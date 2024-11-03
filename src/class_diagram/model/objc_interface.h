@@ -53,8 +53,6 @@ public:
 
     friend bool operator==(const objc_interface &l, const objc_interface &r);
 
-    std::string full_name(bool relative = true) const override;
-
     void add_member(objc_member &&member);
 
     void add_method(objc_method &&method);
@@ -77,6 +75,9 @@ public:
      * @return Doxygen link for this element.
      */
     std::optional<std::string> doxygen_link() const override;
+
+protected:
+    std::string full_name_impl(bool relative = true) const override;
 
 private:
     std::vector<objc_member> members_;

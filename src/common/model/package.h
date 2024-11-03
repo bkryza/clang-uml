@@ -51,8 +51,6 @@ public:
 
     std::string type_name() const override { return "package"; }
 
-    std::string full_name(bool relative) const override;
-
     /**
      * Returns whether the namespace is deprecated.
      *
@@ -76,6 +74,9 @@ public:
      * @return Doxygen-style HTML link for the class.
      */
     std::optional<std::string> doxygen_link() const override;
+
+protected:
+    std::string full_name_impl(bool relative) const override;
 
 private:
     bool is_deprecated_{false};

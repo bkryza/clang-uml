@@ -96,8 +96,8 @@ bool translation_unit_visitor::VisitObjCProtocolDecl(
         diagram().add_participant(std::move(objc_protocol_model_ptr));
     }
     else {
-        LOG_DBG("Skipping ObjC protocol {} with id {}", class_model.full_name(),
-            class_id);
+        LOG_DBG("Skipping ObjC protocol {} with id {}",
+            class_model.full_name(true), class_id);
     }
 
     return true;
@@ -147,7 +147,7 @@ bool translation_unit_visitor::VisitObjCInterfaceDecl(
     }
     else {
         LOG_DBG("Skipping ObjC interface {} with id {}",
-            class_model.full_name(), class_id);
+            class_model.full_name(true), class_id);
     }
 
     return true;
@@ -214,8 +214,8 @@ bool translation_unit_visitor::VisitCXXRecordDecl(
         diagram().add_participant(std::move(class_model_ptr));
     }
     else {
-        LOG_DBG(
-            "Skipping class {} with id {}", class_model.full_name(), class_id);
+        LOG_DBG("Skipping class {} with id {}", class_model.full_name(true),
+            class_id);
     }
 
     return true;

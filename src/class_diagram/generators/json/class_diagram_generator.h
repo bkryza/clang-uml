@@ -156,7 +156,8 @@ void generator::generate_relationships(const T &c, nlohmann::json &parent) const
         if (!target_element.has_value()) {
             LOG_DBG("Skipping {} relation from '{}' to '{}' due "
                     "to unresolved destination id",
-                to_string(r.type()), c.full_name(), r.destination().value());
+                to_string(r.type()), c.full_name(true),
+                r.destination().value());
             continue;
         }
 

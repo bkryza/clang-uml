@@ -41,8 +41,6 @@ public:
 
     friend bool operator==(const enum_ &l, const enum_ &r);
 
-    std::string full_name(bool relative = true) const override;
-
     /**
      * @brief Get the enums constants.
      *
@@ -63,6 +61,9 @@ public:
      * @return Doxygen link for this element.
      */
     std::optional<std::string> doxygen_link() const override;
+
+protected:
+    std::string full_name_impl(bool relative = true) const override;
 
 private:
     std::vector<std::string> constants_;

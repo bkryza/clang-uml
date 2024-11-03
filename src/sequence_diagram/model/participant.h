@@ -147,13 +147,6 @@ public:
     friend bool operator==(const class_ &l, const class_ &r);
 
     /**
-     * Return elements full name.
-     *
-     * @return Fully qualified elements name.
-     */
-    std::string full_name(bool relative = true) const override;
-
-    /**
      * Return elements full name but without namespace.
      *
      * @return Elements full name without namespace.
@@ -206,6 +199,14 @@ public:
 
     eid_t lambda_operator_id() const { return lambda_operator_id_; }
 
+protected:
+    /**
+     * Return elements full name.
+     *
+     * @return Fully qualified elements name.
+     */
+    std::string full_name_impl(bool relative = true) const override;
+
 private:
     bool is_struct_{false};
     bool is_template_{false};
@@ -238,13 +239,6 @@ struct function : public participant {
      * @return Type name of the diagram element.
      */
     std::string type_name() const override { return "function"; }
-
-    /**
-     * Return elements full name.
-     *
-     * @return Fully qualified elements name.
-     */
-    std::string full_name(bool relative = true) const override;
 
     /**
      * Return elements full name but without namespace.
@@ -376,6 +370,14 @@ struct function : public participant {
      */
     const std::vector<std::string> &parameters() const;
 
+protected:
+    /**
+     * Return elements full name.
+     *
+     * @return Fully qualified elements name.
+     */
+    std::string full_name_impl(bool relative = true) const override;
+
 private:
     bool is_const_{false};
     bool is_void_{false};
@@ -450,13 +452,6 @@ struct method : public function {
      */
     const auto &class_full_name() const;
 
-    /**
-     * Return elements full name.
-     *
-     * @return Fully qualified elements name.
-     */
-    std::string full_name(bool relative) const override;
-
     std::string message_name(message_render_mode mode) const override;
 
     /**
@@ -514,6 +509,14 @@ struct method : public function {
      * @param v True, if the method is an assignment operator
      */
     void is_assignment(bool a);
+
+protected:
+    /**
+     * Return elements full name.
+     *
+     * @return Fully qualified elements name.
+     */
+    std::string full_name_impl(bool relative) const override;
 
 private:
     eid_t class_id_{};
@@ -584,13 +587,6 @@ struct objc_method : public function {
      */
     const auto &class_full_name() const;
 
-    /**
-     * Return elements full name.
-     *
-     * @return Fully qualified elements name.
-     */
-    std::string full_name(bool relative) const override;
-
     std::string message_name(message_render_mode mode) const override;
 
     /**
@@ -606,6 +602,14 @@ struct objc_method : public function {
      * @return Participant representation as string
      */
     std::string to_string() const override;
+
+protected:
+    /**
+     * Return elements full name.
+     *
+     * @return Fully qualified elements name.
+     */
+    std::string full_name_impl(bool relative) const override;
 
 private:
     eid_t class_id_{};
@@ -632,13 +636,6 @@ struct function_template : public function {
     std::string type_name() const override { return "function_template"; }
 
     /**
-     * Return elements full name.
-     *
-     * @return Fully qualified elements name.
-     */
-    std::string full_name(bool relative = true) const override;
-
-    /**
      * Return elements full name but without namespace.
      *
      * @return Elements full name without namespace.
@@ -652,5 +649,13 @@ struct function_template : public function {
      * @return Message label
      */
     std::string message_name(message_render_mode mode) const override;
+
+protected:
+    /**
+     * Return elements full name.
+     *
+     * @return Fully qualified elements name.
+     */
+    std::string full_name_impl(bool relative = true) const override;
 };
 } // namespace clanguml::sequence_diagram::model

@@ -26,7 +26,7 @@ package::package(const common::model::namespace_ &using_namespace, path_type pt)
 {
 }
 
-std::string package::full_name(bool relative) const
+std::string package::full_name_impl(bool relative) const
 {
     if (relative) {
         auto res = get_namespace().relative_to(using_namespace()) | name();

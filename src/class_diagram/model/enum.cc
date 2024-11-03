@@ -34,13 +34,10 @@ bool operator==(const enum_ &l, const enum_ &r)
     return (l.get_namespace() == r.get_namespace()) && (l.name() == r.name());
 }
 
-std::string enum_::full_name(bool relative) const
+std::string enum_::full_name_impl(bool relative) const
 {
     using namespace clanguml::util;
     using clanguml::common::model::namespace_;
-
-    if (relative == false && complete() && full_name_cache())
-        return *full_name_cache();
 
     std::ostringstream ostr;
     if (relative)
@@ -51,9 +48,6 @@ std::string enum_::full_name(bool relative) const
         ostr << name_and_ns();
 
     std::string res{ostr.str()};
-
-    if (relative == false && complete())
-        cache_full_name(res);
 
     return res;
 }

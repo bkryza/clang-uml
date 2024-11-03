@@ -119,19 +119,6 @@ public:
     bool module_private() const { return module_private_; }
 
     /**
-     * Return elements full name.
-     *
-     * @return Fully qualified elements name.
-     */
-    std::string full_name(bool relative) const override
-    {
-        if (relative)
-            return name();
-
-        return name_and_ns();
-    }
-
-    /**
      * Return elements full name but without namespace.
      *
      * @return Elements full name without namespace.
@@ -150,6 +137,20 @@ public:
     friend std::ostream &operator<<(std::ostream &out, const element &rhs);
 
     inja::json context() const override;
+
+protected:
+    /**
+     * Return elements full name.
+     *
+     * @return Fully qualified elements name.
+     */
+    std::string full_name_impl(bool relative) const override
+    {
+        if (relative)
+            return name();
+
+        return name_and_ns();
+    }
 
 private:
     namespace_ ns_;

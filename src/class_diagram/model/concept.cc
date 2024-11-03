@@ -46,13 +46,10 @@ std::string concept_::full_name_no_ns() const
     return ostr.str();
 }
 
-std::string concept_::full_name(bool relative) const
+std::string concept_::full_name_impl(bool relative) const
 {
     using namespace clanguml::util;
     using clanguml::common::model::namespace_;
-
-    if (relative == false && complete() && full_name_cache())
-        return *full_name_cache();
 
     std::ostringstream ostr;
 
@@ -69,9 +66,6 @@ std::string concept_::full_name(bool relative) const
 
     if (res.empty())
         return "<<anonymous>>";
-
-    if (relative == false && complete())
-        cache_full_name(res);
 
     return res;
 }

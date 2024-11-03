@@ -114,18 +114,6 @@ public:
     const std::vector<class_method> &methods() const;
 
     /**
-     * @brief Get class full name.
-     *
-     * This method renders the entire class name including all template
-     * parameters and/or arguments.
-     *
-     * @param relative Whether the class name should be relative to
-     *                 using_namespace
-     * @return Full class name.
-     */
-    std::string full_name(bool relative = true) const override;
-
-    /**
      * @brief Get unqualified class ful name.
      *
      * This method returns the class full name but without any namespace
@@ -154,6 +142,19 @@ public:
 
     void apply_filter(const common::model::diagram_filter &filter,
         const std::set<common::model::eid_t> &removed) override;
+
+protected:
+    /**
+     * @brief Get class full name.
+     *
+     * This method renders the entire class name including all template
+     * parameters and/or arguments.
+     *
+     * @param relative Whether the class name should be relative to
+     *                 using_namespace
+     * @return Full class name.
+     */
+    std::string full_name_impl(bool relative = true) const override;
 
 private:
     bool is_struct_{false};
