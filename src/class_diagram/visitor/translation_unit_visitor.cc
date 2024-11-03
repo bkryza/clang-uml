@@ -255,7 +255,6 @@ bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
 
         LOG_DBG("Adding class template specialization {} with id {}", full_name,
             id);
-
         add_class(std::move(template_specialization_ptr));
     }
 
@@ -2493,6 +2492,8 @@ void translation_unit_visitor::add_diagram_element(
 
 void translation_unit_visitor::add_class(std::unique_ptr<class_> &&c)
 {
+    c->complete(true);
+
     if ((config().generate_packages() &&
             config().package_type() == config::package_type_t::kDirectory)) {
         assert(!c->file().empty());
@@ -2522,6 +2523,8 @@ void translation_unit_visitor::add_class(std::unique_ptr<class_> &&c)
 void translation_unit_visitor::add_objc_interface(
     std::unique_ptr<objc_interface> &&c)
 {
+    c->complete(true);
+
     if ((config().generate_packages() &&
             config().package_type() == config::package_type_t::kDirectory)) {
         assert(!c->file().empty());
@@ -2541,6 +2544,8 @@ void translation_unit_visitor::add_objc_interface(
 
 void translation_unit_visitor::add_enum(std::unique_ptr<enum_> &&e)
 {
+    e->complete(true);
+
     if ((config().generate_packages() &&
             config().package_type() == config::package_type_t::kDirectory)) {
         assert(!e->file().empty());
@@ -2569,6 +2574,8 @@ void translation_unit_visitor::add_enum(std::unique_ptr<enum_> &&e)
 
 void translation_unit_visitor::add_concept(std::unique_ptr<concept_> &&c)
 {
+    c->complete(true);
+
     if ((config().generate_packages() &&
             config().package_type() == config::package_type_t::kDirectory)) {
         assert(!c->file().empty());

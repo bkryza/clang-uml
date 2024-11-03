@@ -39,6 +39,9 @@ std::string enum_::full_name(bool relative) const
     using namespace clanguml::util;
     using clanguml::common::model::namespace_;
 
+    if (relative == false && complete() && full_name_cache())
+        return *full_name_cache();
+
     std::ostringstream ostr;
     if (relative)
         ostr << namespace_{name_and_ns()}
@@ -47,7 +50,12 @@ std::string enum_::full_name(bool relative) const
     else
         ostr << name_and_ns();
 
-    return ostr.str();
+    std::string res{ostr.str()};
+
+    if (relative == false && complete())
+        cache_full_name(res);
+
+    return res;
 }
 
 std::vector<std::string> &enum_::constants() { return constants_; }

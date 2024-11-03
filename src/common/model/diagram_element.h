@@ -190,6 +190,13 @@ public:
     virtual void apply_filter(
         const diagram_filter &filter, const std::set<eid_t> &removed);
 
+    const std::optional<std::string> &full_name_cache() const
+    {
+        return full_name_cache_;
+    }
+
+    void cache_full_name(const std::string &fn) const { full_name_cache_ = fn; }
+
 private:
     eid_t id_{};
     std::optional<eid_t> parent_element_id_{};
@@ -197,5 +204,7 @@ private:
     std::vector<relationship> relationships_;
     bool nested_{false};
     bool complete_{false};
+
+    mutable std::optional<std::string> full_name_cache_;
 };
 } // namespace clanguml::common::model
