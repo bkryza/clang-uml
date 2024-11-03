@@ -49,8 +49,8 @@ public:
      */
     std::string name_and_ns() const
     {
-        auto ns = ns_ | name();
-        return ns.to_string();
+        return util::memoized<name_and_ns_tag, std::string>::memoize(
+            true, [this]() { return name_and_ns_impl(); });
     }
 
     /**
@@ -58,7 +58,11 @@ public:
      *
      * @param ns Namespace.
      */
-    void set_namespace(const namespace_ &ns) { ns_ = ns; }
+    void set_namespace(const namespace_ &ns)
+    {
+        util::memoized<name_and_ns_tag, std::string>::invalidate();
+        ns_ = ns;
+    }
 
     /**
      * Return elements namespace.
@@ -150,6 +154,12 @@ protected:
             return name();
 
         return name_and_ns();
+    }
+
+    virtual std::string name_and_ns_impl() const
+    {
+        auto ns = ns_ | name();
+        return ns.to_string();
     }
 
 private:

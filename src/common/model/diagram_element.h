@@ -35,18 +35,20 @@ namespace clanguml::common::model {
 
 class diagram_filter;
 
+struct full_name_tag_t { };
+struct name_and_ns_tag { };
+
 /**
  * @brief Base class for standalone diagram elements.
  *
  * This is a base cass of any standalone elements such as classes, structs,
  * concepts, packages and so on participants and so on.
  */
-struct full_name_tag_t { };
-
 class diagram_element
     : public decorated_element,
       public source_location,
-      public util::memoized<full_name_tag_t, std::string, bool> {
+      public util::memoized<full_name_tag_t, std::string, bool>,
+      public util::memoized<name_and_ns_tag, std::string> {
 public:
     diagram_element();
 
@@ -99,7 +101,11 @@ public:
      *
      * @param name Elements name.
      */
-    void set_name(const std::string &name) { name_ = name; }
+    void set_name(const std::string &name)
+    {
+        util::memoized<name_and_ns_tag, std::string>::invalidate();
+        name_ = name;
+    }
 
     /**
      * Return diagram element name.
@@ -125,7 +131,7 @@ public:
      */
     std::string full_name(bool relative) const
     {
-        return memoize(
+        return util::memoized<full_name_tag_t, std::string, bool>::memoize(
             complete(),
             [this](bool relative) { return full_name_impl(relative); },
             relative);

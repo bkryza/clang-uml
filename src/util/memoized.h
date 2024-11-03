@@ -35,20 +35,45 @@ public:
     using value_t = Ret;
 
     template <typename F>
-    auto memoize(bool is_complete, F f, Args... args) const
+    auto memoize(bool is_complete, F &&f, Args... args) const
     {
         if (!is_complete)
-            return f(args...);
+            return f(std::forward<Args>(args)...);
 
-        const auto key = key_t{args...};
+        const auto key = key_t{std::forward<Args>(args)...};
         if (cache_.find(key) == cache_.end())
-            cache_[key] = f(args...);
+            cache_[key] = std::apply(f, key);
 
         return cache_.at(key);
     }
 
+    void invalidate(Args... args) const { cache_.erase(args...); }
+
 private:
     mutable std::map<key_t, value_t> cache_;
+};
+
+template <typename T, typename Ret> class memoized<T, Ret> {
+public:
+    using key_t = bool;
+    using value_t = Ret;
+
+    template <typename F> auto memoize(bool is_complete, F f) const
+    {
+        if (!is_complete)
+            return f();
+
+        if (!value_) {
+            value_ = f();
+        }
+
+        return *value_; // NOLINT
+    }
+
+    void invalidate() const { value_.reset(); }
+
+private:
+    mutable std::optional<Ret> value_;
 };
 
 template <typename T, typename Ret> class memoized<T, Ret, bool> {
@@ -71,6 +96,14 @@ public:
         }
 
         return key ? *true_value_ : *false_value_; // NOLINT
+    }
+
+    void invalidate(bool key) const
+    {
+        if (key)
+            true_value_.reset();
+        else
+            false_value_.reset();
     }
 
 private:
