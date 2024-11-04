@@ -316,13 +316,13 @@ public:
         auto should_include_namespace = diagram().should_include(
             common::model::namespace_{decl->getQualifiedNameAsString()});
 
-        auto decl_file = decl->getLocation().printToString(source_manager());
+        const auto decl_file =
+            decl->getLocation().printToString(source_manager());
 
         std::string file_path;
         unsigned line{};
         unsigned column{};
-        decl_file =
-            common::parse_source_location(decl_file, file_path, line, column);
+        common::parse_source_location(decl_file, file_path, line, column);
 
         const auto should_include_decl_file =
             diagram().should_include(common::model::source_file{file_path});

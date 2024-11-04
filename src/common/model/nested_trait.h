@@ -298,7 +298,7 @@ private:
      */
     bool has_element(const std::string &name) const
     {
-        return elements_by_name_.count(name);
+        return elements_by_name_.count(name) != 0U;
     }
 
     std::set<std::pair<eid_t, std::string>> added_elements_;
