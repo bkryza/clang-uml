@@ -193,7 +193,7 @@ public:
             file_path = fs::absolute(file_path);
         }
 
-        file_path = fs::weakly_canonical(file_path);
+        file_path = file_path.lexically_normal();
 
         file = file_path.string();
 
@@ -316,11 +316,16 @@ public:
         auto should_include_namespace = diagram().should_include(
             common::model::namespace_{decl->getQualifiedNameAsString()});
 
-        const auto decl_file =
-            decl->getLocation().printToString(source_manager());
+        auto decl_file = decl->getLocation().printToString(source_manager());
+
+        std::string file_path;
+        unsigned line{};
+        unsigned column{};
+        decl_file =
+            common::parse_source_location(decl_file, file_path, line, column);
 
         const auto should_include_decl_file =
-            diagram().should_include(common::model::source_file{decl_file});
+            diagram().should_include(common::model::source_file{file_path});
 
         return should_include_namespace && should_include_decl_file;
     }

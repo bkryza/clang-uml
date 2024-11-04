@@ -464,6 +464,7 @@ This project relies on the following great tools:
 * [Doxygen](https://www.doxygen.nl/) - C++ documentation generator
 * [Doxygen Awesome](https://jothepro.github.io/doxygen-awesome-css) - Doxygen CSS style
 * [miroir](https://gitlab.com/madyanov/miroir) - YAML schema validation library for C++
+* [nanobench](https://github.com/martinus/nanobench) - microbenchmarking library for C++
 
 ## Contributing
 

@@ -365,30 +365,6 @@ bool replace_all(std::string &input, const std::string &pattern,
     return replaced;
 }
 
-template <>
-bool starts_with(
-    const std::filesystem::path &path, const std::filesystem::path &prefix)
-{
-    auto normal_path = std::filesystem::path();
-    auto normal_prefix = std::filesystem::path();
-
-    for (const auto &element : path.lexically_normal()) {
-        if (!element.empty())
-            normal_path /= element;
-    }
-
-    for (const auto &element : prefix.lexically_normal()) {
-        if (!element.empty())
-            normal_prefix /= element;
-    }
-
-    auto normal_path_str = normal_path.string();
-    auto normal_prefix_str = normal_prefix.string();
-    return std::search(normal_path_str.begin(), normal_path_str.end(),
-               normal_prefix_str.begin(),
-               normal_prefix_str.end()) == normal_path_str.begin();
-}
-
 template <> bool starts_with(const std::string &s, const std::string &prefix)
 {
     return s.rfind(prefix, 0) == 0;
@@ -452,12 +428,19 @@ std::filesystem::path ensure_path_is_absolute(
 }
 
 bool is_relative_to(
-    const std::filesystem::path &child, const std::filesystem::path &parent)
+    const std::filesystem::path &child, const std::filesystem::path &base)
 {
-    if (child.has_root_directory() != parent.has_root_directory())
+    if (child.has_root_directory() != base.has_root_directory())
         return false;
 
-    return starts_with(weakly_canonical(child), weakly_canonical(parent));
+    const auto child_ln = child.lexically_normal();
+    const auto base_ln = base.lexically_normal();
+
+    if (child_ln == base_ln)
+        return true;
+
+    auto rel = child_ln.lexically_relative(base_ln);
+    return !rel.empty() && rel.native()[0] != '.';
 }
 
 std::string format_message_comment(const std::string &comment, unsigned width)
@@ -496,41 +479,6 @@ std::string format_message_comment(const std::string &comment, unsigned width)
     return result;
 }
 
-std::filesystem::path normalize_relative_path(const std::filesystem::path &path)
-{
-    if (path.is_absolute())
-        return path;
-
-    std::filesystem::path result;
-
-    for (const auto &part : path) {
-        if (part == ".") {
-            continue;
-        }
-        result /= part;
-    }
-
-    return result;
-}
-
-bool is_subpath(
-    const std::filesystem::path &path, const std::filesystem::path &base)
-{
-    if (path.empty())
-        return false;
-
-    auto normalized_path = normalize_relative_path(path);
-    auto normalized_base = normalize_relative_path(base);
-
-    if (normalized_path == normalized_base)
-        return true;
-
-    auto rel = std::filesystem::relative(normalized_path, normalized_base);
-
-    std::string rel_str = rel.string();
-    return !rel_str.empty() && rel.native()[0] != '.';
-}
-
 std::optional<std::pair<std::string, std::string>> find_entry_by_path_prefix(
     const std::map<std::string, std::string> &m, const std::string &path)
 {
@@ -555,7 +503,7 @@ std::optional<std::pair<std::string, std::string>> find_entry_by_path_prefix(
         const auto &pattern = m.at(key);
         std::filesystem::path key_path{key};
 
-        if (is_subpath(file_path, key_path)) {
+        if (is_relative_to(file_path, key_path)) {
             return {{key, pattern}};
         }
     }

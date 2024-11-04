@@ -1044,7 +1044,7 @@ tvl::value_t paths_filter::match(
     auto pp = p.fs_path(root_);
     for (const auto &path : paths_) {
         if (pp.root_name().string() == path.root_name().string() &&
-            util::starts_with(pp.relative_path(), path.relative_path())) {
+            util::is_relative_to(pp.relative_path(), path.relative_path())) {
 
             return true;
         }
@@ -1070,7 +1070,8 @@ tvl::value_t paths_filter::match(
 
     for (const auto &path : paths_) {
         if (sl_path.root_name().string() == path.root_name().string() &&
-            util::starts_with(sl_path.relative_path(), path.relative_path())) {
+            util::is_relative_to(
+                sl_path.relative_path(), path.relative_path())) {
 
             return true;
         }

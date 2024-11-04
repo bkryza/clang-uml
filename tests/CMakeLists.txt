@@ -117,6 +117,11 @@ set(TEST_NAMES
     test_query_driver_output_extractor
     test_progress_indicator)
 
+if(ENABLE_BENCHMARKS)
+    message(STATUS "Enabling microbenchmarks")
+    list(APPEND TEST_NAMES test_benchmarks)
+endif(ENABLE_BENCHMARKS)
+
 macro(generate_test_cases_with_paths input_list output_list)
     set(${output_list})  # Initialize the output list
     foreach(test_case ${${input_list}})
@@ -209,9 +214,3 @@ endforeach()
 foreach(TEST_NAME ${TEST_NAMES})
     add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME})
 endforeach()
-
-add_executable(benchmarks)
-target_sources(benchmarks PRIVATE benchmarks.cc)
-target_link_libraries(benchmarks PRIVATE ${CLANG_UML_TEST_LIBRARIES})
-
-
