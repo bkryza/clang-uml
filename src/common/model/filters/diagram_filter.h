@@ -30,6 +30,7 @@
 #include "config/config.h"
 #include "include_diagram/model/diagram.h"
 #include "sequence_diagram/model/participant.h"
+#include "util/memoized.h"
 
 #include <filesystem>
 #include <utility>
@@ -698,7 +699,9 @@ private:
  * Match elements based on their source location, whether it matches to
  * a specified file paths.
  */
-struct paths_filter : public filter_visitor {
+struct paths_filter : public filter_visitor,
+                      public util::memoized<std::filesystem::path, bool,
+                          std::filesystem::path> {
     paths_filter(filter_t type, const std::vector<std::string> &p,
         const std::filesystem::path &root);
 

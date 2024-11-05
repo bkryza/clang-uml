@@ -200,8 +200,9 @@ public:
         element.set_file(file);
 
         if (util::is_relative_to(file_path, relative_to_path_)) {
-            element.set_file_relative(util::path_to_url(
-                fs::relative(element.file(), relative_to_path_).string()));
+            element.set_file_relative(
+                util::path_to_url(fs::path{element.file()}.lexically_relative(
+                    relative_to_path_)));
         }
         else {
             element.set_file_relative("");
