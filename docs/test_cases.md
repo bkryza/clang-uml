@@ -153,6 +153,7 @@
  * [t20057](./test_cases/t20057.md) - Basic Objective-C sequence diagram test case
  * [t20058](./test_cases/t20058.md) - Objective-C sequence diagram with method params test case
  * [t20059](./test_cases/t20059.md) - Objective-C sequence diagram with polymorphism test case
+ * [t20060](./test_cases/t20060.md) - Test case for multiple lambda expressions in function calls arguments
 ## Package diagrams
  * [t30001](./test_cases/t30001.md) - Basic package diagram test case
  * [t30002](./test_cases/t30002.md) - Package dependency test case

@@ -62,7 +62,7 @@ std::string class_::full_name_no_ns() const
     return ostr.str();
 }
 
-std::string class_::full_name(bool relative) const
+std::string class_::full_name_impl(bool relative) const
 {
     using namespace clanguml::util;
     using clanguml::common::model::namespace_;
@@ -117,9 +117,9 @@ function::function(const common::model::namespace_ &using_namespace)
 {
 }
 
-std::string function::full_name(bool relative) const
+std::string function::full_name_impl(bool relative) const
 {
-    return fmt::format("{}({}){}", participant::full_name(relative),
+    return fmt::format("{}({}){}", participant::full_name_impl(relative),
         fmt::join(parameters_, ","), is_const() ? " const" : "");
 }
 
@@ -211,7 +211,7 @@ void objc_method::set_class_full_name(const std::string &name)
 
 const auto &objc_method::class_full_name() const { return class_full_name_; }
 
-std::string objc_method::full_name(bool relative) const
+std::string objc_method::full_name_impl(bool relative) const
 {
     if (relative)
         return fmt::format("{}({}){}", method_name(),
@@ -288,7 +288,7 @@ void method::set_class_full_name(const std::string &name)
 
 const auto &method::class_full_name() const { return class_full_name_; }
 
-std::string method::full_name(bool relative) const
+std::string method::full_name_impl(bool relative) const
 {
     if (relative)
         return fmt::format("{}({}){}", method_name(),
@@ -334,7 +334,7 @@ function_template::function_template(
 {
 }
 
-std::string function_template::full_name(bool relative) const
+std::string function_template::full_name_impl(bool relative) const
 {
     using namespace clanguml::util;
     using clanguml::common::model::namespace_;

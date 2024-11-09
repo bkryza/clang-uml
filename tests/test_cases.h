@@ -142,7 +142,9 @@ template <typename T> struct diagram_source_t {
     bool generate_packages{false};
 };
 
-struct plantuml_t : public diagram_source_t<std::string> {
+struct plantuml_t : public diagram_source_t<std::string>,
+                    util::memoized<plantuml_t, std::string, std::string> {
+
     using diagram_source_t::diagram_source_t;
     using source_type = std::string;
     using generator_tag = clanguml::common::generators::plantuml_generator_tag;
@@ -150,6 +152,13 @@ struct plantuml_t : public diagram_source_t<std::string> {
     inline static const std::string diagram_type_name{"PlantUML"};
 
     std::string get_alias(std::string name) const override
+    {
+        return memoize(
+            true, [this, name](std::string x) { return get_alias_impl(x); },
+            name);
+    }
+
+    std::string get_alias_impl(std::string name) const
     {
         std::vector<std::regex> patterns;
 
@@ -162,24 +171,36 @@ struct plantuml_t : public diagram_source_t<std::string> {
         util::replace_all(name, "[", "\\[");
         util::replace_all(name, "]", "\\]");
 
-        patterns.push_back(
-            std::regex{"class\\s\"" + name + "\"\\sas\\s" + alias_regex});
-        patterns.push_back(
-            std::regex{"abstract\\s\"" + name + "\"\\sas\\s" + alias_regex});
-        patterns.push_back(
-            std::regex{"enum\\s\"" + name + "\"\\sas\\s" + alias_regex});
-        patterns.push_back(
-            std::regex{"package\\s\"" + name + "\"\\sas\\s" + alias_regex});
-        patterns.push_back(
-            std::regex{"package\\s\\[" + name + "\\]\\sas\\s" + alias_regex});
-        patterns.push_back(
-            std::regex{"file\\s\"" + name + "\"\\sas\\s" + alias_regex});
-        patterns.push_back(
-            std::regex{"folder\\s\"" + name + "\"\\sas\\s" + alias_regex});
-        patterns.push_back(
-            std::regex{"participant\\s\"" + name + "\"\\sas\\s" + alias_regex});
-        patterns.push_back(
-            std::regex{"protocol\\s\"" + name + "\"\\sas\\s" + alias_regex});
+        if (diagram_type == common::model::diagram_t::kClass) {
+            patterns.push_back(
+                std::regex{"class\\s\"" + name + "\"\\sas\\s" + alias_regex});
+            patterns.push_back(std::regex{
+                "abstract\\s\"" + name + "\"\\sas\\s" + alias_regex});
+            patterns.push_back(
+                std::regex{"enum\\s\"" + name + "\"\\sas\\s" + alias_regex});
+            patterns.push_back(
+                std::regex{"package\\s\"" + name + "\"\\sas\\s" + alias_regex});
+            patterns.push_back(std::regex{
+                "package\\s\\[" + name + "\\]\\sas\\s" + alias_regex});
+            patterns.push_back(std::regex{
+                "protocol\\s\"" + name + "\"\\sas\\s" + alias_regex});
+        }
+        else if (diagram_type == common::model::diagram_t::kSequence) {
+            patterns.push_back(std::regex{
+                "participant\\s\"" + name + "\"\\sas\\s" + alias_regex});
+        }
+        else if (diagram_type == common::model::diagram_t::kPackage) {
+            patterns.push_back(
+                std::regex{"package\\s\"" + name + "\"\\sas\\s" + alias_regex});
+            patterns.push_back(std::regex{
+                "package\\s\\[" + name + "\\]\\sas\\s" + alias_regex});
+        }
+        else if (diagram_type == common::model::diagram_t::kInclude) {
+            patterns.push_back(
+                std::regex{"file\\s\"" + name + "\"\\sas\\s" + alias_regex});
+            patterns.push_back(
+                std::regex{"folder\\s\"" + name + "\"\\sas\\s" + alias_regex});
+        }
 
         std::smatch base_match;
 
@@ -196,14 +217,22 @@ struct plantuml_t : public diagram_source_t<std::string> {
     }
 };
 
-struct mermaid_t : public diagram_source_t<std::string> {
+struct mermaid_t : public diagram_source_t<std::string>,
+                   util::memoized<mermaid_t, std::string, std::string> {
     using diagram_source_t::diagram_source_t;
     using source_type = std::string;
     using generator_tag = clanguml::common::generators::mermaid_generator_tag;
 
     inline static const std::string diagram_type_name{"MermaidJS"};
 
-    std::string get_alias_impl(std::string name) const
+    std::string get_alias(std::string name) const override
+    {
+        return memoize(
+            true, [this, name](std::string x) { return get_alias_impl(x); },
+            name);
+    }
+
+    std::string get_alias_class_diagram_impl(std::string name) const
     {
         std::vector<std::regex> patterns;
 
@@ -277,12 +306,12 @@ struct mermaid_t : public diagram_source_t<std::string> {
         return fmt::format("__INVALID__ALIAS__({})", name);
     }
 
-    std::string get_alias(std::string name) const override
+    std::string get_alias_impl(std::string name) const
     {
         if (diagram_type == common::model::diagram_t::kSequence)
             return get_alias_sequence_diagram_impl(name);
 
-        return get_alias_impl(name);
+        return get_alias_class_diagram_impl(name);
     }
 };
 

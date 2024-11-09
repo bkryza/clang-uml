@@ -49,8 +49,8 @@ public:
      */
     std::string name_and_ns() const
     {
-        auto ns = ns_ | name();
-        return ns.to_string();
+        return util::memoized<name_and_ns_tag, std::string>::memoize(
+            true, [this]() { return name_and_ns_impl(); });
     }
 
     /**
@@ -58,7 +58,11 @@ public:
      *
      * @param ns Namespace.
      */
-    void set_namespace(const namespace_ &ns) { ns_ = ns; }
+    void set_namespace(const namespace_ &ns)
+    {
+        util::memoized<name_and_ns_tag, std::string>::invalidate();
+        ns_ = ns;
+    }
 
     /**
      * Return elements namespace.
@@ -119,19 +123,6 @@ public:
     bool module_private() const { return module_private_; }
 
     /**
-     * Return elements full name.
-     *
-     * @return Fully qualified elements name.
-     */
-    std::string full_name(bool relative) const override
-    {
-        if (relative)
-            return name();
-
-        return name_and_ns();
-    }
-
-    /**
      * Return elements full name but without namespace.
      *
      * @return Elements full name without namespace.
@@ -150,6 +141,26 @@ public:
     friend std::ostream &operator<<(std::ostream &out, const element &rhs);
 
     inja::json context() const override;
+
+protected:
+    /**
+     * Return elements full name.
+     *
+     * @return Fully qualified elements name.
+     */
+    std::string full_name_impl(bool relative) const override
+    {
+        if (relative)
+            return name();
+
+        return name_and_ns();
+    }
+
+    virtual std::string name_and_ns_impl() const
+    {
+        auto ns = ns_ | name();
+        return ns.to_string();
+    }
 
 private:
     namespace_ ns_;

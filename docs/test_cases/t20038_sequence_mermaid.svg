@@ -1,95 +1,95 @@
 <svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" aria-roledescription="sequence" role="graphics-document document" viewBox="-113.5 -10 1421.5 1668" style="max-width: 1421.5px; background-color: white;" width="1421.5" id="my-svg">
   <g>
-    <rect class="actor" ry="3" rx="3" height="65" width="244" stroke="#666" fill="#eaeaea" y="1582" x="1014"/>
-    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="1614.5" x="1136">
+    <rect class="actor actor-bottom" ry="3" rx="3" name="C_0013780172073331423003" height="65" width="244" stroke="#666" fill="#eaeaea" y="1582" x="1014"/>
+    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="1614.5" x="1136">
       <tspan dy="0" x="1136">add_impl&lt;double&gt;(double,double)</tspan>
     </text>
   </g>
   <g>
-    <rect class="actor" ry="3" rx="3" height="65" width="164" stroke="#666" fill="#eaeaea" y="1582" x="800"/>
-    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="1614.5" x="882">
+    <rect class="actor actor-bottom" ry="3" rx="3" name="C_0014904059563015848795" height="65" width="164" stroke="#666" fill="#eaeaea" y="1582" x="800"/>
+    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="1614.5" x="882">
       <tspan dy="0" x="882">add_impl&lt;int&gt;(int,int)</tspan>
     </text>
   </g>
   <g>
-    <rect class="actor" ry="3" rx="3" height="65" width="150" stroke="#666" fill="#eaeaea" y="1582" x="600"/>
-    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="1614.5" x="675">
+    <rect class="actor actor-bottom" ry="3" rx="3" name="C_0016066467566327460914" height="65" width="150" stroke="#666" fill="#eaeaea" y="1582" x="600"/>
+    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="1614.5" x="675">
       <tspan dy="0" x="675">add&lt;int&gt;(int,int)</tspan>
     </text>
   </g>
   <g>
-    <rect class="actor" ry="3" rx="3" height="65" width="150" stroke="#666" fill="#eaeaea" y="1582" x="400"/>
-    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="1614.5" x="475">
+    <rect class="actor actor-bottom" ry="3" rx="3" name="C_0016181798519051847963" height="65" width="150" stroke="#666" fill="#eaeaea" y="1582" x="400"/>
+    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="1614.5" x="475">
       <tspan dy="0" x="475">A</tspan>
     </text>
   </g>
   <g>
-    <rect class="actor" ry="3" rx="3" height="65" width="150" stroke="#666" fill="#eaeaea" y="1582" x="200"/>
-    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="1614.5" x="275">
+    <rect class="actor actor-bottom" ry="3" rx="3" name="C_0008326302221771171317" height="65" width="150" stroke="#666" fill="#eaeaea" y="1582" x="200"/>
+    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="1614.5" x="275">
       <tspan dy="0" x="275">B</tspan>
     </text>
   </g>
   <g>
-    <rect class="actor" ry="3" rx="3" height="65" width="150" stroke="#666" fill="#eaeaea" y="1582" x="0"/>
-    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="1614.5" x="75">
+    <rect class="actor actor-bottom" ry="3" rx="3" name="C_0008108885002633823792" height="65" width="150" stroke="#666" fill="#eaeaea" y="1582" x="0"/>
+    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="1614.5" x="75">
       <tspan dy="0" x="75">tmain()</tspan>
     </text>
   </g>
   <g>
-    <line stroke="#999" stroke-width="0.5px" class="200" y2="1582" x2="1136" y1="5" x1="1136" id="actor5"/>
+    <line name="C_0013780172073331423003" stroke="#999" stroke-width="0.5px" class="actor-line 200" y2="1582" x2="1136" y1="65" x1="1136" id="actor5"/>
     <g id="root-5">
-      <rect class="actor" ry="3" rx="3" height="65" width="244" stroke="#666" fill="#eaeaea" y="0" x="1014"/>
-      <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="32.5" x="1136">
+      <rect class="actor actor-top" ry="3" rx="3" name="C_0013780172073331423003" height="65" width="244" stroke="#666" fill="#eaeaea" y="0" x="1014"/>
+      <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="32.5" x="1136">
         <tspan dy="0" x="1136">add_impl&lt;double&gt;(double,double)</tspan>
       </text>
     </g>
   </g>
   <g>
-    <line stroke="#999" stroke-width="0.5px" class="200" y2="1582" x2="882" y1="5" x1="882" id="actor4"/>
+    <line name="C_0014904059563015848795" stroke="#999" stroke-width="0.5px" class="actor-line 200" y2="1582" x2="882" y1="65" x1="882" id="actor4"/>
     <g id="root-4">
-      <rect class="actor" ry="3" rx="3" height="65" width="164" stroke="#666" fill="#eaeaea" y="0" x="800"/>
-      <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="32.5" x="882">
+      <rect class="actor actor-top" ry="3" rx="3" name="C_0014904059563015848795" height="65" width="164" stroke="#666" fill="#eaeaea" y="0" x="800"/>
+      <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="32.5" x="882">
         <tspan dy="0" x="882">add_impl&lt;int&gt;(int,int)</tspan>
       </text>
     </g>
   </g>
   <g>
-    <line stroke="#999" stroke-width="0.5px" class="200" y2="1582" x2="675" y1="5" x1="675" id="actor3"/>
+    <line name="C_0016066467566327460914" stroke="#999" stroke-width="0.5px" class="actor-line 200" y2="1582" x2="675" y1="65" x1="675" id="actor3"/>
     <g id="root-3">
-      <rect class="actor" ry="3" rx="3" height="65" width="150" stroke="#666" fill="#eaeaea" y="0" x="600"/>
-      <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="32.5" x="675">
+      <rect class="actor actor-top" ry="3" rx="3" name="C_0016066467566327460914" height="65" width="150" stroke="#666" fill="#eaeaea" y="0" x="600"/>
+      <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="32.5" x="675">
         <tspan dy="0" x="675">add&lt;int&gt;(int,int)</tspan>
       </text>
     </g>
   </g>
   <g>
-    <line stroke="#999" stroke-width="0.5px" class="200" y2="1582" x2="475" y1="5" x1="475" id="actor2"/>
+    <line name="C_0016181798519051847963" stroke="#999" stroke-width="0.5px" class="actor-line 200" y2="1582" x2="475" y1="65" x1="475" id="actor2"/>
     <g id="root-2">
-      <rect class="actor" ry="3" rx="3" height="65" width="150" stroke="#666" fill="#eaeaea" y="0" x="400"/>
-      <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="32.5" x="475">
+      <rect class="actor actor-top" ry="3" rx="3" name="C_0016181798519051847963" height="65" width="150" stroke="#666" fill="#eaeaea" y="0" x="400"/>
+      <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="32.5" x="475">
         <tspan dy="0" x="475">A</tspan>
       </text>
     </g>
   </g>
   <g>
-    <line stroke="#999" stroke-width="0.5px" class="200" y2="1582" x2="275" y1="5" x1="275" id="actor1"/>
+    <line name="C_0008326302221771171317" stroke="#999" stroke-width="0.5px" class="actor-line 200" y2="1582" x2="275" y1="65" x1="275" id="actor1"/>
     <g id="root-1">
-      <rect class="actor" ry="3" rx="3" height="65" width="150" stroke="#666" fill="#eaeaea" y="0" x="200"/>
-      <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="32.5" x="275">
+      <rect class="actor actor-top" ry="3" rx="3" name="C_0008326302221771171317" height="65" width="150" stroke="#666" fill="#eaeaea" y="0" x="200"/>
+      <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="32.5" x="275">
         <tspan dy="0" x="275">B</tspan>
       </text>
     </g>
   </g>
   <g>
-    <line stroke="#999" stroke-width="0.5px" class="200" y2="1582" x2="75" y1="5" x1="75" id="actor0"/>
+    <line name="C_0008108885002633823792" stroke="#999" stroke-width="0.5px" class="actor-line 200" y2="1582" x2="75" y1="65" x1="75" id="actor0"/>
     <g id="root-0">
-      <rect class="actor" ry="3" rx="3" height="65" width="150" stroke="#666" fill="#eaeaea" y="0" x="0"/>
-      <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="32.5" x="75">
+      <rect class="actor actor-top" ry="3" rx="3" name="C_0008108885002633823792" height="65" width="150" stroke="#666" fill="#eaeaea" y="0" x="0"/>
+      <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="32.5" x="75">
         <tspan dy="0" x="75">tmain()</tspan>
       </text>
     </g>
   </g>
-  <style>#my-svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#333;}#my-svg .error-icon{fill:#552222;}#my-svg .error-text{fill:#552222;stroke:#552222;}#my-svg .edge-thickness-normal{stroke-width:2px;}#my-svg .edge-thickness-thick{stroke-width:3.5px;}#my-svg .edge-pattern-solid{stroke-dasharray:0;}#my-svg .edge-pattern-dashed{stroke-dasharray:3;}#my-svg .edge-pattern-dotted{stroke-dasharray:2;}#my-svg .marker{fill:#333333;stroke:#333333;}#my-svg .marker.cross{stroke:#333333;}#my-svg svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#my-svg .actor{stroke:hsl(259.6261682243, 59.7765363128%, 87.9019607843%);fill:#ECECFF;}#my-svg text.actor&gt;tspan{fill:black;stroke:none;}#my-svg .actor-line{stroke:grey;}#my-svg .messageLine0{stroke-width:1.5;stroke-dasharray:none;stroke:#333;}#my-svg .messageLine1{stroke-width:1.5;stroke-dasharray:2,2;stroke:#333;}#my-svg #arrowhead path{fill:#333;stroke:#333;}#my-svg .sequenceNumber{fill:white;}#my-svg #sequencenumber{fill:#333;}#my-svg #crosshead path{fill:#333;stroke:#333;}#my-svg .messageText{fill:#333;stroke:none;}#my-svg .labelBox{stroke:hsl(259.6261682243, 59.7765363128%, 87.9019607843%);fill:#ECECFF;}#my-svg .labelText,#my-svg .labelText&gt;tspan{fill:black;stroke:none;}#my-svg .loopText,#my-svg .loopText&gt;tspan{fill:black;stroke:none;}#my-svg .loopLine{stroke-width:2px;stroke-dasharray:2,2;stroke:hsl(259.6261682243, 59.7765363128%, 87.9019607843%);fill:hsl(259.6261682243, 59.7765363128%, 87.9019607843%);}#my-svg .note{stroke:#aaaa33;fill:#fff5ad;}#my-svg .noteText,#my-svg .noteText&gt;tspan{fill:black;stroke:none;}#my-svg .activation0{fill:#f4f4f4;stroke:#666;}#my-svg .activation1{fill:#f4f4f4;stroke:#666;}#my-svg .activation2{fill:#f4f4f4;stroke:#666;}#my-svg .actorPopupMenu{position:absolute;}#my-svg .actorPopupMenuPanel{position:absolute;fill:#ECECFF;box-shadow:0px 8px 16px 0px rgba(0,0,0,0.2);filter:drop-shadow(3px 5px 2px rgb(0 0 0 / 0.4));}#my-svg .actor-man line{stroke:hsl(259.6261682243, 59.7765363128%, 87.9019607843%);fill:#ECECFF;}#my-svg .actor-man circle,#my-svg line{stroke:hsl(259.6261682243, 59.7765363128%, 87.9019607843%);fill:#ECECFF;stroke-width:2px;}#my-svg :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style>
+  <style>#my-svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#333;}#my-svg .error-icon{fill:#552222;}#my-svg .error-text{fill:#552222;stroke:#552222;}#my-svg .edge-thickness-normal{stroke-width:1px;}#my-svg .edge-thickness-thick{stroke-width:3.5px;}#my-svg .edge-pattern-solid{stroke-dasharray:0;}#my-svg .edge-thickness-invisible{stroke-width:0;fill:none;}#my-svg .edge-pattern-dashed{stroke-dasharray:3;}#my-svg .edge-pattern-dotted{stroke-dasharray:2;}#my-svg .marker{fill:#333333;stroke:#333333;}#my-svg .marker.cross{stroke:#333333;}#my-svg svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#my-svg p{margin:0;}#my-svg .actor{stroke:hsl(259.6261682243, 59.7765363128%, 87.9019607843%);fill:#ECECFF;}#my-svg text.actor&gt;tspan{fill:black;stroke:none;}#my-svg .actor-line{stroke:hsl(259.6261682243, 59.7765363128%, 87.9019607843%);}#my-svg .messageLine0{stroke-width:1.5;stroke-dasharray:none;stroke:#333;}#my-svg .messageLine1{stroke-width:1.5;stroke-dasharray:2,2;stroke:#333;}#my-svg #arrowhead path{fill:#333;stroke:#333;}#my-svg .sequenceNumber{fill:white;}#my-svg #sequencenumber{fill:#333;}#my-svg #crosshead path{fill:#333;stroke:#333;}#my-svg .messageText{fill:#333;stroke:none;}#my-svg .labelBox{stroke:hsl(259.6261682243, 59.7765363128%, 87.9019607843%);fill:#ECECFF;}#my-svg .labelText,#my-svg .labelText&gt;tspan{fill:black;stroke:none;}#my-svg .loopText,#my-svg .loopText&gt;tspan{fill:black;stroke:none;}#my-svg .loopLine{stroke-width:2px;stroke-dasharray:2,2;stroke:hsl(259.6261682243, 59.7765363128%, 87.9019607843%);fill:hsl(259.6261682243, 59.7765363128%, 87.9019607843%);}#my-svg .note{stroke:#aaaa33;fill:#fff5ad;}#my-svg .noteText,#my-svg .noteText&gt;tspan{fill:black;stroke:none;}#my-svg .activation0{fill:#f4f4f4;stroke:#666;}#my-svg .activation1{fill:#f4f4f4;stroke:#666;}#my-svg .activation2{fill:#f4f4f4;stroke:#666;}#my-svg .actorPopupMenu{position:absolute;}#my-svg .actorPopupMenuPanel{position:absolute;fill:#ECECFF;box-shadow:0px 8px 16px 0px rgba(0,0,0,0.2);filter:drop-shadow(3px 5px 2px rgb(0 0 0 / 0.4));}#my-svg .actor-man line{stroke:hsl(259.6261682243, 59.7765363128%, 87.9019607843%);fill:#ECECFF;}#my-svg .actor-man circle,#my-svg line{stroke:hsl(259.6261682243, 59.7765363128%, 87.9019607843%);fill:#ECECFF;stroke-width:2px;}#my-svg :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style>
   <g/>
   <defs>
     <symbol height="24" width="24" id="computer">
@@ -108,8 +108,8 @@
     </symbol>
   </defs>
   <defs>
-    <marker orient="auto" markerHeight="12" markerWidth="12" markerUnits="userSpaceOnUse" refY="5" refX="7.9" id="arrowhead">
-      <path d="M 0 0 L 10 5 L 0 10 z"/>
+    <marker orient="auto-start-reverse" markerHeight="12" markerWidth="12" markerUnits="userSpaceOnUse" refY="5" refX="7.9" id="arrowhead">
+      <path d="M -1 0 L 10 5 L 0 10 z"/>
     </marker>
   </defs>
   <defs>
@@ -128,10 +128,10 @@
     </marker>
   </defs>
   <g>
-    <rect class="activation0" ry="0" rx="0" height="1495" width="10" stroke="#666" fill="#EDF2AE" y="67" x="70"/>
+    <rect class="activation0" height="1495" width="10" stroke="#666" fill="#EDF2AE" y="67" x="70"/>
   </g>
   <g>
-    <rect class="note" ry="0" rx="0" height="224" width="277" stroke="#666" fill="#EDF2AE" y="75" x="-63.5"/>
+    <rect class="note" height="224" width="277" stroke="#666" fill="#EDF2AE" y="75" x="-63.5"/>
     <text style="font-size: 16px; font-weight: 400;" dy="1em" class="noteText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="80" x="75">
       <tspan x="75">Nisl purus in mollis nunc sed id semper.</tspan>
     </text>
@@ -170,16 +170,16 @@
     </text>
   </g>
   <g>
-    <rect class="note" ry="0" rx="0" height="37" width="150" stroke="#666" fill="#EDF2AE" y="334" x="0"/>
+    <rect class="note" height="37" width="150" stroke="#666" fill="#EDF2AE" y="334" x="0"/>
     <text style="font-size: 16px; font-weight: 400;" dy="1em" class="noteText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="339" x="75">
       <tspan x="75">Repeat 5 times...</tspan>
     </text>
   </g>
   <g>
-    <rect class="activation0" ry="0" rx="0" height="64" width="10" stroke="#666" fill="#EDF2AE" y="444" x="270"/>
+    <rect class="activation0" height="64" width="10" stroke="#666" fill="#EDF2AE" y="444" x="270"/>
   </g>
   <g>
-    <rect class="activation0" ry="0" rx="0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="492" x="470"/>
+    <rect class="activation0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="492" x="470"/>
   </g>
   <g>
     <line class="loopLine" y2="381" x2="490" y1="381" x1="60"/>
@@ -193,16 +193,16 @@
     </text>
   </g>
   <g>
-    <rect class="note" ry="0" rx="0" height="37" width="150" stroke="#666" fill="#EDF2AE" y="555" x="0"/>
+    <rect class="note" height="37" width="150" stroke="#666" fill="#EDF2AE" y="555" x="0"/>
     <text style="font-size: 16px; font-weight: 400;" dy="1em" class="noteText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="560" x="75">
       <tspan x="75">... or just once</tspan>
     </text>
   </g>
   <g>
-    <rect class="activation0" ry="0" rx="0" height="64" width="10" stroke="#666" fill="#EDF2AE" y="640" x="270"/>
+    <rect class="activation0" height="64" width="10" stroke="#666" fill="#EDF2AE" y="640" x="270"/>
   </g>
   <g>
-    <rect class="activation0" ry="0" rx="0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="688" x="470"/>
+    <rect class="activation0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="688" x="470"/>
   </g>
   <g>
     <line class="loopLine" y2="309" x2="500" y1="309" x1="-10"/>
@@ -217,25 +217,25 @@
     </text>
   </g>
   <g>
-    <rect class="activation0" ry="0" rx="0" height="64" width="10" stroke="#666" fill="#EDF2AE" y="764" x="270"/>
+    <rect class="activation0" height="64" width="10" stroke="#666" fill="#EDF2AE" y="764" x="270"/>
   </g>
   <g>
-    <rect class="activation0" ry="0" rx="0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="812" x="470"/>
+    <rect class="activation0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="812" x="470"/>
   </g>
   <g>
-    <rect class="activation0" ry="0" rx="0" height="104" width="10" stroke="#666" fill="#EDF2AE" y="876" x="270"/>
+    <rect class="activation0" height="104" width="10" stroke="#666" fill="#EDF2AE" y="876" x="270"/>
   </g>
   <g>
-    <rect class="activation0" ry="0" rx="0" height="48" width="10" stroke="#666" fill="#EDF2AE" y="922" x="470"/>
+    <rect class="activation0" height="48" width="10" stroke="#666" fill="#EDF2AE" y="922" x="470"/>
   </g>
   <g>
-    <rect class="activation0" ry="0" rx="0" height="28" width="10" stroke="#666" fill="#EDF2AE" y="932" x="670"/>
+    <rect class="activation0" height="28" width="10" stroke="#666" fill="#EDF2AE" y="932" x="670"/>
   </g>
   <g>
-    <rect class="activation0" ry="0" rx="0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="944" x="877"/>
+    <rect class="activation0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="944" x="877"/>
   </g>
   <g>
-    <rect class="note" ry="0" rx="0" height="54" width="270" stroke="#666" fill="#EDF2AE" y="990" x="-60"/>
+    <rect class="note" height="54" width="270" stroke="#666" fill="#EDF2AE" y="990" x="-60"/>
     <text style="font-size: 16px; font-weight: 400;" dy="1em" class="noteText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="995" x="75">
       <tspan x="75">This comment should be rendered only</tspan>
     </text>
@@ -244,46 +244,46 @@
     </text>
   </g>
   <g>
-    <rect class="activation0" ry="0" rx="0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="1094" x="270"/>
+    <rect class="activation0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="1094" x="270"/>
   </g>
   <g>
-    <rect class="note" ry="0" rx="0" height="37" width="150" stroke="#666" fill="#EDF2AE" y="1110" x="0"/>
+    <rect class="note" height="37" width="150" stroke="#666" fill="#EDF2AE" y="1110" x="0"/>
     <text style="font-size: 16px; font-weight: 400;" dy="1em" class="noteText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="1115" x="75">
       <tspan x="75">What is 2 + 2?</tspan>
     </text>
   </g>
   <g>
-    <rect class="activation0" ry="0" rx="0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="1161" x="1131"/>
+    <rect class="activation0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="1161" x="1131"/>
   </g>
   <g>
-    <rect class="note" ry="0" rx="0" height="37" width="150" stroke="#666" fill="#EDF2AE" y="1177" x="0"/>
+    <rect class="note" height="37" width="150" stroke="#666" fill="#EDF2AE" y="1177" x="0"/>
     <text style="font-size: 16px; font-weight: 400;" dy="1em" class="noteText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="1182" x="75">
       <tspan x="75">Calling B::bbbbb()</tspan>
     </text>
   </g>
   <g>
-    <rect class="activation0" ry="0" rx="0" height="104" width="10" stroke="#666" fill="#EDF2AE" y="1262" x="270"/>
+    <rect class="activation0" height="104" width="10" stroke="#666" fill="#EDF2AE" y="1262" x="270"/>
   </g>
   <g>
-    <rect class="activation0" ry="0" rx="0" height="48" width="10" stroke="#666" fill="#EDF2AE" y="1308" x="470"/>
+    <rect class="activation0" height="48" width="10" stroke="#666" fill="#EDF2AE" y="1308" x="470"/>
   </g>
   <g>
-    <rect class="activation0" ry="0" rx="0" height="28" width="10" stroke="#666" fill="#EDF2AE" y="1318" x="670"/>
+    <rect class="activation0" height="28" width="10" stroke="#666" fill="#EDF2AE" y="1318" x="670"/>
   </g>
   <g>
-    <rect class="activation0" ry="0" rx="0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="1330" x="877"/>
+    <rect class="activation0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="1330" x="877"/>
   </g>
   <g>
-    <rect class="note" ry="0" rx="0" height="37" width="208" stroke="#666" fill="#EDF2AE" y="1376" x="-29"/>
+    <rect class="note" height="37" width="208" stroke="#666" fill="#EDF2AE" y="1376" x="-29"/>
     <text style="font-size: 16px; font-weight: 400;" dy="1em" class="noteText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="1381" x="75">
       <tspan x="75">This is a conditional operator</tspan>
     </text>
   </g>
   <g>
-    <rect class="activation0" ry="0" rx="0" height="64" width="10" stroke="#666" fill="#EDF2AE" y="1486" x="270"/>
+    <rect class="activation0" height="64" width="10" stroke="#666" fill="#EDF2AE" y="1486" x="270"/>
   </g>
   <g>
-    <rect class="activation0" ry="0" rx="0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="1534" x="470"/>
+    <rect class="activation0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="1534" x="470"/>
   </g>
   <g>
     <line class="loopLine" y2="1423" x2="490" y1="1423" x1="60"/>

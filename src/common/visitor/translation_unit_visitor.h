@@ -193,15 +193,16 @@ public:
             file_path = fs::absolute(file_path);
         }
 
-        file_path = fs::weakly_canonical(file_path);
+        file_path = file_path.lexically_normal();
 
         file = file_path.string();
 
         element.set_file(file);
 
         if (util::is_relative_to(file_path, relative_to_path_)) {
-            element.set_file_relative(util::path_to_url(
-                fs::relative(element.file(), relative_to_path_).string()));
+            element.set_file_relative(
+                util::path_to_url(fs::path{element.file()}.lexically_relative(
+                    relative_to_path_)));
         }
         else {
             element.set_file_relative("");
@@ -319,8 +320,13 @@ public:
         const auto decl_file =
             decl->getLocation().printToString(source_manager());
 
+        std::string file_path;
+        unsigned line{};
+        unsigned column{};
+        common::parse_source_location(decl_file, file_path, line, column);
+
         const auto should_include_decl_file =
-            diagram().should_include(common::model::source_file{decl_file});
+            diagram().should_include(common::model::source_file{file_path});
 
         return should_include_namespace && should_include_decl_file;
     }

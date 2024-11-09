@@ -96,8 +96,8 @@ bool translation_unit_visitor::VisitObjCProtocolDecl(
         diagram().add_participant(std::move(objc_protocol_model_ptr));
     }
     else {
-        LOG_DBG("Skipping ObjC protocol {} with id {}", class_model.full_name(),
-            class_id);
+        LOG_DBG("Skipping ObjC protocol {} with id {}",
+            class_model.full_name(true), class_id);
     }
 
     return true;
@@ -147,7 +147,7 @@ bool translation_unit_visitor::VisitObjCInterfaceDecl(
     }
     else {
         LOG_DBG("Skipping ObjC interface {} with id {}",
-            class_model.full_name(), class_id);
+            class_model.full_name(true), class_id);
     }
 
     return true;
@@ -214,8 +214,8 @@ bool translation_unit_visitor::VisitCXXRecordDecl(
         diagram().add_participant(std::move(class_model_ptr));
     }
     else {
-        LOG_DBG(
-            "Skipping class {} with id {}", class_model.full_name(), class_id);
+        LOG_DBG("Skipping class {} with id {}", class_model.full_name(true),
+            class_id);
     }
 
     return true;
@@ -540,6 +540,22 @@ bool translation_unit_visitor::VisitFunctionDecl(
     return true;
 }
 
+bool translation_unit_visitor::TraverseFunctionTemplateDecl(
+    clang::FunctionTemplateDecl *declaration)
+{
+    // We need to backup the context, since other methods or functions can
+    // be traversed during this traversal (e.g. template function/method
+    // specializations)
+    auto context_backup = context();
+
+    RecursiveASTVisitor<translation_unit_visitor>::TraverseFunctionTemplateDecl(
+        declaration);
+
+    call_expression_context_ = context_backup;
+
+    return true;
+}
+
 bool translation_unit_visitor::VisitFunctionTemplateDecl(
     clang::FunctionTemplateDecl *declaration)
 {
@@ -636,6 +652,8 @@ bool translation_unit_visitor::VisitLambdaExpr(clang::LambdaExpr *expr)
         set_source_location(*expr, m);
         m.set_from(context().caller_id());
         m.set_to(lambda_method_model_ptr->id());
+
+        ensure_activity_exists(m);
 
         diagram().add_active_participant(m.from());
         diagram().add_active_participant(m.to());
@@ -913,6 +931,8 @@ bool translation_unit_visitor::TraverseIfStmt(clang::IfStmt *stmt)
         }
         else {
             context().enter_ifstmt(stmt);
+            LOG_TRACE("Entered if statement at {}",
+                stmt->getBeginLoc().printToString(source_manager()));
 
             message m{message_t::kIf, current_caller_id};
             set_source_location(*stmt, m);
@@ -1294,11 +1314,7 @@ bool translation_unit_visitor::VisitObjCMessageExpr(
             m.set_comment(raw_expr_comment->getBeginLoc().getHashValue(),
                 stripped_comment);
 
-        if (diagram().sequences().find(m.from()) ==
-            diagram().sequences().end()) {
-            activity a{m.from()};
-            diagram().sequences().insert({m.from(), std::move(a)});
-        }
+        ensure_activity_exists(m);
 
         diagram().add_active_participant(m.from());
         diagram().add_active_participant(m.to());
@@ -1473,11 +1489,7 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
             m.set_comment(raw_expr_comment->getBeginLoc().getHashValue(),
                 stripped_comment);
 
-        if (diagram().sequences().find(m.from()) ==
-            diagram().sequences().end()) {
-            activity a{m.from()};
-            diagram().sequences().insert({m.from(), std::move(a)});
-        }
+        ensure_activity_exists(m);
 
         diagram().add_active_participant(m.from());
         diagram().add_active_participant(m.to());
@@ -1489,6 +1501,13 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
     }
 
     return true;
+}
+void translation_unit_visitor::ensure_activity_exists(const model::message &m)
+{
+    if (diagram().sequences().find(m.from()) == diagram().sequences().end()) {
+        model::activity a{m.from()};
+        diagram().sequences().insert({m.from(), std::move(a)});
+    }
 }
 
 bool translation_unit_visitor::generate_message_from_comment(
@@ -1555,11 +1574,7 @@ bool translation_unit_visitor::VisitCXXConstructExpr(
         return true;
 
     if (m.from().value() > 0 && m.to().value() > 0) {
-        if (diagram().sequences().find(m.from()) ==
-            diagram().sequences().end()) {
-            activity a{m.from()};
-            diagram().sequences().insert({m.from(), std::move(a)});
-        }
+        ensure_activity_exists(m);
 
         diagram().add_active_participant(m.from());
         diagram().add_active_participant(m.to());
@@ -2308,7 +2323,7 @@ std::string translation_unit_visitor::make_lambda_name(
 void translation_unit_visitor::push_message(
     clang::CallExpr *expr, model::message &&m)
 {
-    call_expr_message_map_.emplace(expr, std::move(m));
+    call_expr_message_map_[expr].push_back(std::move(m));
 }
 
 void translation_unit_visitor::push_message(
@@ -2332,15 +2347,24 @@ void translation_unit_visitor::pop_message_to_diagram(clang::CallExpr *expr)
         return;
     }
 
-    auto msg = std::move(call_expr_message_map_.at(expr));
-
-    auto caller_id = msg.from();
-
-    if (caller_id == 0)
+    if (call_expr_message_map_.at(expr).empty())
         return;
 
-    if (diagram().has_activity(caller_id))
-        diagram().get_activity(caller_id).add_message(std::move(msg));
+    while (!call_expr_message_map_.at(expr).empty()) {
+        auto msg = call_expr_message_map_.at(expr).front();
+
+        auto caller_id = msg.from();
+
+        if (caller_id == 0)
+            return;
+
+        if (diagram().has_activity(caller_id))
+            diagram().get_activity(caller_id).add_message(std::move(msg));
+        else
+            LOG_DBG("Skipping message due to missing activity: {}", caller_id);
+
+        call_expr_message_map_.at(expr).pop_front();
+    }
 
     call_expr_message_map_.erase(expr);
 }
@@ -2627,8 +2651,18 @@ bool translation_unit_visitor::should_include(
 bool translation_unit_visitor::should_include(
     const clang::LambdaExpr *expr) const
 {
+    if (context().caller_id() == 0)
+        return false;
+
+    if (!context().valid())
+        return false;
+
     const auto expr_file = expr->getBeginLoc().printToString(source_manager());
-    return diagram().should_include(common::model::source_file{expr_file});
+
+    if (!diagram().should_include(common::model::source_file{expr_file}))
+        return false;
+
+    return true;
 }
 
 bool translation_unit_visitor::should_include(

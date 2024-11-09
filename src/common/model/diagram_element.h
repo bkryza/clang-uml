@@ -20,6 +20,7 @@
 #include "decorated_element.h"
 #include "relationship.h"
 #include "source_location.h"
+#include "util/memoized.h"
 #include "util/util.h"
 
 #include <inja/inja.hpp>
@@ -34,13 +35,20 @@ namespace clanguml::common::model {
 
 class diagram_filter;
 
+struct full_name_tag_t { };
+struct name_and_ns_tag { };
+
 /**
  * @brief Base class for standalone diagram elements.
  *
  * This is a base cass of any standalone elements such as classes, structs,
  * concepts, packages and so on participants and so on.
  */
-class diagram_element : public decorated_element, public source_location {
+class diagram_element
+    : public decorated_element,
+      public source_location,
+      public util::memoized<full_name_tag_t, std::string, bool>,
+      public util::memoized<name_and_ns_tag, std::string> {
 public:
     diagram_element();
 
@@ -93,7 +101,11 @@ public:
      *
      * @param name Elements name.
      */
-    void set_name(const std::string &name) { name_ = name; }
+    void set_name(const std::string &name)
+    {
+        util::memoized<name_and_ns_tag, std::string>::invalidate();
+        name_ = name;
+    }
 
     /**
      * Return diagram element name.
@@ -117,7 +129,13 @@ public:
      *
      * @return Full elements name.
      */
-    virtual std::string full_name(bool /*relative*/) const { return name(); }
+    std::string full_name(bool relative) const
+    {
+        return util::memoized<full_name_tag_t, std::string, bool>::memoize(
+            complete(),
+            [this](bool relative) { return full_name_impl(relative); },
+            relative);
+    }
 
     /**
      * Return all relationships outgoing from this element.
@@ -189,6 +207,12 @@ public:
 
     virtual void apply_filter(
         const diagram_filter &filter, const std::set<eid_t> &removed);
+
+protected:
+    virtual std::string full_name_impl(bool /*relative*/) const
+    {
+        return name();
+    }
 
 private:
     eid_t id_{};

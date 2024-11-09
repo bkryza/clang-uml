@@ -56,8 +56,15 @@
 
 namespace clanguml::util {
 
+// For release builds, use only file names in the log paths, for debug use
+// full paths to make it easier to navigate to specific file:line in the code
+// from logs
+#if defined(NDEBUG)
 #define FILENAME_                                                              \
     (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
+#else
+#define FILENAME_ __FILE__
+#endif
 
 constexpr unsigned kDefaultMessageCommentWidth{25U};
 
@@ -296,10 +303,6 @@ template <typename T> bool starts_with(const T &col, const T &prefix)
         col.begin();
 }
 
-template <>
-bool starts_with(
-    const std::filesystem::path &path, const std::filesystem::path &prefix);
-
 template <> bool starts_with(const std::string &s, const std::string &prefix);
 
 template <typename T> bool ends_with(const T &value, const T &suffix);
@@ -362,17 +365,6 @@ template <typename T, typename F> void for_each(const T &collection, F &&func)
 {
     std::for_each(std::begin(collection), std::end(collection),
         std::forward<decltype(func)>(func));
-}
-
-template <typename T, typename C, typename F>
-void for_each_if(const T &collection, C &&cond, F &&func)
-{
-    std::for_each(std::begin(collection), std::end(collection),
-        [cond = std::forward<decltype(cond)>(cond),
-            func = std::forward<decltype(func)>(func)](const auto &e) {
-            if (cond(e))
-                func(e);
-        });
 }
 
 template <typename R, typename T, typename F>
@@ -461,9 +453,6 @@ bool is_relative_to(
 
 std::string format_message_comment(
     const std::string &c, unsigned width = kDefaultMessageCommentWidth);
-
-bool is_subpath(
-    const std::filesystem::path &path, const std::filesystem::path &prefix);
 
 std::optional<std::pair<std::string, std::string>> find_entry_by_path_prefix(
     const std::map<std::string, std::string> &m, const std::string &prefix);

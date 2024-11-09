@@ -255,7 +255,6 @@ bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
 
         LOG_DBG("Adding class template specialization {} with id {}", full_name,
             id);
-
         add_class(std::move(template_specialization_ptr));
     }
 
@@ -286,7 +285,7 @@ bool translation_unit_visitor::VisitTypeAliasTemplateDecl(
         *template_specialization_ptr, cls, *template_type_specialization_ptr);
 
     if (diagram().should_include(*template_specialization_ptr)) {
-        const auto name = template_specialization_ptr->full_name();
+        const auto name = template_specialization_ptr->full_name(true);
         const auto id = template_specialization_ptr->id();
 
         LOG_DBG("Adding class {} with id {}", name, id);
@@ -347,7 +346,7 @@ bool translation_unit_visitor::VisitClassTemplateDecl(
     forward_declarations_.erase(id);
 
     if (diagram().should_include(*c_ptr)) {
-        const auto name = c_ptr->full_name();
+        const auto name = c_ptr->full_name(true);
         LOG_DBG("Adding class template {} with id {}", name, id);
 
         add_class(std::move(c_ptr));
@@ -402,8 +401,8 @@ bool translation_unit_visitor::VisitRecordDecl(clang::RecordDecl *rec)
         add_class(std::move(record_ptr));
     }
     else {
-        LOG_DBG("Skipping struct/union {} with id {}", record_model.full_name(),
-            record_model.id());
+        LOG_DBG("Skipping struct/union {} with id {}",
+            record_model.full_name(true), record_model.id());
     }
 
     return true;
@@ -443,7 +442,7 @@ bool translation_unit_visitor::VisitObjCCategoryDecl(
     }
     else {
         LOG_DBG("Skipping ObjC category {} with id {}",
-            category_model.full_name(), category_model.id());
+            category_model.full_name(true), category_model.id());
     }
 
     return true;
@@ -483,7 +482,7 @@ bool translation_unit_visitor::VisitObjCProtocolDecl(
     }
     else {
         LOG_DBG("Skipping ObjC protocol {} with id {}",
-            protocol_model.full_name(), protocol_model.id());
+            protocol_model.full_name(true), protocol_model.id());
     }
 
     return true;
@@ -524,7 +523,7 @@ bool translation_unit_visitor::VisitObjCInterfaceDecl(
     }
     else {
         LOG_DBG("Skipping ObjC interface {} with id {}",
-            interface_model.full_name(), interface_model.id());
+            interface_model.full_name(true), interface_model.id());
     }
 
     return true;
@@ -575,8 +574,8 @@ bool translation_unit_visitor::TraverseConceptDecl(clang::ConceptDecl *cpt)
         add_concept(std::move(concept_model));
     }
     else {
-        LOG_DBG("Skipping concept {} with id {}", concept_model->full_name(),
-            concept_model->id());
+        LOG_DBG("Skipping concept {} with id {}",
+            concept_model->full_name(true), concept_model->id());
     }
 
     return true;
@@ -884,7 +883,7 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
         add_class(std::move(c_ptr));
     }
     else {
-        LOG_DBG("Skipping class {} with id {}", class_model.full_name(),
+        LOG_DBG("Skipping class {} with id {}", class_model.full_name(true),
             class_model.id());
     }
 
@@ -1578,7 +1577,7 @@ void translation_unit_visitor::process_method(
 
             LOG_DBG("Adding method return type relationship from {}::{} to "
                     "{}: {}",
-                c.full_name(), mf.getNameAsString(),
+                c.full_name(true), mf.getNameAsString(),
                 clanguml::common::model::to_string(r.type()), r.label());
 
             c.add_relationship(std::move(r));
@@ -1648,7 +1647,7 @@ void translation_unit_visitor::process_objc_method(
 
             LOG_DBG("Adding method return type relationship from {}::{} to "
                     "{}: {}",
-                c.full_name(), mf.getNameAsString(),
+                c.full_name(true), mf.getNameAsString(),
                 clanguml::common::model::to_string(r.type()), r.label());
 
             c.add_relationship(std::move(r));
@@ -1985,8 +1984,8 @@ void translation_unit_visitor::process_objc_method_parameter(
 
                 LOG_DBG("Adding ObjC method parameter relationship from {} to "
                         "{}: {}",
-                    c.full_name(), clanguml::common::model::to_string(r.type()),
-                    r.label());
+                    c.full_name(true),
+                    clanguml::common::model::to_string(r.type()), r.label());
 
                 c.add_relationship(std::move(r));
             }
@@ -2061,8 +2060,8 @@ void translation_unit_visitor::process_function_parameter(
 
                 LOG_DBG("Adding function parameter relationship from {} to "
                         "{}: {}",
-                    c.full_name(), clanguml::common::model::to_string(r.type()),
-                    r.label());
+                    c.full_name(true),
+                    clanguml::common::model::to_string(r.type()), r.label());
 
                 c.add_relationship(std::move(r));
             }
@@ -2493,6 +2492,8 @@ void translation_unit_visitor::add_diagram_element(
 
 void translation_unit_visitor::add_class(std::unique_ptr<class_> &&c)
 {
+    c->complete(true);
+
     if ((config().generate_packages() &&
             config().package_type() == config::package_type_t::kDirectory)) {
         assert(!c->file().empty());
@@ -2522,6 +2523,8 @@ void translation_unit_visitor::add_class(std::unique_ptr<class_> &&c)
 void translation_unit_visitor::add_objc_interface(
     std::unique_ptr<objc_interface> &&c)
 {
+    c->complete(true);
+
     if ((config().generate_packages() &&
             config().package_type() == config::package_type_t::kDirectory)) {
         assert(!c->file().empty());
@@ -2541,6 +2544,8 @@ void translation_unit_visitor::add_objc_interface(
 
 void translation_unit_visitor::add_enum(std::unique_ptr<enum_> &&e)
 {
+    e->complete(true);
+
     if ((config().generate_packages() &&
             config().package_type() == config::package_type_t::kDirectory)) {
         assert(!e->file().empty());
@@ -2569,6 +2574,8 @@ void translation_unit_visitor::add_enum(std::unique_ptr<enum_> &&e)
 
 void translation_unit_visitor::add_concept(std::unique_ptr<concept_> &&c)
 {
+    c->complete(true);
+
     if ((config().generate_packages() &&
             config().package_type() == config::package_type_t::kDirectory)) {
         assert(!c->file().empty());

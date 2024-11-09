@@ -35,7 +35,7 @@ bool operator==(const objc_interface &l, const objc_interface &r)
     return l.id() == r.id();
 }
 
-std::string objc_interface::full_name(bool /*relative*/) const
+std::string objc_interface::full_name_impl(bool /*relative*/) const
 {
     return name();
 }

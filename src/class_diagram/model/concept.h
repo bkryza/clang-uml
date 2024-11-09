@@ -52,8 +52,6 @@ public:
 
     friend bool operator==(const concept_ &l, const concept_ &r);
 
-    std::string full_name(bool relative = true) const override;
-
     std::string full_name_no_ns() const override;
 
     /**
@@ -86,6 +84,9 @@ public:
      * @return List of concepts requires statements
      */
     const std::vector<std::string> &requires_statements() const;
+
+protected:
+    std::string full_name_impl(bool relative = true) const override;
 
 private:
     std::vector<std::string> requires_expression_;

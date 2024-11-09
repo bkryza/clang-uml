@@ -117,6 +117,11 @@ set(TEST_NAMES
     test_query_driver_output_extractor
     test_progress_indicator)
 
+if(ENABLE_BENCHMARKS)
+    message(STATUS "Enabling microbenchmarks")
+    list(APPEND TEST_NAMES test_benchmarks)
+endif(ENABLE_BENCHMARKS)
+
 macro(generate_test_cases_with_paths input_list output_list)
     set(${output_list})  # Initialize the output list
     foreach(test_case ${${input_list}})

@@ -139,16 +139,6 @@ public:
     const filesystem_path &path() const { return path_; }
 
     /**
-     * Return the full path string, i.e. parent path and elements name.
-     *
-     * @return Full source file path as string.
-     */
-    std::string full_name(bool /*relative*/) const override
-    {
-        return (path_ | name()).to_string();
-    }
-
-    /**
      * Return full path, i.e. parent path and elements name.
      *
      * @return Full source file path.
@@ -193,6 +183,17 @@ public:
         ctx["full_name"] = fullNamePath.string();
 
         return ctx;
+    }
+
+protected:
+    /**
+     * Return the full path string, i.e. parent path and elements name.
+     *
+     * @return Full source file path as string.
+     */
+    std::string full_name_impl(bool /*relative*/) const override
+    {
+        return (path_ | name()).to_string();
     }
 
 private:

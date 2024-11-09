@@ -79,7 +79,7 @@ void generator::generate_alias(const class_ &c, std::ostream &ostr) const
     if (!config().generate_fully_qualified_name())
         full_name = c.full_name_no_ns();
     else
-        full_name = c.full_name();
+        full_name = c.full_name(true);
 
     assert(!full_name.empty());
 
@@ -101,7 +101,7 @@ void generator::generate_alias(const enum_ &e, std::ostream &ostr) const
     if (!config().generate_fully_qualified_name())
         ostr << "enum" << " \"" << e.name();
     else
-        ostr << "enum" << " \"" << render_name(e.full_name());
+        ostr << "enum" << " \"" << render_name(e.full_name(true));
 
     ostr << "\" as " << e.alias() << '\n';
 
@@ -116,7 +116,7 @@ void generator::generate_alias(const concept_ &c, std::ostream &ostr) const
     if (!config().generate_fully_qualified_name())
         ostr << "class" << " \"" << c.full_name_no_ns();
     else
-        ostr << "class" << " \"" << render_name(c.full_name());
+        ostr << "class" << " \"" << render_name(c.full_name(true));
 
     ostr << "\" as " << c.alias() << '\n';
 
@@ -134,7 +134,7 @@ void generator::generate_alias(
     else
         ostr << "protocol";
 
-    ostr << " \"" << render_name(e.full_name());
+    ostr << " \"" << render_name(e.full_name(true));
 
     ostr << "\" as " << e.alias() << '\n';
 
@@ -185,7 +185,8 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
         catch (error::uml_alias_missing &e) {
             LOG_DBG("Skipping {} relation from {} to {} due "
                     "to: {}",
-                to_string(r.type()), c.full_name(), r.destination(), e.what());
+                to_string(r.type()), c.full_name(true), r.destination(),
+                e.what());
         }
     }
 
@@ -416,7 +417,8 @@ void generator::generate(const objc_interface &c, std::ostream &ostr) const
         catch (error::uml_alias_missing &e) {
             LOG_DBG("Skipping {} relation from {} to {} due "
                     "to: {}",
-                to_string(r.type()), c.full_name(), r.destination(), e.what());
+                to_string(r.type()), c.full_name(true), r.destination(),
+                e.what());
         }
     }
 
@@ -631,7 +633,7 @@ void generator::generate_relationships(
         catch (error::uml_alias_missing &e) {
             LOG_DBG("=== Skipping {} relation from {} to {} due "
                     "to: {}",
-                to_string(r.type()), c.full_name(), destination, e.what());
+                to_string(r.type()), c.full_name(true), destination, e.what());
         }
     }
 
@@ -705,7 +707,7 @@ void generator::generate_relationships(
         catch (error::uml_alias_missing &e) {
             LOG_DBG("=== Skipping {} relation from {} to {} due "
                     "to: {}",
-                to_string(r.type()), c.full_name(), destination, e.what());
+                to_string(r.type()), c.full_name(true), destination, e.what());
         }
     }
 
@@ -764,7 +766,7 @@ void generator::generate_relationships(const enum_ &e, std::ostream &ostr) const
                     "to: {}",
                 clanguml::common::generators::plantuml::to_plantuml(
                     r, config()),
-                e.full_name(), destination, ex.what());
+                e.full_name(true), destination, ex.what());
         }
     }
 }
@@ -838,7 +840,7 @@ void generator::generate_relationships(
         catch (error::uml_alias_missing &e) {
             LOG_DBG("=== Skipping {} relation from {} to {} due "
                     "to: {}",
-                to_string(r.type()), c.full_name(), destination, e.what());
+                to_string(r.type()), c.full_name(true), destination, e.what());
         }
     }
 

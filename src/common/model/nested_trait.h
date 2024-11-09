@@ -60,16 +60,15 @@ public:
     template <typename V = T>
     [[nodiscard]] bool add_element(std::unique_ptr<V> p)
     {
-        auto it = std::find_if(
-            elements_.begin(), elements_.end(), [&p](const auto &e) {
-                return (e->type_name() == p->type_name()) && (*e == *p);
-            });
-
-        if (it != elements_.end()) {
+        if (auto id = p->id();
+            added_elements_.count(std::make_pair<eid_t, std::string>(
+                std::move(id), p->type_name()))) {
             // Element already in element tree
             return false;
         }
 
+        added_elements_.emplace(p->id(), p->type_name());
+        elements_by_name_.emplace(p->name(), elements_.size());
         elements_.emplace_back(std::move(p));
 
         return true;
@@ -154,39 +153,25 @@ public:
         // For some reason it is legal to have a C/C++ struct with the same
         // name as some ObjC protocol/interface, so the name is not necessarily
         // unique
-        auto it = elements_.cbegin();
-        while (true) {
-            it = std::find_if(it, elements_.cend(),
-                [&](const auto &p) { return name == p->name(); });
 
-            if (it == elements_.cend())
+        auto matches = elements_by_name_.equal_range(name);
+
+        auto it = matches.first;
+        while (true) {
+            if (it == matches.second)
                 break;
 
-            assert(it->get() != nullptr);
+            assert((*it).second < elements_.size());
 
             // Return the element if it has the expected type
-            if (dynamic_cast<V *>(it->get()))
-                return optional_ref<V>{
-                    std::ref<V>(dynamic_cast<V &>(*it->get()))};
+            if (dynamic_cast<V *>(elements_.at((*it).second).get()))
+                return optional_ref<V>{std::ref<V>(
+                    dynamic_cast<V &>(*elements_.at((*it).second).get()))};
 
             ++it;
         }
 
         return optional_ref<V>{};
-    }
-
-    /**
-     * Returns true of this nested level contains an element with specified
-     * name.
-     *
-     * @param name Name of the element.
-     * @return True if element exists.
-     */
-    bool has_element(const std::string &name) const
-    {
-        return std::find_if(elements_.cbegin(), elements_.cend(),
-                   [&](const auto &p) { return name == p->name(); }) !=
-            elements_.end();
     }
 
     /**
@@ -262,12 +247,38 @@ public:
 
     void remove(const std::set<eid_t> &element_ids)
     {
+        // Find all elements positions to remove
+        size_t idx{0};
+        for (const auto &e : elements_) {
+            if (element_ids.count(e->id())) {
+                auto range = elements_by_name_.equal_range(e->name());
+
+                for (auto it = range.first; it != range.second; ++it) {
+                    if (it->second == idx) {
+                        elements_by_name_.erase(it);
+                        break;
+                    }
+                }
+            }
+
+            idx++;
+        }
+
         // First remove all matching elements on this level
         elements_.erase(std::remove_if(elements_.begin(), elements_.end(),
                             [&element_ids](auto &&e) {
                                 return element_ids.count(e->id()) > 0;
                             }),
             elements_.end());
+
+        decltype(added_elements_) to_keep_;
+
+        for (const auto &e : added_elements_) {
+            if (element_ids.count(e.first) == 0)
+                to_keep_.emplace(e);
+        }
+
+        std::swap(to_keep_, added_elements_);
 
         // Now recurse to any packages on this level
         for (auto &p : elements_) {
@@ -278,7 +289,21 @@ public:
     }
 
 private:
+    /**
+     * Returns true of this nested level contains an element with specified
+     * name.
+     *
+     * @param name Name of the element.
+     * @return True if element exists.
+     */
+    bool has_element(const std::string &name) const
+    {
+        return elements_by_name_.count(name) != 0U;
+    }
+
+    std::set<std::pair<eid_t, std::string>> added_elements_;
     std::vector<std::unique_ptr<T>> elements_;
+    std::multimap<std::string, size_t> elements_by_name_;
 };
 
 } // namespace clanguml::common::model

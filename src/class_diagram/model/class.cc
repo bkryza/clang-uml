@@ -67,7 +67,7 @@ std::string class_::full_name_no_ns() const
     return ostr.str();
 }
 
-std::string class_::full_name(bool relative) const
+std::string class_::full_name_impl(bool relative) const
 {
     using namespace clanguml::util;
     using clanguml::common::model::namespace_;

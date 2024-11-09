@@ -1041,16 +1041,20 @@ tvl::value_t paths_filter::match(
         return {};
     }
 
-    auto pp = p.fs_path(root_);
-    for (const auto &path : paths_) {
-        if (pp.root_name().string() == path.root_name().string() &&
-            util::starts_with(pp.relative_path(), path.relative_path())) {
+    const auto source_file_path = p.fs_path(root_);
 
-            return true;
-        }
-    }
-
-    return false;
+    return memoize(
+        true,
+        [this](const std::filesystem::path &sfp) {
+            return std::any_of(
+                paths_.begin(), paths_.end(), [&](const auto &path) {
+                    return sfp.root_name().string() ==
+                        path.root_name().string() &&
+                        util::is_relative_to(
+                            sfp.relative_path(), path.relative_path());
+                });
+        },
+        source_file_path);
 }
 
 tvl::value_t paths_filter::match(
@@ -1060,23 +1064,26 @@ tvl::value_t paths_filter::match(
         return {};
     }
 
-    auto sl_path = std::filesystem::path{p.file()};
+    const auto source_location_path = std::filesystem::path{p.file()};
 
-    // Matching source paths doesn't make sens if they are not absolute or
+    // Matching source paths doesn't make sense if they are not absolute or
     // empty
-    if (p.file().empty() || sl_path.is_relative()) {
+    if (p.file().empty() || source_location_path.is_relative()) {
         return {};
     }
 
-    for (const auto &path : paths_) {
-        if (sl_path.root_name().string() == path.root_name().string() &&
-            util::starts_with(sl_path.relative_path(), path.relative_path())) {
-
-            return true;
-        }
-    }
-
-    return false;
+    return memoize(
+        true,
+        [this](const std::filesystem::path &p) {
+            return std::any_of(
+                paths_.begin(), paths_.end(), [&](const auto &path) {
+                    return p.root_name().string() ==
+                        path.root_name().string() &&
+                        util::is_relative_to(
+                            p.relative_path(), path.relative_path());
+                });
+        },
+        source_location_path);
 }
 
 tvl::value_t paths_filter::match(

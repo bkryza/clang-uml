@@ -46,7 +46,7 @@ void translation_unit_visitor::include_visitor::InclusionDirective(
     clang::SourceLocation hash_loc, const clang::Token & /*include_tok*/,
     clang::StringRef /*file_name*/, bool is_angled,
     clang::CharSourceRange /*filename_range*/, clang::OptionalFileEntryRef file,
-    clang::StringRef SearchPath, clang::StringRef relative_path,
+    clang::StringRef /*search_path*/, clang::StringRef relative_path,
     const clang::Module * /* suggested_module */, bool /*imported*/,
     clang::SrcMgr::CharacteristicKind file_type)
 #elif LLVM_VERSION_MAJOR >= 16

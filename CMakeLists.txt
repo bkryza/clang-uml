@@ -200,6 +200,7 @@ add_subdirectory(src)
 # Enable testing via CTest
 #
 option(BUILD_TESTS "" ON)
+option(ENABLE_BENCHMARKS "" OFF)
 option(ENABLE_CXX_MODULES_TEST_CASES "" OFF)
 option(ENABLE_CUDA_TEST_CASES "" OFF)
 option(ENABLE_OBJECTIVE_C_TEST_CASES "" OFF)

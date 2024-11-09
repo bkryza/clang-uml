@@ -99,7 +99,8 @@ long compilation_database::count_matching_commands(
         result += std::count_if(
             files.begin(), files.end(), [&command](const auto &file) {
                 return (command.Filename == file) ||
-                    (std::filesystem::weakly_canonical(command.Filename)
+                    (std::filesystem::path{command.Filename}
+                            .lexically_normal()
                             .string() == file);
             });
     }

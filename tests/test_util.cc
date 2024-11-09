@@ -55,24 +55,6 @@ TEST_CASE("Test abbreviate")
     CHECK(abbreviate("abcdefg", 5) == "ab...");
 }
 
-TEST_CASE("Test starts_with")
-{
-    using clanguml::util::starts_with;
-    using std::filesystem::path;
-
-    CHECK(starts_with(path{"/a/b/c/d"}, path{"/"}));
-    CHECK_FALSE(starts_with(path{"/a/b/c/d"}, path{"/a/b/c/d/e"}));
-    CHECK(starts_with(path{"/a/b/c/d/e"}, path{"/a/b/c/d"}));
-    CHECK(starts_with(path{"/a/b/c/d/e"}, path{"/a/b/c/d/"}));
-    CHECK_FALSE(starts_with(path{"/e/f/c/d/file.h"}, path{"/a/b"}));
-    CHECK_FALSE(starts_with(path{"/e/f/c/d/file.h"}, path{"/a/b/"}));
-    CHECK(starts_with(path{"/a/b/c/d/file.h"}, path{"/a/b/c"}));
-    CHECK(starts_with(path{"/a/b/c/file.h"}, path{"/a/b/c/file.h"}));
-    CHECK(starts_with(path{"c/file.h"}, path{"c"}));
-    CHECK(starts_with(path{"c/file.h"}, path{"c/"}));
-    CHECK_FALSE(starts_with(path{"c/file1.h"}, path{"c/file2.h"}));
-}
-
 TEST_CASE("Test replace_all")
 {
     using namespace clanguml::util;
@@ -430,6 +412,40 @@ TEST_CASE("Test is_relative_to")
 
     CHECK(is_relative_to(child, base1));
     CHECK_FALSE(is_relative_to(child, base2));
+
+    CHECK(is_relative_to(path{"/a/b/c/d"}, path{"/"}));
+    CHECK_FALSE(is_relative_to(path{"/a/b/c/d"}, path{"/a/b/c/d/e"}));
+    CHECK(is_relative_to(path{"/a/b/c/d/e"}, path{"/a/b/c/d"}));
+    CHECK(is_relative_to(path{"/a/b/c/d/e"}, path{"/a/b/c/d/"}));
+    CHECK_FALSE(is_relative_to(path{"/e/f/c/d/file.h"}, path{"/a/b"}));
+    CHECK_FALSE(is_relative_to(path{"/e/f/c/d/file.h"}, path{"/a/b/"}));
+    CHECK(is_relative_to(path{"/a/b/c/d/file.h"}, path{"/a/b/c"}));
+    CHECK(is_relative_to(path{"/a/b/c/file.h"}, path{"/a/b/c/file.h"}));
+    CHECK(is_relative_to(path{"c/file.h"}, path{"c"}));
+    CHECK(is_relative_to(path{"c/file.h"}, path{"c/"}));
+    CHECK_FALSE(is_relative_to(path{"c/file1.h"}, path{"c/file2.h"}));
+
+    CHECK(is_relative_to("./include/f.h", "."));
+    CHECK(is_relative_to("include/f.h", "."));
+    CHECK(is_relative_to("./include/f.h", "./"));
+    CHECK(is_relative_to("./include/f.h", "./include"));
+    CHECK(is_relative_to("./include/f.h", "include"));
+    CHECK(is_relative_to("include/f.h", "./include"));
+    CHECK(is_relative_to("include/f.h", "include"));
+
+    CHECK(is_relative_to("include/f.h", "include/f.h"));
+    CHECK(is_relative_to("./include/f.h", "include/f.h"));
+    CHECK(is_relative_to("include/f.h", "./include/f.h"));
+    CHECK(is_relative_to("./include/f.h", "include/f.h"));
+
+#if !defined(_MSC_VER)
+    CHECK(is_relative_to("/usr/local/include/f.h", "/usr/local"));
+    CHECK_FALSE(is_relative_to("/usr/local/include/f.h", "/usr/local/lib"));
+    CHECK_FALSE(is_relative_to("/usr/include/f.h", "."));
+#else
+    CHECK(is_relative_to("E:\\test\\src\\main.cpp", "E:\\test"));
+    CHECK_FALSE(is_relative_to("E:\\test\\src\\main.cpp", "C:\\test"));
+#endif
 }
 
 TEST_CASE("Test parse_source_location")
@@ -474,33 +490,6 @@ TEST_CASE("Test parse_source_location")
     CHECK(column == 456);
 
     result = false, file = "", line = 0, column = 0;
-}
-
-TEST_CASE("Test is_subpath")
-{
-    using clanguml::util::is_subpath;
-
-    CHECK(is_subpath("./include/f.h", "."));
-    CHECK(is_subpath("include/f.h", "."));
-    CHECK(is_subpath("./include/f.h", "./"));
-    CHECK(is_subpath("./include/f.h", "./include"));
-    CHECK(is_subpath("./include/f.h", "include"));
-    CHECK(is_subpath("include/f.h", "./include"));
-    CHECK(is_subpath("include/f.h", "include"));
-
-    CHECK(is_subpath("include/f.h", "include/f.h"));
-    CHECK(is_subpath("./include/f.h", "include/f.h"));
-    CHECK(is_subpath("include/f.h", "./include/f.h"));
-    CHECK(is_subpath("./include/f.h", "include/f.h"));
-
-#if !defined(_MSC_VER)
-    CHECK(is_subpath("/usr/local/include/f.h", "/usr/local"));
-    CHECK_FALSE(is_subpath("/usr/local/include/f.h", "/usr/local/lib"));
-    CHECK_FALSE(is_subpath("/usr/include/f.h", "."));
-#else
-    CHECK(is_subpath("E:\\test\\src\\main.cpp", "E:\\test"));
-    CHECK_FALSE(is_subpath("E:\\test\\src\\main.cpp", "C:\\test"));
-#endif
 }
 
 TEST_CASE("Test find_entry_by_path_prefix")

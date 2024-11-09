@@ -1,80 +1,80 @@
 <svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" aria-roledescription="sequence" role="graphics-document document" viewBox="-77.5 -10 1292.5 946" style="max-width: 1292.5px; background-color: white;" width="1292.5" id="my-svg">
   <g>
-    <rect class="actor" ry="3" rx="3" height="65" width="201" stroke="#666" fill="#eaeaea" y="860" x="964"/>
-    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="892.5" x="1064.5">
+    <rect class="actor actor-bottom" ry="3" rx="3" name="C_0010901171450087035525" height="65" width="201" stroke="#666" fill="#eaeaea" y="860" x="964"/>
+    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="892.5" x="1064.5">
       <tspan dy="0" x="1064.5">encode_b64(std::string &amp;&amp;)</tspan>
     </text>
   </g>
   <g>
-    <rect class="actor" ry="3" rx="3" height="65" width="150" stroke="#666" fill="#eaeaea" y="860" x="764"/>
-    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="892.5" x="839">
+    <rect class="actor actor-bottom" ry="3" rx="3" name="C_0015171249640780951499" height="65" width="150" stroke="#666" fill="#eaeaea" y="860" x="764"/>
+    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="892.5" x="839">
       <tspan dy="0" x="839">ConnectionPool</tspan>
     </text>
   </g>
   <g>
-    <rect class="actor" ry="3" rx="3" height="65" width="186" stroke="#666" fill="#eaeaea" y="860" x="507"/>
-    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="892.5" x="600">
+    <rect class="actor actor-bottom" ry="3" rx="3" name="C_0005264470844727584752" height="65" width="186" stroke="#666" fill="#eaeaea" y="860" x="507"/>
+    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="892.5" x="600">
       <tspan dy="0" x="600">Retrier&lt;ConnectionPool&gt;</tspan>
     </text>
   </g>
   <g>
-    <rect class="actor" ry="3" rx="3" height="65" width="257" stroke="#666" fill="#eaeaea" y="860" x="200"/>
-    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="892.5" x="328.5">
+    <rect class="actor actor-bottom" ry="3" rx="3" name="C_0013386089566985539066" height="65" width="257" stroke="#666" fill="#eaeaea" y="860" x="200"/>
+    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="892.5" x="328.5">
       <tspan dy="0" x="328.5">Encoder&lt;Retrier&lt;ConnectionPool&gt;&gt;</tspan>
     </text>
   </g>
   <g>
-    <rect class="actor" ry="3" rx="3" height="65" width="150" stroke="#666" fill="#eaeaea" y="860" x="0"/>
-    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="892.5" x="75">
+    <rect class="actor actor-bottom" ry="3" rx="3" name="C_0016730997910466557141" height="65" width="150" stroke="#666" fill="#eaeaea" y="860" x="0"/>
+    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="892.5" x="75">
       <tspan dy="0" x="75">tmain()</tspan>
     </text>
   </g>
   <g>
-    <line stroke="#999" stroke-width="0.5px" class="200" y2="860" x2="1064.5" y1="5" x1="1064.5" id="actor4"/>
+    <line name="C_0010901171450087035525" stroke="#999" stroke-width="0.5px" class="actor-line 200" y2="860" x2="1064.5" y1="65" x1="1064.5" id="actor4"/>
     <g id="root-4">
-      <rect class="actor" ry="3" rx="3" height="65" width="201" stroke="#666" fill="#eaeaea" y="0" x="964"/>
-      <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="32.5" x="1064.5">
+      <rect class="actor actor-top" ry="3" rx="3" name="C_0010901171450087035525" height="65" width="201" stroke="#666" fill="#eaeaea" y="0" x="964"/>
+      <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="32.5" x="1064.5">
         <tspan dy="0" x="1064.5">encode_b64(std::string &amp;&amp;)</tspan>
       </text>
     </g>
   </g>
   <g>
-    <line stroke="#999" stroke-width="0.5px" class="200" y2="860" x2="839" y1="5" x1="839" id="actor3"/>
+    <line name="C_0015171249640780951499" stroke="#999" stroke-width="0.5px" class="actor-line 200" y2="860" x2="839" y1="65" x1="839" id="actor3"/>
     <g id="root-3">
-      <rect class="actor" ry="3" rx="3" height="65" width="150" stroke="#666" fill="#eaeaea" y="0" x="764"/>
-      <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="32.5" x="839">
+      <rect class="actor actor-top" ry="3" rx="3" name="C_0015171249640780951499" height="65" width="150" stroke="#666" fill="#eaeaea" y="0" x="764"/>
+      <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="32.5" x="839">
         <tspan dy="0" x="839">ConnectionPool</tspan>
       </text>
     </g>
   </g>
   <g>
-    <line stroke="#999" stroke-width="0.5px" class="200" y2="860" x2="600" y1="5" x1="600" id="actor2"/>
+    <line name="C_0005264470844727584752" stroke="#999" stroke-width="0.5px" class="actor-line 200" y2="860" x2="600" y1="65" x1="600" id="actor2"/>
     <g id="root-2">
-      <rect class="actor" ry="3" rx="3" height="65" width="186" stroke="#666" fill="#eaeaea" y="0" x="507"/>
-      <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="32.5" x="600">
+      <rect class="actor actor-top" ry="3" rx="3" name="C_0005264470844727584752" height="65" width="186" stroke="#666" fill="#eaeaea" y="0" x="507"/>
+      <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="32.5" x="600">
         <tspan dy="0" x="600">Retrier&lt;ConnectionPool&gt;</tspan>
       </text>
     </g>
   </g>
   <g>
-    <line stroke="#999" stroke-width="0.5px" class="200" y2="860" x2="328.5" y1="5" x1="328.5" id="actor1"/>
+    <line name="C_0013386089566985539066" stroke="#999" stroke-width="0.5px" class="actor-line 200" y2="860" x2="328.5" y1="65" x1="328.5" id="actor1"/>
     <g id="root-1">
-      <rect class="actor" ry="3" rx="3" height="65" width="257" stroke="#666" fill="#eaeaea" y="0" x="200"/>
-      <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="32.5" x="328.5">
+      <rect class="actor actor-top" ry="3" rx="3" name="C_0013386089566985539066" height="65" width="257" stroke="#666" fill="#eaeaea" y="0" x="200"/>
+      <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="32.5" x="328.5">
         <tspan dy="0" x="328.5">Encoder&lt;Retrier&lt;ConnectionPool&gt;&gt;</tspan>
       </text>
     </g>
   </g>
   <g>
-    <line stroke="#999" stroke-width="0.5px" class="200" y2="860" x2="75" y1="5" x1="75" id="actor0"/>
+    <line name="C_0016730997910466557141" stroke="#999" stroke-width="0.5px" class="actor-line 200" y2="860" x2="75" y1="65" x1="75" id="actor0"/>
     <g id="root-0">
-      <rect class="actor" ry="3" rx="3" height="65" width="150" stroke="#666" fill="#eaeaea" y="0" x="0"/>
-      <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="32.5" x="75">
+      <rect class="actor actor-top" ry="3" rx="3" name="C_0016730997910466557141" height="65" width="150" stroke="#666" fill="#eaeaea" y="0" x="0"/>
+      <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="32.5" x="75">
         <tspan dy="0" x="75">tmain()</tspan>
       </text>
     </g>
   </g>
-  <style>#my-svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#333;}#my-svg .error-icon{fill:#552222;}#my-svg .error-text{fill:#552222;stroke:#552222;}#my-svg .edge-thickness-normal{stroke-width:2px;}#my-svg .edge-thickness-thick{stroke-width:3.5px;}#my-svg .edge-pattern-solid{stroke-dasharray:0;}#my-svg .edge-pattern-dashed{stroke-dasharray:3;}#my-svg .edge-pattern-dotted{stroke-dasharray:2;}#my-svg .marker{fill:#333333;stroke:#333333;}#my-svg .marker.cross{stroke:#333333;}#my-svg svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#my-svg .actor{stroke:hsl(259.6261682243, 59.7765363128%, 87.9019607843%);fill:#ECECFF;}#my-svg text.actor&gt;tspan{fill:black;stroke:none;}#my-svg .actor-line{stroke:grey;}#my-svg .messageLine0{stroke-width:1.5;stroke-dasharray:none;stroke:#333;}#my-svg .messageLine1{stroke-width:1.5;stroke-dasharray:2,2;stroke:#333;}#my-svg #arrowhead path{fill:#333;stroke:#333;}#my-svg .sequenceNumber{fill:white;}#my-svg #sequencenumber{fill:#333;}#my-svg #crosshead path{fill:#333;stroke:#333;}#my-svg .messageText{fill:#333;stroke:none;}#my-svg .labelBox{stroke:hsl(259.6261682243, 59.7765363128%, 87.9019607843%);fill:#ECECFF;}#my-svg .labelText,#my-svg .labelText&gt;tspan{fill:black;stroke:none;}#my-svg .loopText,#my-svg .loopText&gt;tspan{fill:black;stroke:none;}#my-svg .loopLine{stroke-width:2px;stroke-dasharray:2,2;stroke:hsl(259.6261682243, 59.7765363128%, 87.9019607843%);fill:hsl(259.6261682243, 59.7765363128%, 87.9019607843%);}#my-svg .note{stroke:#aaaa33;fill:#fff5ad;}#my-svg .noteText,#my-svg .noteText&gt;tspan{fill:black;stroke:none;}#my-svg .activation0{fill:#f4f4f4;stroke:#666;}#my-svg .activation1{fill:#f4f4f4;stroke:#666;}#my-svg .activation2{fill:#f4f4f4;stroke:#666;}#my-svg .actorPopupMenu{position:absolute;}#my-svg .actorPopupMenuPanel{position:absolute;fill:#ECECFF;box-shadow:0px 8px 16px 0px rgba(0,0,0,0.2);filter:drop-shadow(3px 5px 2px rgb(0 0 0 / 0.4));}#my-svg .actor-man line{stroke:hsl(259.6261682243, 59.7765363128%, 87.9019607843%);fill:#ECECFF;}#my-svg .actor-man circle,#my-svg line{stroke:hsl(259.6261682243, 59.7765363128%, 87.9019607843%);fill:#ECECFF;stroke-width:2px;}#my-svg :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style>
+  <style>#my-svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#333;}#my-svg .error-icon{fill:#552222;}#my-svg .error-text{fill:#552222;stroke:#552222;}#my-svg .edge-thickness-normal{stroke-width:1px;}#my-svg .edge-thickness-thick{stroke-width:3.5px;}#my-svg .edge-pattern-solid{stroke-dasharray:0;}#my-svg .edge-thickness-invisible{stroke-width:0;fill:none;}#my-svg .edge-pattern-dashed{stroke-dasharray:3;}#my-svg .edge-pattern-dotted{stroke-dasharray:2;}#my-svg .marker{fill:#333333;stroke:#333333;}#my-svg .marker.cross{stroke:#333333;}#my-svg svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#my-svg p{margin:0;}#my-svg .actor{stroke:hsl(259.6261682243, 59.7765363128%, 87.9019607843%);fill:#ECECFF;}#my-svg text.actor&gt;tspan{fill:black;stroke:none;}#my-svg .actor-line{stroke:hsl(259.6261682243, 59.7765363128%, 87.9019607843%);}#my-svg .messageLine0{stroke-width:1.5;stroke-dasharray:none;stroke:#333;}#my-svg .messageLine1{stroke-width:1.5;stroke-dasharray:2,2;stroke:#333;}#my-svg #arrowhead path{fill:#333;stroke:#333;}#my-svg .sequenceNumber{fill:white;}#my-svg #sequencenumber{fill:#333;}#my-svg #crosshead path{fill:#333;stroke:#333;}#my-svg .messageText{fill:#333;stroke:none;}#my-svg .labelBox{stroke:hsl(259.6261682243, 59.7765363128%, 87.9019607843%);fill:#ECECFF;}#my-svg .labelText,#my-svg .labelText&gt;tspan{fill:black;stroke:none;}#my-svg .loopText,#my-svg .loopText&gt;tspan{fill:black;stroke:none;}#my-svg .loopLine{stroke-width:2px;stroke-dasharray:2,2;stroke:hsl(259.6261682243, 59.7765363128%, 87.9019607843%);fill:hsl(259.6261682243, 59.7765363128%, 87.9019607843%);}#my-svg .note{stroke:#aaaa33;fill:#fff5ad;}#my-svg .noteText,#my-svg .noteText&gt;tspan{fill:black;stroke:none;}#my-svg .activation0{fill:#f4f4f4;stroke:#666;}#my-svg .activation1{fill:#f4f4f4;stroke:#666;}#my-svg .activation2{fill:#f4f4f4;stroke:#666;}#my-svg .actorPopupMenu{position:absolute;}#my-svg .actorPopupMenuPanel{position:absolute;fill:#ECECFF;box-shadow:0px 8px 16px 0px rgba(0,0,0,0.2);filter:drop-shadow(3px 5px 2px rgb(0 0 0 / 0.4));}#my-svg .actor-man line{stroke:hsl(259.6261682243, 59.7765363128%, 87.9019607843%);fill:#ECECFF;}#my-svg .actor-man circle,#my-svg line{stroke:hsl(259.6261682243, 59.7765363128%, 87.9019607843%);fill:#ECECFF;stroke-width:2px;}#my-svg :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style>
   <g/>
   <defs>
     <symbol height="24" width="24" id="computer">
@@ -93,8 +93,8 @@
     </symbol>
   </defs>
   <defs>
-    <marker orient="auto" markerHeight="12" markerWidth="12" markerUnits="userSpaceOnUse" refY="5" refX="7.9" id="arrowhead">
-      <path d="M 0 0 L 10 5 L 0 10 z"/>
+    <marker orient="auto-start-reverse" markerHeight="12" markerWidth="12" markerUnits="userSpaceOnUse" refY="5" refX="7.9" id="arrowhead">
+      <path d="M -1 0 L 10 5 L 0 10 z"/>
     </marker>
   </defs>
   <defs>
@@ -113,10 +113,10 @@
     </marker>
   </defs>
   <g>
-    <rect class="activation0" ry="0" rx="0" height="773" width="10" stroke="#666" fill="#EDF2AE" y="67" x="70"/>
+    <rect class="activation0" height="773" width="10" stroke="#666" fill="#EDF2AE" y="67" x="70"/>
   </g>
   <g>
-    <rect class="note" ry="0" rx="0" height="54" width="205" stroke="#666" fill="#EDF2AE" y="75" x="-27.5"/>
+    <rect class="note" height="54" width="205" stroke="#666" fill="#EDF2AE" y="75" x="-27.5"/>
     <text style="font-size: 16px; font-weight: 400;" dy="1em" class="noteText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="80" x="75">
       <tspan x="75">Establish connection to the</tspan>
     </text>
@@ -125,10 +125,10 @@
     </text>
   </g>
   <g>
-    <rect class="activation0" ry="0" rx="0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="169" x="834"/>
+    <rect class="activation0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="169" x="834"/>
   </g>
   <g>
-    <rect class="note" ry="0" rx="0" height="54" width="188" stroke="#666" fill="#EDF2AE" y="185" x="-19"/>
+    <rect class="note" height="54" width="188" stroke="#666" fill="#EDF2AE" y="185" x="-19"/>
     <text style="font-size: 16px; font-weight: 400;" dy="1em" class="noteText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="190" x="75">
       <tspan x="75">Repeat for each line in the</tspan>
     </text>
@@ -137,10 +137,10 @@
     </text>
   </g>
   <g>
-    <rect class="activation0" ry="0" rx="0" height="483" width="10" stroke="#666" fill="#EDF2AE" y="337" x="323.5"/>
+    <rect class="activation0" height="483" width="10" stroke="#666" fill="#EDF2AE" y="337" x="323.5"/>
   </g>
   <g>
-    <rect class="note" ry="0" rx="0" height="71" width="257" stroke="#666" fill="#EDF2AE" y="345" x="200"/>
+    <rect class="note" height="71" width="257" stroke="#666" fill="#EDF2AE" y="345" x="200"/>
     <text style="font-size: 16px; font-weight: 400;" dy="1em" class="noteText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="350" x="329">
       <tspan x="329">Encode the message using</tspan>
     </text>
@@ -152,16 +152,16 @@
     </text>
   </g>
   <g>
-    <rect class="activation1" ry="0" rx="0" height="58" width="10" stroke="#666" fill="#EDF2AE" y="494" x="328.5"/>
+    <rect class="activation1" height="58" width="10" stroke="#666" fill="#EDF2AE" y="494" x="328.5"/>
   </g>
   <g>
-    <rect class="activation0" ry="0" rx="0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="506" x="1059.5"/>
+    <rect class="activation0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="506" x="1059.5"/>
   </g>
   <g>
-    <rect class="activation0" ry="0" rx="0" height="210" width="10" stroke="#666" fill="#EDF2AE" y="600" x="595"/>
+    <rect class="activation0" height="210" width="10" stroke="#666" fill="#EDF2AE" y="600" x="595"/>
   </g>
   <g>
-    <rect class="note" ry="0" rx="0" height="54" width="203" stroke="#666" fill="#EDF2AE" y="608" x="498.5"/>
+    <rect class="note" height="54" width="203" stroke="#666" fill="#EDF2AE" y="608" x="498.5"/>
     <text style="font-size: 16px; font-weight: 400;" dy="1em" class="noteText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="613" x="600">
       <tspan x="600">Repeat until send() succeeds</tspan>
     </text>
@@ -170,7 +170,7 @@
     </text>
   </g>
   <g>
-    <rect class="activation0" ry="0" rx="0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="762" x="834"/>
+    <rect class="activation0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="762" x="834"/>
   </g>
   <g>
     <line class="loopLine" y2="697" x2="854" y1="697" x1="585"/>
