@@ -56,8 +56,15 @@
 
 namespace clanguml::util {
 
+// For release builds, use only file names in the log paths, for debug use
+// full paths to make it easier to navigate to specific file:line in the code
+// from logs
+#if defined(NDEBUG)
 #define FILENAME_                                                              \
     (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
+#else
+#define FILENAME_ __FILE__
+#endif
 
 constexpr unsigned kDefaultMessageCommentWidth{25U};
 
@@ -358,17 +365,6 @@ template <typename T, typename F> void for_each(const T &collection, F &&func)
 {
     std::for_each(std::begin(collection), std::end(collection),
         std::forward<decltype(func)>(func));
-}
-
-template <typename T, typename C, typename F>
-void for_each_if(const T &collection, C &&cond, F &&func)
-{
-    std::for_each(std::begin(collection), std::end(collection),
-        [cond = std::forward<decltype(cond)>(cond),
-            func = std::forward<decltype(func)>(func)](const auto &e) {
-            if (cond(e))
-                func(e);
-        });
 }
 
 template <typename R, typename T, typename F>

@@ -27,7 +27,7 @@
 #include <clang/AST/RecursiveASTVisitor.h>
 #include <clang/Basic/SourceManager.h>
 
-#include <stack>
+#include <deque>
 
 namespace clanguml::sequence_diagram::visitor {
 
@@ -121,6 +121,8 @@ public:
     bool TraverseFunctionDecl(clang::FunctionDecl *declaration);
 
     bool VisitFunctionDecl(clang::FunctionDecl *declaration);
+
+    bool TraverseFunctionTemplateDecl(clang::FunctionTemplateDecl *declaration);
 
     bool VisitFunctionTemplateDecl(
         clang::FunctionTemplateDecl *function_declaration);
@@ -545,7 +547,8 @@ private:
      * expressions (e.g. a(b(c(), d())), as they need to be added to the diagram
      * sequence after the visitor leaves the call expression AST node
      */
-    std::map<clang::CallExpr *, model::message> call_expr_message_map_;
+    std::map<clang::CallExpr *, std::deque<model::message>>
+        call_expr_message_map_;
     std::map<clang::CXXConstructExpr *, model::message>
         construct_expr_message_map_;
     std::map<clang::ObjCMessageExpr *, model::message> objc_message_map_;
@@ -566,5 +569,6 @@ private:
         processed_comments_by_caller_id_;
 
     template_builder_t template_builder_;
+    void ensure_activity_exists(const model::message &m);
 };
 } // namespace clanguml::sequence_diagram::visitor
