@@ -42,7 +42,7 @@ public class CompileCommandsLogger : Logger
     private static readonly string CCompilerFrontend = "clang.exe";
     private static readonly string CPPCompilerFrontend = "clang++.exe";
 
-    private static readonly string[] IgnoredFlags = {"/MP", "/Gm-"};
+    private static readonly string[] SourceFileTypeQualifierFlags = {"/Tc", "/Tp"};
 
     private static readonly string[] CppExtensions = { ".cpp", ".cxx", ".cc", ".c" };
 
@@ -99,12 +99,13 @@ public class CompileCommandsLogger : Logger
             List<string> filenames = new List<string>();
             List<string> compileFlags = new List<string>();
 
-
-
             // Here we assume that source files are at the end of the command and are absolute
             int argIndex = cmdArgs.Length - 1;
             for(;argIndex >= 0; argIndex--) {
-                if(IsCPPSourcePath(cmdArgs[argIndex])) {
+                if(SourceFileTypeQualifierFlags.Contains(cmdArgs[argIndex])) {
+                    continue;
+                }
+                else if(IsCPPSourcePath(cmdArgs[argIndex])) {
                     filenames.Add(cmdArgs[argIndex]);
                 }
                 else {
@@ -113,6 +114,13 @@ public class CompileCommandsLogger : Logger
             }
 
             for(int i = 0; i < argIndex; i++) {
+                if(cmdArgs[i] == "/I") {
+                    compileFlags.Add("-isystem" + cmdArgs[i+1]);
+                    i++;
+
+                    continue;
+                }
+
                 if(cmdArgs[i].StartsWith("/I")) {
                     compileFlags.Add("-isystem");
                     compileFlags.Add("\"" + cmdArgs[i].Substring(2) + "\"");
