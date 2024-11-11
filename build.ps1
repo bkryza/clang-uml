@@ -1,19 +1,32 @@
-param ($Prefix="C:\clang-uml-llvm18", $BuildType="Release")
+param (
+  $Prefix="C:\clang-uml-llvm18",
+  $BuildType="Release"
+)
+
+# Save the original directory
+$originalDirectory = Get-Location
 
 $ErrorActionPreference = "Stop"
 $PSNativeCommandUseErrorActionPreference = $true
 
 try {
-  cmake -S . -B $BuildType -DCMAKE_PREFIX_PATH="$Prefix" -DENABLE_CXX_MODULES_TEST_CASES=OFF -Thost=x64
-  cmake --build $BuildType --config $BuildType -- "-logger:$PWD/util/msbuild_compile_commands_logger/bin/Debug/netstandard2.0/CompileCommandsLogger.dll"
+  Set-Location util/msbuild_compile_commands_logger
+  dotnet build
+  Copy-Item bin/Debug/netstandard2.0/CompileCommandsLogger.dll CompileCommandsLogger.dll
+  Set-Location $originalDirectory
 
-  # Create compile commands in Visual Studio
-  # before running these tests
-  cd $BuildType
+  cmake -G "Visual Studio 17 2022" -S . -B $BuildType -DCMAKE_PREFIX_PATH="$Prefix" -Thost=x64
+
+  cmake --build $BuildType --config $BuildType -- "-logger:$PWD/util/msbuild_compile_commands_logger/CompileCommandsLogger.dll"
+
+  Set-Location $BuildType
   ctest -C $BuildType --output-on-failure
 }
 catch {
-  break
+  Write-Host "An error occurred. Exiting script."
+  return
 }
-
-cd ..
+finally {
+  # Always return to the original directory
+  Set-Location $originalDirectory
+}

@@ -503,8 +503,13 @@ TEST_CASE("Test find_entry_by_path_prefix")
     m.emplace("/usr/include/boost", "boost_sources");
     m.emplace("../my_other_project/src", "my_other_project_sources");
 
+#if !defined(_MSC_VER)
     auto kv = find_entry_by_path_prefix(m, "/tmp");
     CHECK_FALSE(kv.has_value());
+#else
+    auto kv = find_entry_by_path_prefix(m, "C:/tmp");
+    CHECK_FALSE(kv.has_value());
+#endif
 
     kv = find_entry_by_path_prefix(m, "./src/main.cc");
     CHECK(kv.value().second == "internal_sources");

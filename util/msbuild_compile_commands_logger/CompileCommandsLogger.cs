@@ -102,7 +102,7 @@ public class CompileCommandsLogger : Logger
             // Here we assume that source files are at the end of the command and are absolute
             int argIndex = cmdArgs.Length - 1;
             for(;argIndex >= 0; argIndex--) {
-                if(SourceFileTypeQualifierFlags.Contains(cmdArgs[argIndex])) {
+                if(Array.IndexOf(SourceFileTypeQualifierFlags, cmdArgs[argIndex]) > -1) {
                     continue;
                 }
                 else if(IsCPPSourcePath(cmdArgs[argIndex])) {
