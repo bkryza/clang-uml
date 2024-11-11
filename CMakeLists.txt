@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.16)
 
+cmake_policy(SET CMP0091 NEW)
+
 #
 # Project name
 #
 project(clang-uml C CXX)
-
-cmake_policy(SET CMP0054 NEW)
 
 #
 # CMake standard defines
@@ -143,6 +143,9 @@ find_package(Threads REQUIRED)
 # Setup yaml-cpp
 #
 message(STATUS "Checking for yaml-cpp...")
+if(MSVC)
+    set(YAML_CPP_LIBRARIES "yaml-cpp")
+else(MSVC)
 find_package(yaml-cpp)
 
 if("${YAML_CPP_LIBRARIES}" STREQUAL "")
@@ -150,8 +153,7 @@ if("${YAML_CPP_LIBRARIES}" STREQUAL "")
 else()
     message(STATUS "Found yaml-cpp libraries: ${YAML_CPP_LIBRARIES}")
 endif()
-if(MSVC)
-    set(YAML_CPP_LIBRARIES "yaml-cpp")
+
 endif(MSVC)
 
 link_directories(${LLVM_LIBRARY_DIR} ${YAML_CPP_LIBRARY_DIR})

@@ -23,6 +23,7 @@ else(MSVC)
 endif(MSVC)
 
 target_compile_features(clang-umllib INTERFACE cxx_std_17)
+
 target_compile_options(
     clang-umllib
     PRIVATE $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:GNU>>:
@@ -32,7 +33,7 @@ target_compile_options(
             -Wno-unused-parameter
             -Wno-deprecated-declarations
             ${CUSTOM_COMPILE_OPTIONS}>
-            $<$<CXX_COMPILER_ID:MSVC>:/MP
+            $<$<CXX_COMPILER_ID:MSVC>:
             /MD
             /W1
             /bigobj
@@ -41,8 +42,7 @@ target_compile_options(
             /wd4244>)
 target_compile_definitions(
     clang-umllib
-    PRIVATE $<$<CXX_COMPILER_ID:MSVC>: -DLLVM_FORCE_USE_OLD_TOOLCHAIN
-            -DTERMCOLOR_USE_WINDOWS_API=1 -DTERMCOLOR_TARGET_WINDOWS=1>)
+    PRIVATE $<$<CXX_COMPILER_ID:MSVC>: -DLLVM_FORCE_USE_OLD_TOOLCHAIN -DTERMCOLOR_USE_WINDOWS_API=1>)
 
 #
 # Define the target executable clang-uml

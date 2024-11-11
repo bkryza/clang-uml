@@ -167,7 +167,7 @@ public:
         unsigned column{};
 
         if (location.isValid()) {
-            file = source_manager_.getFilename(location).str();
+            file = source_manager_.getFilename(source_manager_.getSpellingLoc(location)).str();
             line = source_manager_.getSpellingLineNumber(location);
             column = source_manager_.getSpellingColumnNumber(location);
 
