@@ -47,3 +47,8 @@ cmake-build-*
 
 # VSCode
 /.vscode/
+
+# utils
+/util/msbuild_compile_commands_logger/*.dll
+/util/msbuild_compile_commands_logger/bin
+/util/msbuild_compile_commands_logger/obj

@@ -264,7 +264,7 @@ inja::json generator<C, D>::element_context(const E &e) const
     inja::json ctx;
     ctx["element"] = e.context();
 #if _MSC_VER
-    if (ctx.contains("git")) {
+    if (diagram_context.contains("git")) {
 #else
     if (diagram_context.template contains("git")) {
 #endif
