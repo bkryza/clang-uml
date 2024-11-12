@@ -115,15 +115,31 @@ public class CompileCommandsLogger : Logger
 
             for(int i = 0; i < argIndex; i++) {
                 if(cmdArgs[i] == "/I") {
-                    compileFlags.Add("-isystem" + cmdArgs[i+1]);
+                    compileFlags.Add("-I");
+                    compileFlags.Add(NormalizePath(cmdArgs[i+1]));
                     i++;
 
                     continue;
                 }
 
                 if(cmdArgs[i].StartsWith("/I")) {
+                    compileFlags.Add("-I");
+                    compileFlags.Add(NormalizePath(cmdArgs[i].Substring(2)));
+
+                    continue;
+                }
+
+                if(cmdArgs[i] == "/external:I") {
                     compileFlags.Add("-isystem");
-                    compileFlags.Add("\"" + cmdArgs[i].Substring(2) + "\"");
+                    compileFlags.Add(NormalizePath(cmdArgs[i+1]));
+                    i++;
+
+                    continue;
+                }
+
+                if(cmdArgs[i].StartsWith("/external:I")) {
+                    compileFlags.Add("-isystem");
+                    compileFlags.Add(NormalizePath(cmdArgs[i].Substring(2)));
 
                     continue;
                 }
@@ -180,20 +196,22 @@ public class CompileCommandsLogger : Logger
                     streamWriter.WriteLine(" ,");
                 }
 
-                string filePath = HttpUtility.JavaScriptStringEncode(filename.Replace("\\", "/"));
+                string directoryPath = HttpUtility.JavaScriptStringEncode(dirname.Replace("\\", "/"));
 
-                string compileCommand = GetCompilerFrontend(filePath) + " " + String.Join(" ", compileFlags);
+                string filePath = HttpUtility.JavaScriptStringEncode(NormalizePath(filename));
+
+                string compileCommand = HttpUtility.JavaScriptStringEncode(GetCompilerFrontend(filename) + " " + String.Join(" ", compileFlags));
+
+                string compileCommandWithFilename = compileCommand + " " + filePath;
 
                 // Write one entry
                 streamWriter.WriteLine(" {");
 
-                string directoryPath = HttpUtility.JavaScriptStringEncode(dirname.Replace("\\", "/"));
                 streamWriter.WriteLine(String.Format( "   \"directory\": \"{0}\",", directoryPath));
 
-                string compileCommandWithFilename = HttpUtility.JavaScriptStringEncode(compileCommand  + " \"" + filename.Replace("\\", "/") + "\"");
                 streamWriter.WriteLine(String.Format("   \"command\": \"{0}\",", compileCommandWithFilename));
 
-                streamWriter.Write(String.Format("   \"file\": \"{0}\"", filePath));
+                streamWriter.Write(String.Format("   \"file\": \"{0}\"", filename.Replace("\\", "/")));
 
                 streamWriter.WriteLine("");
                 streamWriter.WriteLine(" }");
@@ -267,6 +285,28 @@ public class CompileCommandsLogger : Logger
         }
 
         return false;
+    }
+
+    public static string NormalizePath(string input)
+    {
+        string result = input.Replace("\\", "/");
+
+        if (string.IsNullOrEmpty(result))
+        {
+            return result;
+        }
+
+        if (!result.StartsWith("\""))
+        {
+            result = "\"" + result;
+        }
+
+        if (!result.EndsWith("\""))
+        {
+            result = result + "\"";
+        }
+
+        return result;
     }
 
     public override void Shutdown()

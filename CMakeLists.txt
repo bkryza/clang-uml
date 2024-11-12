@@ -134,6 +134,8 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     endif(APPLE)
 endif()
 
+link_directories(${LLVM_LIBRARY_DIR})
+
 #
 # Setup threads library
 #
@@ -143,20 +145,12 @@ find_package(Threads REQUIRED)
 # Setup yaml-cpp
 #
 message(STATUS "Checking for yaml-cpp...")
-if(MSVC)
-    set(YAML_CPP_LIBRARIES "yaml-cpp")
-else(MSVC)
 find_package(yaml-cpp)
-
-if("${YAML_CPP_LIBRARIES}" STREQUAL "")
-    message(FATAL_ERROR "Failed to find yaml-cpp library!")
-else()
-    message(STATUS "Found yaml-cpp libraries: ${YAML_CPP_LIBRARIES}")
-endif()
-
+set(YAML_CPP_LIBRARIES yaml-cpp::yaml-cpp)
+if(MSVC)
+    add_definitions(-DYAML_CPP_STATIC_DEFINE)
 endif(MSVC)
-
-link_directories(${LLVM_LIBRARY_DIR} ${YAML_CPP_LIBRARY_DIR})
+message(STATUS "Found yaml-cpp at ${YAML_CPP_INCLUDE_DIR}")
 
 #
 # Setup backward-cpp, libdw and libunwind

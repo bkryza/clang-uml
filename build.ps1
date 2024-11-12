@@ -1,5 +1,5 @@
 param (
-  $Prefix="C:\clang-uml-llvm18",
+  $Prefix="C:\clang-uml-llvm19",
   $BuildType="Release"
 )
 
@@ -20,10 +20,12 @@ try {
   cmake --build $BuildType --config $BuildType -- "-logger:$PWD/util/msbuild_compile_commands_logger/CompileCommandsLogger.dll"
 
   Set-Location $BuildType
+
   ctest -C $BuildType --output-on-failure
 }
 catch {
-  Write-Host "An error occurred. Exiting script."
+  Write-Host $Error[0]
+  Write-Host "Exiting script."
   return
 }
 finally {
