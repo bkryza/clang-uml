@@ -77,6 +77,13 @@ int main(int argc, const char *argv[])
             cli.diagram_names, cli.config, compilation_database_files,
             translation_units_map);
 
+        if (cli.progress) {
+            // llvm::errs() output stream mangles the stdout stream , we need
+            // to close it here so that it doesn't interfere with the rendering
+            // of progress indicators
+            llvm::errs().close();
+        }
+
         common::generators::generate_diagrams(cli.diagram_names, cli.config, db,
             cli.get_runtime_config(), translation_units_map);
     }
