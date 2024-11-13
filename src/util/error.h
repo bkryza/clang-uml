@@ -19,6 +19,8 @@
 
 #include <stdexcept>
 
+#include "common/model/enums.h"
+
 namespace clanguml::error {
 
 class query_driver_no_paths : public std::runtime_error {
@@ -36,8 +38,41 @@ class compilation_database_error : public std::runtime_error {
     using std::runtime_error::runtime_error;
 };
 
-class empty_diagram_error : public std::runtime_error {
-    using std::runtime_error::runtime_error;
+class diagram_generation_error : public std::runtime_error {
+public:
+    diagram_generation_error(common::model::diagram_t type, std::string name,
+        std::string description)
+        : std::runtime_error{description}
+        , type_{type}
+        , name_{std::move(name)}
+    {
+        message_ =
+            fmt::format("Generation of {} diagram '{}' failed due to: {}",
+                diagram_type(), diagram_name(), description);
+    }
+
+    const char *what() const noexcept override { return message_.c_str(); }
+
+    const std::string &diagram_name() const noexcept { return name_; }
+    common::model::diagram_t diagram_type() const noexcept { return type_; }
+
+private:
+    common::model::diagram_t type_;
+    std::string name_;
+
+    std::string message_;
+};
+
+class empty_diagram_error : public diagram_generation_error {
+    using diagram_generation_error::diagram_generation_error;
+};
+
+class invalid_sequence_from_condition : public diagram_generation_error {
+    using diagram_generation_error::diagram_generation_error;
+};
+
+class invalid_sequence_to_condition : public diagram_generation_error {
+    using diagram_generation_error::diagram_generation_error;
 };
 
 } // namespace clanguml::error

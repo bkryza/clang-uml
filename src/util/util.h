@@ -29,6 +29,8 @@
 #include <type_traits>
 #include <vector>
 
+#include "fmt_formatters.h"
+
 #define LOG_ERROR(fmt__, ...)                                                  \
     spdlog::get("clanguml-logger")                                             \
         ->error(fmt::runtime(std::string("[{}:{}] ") + fmt__), FILENAME_,      \

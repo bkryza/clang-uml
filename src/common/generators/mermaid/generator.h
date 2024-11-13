@@ -180,7 +180,7 @@ void generator<C, D>::generate(std::ostream &ostr) const
 
     if (!config.allow_empty_diagrams() && model.is_empty() &&
         config.mermaid().before.empty() && config.mermaid().after.empty()) {
-        throw clanguml::error::empty_diagram_error{
+        throw clanguml::error::empty_diagram_error{model.type(), model.name(),
             "Diagram configuration resulted in empty diagram."};
     }
 

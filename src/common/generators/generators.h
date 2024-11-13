@@ -22,6 +22,7 @@
 #include "class_diagram/generators/plantuml/class_diagram_generator.h"
 #include "cli/cli_handler.h"
 #include "common/compilation_database.h"
+#include "common/generators/clang_tool.h"
 #include "common/model/filters/diagram_filter_factory.h"
 #include "config/config.h"
 #include "include_diagram/generators/json/include_diagram_generator.h"
@@ -373,17 +374,17 @@ std::unique_ptr<DiagramModel> generate(const common::compilation_database &db,
     LOG_DBG("Found translation units for diagram {}: {}", name,
         fmt::join(translation_units, ", "));
 
-    clang::tooling::ClangTool clang_tool(db, translation_units);
+    const bool quiet_clang_tool = !!progress;
+
+    clanguml::generators::clang_tool clang_tool(diagram->type(), name, db,
+        translation_units, config.get_relative_to()(), quiet_clang_tool);
+
     auto action_factory =
         std::make_unique<diagram_action_visitor_factory<DiagramModel,
             DiagramConfig, DiagramVisitor>>(
             *diagram, config, std::move(progress));
 
-    auto res = clang_tool.run(action_factory.get());
-
-    if (res != 0) {
-        throw std::runtime_error("Diagram " + name + " generation failed");
-    }
+    clang_tool.run(action_factory.get());
 
     diagram->set_complete(true);
 
@@ -422,8 +423,10 @@ void generate_diagram(const std::string &name,
  * @param progress Whether progress indicators should be displayed
  * @param generators List of generator types to use for each diagram
  * @param translation_units_map Map of translation units for each file
+ *
+ * @return 0 if success, otherwise error code
  */
-void generate_diagrams(const std::vector<std::string> &diagram_names,
+int generate_diagrams(const std::vector<std::string> &diagram_names,
     clanguml::config::config &config,
     const common::compilation_database_ptr &db,
     const cli::runtime_config &runtime_config,

@@ -19,6 +19,8 @@
 
 #include <string>
 
+#include "util/fmt_formatters.h"
+
 namespace clanguml::common::model {
 
 enum class diagram_t { kClass, kSequence, kPackage, kInclude };
@@ -89,3 +91,10 @@ std::string to_string(message_scope_t t);
 diagram_t from_string(const std::string &s);
 
 } // namespace clanguml::common::model
+
+MAKE_TO_STRING_FORMATTER(clanguml::common::model::relationship_t)
+MAKE_TO_STRING_FORMATTER(clanguml::common::model::access_t)
+MAKE_TO_STRING_FORMATTER(clanguml::common::model::module_access_t)
+MAKE_TO_STRING_FORMATTER(clanguml::common::model::message_t)
+MAKE_TO_STRING_FORMATTER(clanguml::common::model::diagram_t)
+MAKE_TO_STRING_FORMATTER(clanguml::common::model::message_scope_t)

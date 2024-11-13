@@ -18,6 +18,8 @@
 
 #include "sequence_diagram_generator.h"
 
+#include "util/error.h"
+
 namespace clanguml::sequence_diagram::generators::plantuml {
 
 using clanguml::common::eid_t;
@@ -571,8 +573,21 @@ void generator::generate_diagram(std::ostream &ostr) const
         auto from_activity_id = model().get_from_activity_id(from_location);
         auto to_activity_id = model().get_to_activity_id(to_location);
 
-        if (!from_activity_id || !to_activity_id)
-            continue;
+        if (!from_activity_id) {
+            throw clanguml::error::invalid_sequence_from_condition(
+                model().type(), model().name(),
+                fmt::format("Failed to find participant matching '{}' for "
+                            "'from' condition",
+                    from_location.location));
+        }
+
+        if (!from_activity_id || !to_activity_id) {
+            throw clanguml::error::invalid_sequence_to_condition(model().type(),
+                model().name(),
+                fmt::format("Failed to find participant matching '{}' for "
+                            "'to' condition",
+                    to_location.location));
+        }
 
         if (model().participants().count(*from_activity_id) == 0)
             continue;
@@ -612,8 +627,13 @@ void generator::generate_diagram(std::ostream &ostr) const
     for (const auto &to_location : config().to()) {
         auto to_activity_id = model().get_to_activity_id(to_location);
 
-        if (!to_activity_id)
-            continue;
+        if (!to_activity_id) {
+            throw clanguml::error::invalid_sequence_to_condition(model().type(),
+                model().name(),
+                fmt::format("Failed to find participant matching '{}' for "
+                            "'to' condition",
+                    to_location.location));
+        }
 
         auto message_chains_unique =
             model().get_all_from_to_message_chains(eid_t{}, *to_activity_id);
@@ -666,10 +686,11 @@ void generator::generate_diagram(std::ostream &ostr) const
             }
 
             if (start_from == 0) {
-                LOG_WARN("Failed to find participant with {} for start_from "
-                         "condition",
-                    sf.location);
-                continue;
+                throw clanguml::error::invalid_sequence_from_condition(
+                    model().type(), model().name(),
+                    fmt::format("Failed to find participant matching '{}' for "
+                                "'from' condition",
+                        sf.location));
             }
 
             if (model().participants().count(start_from) == 0)
@@ -682,10 +703,11 @@ void generator::generate_diagram(std::ostream &ostr) const
                 model().get_participant<model::function>(start_from);
 
             if (!from.has_value()) {
-                LOG_WARN("Failed to find participant {} for start_from "
-                         "condition",
-                    sf.location);
-                continue;
+                throw clanguml::error::invalid_sequence_from_condition(
+                    model().type(), model().name(),
+                    fmt::format("Failed to find participant matching '{}' for "
+                                "'from' condition",
+                        sf.location));
             }
 
             generate_participant(ostr, start_from);

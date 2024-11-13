@@ -19,6 +19,7 @@
 
 #include "common/model/enums.h"
 #include "common/model/namespace.h"
+#include "common/model/source_location.h"
 #include "common/model/template_parameter.h"
 #include "config/config.h"
 #include "types.h"
@@ -314,6 +315,12 @@ clang::RawComment *get_declaration_raw_comment(const clang::SourceManager &sm,
 
 clang::RawComment *get_raw_comment(const clang::SourceManager &sm,
     const clang::ASTContext &context, const clang::SourceRange &source_range);
+
+void set_source_location(clang::SourceManager &source_manager,
+    const clang::SourceLocation &location,
+    clanguml::common::model::source_location &element,
+    std::filesystem::path tu_path,
+    std::filesystem::path relative_to_path_ = {});
 
 /**
  * Check if function or method declaration is a C++20 coroutine.

@@ -44,22 +44,23 @@ using namespace clanguml;
 int main(int argc, const char *argv[])
 {
     cli::cli_handler cli;
-    auto res = cli.handle_options(argc, argv);
-
-    if (res == cli::cli_flow_t::kExit)
-        return 0;
-
-    if (res == cli::cli_flow_t::kError)
-        return 1;
-
-#if !defined(NDEBUG)
-    // Catch invalid logger message formats, e.g. missing arguments
-    spdlog::set_error_handler([](const std::string & /*msg*/) {
-        assert(0 == 1); // NOLINT
-    });
-#endif
 
     try {
+        auto res = cli.handle_options(argc, argv);
+
+        if (res == cli::cli_flow_t::kExit)
+            return 0;
+
+        if (res == cli::cli_flow_t::kError)
+            return 1;
+
+#if !defined(NDEBUG)
+        // Catch invalid logger message formats, e.g. missing arguments
+        spdlog::set_error_handler([](const std::string & /*msg*/) {
+            assert(0 == 1); // NOLINT
+        });
+#endif
+
         const auto db =
             common::compilation_database::auto_detect_from_directory(
                 cli.config);
@@ -84,19 +85,29 @@ int main(int argc, const char *argv[])
             llvm::errs().close();
         }
 
-        common::generators::generate_diagrams(cli.diagram_names, cli.config, db,
-            cli.get_runtime_config(), translation_units_map);
+        return common::generators::generate_diagrams(cli.diagram_names,
+            cli.config, db, cli.get_runtime_config(), translation_units_map);
     }
     catch (error::compilation_database_error &e) {
-        LOG_ERROR("Failed to load compilation database from {} due to: {}",
+        fmt::println(
+            "ERROR: Failed to load compilation database from {} due to: {}",
             cli.config.compilation_database_dir(), e.what());
         return 1;
     }
     catch (error::query_driver_no_paths &e) {
-        LOG_ERROR("Querying provided compiler driver {} did not provide any "
-                  "paths, please make sure the path is correct and that your "
-                  "compiler is GCC-compatible: {}",
+        fmt::println(
+            "ERROR: Querying provided compiler driver {} did not provide any "
+            "paths, please make sure the path is correct and that your "
+            "compiler is GCC-compatible: {}",
             cli.config.query_driver(), e.what());
+        return 1;
+    }
+    catch (error::diagram_generation_error &e) {
+        fmt::println("ERROR: {}", e.what());
+        return 1;
+    }
+    catch (std::exception &e) {
+        fmt::println("ERROR: {}", e.what());
         return 1;
     }
 

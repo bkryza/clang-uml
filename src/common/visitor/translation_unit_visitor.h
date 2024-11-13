@@ -160,60 +160,8 @@ public:
     void set_source_location(const clang::SourceLocation &location,
         clanguml::common::model::source_location &element)
     {
-        namespace fs = std::filesystem;
-
-        std::string file;
-        unsigned line{};
-        unsigned column{};
-
-        if (location.isValid()) {
-            file = source_manager_
-                       .getFilename(source_manager_.getSpellingLoc(location))
-                       .str();
-            line = source_manager_.getSpellingLineNumber(location);
-            column = source_manager_.getSpellingColumnNumber(location);
-
-            if (file.empty()) {
-                // Why do I have to do this?
-                parse_source_location(location.printToString(source_manager()),
-                    file, line, column);
-            }
-        }
-        else {
-            auto success = parse_source_location(
-                location.printToString(source_manager()), file, line, column);
-            if (!success) {
-                LOG_DBG("Failed to extract source location for element from {}",
-                    location.printToString(source_manager_));
-                return;
-            }
-        }
-
-        // ensure the path is absolute
-        fs::path file_path{file};
-        if (!file_path.is_absolute()) {
-            file_path = fs::absolute(file_path);
-        }
-
-        file_path = file_path.lexically_normal();
-
-        file = file_path.string();
-
-        element.set_file(file);
-
-        if (util::is_relative_to(file_path, relative_to_path_)) {
-            element.set_file_relative(
-                util::path_to_url(fs::path{element.file()}.lexically_relative(
-                    relative_to_path_)));
-        }
-        else {
-            element.set_file_relative("");
-        }
-
-        element.set_translation_unit(tu_path().string());
-        element.set_line(line);
-        element.set_column(column);
-        element.set_location_id(location.getHashValue());
+        common::set_source_location(
+            source_manager(), location, element, tu_path(), relative_to_path_);
     }
 
     void set_owning_module(

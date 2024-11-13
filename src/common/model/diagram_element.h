@@ -223,3 +223,15 @@ private:
     bool complete_{false};
 };
 } // namespace clanguml::common::model
+
+template <typename T>
+struct fmt::formatter<T,
+    std::enable_if_t<
+        std::is_base_of_v<clanguml::common::model::diagram_element, T>, char>>
+    : fmt::formatter<std::string> {
+    auto format(const clanguml::common::model::diagram_element &a,
+        format_context &ctx) const
+    {
+        return formatter<std::string>::format(a.full_name(false), ctx);
+    }
+};
