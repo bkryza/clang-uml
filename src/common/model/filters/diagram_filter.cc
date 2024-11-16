@@ -316,7 +316,7 @@ tvl::value_t namespace_filter::match(
     if (ns.is_empty())
         return {};
 
-    return tvl::any_of(namespaces_.begin(), namespaces_.end(),
+    auto res = tvl::any_of(namespaces_.begin(), namespaces_.end(),
         [&ns, is_inclusive = is_inclusive()](const auto &nsit) {
             if (std::holds_alternative<namespace_>(nsit.value())) {
                 const auto &ns_pattern = std::get<namespace_>(nsit.value());
@@ -330,13 +330,21 @@ tvl::value_t namespace_filter::match(
             const auto &regex = std::get<common::regex>(nsit.value());
             return regex %= ns.to_string();
         });
+
+    if ((type() == filter_t::kInclusive && tvl::is_false(res)) ||
+        (type() == filter_t::kExclusive && tvl::is_true(res))) {
+        LOG_TRACE("Namespace {} rejected by namespace_filter", ns.to_string());
+    }
+
+    return res;
 }
 
 tvl::value_t namespace_filter::match(const diagram &d, const element &e) const
 {
+    tvl::value_t res;
     if (d.type() != diagram_t::kPackage &&
         dynamic_cast<const package *>(&e) != nullptr) {
-        auto result = tvl::any_of(namespaces_.begin(), namespaces_.end(),
+        res = tvl::any_of(namespaces_.begin(), namespaces_.end(),
             [&e, is_inclusive = is_inclusive()](const auto &nsit) {
                 if (std::holds_alternative<namespace_>(nsit.value())) {
                     const auto &ns_pattern = std::get<namespace_>(nsit.value());
@@ -364,11 +372,17 @@ tvl::value_t namespace_filter::match(const diagram &d, const element &e) const
                     e.full_name(false);
             });
 
-        return result;
+        if ((type() == filter_t::kInclusive && tvl::is_false(res)) ||
+            (type() == filter_t::kExclusive && tvl::is_true(res))) {
+            LOG_TRACE(
+                "Element {} rejected by namespace_filter", e.full_name(false));
+        }
+
+        return res;
     }
 
     if (d.type() == diagram_t::kPackage) {
-        auto result = tvl::any_of(namespaces_.begin(), namespaces_.end(),
+        res = tvl::any_of(namespaces_.begin(), namespaces_.end(),
             [&e, is_inclusive = is_inclusive()](const auto &nsit) {
                 if (std::holds_alternative<namespace_>(nsit.value())) {
                     auto e_ns = namespace_{e.full_name(false)};
@@ -385,10 +399,15 @@ tvl::value_t namespace_filter::match(const diagram &d, const element &e) const
                     e.full_name(false);
             });
 
-        return result;
+        if ((type() == filter_t::kInclusive && tvl::is_false(res)) ||
+            (type() == filter_t::kExclusive && tvl::is_true(res))) {
+            LOG_TRACE(
+                "Element {} rejected by namespace_filter", e.full_name(false));
+        }
+        return res;
     }
 
-    auto result = tvl::any_of(
+    res = tvl::any_of(
         namespaces_.begin(), namespaces_.end(), [&e](const auto &nsit) {
             if (std::holds_alternative<namespace_>(nsit.value())) {
                 return e.get_namespace().starts_with(
@@ -398,7 +417,12 @@ tvl::value_t namespace_filter::match(const diagram &d, const element &e) const
             return std::get<common::regex>(nsit.value()) %= e.full_name(false);
         });
 
-    return result;
+    if ((type() == filter_t::kInclusive && tvl::is_false(res)) ||
+        (type() == filter_t::kExclusive && tvl::is_true(res))) {
+        LOG_TRACE(
+            "Element {} rejected by namespace_filter", e.full_name(false));
+    }
+    return res;
 }
 
 tvl::value_t namespace_filter::match(
@@ -445,6 +469,11 @@ tvl::value_t modules_filter::match(
             return std::get<common::regex>(modit.value()) %= e.module().value();
         });
 
+    if ((type() == filter_t::kInclusive && tvl::is_false(result)) ||
+        (type() == filter_t::kExclusive && tvl::is_true(result))) {
+        LOG_TRACE("Element {} rejected by modules_filter", e.full_name(false));
+    }
+
     return result;
 }
 
@@ -461,8 +490,8 @@ tvl::value_t element_filter::match(const diagram &d, const element &e) const
     if (d.type() == diagram_t::kClass && e.type_name() == "package")
         return std::nullopt;
 
-    return tvl::any_of(
-        elements_.begin(), elements_.end(), [&e](const auto &el) {
+    auto res =
+        tvl::any_of(elements_.begin(), elements_.end(), [&e](const auto &el) {
             // First check if elements type matches the filter
             if ((el.type != config::element_filter_t::filtered_type::any) &&
                 (config::to_string(el.type) != e.type_name())) {
@@ -472,12 +501,19 @@ tvl::value_t element_filter::match(const diagram &d, const element &e) const
             return ((el.name == e.full_name(false)) ||
                 (el.name == fmt::format("::{}", e.full_name(false))));
         });
+
+    if ((type() == filter_t::kInclusive && tvl::is_false(res)) ||
+        (type() == filter_t::kExclusive && tvl::is_true(res))) {
+        LOG_TRACE("Element {} rejected by element_filter", e.full_name(false));
+    }
+
+    return res;
 }
 
 tvl::value_t element_filter::match(
     const diagram & /*d*/, const class_diagram::model::class_method &m) const
 {
-    return tvl::any_of(elements_.begin(), elements_.end(),
+    auto res = tvl::any_of(elements_.begin(), elements_.end(),
         [&m](const auto &ef) -> tvl::value_t {
             // Apply this filter only if it had `method` type, do not apply
             // `any` filters to methods for backward compatibility
@@ -486,12 +522,20 @@ tvl::value_t element_filter::match(
 
             return ef.name == m.qualified_name();
         });
+
+    if ((type() == filter_t::kInclusive && tvl::is_false(res)) ||
+        (type() == filter_t::kExclusive && tvl::is_true(res))) {
+        LOG_TRACE(
+            "Class method {} rejected by element_filter", m.display_name());
+    }
+
+    return res;
 }
 
 tvl::value_t element_filter::match(
     const diagram & /*d*/, const class_diagram::model::class_member &m) const
 {
-    return tvl::any_of(elements_.begin(), elements_.end(),
+    auto res = tvl::any_of(elements_.begin(), elements_.end(),
         [&m](const auto &ef) -> tvl::value_t {
             // Apply this filter only if it had `member` type, do not apply
             // `any` filters to methods for backward compatibility
@@ -500,12 +544,20 @@ tvl::value_t element_filter::match(
 
             return ef.name == m.qualified_name();
         });
+
+    if ((type() == filter_t::kInclusive && tvl::is_false(res)) ||
+        (type() == filter_t::kExclusive && tvl::is_true(res))) {
+        LOG_TRACE(
+            "Class member {} rejected by element_filter", m.qualified_name());
+    }
+
+    return res;
 }
 
 tvl::value_t element_filter::match(
     const diagram & /*d*/, const class_diagram::model::objc_method &m) const
 {
-    return tvl::any_of(elements_.begin(), elements_.end(),
+    auto res = tvl::any_of(elements_.begin(), elements_.end(),
         [&m](const auto &ef) -> tvl::value_t {
             // Apply this filter only if it had `objc_method` type, do not apply
             // `any` filters to methods for backward compatibility
@@ -514,12 +566,20 @@ tvl::value_t element_filter::match(
 
             return ef.name == m.qualified_name();
         });
+
+    if ((type() == filter_t::kInclusive && tvl::is_false(res)) ||
+        (type() == filter_t::kExclusive && tvl::is_true(res))) {
+        LOG_TRACE(
+            "ObjC method {} rejected by element_filter", m.qualified_name());
+    }
+
+    return res;
 }
 
 tvl::value_t element_filter::match(
     const diagram & /*d*/, const class_diagram::model::objc_member &m) const
 {
-    return tvl::any_of(elements_.begin(), elements_.end(),
+    auto res = tvl::any_of(elements_.begin(), elements_.end(),
         [&m](const auto &ef) -> tvl::value_t {
             // Apply this filter only if it had `method` type, do not apply
             // `any` filters to methods for backward compatibility
@@ -528,6 +588,14 @@ tvl::value_t element_filter::match(
 
             return ef.name == m.qualified_name();
         });
+
+    if ((type() == filter_t::kInclusive && tvl::is_false(res)) ||
+        (type() == filter_t::kExclusive && tvl::is_true(res))) {
+        LOG_TRACE(
+            "ObjC member {} rejected by element_filter", m.qualified_name());
+    }
+
+    return res;
 }
 
 tvl::value_t element_filter::match(
@@ -541,7 +609,7 @@ tvl::value_t element_filter::match(
 
     const auto &sequence_model =
         dynamic_cast<const sequence_diagram::model::diagram &>(d);
-    return tvl::any_of(elements_.begin(), elements_.end(),
+    auto res = tvl::any_of(elements_.begin(), elements_.end(),
         [&sequence_model, &p](const auto &el) {
             // First check if elements type matches the filter
             if (el.type != config::element_filter_t::filtered_type::any &&
@@ -577,6 +645,14 @@ tvl::value_t element_filter::match(
 
             return el.name == p.full_name(false);
         });
+
+    if ((type() == filter_t::kInclusive && tvl::is_false(res)) ||
+        (type() == filter_t::kExclusive && tvl::is_true(res))) {
+        LOG_TRACE(
+            "Participant {} rejected by element_filter", p.full_name(false));
+    }
+
+    return res;
 }
 
 element_type_filter::element_type_filter(
@@ -590,10 +666,18 @@ tvl::value_t element_type_filter::match(const diagram & /*d*/
     ,
     const element &e) const
 {
-    return tvl::any_of(element_types_.begin(), element_types_.end(),
+    auto res = tvl::any_of(element_types_.begin(), element_types_.end(),
         [&e](const auto &element_type) {
             return e.type_name() == element_type;
         });
+
+    if ((type() == filter_t::kInclusive && tvl::is_false(res)) ||
+        (type() == filter_t::kExclusive && tvl::is_true(res))) {
+        LOG_TRACE(
+            "Element {} rejected by element_type_filter", e.full_name(false));
+    }
+
+    return res;
 }
 
 method_type_filter::method_type_filter(
@@ -606,8 +690,8 @@ method_type_filter::method_type_filter(
 tvl::value_t method_type_filter::match(
     const diagram & /*d*/, const class_diagram::model::class_method &m) const
 {
-    return tvl::any_of(
-        method_types_.begin(), method_types_.end(), [&m](auto mt) {
+    auto res =
+        tvl::any_of(method_types_.begin(), method_types_.end(), [&m](auto mt) {
             switch (mt) {
             case config::method_type::constructor:
                 return m.is_constructor();
@@ -627,6 +711,14 @@ tvl::value_t method_type_filter::match(
 
             return false;
         });
+
+    if ((type() == filter_t::kInclusive && tvl::is_false(res)) ||
+        (type() == filter_t::kExclusive && tvl::is_true(res))) {
+        LOG_TRACE("Class method {} rejected by method_type_filter",
+            m.qualified_name());
+    }
+
+    return res;
 }
 
 callee_filter::callee_filter(
@@ -701,6 +793,12 @@ tvl::value_t callee_filter::match(
             return false;
         });
 
+    if ((type() == filter_t::kInclusive && tvl::is_false(res)) ||
+        (type() == filter_t::kExclusive && tvl::is_true(res))) {
+        LOG_TRACE(
+            "Participant {} rejected by callee_filter", p.full_name(false));
+    }
+
     return res;
 }
 
@@ -747,10 +845,17 @@ tvl::value_t subclass_filter::match(const diagram &d, const element &e) const
         for (const auto &parent : parents) {
             auto full_name = parent.get().full_name(false);
             if (root == full_name) {
+                if (type() == filter_t::kExclusive)
+                    LOG_TRACE("Element {} rejected by subclass_filter",
+                        e.full_name(false));
+
                 return true;
             }
         }
     }
+
+    if (type() == filter_t::kInclusive)
+        LOG_TRACE("Element {} rejected by subclass_filter", e.full_name(false));
 
     return false;
 }
@@ -793,6 +898,8 @@ tvl::value_t parents_filter::match(const diagram &d, const element &e) const
         if (e == parent.get())
             return true;
     }
+
+    LOG_TRACE("Element {} rejected by parents_filter", e.full_name(false));
 
     return false;
 }
@@ -965,9 +1072,15 @@ tvl::value_t context_filter::match(const diagram &d, const element &e) const
         return {};
 
     for (const auto &ec : effective_contexts_) {
-        if (ec.count(e.id()) > 0)
+        if (ec.count(e.id()) > 0) {
+            if (type() == filter_t::kExclusive)
+                LOG_TRACE("Element {} rejected by context_filter",
+                    e.full_name(false));
             return true;
+        }
     }
+    if (type() == filter_t::kInclusive)
+        LOG_TRACE("Element {} rejected by context_filter", e.full_name(false));
 
     return false;
 }
@@ -1043,7 +1156,7 @@ tvl::value_t paths_filter::match(
 
     const auto source_file_path = p.fs_path(root_);
 
-    return memoize(
+    auto res = memoize(
         true,
         [this](const std::filesystem::path &sfp) {
             return std::any_of(
@@ -1055,6 +1168,14 @@ tvl::value_t paths_filter::match(
                 });
         },
         source_file_path);
+
+    if ((type() == filter_t::kInclusive && tvl::is_false(res)) ||
+        (type() == filter_t::kExclusive && tvl::is_true(res))) {
+        LOG_TRACE(
+            "Source file {} rejected by paths_filter", p.full_name(false));
+    }
+
+    return res;
 }
 
 tvl::value_t paths_filter::match(
@@ -1072,7 +1193,7 @@ tvl::value_t paths_filter::match(
         return {};
     }
 
-    return memoize(
+    auto res = memoize(
         true,
         [this](const std::filesystem::path &p) {
             return std::any_of(
@@ -1084,6 +1205,13 @@ tvl::value_t paths_filter::match(
                 });
         },
         source_location_path);
+
+    if ((type() == filter_t::kInclusive && tvl::is_false(res)) ||
+        (type() == filter_t::kExclusive && tvl::is_true(res))) {
+        LOG_TRACE("Source location {} rejected by paths_filter", p.file());
+    }
+
+    return res;
 }
 
 tvl::value_t paths_filter::match(
@@ -1106,6 +1234,12 @@ tvl::value_t class_method_filter::match(
     tvl::value_t res = tvl::or_(
         access_filter_->match(d, m.access()), method_type_filter_->match(d, m));
 
+    if ((type() == filter_t::kInclusive && tvl::is_false(res)) ||
+        (type() == filter_t::kExclusive && tvl::is_true(res))) {
+        LOG_TRACE("Class method {} rejected by class_method_filter",
+            m.qualified_name());
+    }
+
     return res;
 }
 
@@ -1119,7 +1253,15 @@ class_member_filter::class_member_filter(
 tvl::value_t class_member_filter::match(
     const diagram &d, const class_diagram::model::class_member &m) const
 {
-    return access_filter_->match(d, m.access());
+    auto res = access_filter_->match(d, m.access());
+
+    if ((type() == filter_t::kInclusive && tvl::is_false(res)) ||
+        (type() == filter_t::kExclusive && tvl::is_true(res))) {
+        LOG_TRACE("Class member {} rejected by class_member_filter",
+            m.qualified_name());
+    }
+
+    return res;
 }
 
 diagram_filter::diagram_filter(const common::model::diagram &d,
