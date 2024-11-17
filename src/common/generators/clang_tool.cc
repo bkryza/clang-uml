@@ -105,6 +105,7 @@ clang_tool::clang_tool(common::model::diagram_t diagram_type,
     , inmemory_fs_{new llvm::vfs::InMemoryFileSystem}
     , files_{new FileManager(FileSystemOptions(), overlay_fs_)}
     , diag_consumer_{std::make_unique<diagnostic_consumer>(relative_to)}
+    , diag_opts_{new clang::DiagnosticOptions}
 {
     overlay_fs_->pushOverlay(inmemory_fs_);
 
@@ -200,6 +201,7 @@ void clang_tool::run(ToolAction *Action)
             ToolInvocation invocation(std::move(command_line), Action,
                 files_.get(), pch_container_ops_);
             invocation.setDiagnosticConsumer(diag_consumer_.get());
+            invocation.setDiagnosticOptions(diag_opts_.get());
 
             if (!invocation.run() || diag_consumer_->failed) {
                 if (!initial_workdir.empty()) {
