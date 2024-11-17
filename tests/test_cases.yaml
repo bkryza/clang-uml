@@ -442,6 +442,9 @@ test_cases:
     - name: t20060
       title: Test case for multiple lambda expressions in function calls arguments
       description:
+    - name: t20061
+      title: Test case for paths filter in sequence diagrams
+      description:
   Package diagrams:
     - name: t30001
       title: Basic package diagram test case
