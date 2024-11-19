@@ -46,7 +46,7 @@ enum class ProgressType { incremental, decremental };
 
 #include <iostream>
 #include <cstdio>
-#include <stdint.h>
+#include <cstdint>
 
 // Detect target's platform and set some macros in order to wrap platform
 // specific code this library depends on.
@@ -1652,7 +1652,10 @@ static inline int mk_wcswidth_cjk(const wchar_t *pwcs, size_t n) {
 // convert UTF-8 string to wstring
 #ifdef _MSC_VER
 static inline std::wstring utf8_decode(const std::string& s) {
-    std::string curLocale = setlocale(LC_ALL, "");
+    auto r = setlocale(LC_ALL, "");
+    std::string curLocale;
+    if (r)
+      curLocale = r;
     const char* _Source = s.c_str();
     size_t _Dsize = std::strlen(_Source) + 1;
     wchar_t* _Dest = new wchar_t[_Dsize];
@@ -1665,7 +1668,10 @@ static inline std::wstring utf8_decode(const std::string& s) {
 }
 #else 
 static inline std::wstring utf8_decode(const std::string& s) {
-    std::string curLocale = setlocale(LC_ALL, "");
+    auto r = setlocale(LC_ALL, "");
+    std::string curLocale;
+    if (r)
+      curLocale = r;
     const char* _Source = s.c_str();
     size_t _Dsize = mbstowcs(NULL, _Source, 0) + 1;
     wchar_t* _Dest = new wchar_t[_Dsize];
@@ -2129,7 +2135,7 @@ private:
     }
   }
 
-  std::pair<std::string, size_t> get_prefix_text() {
+  std::pair<std::string, int> get_prefix_text() {
     std::stringstream os;
     os << get_value<details::ProgressBarOption::prefix_text>();
     const auto result = os.str();
@@ -2137,7 +2143,7 @@ private:
     return {result, result_size};
   }
 
-  std::pair<std::string, size_t> get_postfix_text() {
+  std::pair<std::string, int> get_postfix_text() {
     std::stringstream os;
     const auto max_progress =
         get_value<details::ProgressBarOption::max_progress>();
@@ -2251,7 +2257,9 @@ public:
     const auto terminal_width = terminal_size().second;
     // prefix + bar_width + postfix should be <= terminal_width
     const int remaining = terminal_width - (prefix_length + start_length + bar_width + end_length + postfix_length);
-    if (remaining > 0) {
+    if (prefix_length == -1 || postfix_length == -1) {
+      os << "\r";
+    } else if (remaining > 0) {
       os << std::string(remaining, ' ') << "\r";
     } else if (remaining < 0) {
       // Do nothing. Maybe in the future truncate postfix with ...
@@ -2438,7 +2446,7 @@ private:
     }
   }
 
-  std::pair<std::string, size_t> get_prefix_text() {
+  std::pair<std::string, int> get_prefix_text() {
     std::stringstream os;
     os << get_value<details::ProgressBarOption::prefix_text>();
     const auto result = os.str();
@@ -2446,7 +2454,7 @@ private:
     return {result, result_size};
   }
 
-  std::pair<std::string, size_t> get_postfix_text() {
+  std::pair<std::string, int> get_postfix_text() {
     std::stringstream os;
     const auto max_progress = get_value<details::ProgressBarOption::max_progress>();
     auto now = std::chrono::high_resolution_clock::now();
@@ -2543,7 +2551,9 @@ public:
     const auto terminal_width = terminal_size().second;
     // prefix + bar_width + postfix should be <= terminal_width
     const int remaining = terminal_width - (prefix_length + start_length + bar_width + end_length + postfix_length);
-    if (remaining > 0) {
+    if (prefix_length == -1 || postfix_length == -1) {
+      os << "\r";
+    } else if (remaining > 0) {
       os << std::string(remaining, ' ') << "\r";
     } else if (remaining < 0) {
       // Do nothing. Maybe in the future truncate postfix with ...
@@ -2725,7 +2735,7 @@ private:
   template <typename Indicator> friend class DynamicProgress;
   std::atomic<bool> multi_progress_mode_{false};
 
-  std::pair<std::string, size_t> get_prefix_text() {
+  std::pair<std::string, int> get_prefix_text() {
     std::stringstream os;
     os << get_value<details::ProgressBarOption::prefix_text>();
     const auto result = os.str();
@@ -2733,7 +2743,7 @@ private:
     return {result, result_size};
   }
 
-  std::pair<std::string, size_t> get_postfix_text() {
+  std::pair<std::string, int> get_postfix_text() {
     std::stringstream os;
     os << " " << get_value<details::ProgressBarOption::postfix_text>();
 
@@ -2784,7 +2794,9 @@ public:
     const auto terminal_width = terminal_size().second;
     // prefix + bar_width + postfix should be <= terminal_width
     const int remaining = terminal_width - (prefix_length + start_length + bar_width + end_length + postfix_length);
-    if (remaining > 0) {
+    if (prefix_length == -1 || postfix_length == -1) {
+      os << "\r";
+    } else if (remaining > 0) {
       os << std::string(remaining, ' ') << "\r";
     } else if (remaining < 0) {
       // Do nothing. Maybe in the future truncate postfix with ...

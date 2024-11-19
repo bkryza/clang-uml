@@ -877,14 +877,12 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
     forward_declarations_.erase(id);
 
     if (diagram().should_include(class_model)) {
-        LOG_DBG("Adding class {} with id {}", class_model.full_name(false),
-            class_model.id());
+        LOG_DBG("Adding class {} with id {}", class_model, class_model.id());
 
         add_class(std::move(c_ptr));
     }
     else {
-        LOG_DBG("Skipping class {} with id {}", class_model.full_name(true),
-            class_model.id());
+        LOG_DBG("Skipping class {} with id {}", class_model, class_model.id());
     }
 
     return true;
@@ -1577,8 +1575,7 @@ void translation_unit_visitor::process_method(
 
             LOG_DBG("Adding method return type relationship from {}::{} to "
                     "{}: {}",
-                c.full_name(true), mf.getNameAsString(),
-                clanguml::common::model::to_string(r.type()), r.label());
+                c, mf.getNameAsString(), r.type(), r.label());
 
             c.add_relationship(std::move(r));
         }
@@ -1647,8 +1644,7 @@ void translation_unit_visitor::process_objc_method(
 
             LOG_DBG("Adding method return type relationship from {}::{} to "
                     "{}: {}",
-                c.full_name(true), mf.getNameAsString(),
-                clanguml::common::model::to_string(r.type()), r.label());
+                c, mf.getNameAsString(), r.type(), r.label());
 
             c.add_relationship(std::move(r));
         }
@@ -1984,8 +1980,7 @@ void translation_unit_visitor::process_objc_method_parameter(
 
                 LOG_DBG("Adding ObjC method parameter relationship from {} to "
                         "{}: {}",
-                    c.full_name(true),
-                    clanguml::common::model::to_string(r.type()), r.label());
+                    c, r.type(), r.label());
 
                 c.add_relationship(std::move(r));
             }
@@ -2057,11 +2052,9 @@ void translation_unit_visitor::process_function_parameter(
             if (type_element_id != c.id() &&
                 (relationship_type != relationship_t::kNone)) {
                 relationship r{relationship_t::kDependency, type_element_id};
-
                 LOG_DBG("Adding function parameter relationship from {} to "
                         "{}: {}",
-                    c.full_name(true),
-                    clanguml::common::model::to_string(r.type()), r.label());
+                    c, r.type(), r.label());
 
                 c.add_relationship(std::move(r));
             }
@@ -2100,9 +2093,8 @@ void translation_unit_visitor::add_relationships(
 
             r.set_style(field.style_spec());
 
-            LOG_DBG("Adding relationship from {} to {} with label {}",
-                c.full_name(false), r.destination(),
-                clanguml::common::model::to_string(r.type()), r.label());
+            LOG_DBG("Adding relationship from {} to {} with label {}", c,
+                r.destination(), r.type(), r.label());
 
             c.add_relationship(std::move(r));
 
@@ -2338,7 +2330,7 @@ void translation_unit_visitor::process_field(
 
                     LOG_DBG("Looking for nested relationships from {}::{} in "
                             "template argument {}",
-                        c.full_name(false), field_name,
+                        c, field_name,
                         template_argument.to_string(
                             config().using_namespace(), false));
 
@@ -2652,7 +2644,7 @@ void translation_unit_visitor::find_instantiation_relationships(
     }
     else if (diagram().should_include(common::model::namespace_{full_name})) {
         LOG_DBG("Skipping instantiation relationship from {} to {}",
-            template_instantiation.full_name(false), templated_decl_global_id);
+            template_instantiation, templated_decl_global_id);
     }
     else {
         LOG_DBG("== Cannot determine global id for specialization template {} "

@@ -58,7 +58,7 @@ void find_translation_units_for_diagrams(
         translation_units_map[name] =
             diagram->glob_translation_units(compilation_database_files);
 
-        LOG_DBG("Found {} translation units for diagram {}",
+        LOG_DBG("Found {} translation units for diagram '{}'",
             translation_units_map.at(name).size(), name);
     }
 }
@@ -213,7 +213,7 @@ void generate_diagram(const std::string &name,
     }
 }
 
-void generate_diagrams(const std::vector<std::string> &diagram_names,
+int generate_diagrams(const std::vector<std::string> &diagram_names,
     config::config &config, const common::compilation_database_ptr &db,
     const cli::runtime_config &runtime_config,
     const std::map<std::string, std::vector<std::string>>
@@ -230,6 +230,8 @@ void generate_diagrams(const std::vector<std::string> &diagram_names,
         indicator = std::make_unique<progress_indicator>();
     }
 
+    std::vector<std::exception_ptr> errors;
+
     for (const auto &[name, diagram] : config.diagrams) {
         // If there are any specific diagram names provided on the command
         // line, and this diagram is not in that list - skip it
@@ -238,25 +240,34 @@ void generate_diagrams(const std::vector<std::string> &diagram_names,
 
         const auto &valid_translation_units = translation_units_map.at(name);
 
-        LOG_DBG("Found {} valid translation units for diagram {}",
+        LOG_DBG("Found {} possible translation units for diagram '{}'",
             valid_translation_units.size(), name);
 
         const auto matching_commands_count =
             db->count_matching_commands(valid_translation_units);
 
         if (matching_commands_count == 0) {
+            const auto error_msg = fmt::format(
+                "Diagram '{}' generation failed: no translation units "
+                "found. Please make sure that your 'glob' patterns match "
+                "at least 1 file in 'compile_commands.json'.",
+                name);
+
             if (indicator) {
                 indicator->add_progress_bar(
                     name, 0, diagram_type_to_color(diagram->type()));
                 indicator->fail(name);
+                try {
+                    throw std::runtime_error(error_msg);
+                }
+                catch (std::runtime_error &e) {
+                    errors.emplace_back(std::current_exception());
+                }
             }
             else {
-                LOG_ERROR(
-                    "Diagram {} generation failed: no translation units "
-                    "found. Please make sure that your 'glob' patterns match "
-                    "at least 1 file in 'compile_commands.json'.",
-                    name);
+                LOG_ERROR(error_msg);
             }
+
             continue;
         }
 
@@ -266,27 +277,41 @@ void generate_diagrams(const std::vector<std::string> &diagram_names,
         auto generator = [&name = name, &diagram = diagram, &indicator,
                              db = std::ref(*db), matching_commands_count,
                              translation_units = valid_translation_units,
-                             runtime_config]() mutable {
+                             runtime_config]() mutable -> void {
             try {
-                if (indicator)
+                if (indicator) {
                     indicator->add_progress_bar(name, matching_commands_count,
                         diagram_type_to_color(diagram->type()));
 
-                generate_diagram(name, diagram, db, translation_units,
-                    runtime_config, [&indicator, &name]() {
-                        if (indicator)
-                            indicator->increment(name);
-                    });
+                    generate_diagram(name, diagram, db, translation_units,
+                        runtime_config, [&indicator, &name]() {
+                            if (indicator)
+                                indicator->increment(name);
+                        });
 
-                if (indicator)
-                    indicator->complete(name);
+                    if (indicator)
+                        indicator->complete(name);
+                }
+                else {
+                    generate_diagram(name, diagram, db, translation_units,
+                        runtime_config, {});
+                }
             }
-            catch (const std::exception &e) {
+            catch (clanguml::generators::clang_tool_exception &e) {
+                if (indicator)
+                    indicator->fail(name);
+
+                throw std::move(e);
+            }
+            catch (std::exception &e) {
                 if (indicator)
                     indicator->fail(name);
 
                 LOG_ERROR(
-                    "ERROR: Failed to generate diagram {}: {}", name, e.what());
+                    "Failed to generate diagram '{}': {}", name, e.what());
+
+                throw std::runtime_error(fmt::format(
+                    "Failed to generate diagram '{}': {}", name, e.what()));
             }
         };
 
@@ -294,14 +319,47 @@ void generate_diagrams(const std::vector<std::string> &diagram_names,
     }
 
     for (auto &fut : futs) {
-        fut.get();
+        try {
+            fut.get();
+        }
+        catch (std::exception &e) {
+            errors.emplace_back(std::current_exception());
+        }
     }
 
     if (runtime_config.progress) {
         indicator->stop();
-        std::cout << termcolor::white << "Done\n";
+        if (errors.empty()) {
+            std::cout << termcolor::white << "Done\n";
+        }
+        else {
+            std::cout << termcolor::white << "\n";
+        }
         std::cout << termcolor::reset;
     }
+
+    if (errors.empty())
+        return 0;
+
+    for (auto &e : errors) {
+        try {
+            std::rethrow_exception(e);
+        }
+        catch (const clanguml::generators::clang_tool_exception &e) {
+            fmt::println("ERROR: Failed to generate {} diagram '{}' due to "
+                         "following issues:",
+                e.diagram_type(), e.diagram_name());
+            for (const auto &d : e.diagnostics) {
+                fmt::println(" - {}", d);
+            }
+            fmt::println("");
+        }
+        catch (const std::exception &e) {
+            fmt::println("ERROR: {}", e.what());
+        }
+    }
+
+    return 1;
 }
 
 indicators::Color diagram_type_to_color(model::diagram_t diagram_type)

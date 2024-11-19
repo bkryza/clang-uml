@@ -354,3 +354,5 @@ public:
         return fmt::format_to(ctx.out(), "{}", id.value());
     }
 };
+
+MAKE_TO_STRING_FORMATTER(clanguml::common::generator_type_t)

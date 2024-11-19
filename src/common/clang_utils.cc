@@ -1073,4 +1073,64 @@ std::optional<size_t> get_array_size(const clang::ArrayType &type)
 
     return {};
 }
+
+void set_source_location(clang::SourceManager &source_manager,
+    const clang::SourceLocation &location,
+    clanguml::common::model::source_location &element,
+    std::filesystem::path tu_path, std::filesystem::path relative_to_path_)
+{
+    namespace fs = std::filesystem;
+
+    std::string file;
+    unsigned line{};
+    unsigned column{};
+
+    if (location.isValid()) {
+        file =
+            source_manager.getFilename(source_manager.getSpellingLoc(location))
+                .str();
+        line = source_manager.getSpellingLineNumber(location);
+        column = source_manager.getSpellingColumnNumber(location);
+
+        if (file.empty()) {
+            // Why do I have to do this?
+            parse_source_location(
+                location.printToString(source_manager), file, line, column);
+        }
+    }
+    else {
+        auto success = parse_source_location(
+            location.printToString(source_manager), file, line, column);
+        if (!success) {
+            LOG_DBG("Failed to extract source location for element from {}",
+                location.printToString(source_manager));
+            return;
+        }
+    }
+
+    // ensure the path is absolute
+    fs::path file_path{file};
+    if (!file_path.is_absolute()) {
+        file_path = fs::absolute(file_path);
+    }
+
+    file_path = file_path.lexically_normal();
+
+    file = file_path.string();
+
+    element.set_file(file);
+
+    if (util::is_relative_to(file_path, relative_to_path_)) {
+        element.set_file_relative(util::path_to_url(
+            fs::path{element.file()}.lexically_relative(relative_to_path_)));
+    }
+    else {
+        element.set_file_relative("");
+    }
+
+    element.set_translation_unit(tu_path.string());
+    element.set_line(line);
+    element.set_column(column);
+    element.set_location_id(location.getHashValue());
+}
 } // namespace clanguml::common

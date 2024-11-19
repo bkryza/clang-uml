@@ -42,18 +42,18 @@ void cli_handler::setup_logging()
 
     spdlog::register_logger(logger_);
 
-    logger_->set_pattern("[%^%l%^] [tid %t] %v");
+    logger_->set_pattern("%^[%l]%$ [tid %t] %v");
 
-    if (verbose == 0) {
+    if (verbose == 0) { // --quiet
         logger_->set_level(spdlog::level::err);
     }
-    else if (verbose == 1) {
+    else if (verbose == 1) { // [default]
         logger_->set_level(spdlog::level::info);
     }
-    else if (verbose == 2) {
+    else if (verbose == 2) { // -v
         logger_->set_level(spdlog::level::debug);
     }
-    else {
+    else { // -vv
         logger_->set_level(spdlog::level::trace);
     }
 }
@@ -81,7 +81,7 @@ cli_flow_t cli_handler::parse(int argc, const char **argv)
         "Thread pool size (0 = hardware concurrency)");
     app.add_flag("-V,--version", show_version, "Print version and exit");
     app.add_flag("-v,--verbose", verbose,
-        "Verbose logging (use multiple times to increase - e.g. -vvv)");
+        "Verbose logging ('-v' - debug, '-vv' - trace)");
     app.add_flag(
         "-p,--progress", progress, "Show progress bars for generated diagrams");
     app.add_flag("-q,--quiet", quiet, "Minimal logging");

@@ -1,3 +1,5 @@
+add_compile_flags:
+  - --no-cuda-version-check
 diagrams:
   t20050_sequence:
     type: sequence

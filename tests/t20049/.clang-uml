@@ -1,3 +1,5 @@
+add_compile_flags:
+  - --no-cuda-version-check
 diagrams:
   t20049_sequence:
     type: sequence
