@@ -307,12 +307,11 @@ int generate_diagrams(const std::vector<std::string> &diagram_names,
                 if (indicator)
                     indicator->fail(name);
 
-                LOG_ERROR("ERROR: Failed to generate diagram '{}': {}", name,
-                    e.what());
+                LOG_ERROR(
+                    "Failed to generate diagram '{}': {}", name, e.what());
 
-                throw std::runtime_error(
-                    fmt::format("ERROR: Failed to generate diagram '{}': {}",
-                        name, e.what()));
+                throw std::runtime_error(fmt::format(
+                    "Failed to generate diagram '{}': {}", name, e.what()));
             }
         };
 
