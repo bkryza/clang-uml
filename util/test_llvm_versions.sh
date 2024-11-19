@@ -18,7 +18,7 @@ for config_path in ${llvm_configs[@]}; do
   echo " Running clang-uml tests against LLVM $(${config_path} --version)"
   echo "---------------------------------------------------------"
   make clean
-  CC=/usr/bin/gcc-11 CXX=/usr/bin/g++-11 LLVM_CONFIG_PATH=$config_path NUMPROC=16 make test
+  CC=/usr/bin/gcc-13 CXX=/usr/bin/g++-13 LLVM_CONFIG_PATH=$config_path NUMPROC=16 make test
 done
 
 # Also check compilation with Clang

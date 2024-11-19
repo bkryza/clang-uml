@@ -49,13 +49,18 @@ std::string to_string(const clanguml::generators::diagnostic &d)
         return fmt::format("[{}] {}", d.level, d.description);
     }
 
-    return fmt::format("[{}] {}:{}: {}", d.level, d.location->file_relative(),
-        d.location->line(), d.description);
+    std::string filepath = d.location->file_relative().empty()
+        ? d.location->file()
+        : d.location->file_relative();
+    auto line = d.location->line();
+
+    return fmt::format(
+        "[{}] {}:{}: {}", d.level, filepath, line, d.description);
 }
 
-clang_tool_exception::clang_tool_exception(
-    common::model::diagram_t dt, std::string dn, std::vector<diagnostic> d)
-    : error::diagram_generation_error{dt, dn, "Clang failed to parse sources."}
+clang_tool_exception::clang_tool_exception(common::model::diagram_t dt,
+    std::string dn, std::vector<diagnostic> d, std::string description)
+    : error::diagram_generation_error{dt, dn, description}
     , diagnostics{std::move(d)}
 {
 }
@@ -201,7 +206,9 @@ void clang_tool::run(ToolAction *Action)
             ToolInvocation invocation(std::move(command_line), Action,
                 files_.get(), pch_container_ops_);
             invocation.setDiagnosticConsumer(diag_consumer_.get());
+#if LLVM_VERSION_MAJOR > 13
             invocation.setDiagnosticOptions(diag_opts_.get());
+#endif
 
             if (!invocation.run() || diag_consumer_->failed) {
                 if (!initial_workdir.empty()) {
@@ -215,6 +222,12 @@ void clang_tool::run(ToolAction *Action)
                 }
 
                 if (diag_consumer_ && diag_consumer_->failed) {
+                    if (!(diag_consumer_->diagnostics.empty())) {
+                        throw clang_tool_exception(diagram_type_, diagram_name_,
+                            diag_consumer_->diagnostics,
+                            to_string(diag_consumer_->diagnostics.back()));
+                    }
+
                     throw clang_tool_exception(diagram_type_, diagram_name_,
                         diag_consumer_->diagnostics);
                 }

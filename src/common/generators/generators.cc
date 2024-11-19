@@ -347,13 +347,13 @@ int generate_diagrams(const std::vector<std::string> &diagram_names,
             std::rethrow_exception(e);
         }
         catch (const clanguml::generators::clang_tool_exception &e) {
-            fmt::println(
-                "ERROR: Failed to generate {} diagram '{}' due to following "
-                "Clang issues:",
+            fmt::println("ERROR: Failed to generate {} diagram '{}' due to "
+                         "following issues:",
                 e.diagram_type(), e.diagram_name());
             for (const auto &d : e.diagnostics) {
                 fmt::println(" - {}", d);
             }
+            fmt::println("");
         }
         catch (const std::exception &e) {
             fmt::println("ERROR: {}", e.what());

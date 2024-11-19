@@ -39,8 +39,9 @@ std::string to_string(const diagnostic &d);
 
 struct clang_tool_exception : public error::diagram_generation_error {
 
-    clang_tool_exception(
-        common::model::diagram_t dt, std::string dn, std::vector<diagnostic> d);
+    clang_tool_exception(common::model::diagram_t dt, std::string dn,
+        std::vector<diagnostic> d,
+        std::string description = "Clang failed to parse sources.");
 
     std::vector<diagnostic> diagnostics;
 };
@@ -101,7 +102,6 @@ private:
 
     std::unique_ptr<diagnostic_consumer> diag_consumer_;
     llvm::IntrusiveRefCntPtr<clang::DiagnosticOptions> diag_opts_;
-
 };
 } // namespace clanguml::generators
 
