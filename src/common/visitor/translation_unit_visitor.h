@@ -270,13 +270,8 @@ public:
         const auto decl_file =
             decl->getLocation().printToString(source_manager());
 
-        std::string file_path;
-        unsigned line{};
-        unsigned column{};
-        common::parse_source_location(decl_file, file_path, line, column);
-
-        const auto should_include_decl_file =
-            diagram().should_include(common::model::source_file{file_path});
+        const auto should_include_decl_file = diagram().should_include(
+            common::model::source_file{get_file_path(decl_file)});
 
         return should_include_namespace && should_include_decl_file;
     }
@@ -306,6 +301,19 @@ protected:
     std::set<const clang::RawComment *> &processed_comments()
     {
         return processed_comments_;
+    }
+
+    std::string get_file_path(const std::string &file_location) const
+    {
+        std::string file_path;
+        unsigned line{};
+        unsigned column{};
+
+        if (common::parse_source_location(
+                file_location, file_path, line, column))
+            return file_path;
+
+        return file_location;
     }
 
 private:

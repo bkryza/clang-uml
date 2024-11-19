@@ -2659,7 +2659,8 @@ bool translation_unit_visitor::should_include(
 
     const auto expr_file = expr->getBeginLoc().printToString(source_manager());
 
-    if (!diagram().should_include(common::model::source_file{expr_file}))
+    if (!diagram().should_include(
+            common::model::source_file{get_file_path(expr_file)}))
         return false;
 
     return true;
@@ -2676,7 +2677,8 @@ bool translation_unit_visitor::should_include(
 
     const auto expr_file = expr->getBeginLoc().printToString(source_manager());
 
-    if (!diagram().should_include(common::model::source_file{expr_file}))
+    if (!diagram().should_include(
+            common::model::source_file{get_file_path(expr_file)}))
         return false;
 
     return true;
@@ -2702,7 +2704,8 @@ bool translation_unit_visitor::should_include(const clang::CallExpr *expr) const
 
     const auto expr_file = expr->getBeginLoc().printToString(source_manager());
 
-    if (!diagram().should_include(common::model::source_file{expr_file}))
+    if (!diagram().should_include(
+            common::model::source_file{get_file_path(expr_file)}))
         return false;
 
     const auto *callee_decl = expr->getCalleeDecl();
