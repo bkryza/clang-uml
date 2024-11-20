@@ -49,7 +49,7 @@ class compilation_database : public clang::tooling::CompilationDatabase {
 public:
     compilation_database(
         std::unique_ptr<clang::tooling::CompilationDatabase> base,
-        const clanguml::config::config &cfg);
+        const clanguml::config::config &cfg, bool is_fixed);
 
     ~compilation_database() override = default;
 
@@ -103,9 +103,23 @@ public:
 
     std::string guess_language_from_filename(const std::string &filename) const;
 
-    long count_matching_commands(const std::vector<std::string> &files) const;
+    size_t count_matching_commands(const std::vector<std::string> &files) const;
+
+    /** @brief Determines whether this is a fixed or regular compilation
+     * database.
+     *
+     * Fixed compilation database doesn't have any compilation commands attached
+     * to specific source files, just arguments that should be applied to any
+     * file.
+     *
+     * @return True, if this is a fixed compilation database
+     */
+    bool is_fixed() const;
 
 private:
+    bool match_filename(const clang::tooling::CompileCommand &command,
+        const std::string &file) const;
+
     void adjust_compilation_database(
         std::vector<clang::tooling::CompileCommand> &commands) const;
 
@@ -121,6 +135,12 @@ private:
      * Reference to the instance of clanguml config.
      */
     const clanguml::config::config &config_;
+
+    /**
+     * True, if this is a fixed compilation database, e.g. loaded from
+     * compile_flags.txt
+     */
+    bool is_fixed_;
 };
 
 using compilation_database_ptr = std::unique_ptr<compilation_database>;

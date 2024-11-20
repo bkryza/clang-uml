@@ -32,6 +32,18 @@ set(TEST_CASES_REQUIRING_OBJC
     t30016
     t40004)
 
+set(COMPILE_COMMANDS_BUILD_DIR
+    ${PROJECT_BINARY_DIR}/tests/test_compilation_database_data/compile_commands_test
+)
+configure_file(
+    ${CMAKE_CURRENT_LIST_DIR}/test_compilation_database_data/compile_commands_test/compile_commands.json.in
+    ${PROJECT_BINARY_DIR}/tests/test_compilation_database_data/compile_commands_test/compile_commands.json
+)
+configure_file(
+    ${CMAKE_CURRENT_LIST_DIR}/test_compilation_database_data/compile_flags_test/compile_flags.txt
+    ${PROJECT_BINARY_DIR}/tests/test_compilation_database_data/compile_flags_test/compile_flags.txt
+)
+
 if(ENABLE_OBJECTIVE_C_TEST_CASES)
     message(STATUS "Enabling Objective-C test cases")
     if(FETCH_LIBOBJC2)
@@ -53,7 +65,7 @@ if(ENABLE_CXX_MODULES_TEST_CASES)
     # Remove the module test cases *.cc sources as they will be added
     # to test_cases_mod target
     set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
-        foreach(CXX20_MOD_TC ${TEST_CASES_REQUIRING_CXX20_MODULES})
+    foreach(CXX20_MOD_TC ${TEST_CASES_REQUIRING_CXX20_MODULES})
         list(FILTER TEST_CASE_SOURCES EXCLUDE REGEX ".*${CXX20_MOD_TC}.*")
     endforeach()
 else()
@@ -123,22 +135,26 @@ if(ENABLE_BENCHMARKS)
 endif(ENABLE_BENCHMARKS)
 
 macro(generate_test_cases_with_paths input_list output_list)
-    set(${output_list})  # Initialize the output list
+    set(${output_list}) # Initialize the output list
     foreach(test_case ${${input_list}})
-        list(APPEND ${output_list} "${CMAKE_CURRENT_SOURCE_DIR}/${test_case}/${test_case}.cc")
+        list(APPEND ${output_list}
+             "${CMAKE_CURRENT_SOURCE_DIR}/${test_case}/${test_case}.cc")
     endforeach()
 endmacro()
 
-generate_test_cases_with_paths(TEST_CASES_REQUIRING_CXX20_MODULES TEST_CASES_REQUIRING_CXX20_MODULES_PATHS)
+generate_test_cases_with_paths(TEST_CASES_REQUIRING_CXX20_MODULES
+                               TEST_CASES_REQUIRING_CXX20_MODULES_PATHS)
 foreach(TEST_NAME ${TEST_NAMES})
     add_executable(${TEST_NAME})
     if(TEST_NAME STREQUAL "test_cases")
         if(ENABLE_CXX_MODULES_TEST_CASES)
             add_library(test_cases_mod)
-            set_target_properties(test_cases_mod PROPERTIES CXX_SCAN_FOR_MODULES ON)
-            target_sources(test_cases_mod
-                    PUBLIC ${TEST_CASES_REQUIRING_CXX20_MODULES_PATHS}
-                    PUBLIC FILE_SET CXX_MODULES FILES  ${TEST_CASE_MODULE_SOURCES})
+            set_target_properties(test_cases_mod PROPERTIES CXX_SCAN_FOR_MODULES
+                                                            ON)
+            target_sources(
+                test_cases_mod
+                PUBLIC ${TEST_CASES_REQUIRING_CXX20_MODULES_PATHS}
+                PUBLIC FILE_SET CXX_MODULES FILES ${TEST_CASE_MODULE_SOURCES})
             target_compile_features(test_cases_mod PRIVATE cxx_std_20)
         endif(ENABLE_CXX_MODULES_TEST_CASES)
         if(ENABLE_OBJECTIVE_C_TEST_CASES)

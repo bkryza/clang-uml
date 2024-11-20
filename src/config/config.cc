@@ -270,6 +270,11 @@ void mermaid::append(const mermaid &r)
         cmd = r.cmd;
 }
 
+std::filesystem::path inheritable_diagram_options::root_directory() const
+{
+    return weakly_canonical(absolute(base_directory() / relative_to()));
+}
+
 void inheritable_diagram_options::inherit(
     const inheritable_diagram_options &parent)
 {
@@ -392,11 +397,6 @@ std::vector<std::string> diagram::glob_translation_units(
     }
 
     return result;
-}
-
-std::filesystem::path diagram::root_directory() const
-{
-    return weakly_canonical(absolute(base_directory() / relative_to()));
 }
 
 std::filesystem::path diagram::make_path_relative(
