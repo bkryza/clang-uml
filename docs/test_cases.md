@@ -154,6 +154,8 @@
  * [t20058](./test_cases/t20058.md) - Objective-C sequence diagram with method params test case
  * [t20059](./test_cases/t20059.md) - Objective-C sequence diagram with polymorphism test case
  * [t20060](./test_cases/t20060.md) - Test case for multiple lambda expressions in function calls arguments
+ * [t20061](./test_cases/t20061.md) - Test case for paths filter in sequence diagrams
+ * [t20062](./test_cases/t20062.md) - Test case with vaargs function in sequence diagrams
 ## Package diagrams
  * [t30001](./test_cases/t30001.md) - Basic package diagram test case
  * [t30002](./test_cases/t30002.md) - Package dependency test case
