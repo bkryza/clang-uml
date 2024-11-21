@@ -445,6 +445,9 @@ test_cases:
     - name: t20061
       title: Test case for paths filter in sequence diagrams
       description:
+    - name: t20062
+      title: Test case with vaargs function in sequence diagrams
+      description:
   Package diagrams:
     - name: t30001
       title: Basic package diagram test case
