@@ -574,6 +574,13 @@ struct inheritable_diagram_options {
     bool generate_fully_qualified_name() const;
 
     /**
+     * @brief Returns absolute path of the `relative_to` option
+     *
+     * @return Absolute path of `relative_to`
+     */
+    std::filesystem::path root_directory() const;
+
+    /**
      * @brief Get reference to `relative_to` diagram config option
      *
      * This method is only to allow access to `relative_to` for loading
@@ -688,13 +695,6 @@ struct diagram : public inheritable_diagram_options {
      */
     std::vector<std::string> make_module_relative(
         const std::optional<std::string> &maybe_module) const;
-
-    /**
-     * @brief Returns absolute path of the `relative_to` option
-     *
-     * @return Absolute path of `relative_to`
-     */
-    std::filesystem::path root_directory() const;
 
     std::optional<std::string> get_together_group(
         const std::string &full_name) const;

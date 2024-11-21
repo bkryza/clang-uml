@@ -33,7 +33,7 @@ std::shared_ptr<spdlog::logger> make_sstream_logger(std::ostream &ostr)
         "clanguml-logger", std::move(oss_sink));
 }
 
-TEST_CASE("Test compilation_database should work")
+TEST_CASE("Test compile_commands.json should work")
 {
     using clanguml::common::compilation_database;
     using clanguml::common::compilation_database_ptr;
@@ -43,8 +43,9 @@ TEST_CASE("Test compilation_database should work")
     using std::filesystem::path;
 
     // This is executed by cmake in the directory `<BUILD_DIRECTORY>/tests`
-    auto cfg =
-        clanguml::config::load("./test_compilation_database_data/config.yml");
+    auto config_path = std::filesystem::current_path() /
+        "test_compilation_database_data/compile_commands_test/config.yml";
+    auto cfg = clanguml::config::load(config_path.string());
 
     try {
         const auto db =
@@ -53,20 +54,18 @@ TEST_CASE("Test compilation_database should work")
 
         auto all_files = db->getAllFiles();
 
+        auto class_diagram_generator_path = cfg.root_directory() /
+            path("src/class_diagram/generators/json/"
+                 "class_diagram_generator.cc");
+        auto class_path =
+            cfg.root_directory() / path("src/class_diagram/model/class.cc");
+
         REQUIRE(all_files.size() == 3);
-        REQUIRE(contains(all_files,
-            path("src/class_diagram/generators/json/class_diagram_generator.cc")
-                .make_preferred()
-                .string()));
-        REQUIRE(contains(all_files,
-            path("src/class_diagram/generators/plantuml/"
-                 "class_diagram_generator.cc")
-                .make_preferred()
-                .string()));
-        REQUIRE(contains(all_files,
-            path("src/class_diagram/model/class.cc")
-                .make_preferred()
-                .string()));
+        REQUIRE(contains(
+            all_files, class_diagram_generator_path.make_preferred().string()));
+        REQUIRE(contains(
+            all_files, class_diagram_generator_path.make_preferred().string()));
+        REQUIRE(contains(all_files, class_path.make_preferred().string()));
 
         REQUIRE_EQ(db->guess_language_from_filename("file.cpp"), "c++");
         REQUIRE_EQ(db->guess_language_from_filename("file.cc"), "c++");
@@ -80,8 +79,45 @@ TEST_CASE("Test compilation_database should work")
         REQUIRE(
             !contains(ccs.at(0).CommandLine, "-Wno-deprecated-declarations"));
 
-        REQUIRE_EQ(
-            db->count_matching_commands({"./src/class_diagram/model/class.cc"}),
+        REQUIRE_EQ(db->count_matching_commands({class_path.string()}), 1);
+    }
+    catch (clanguml::error::compilation_database_error &e) {
+        REQUIRE(false);
+    }
+}
+
+TEST_CASE("Test compile_flags.txt should work")
+{
+    using clanguml::common::compilation_database;
+    using clanguml::common::compilation_database_ptr;
+    using clanguml::common::model::access_t;
+    using clanguml::common::model::relationship_t;
+    using clanguml::util::contains;
+    using std::filesystem::path;
+
+    // This is executed by cmake in the directory `<BUILD_DIRECTORY>/tests`
+    auto config_path = std::filesystem::current_path() /
+        "test_compilation_database_data/compile_flags_test/config.yml";
+    auto cfg = clanguml::config::load(config_path.string());
+
+    try {
+        const auto db =
+            clanguml::common::compilation_database::auto_detect_from_directory(
+                cfg);
+
+        REQUIRE(db->is_fixed());
+
+        auto class_diagram_generator_path = cfg.root_directory() /
+            path("src/class_diagram/generators/json/"
+                 "class_diagram_generator.cc");
+
+        auto cc = db->getCompileCommands(class_diagram_generator_path.string());
+        REQUIRE(cc.size() == 1);
+        REQUIRE(cc.at(0).Filename == class_diagram_generator_path.string());
+        REQUIRE(contains(cc.at(0).CommandLine, "-std=c++20"));
+
+        REQUIRE_EQ(db->count_matching_commands(
+                       {class_diagram_generator_path.string()}),
             1);
     }
     catch (clanguml::error::compilation_database_error &e) {
@@ -97,7 +133,7 @@ TEST_CASE("Test compilation_database should throw")
     using clanguml::util::contains;
 
     auto cfg = clanguml::config::load(
-        "./test_compilation_database_data/config_bad.yml");
+        "./test_compilation_database_data/invalid/config_bad.yml");
 
     REQUIRE_THROWS_AS(
         clanguml::common::compilation_database::auto_detect_from_directory(cfg),

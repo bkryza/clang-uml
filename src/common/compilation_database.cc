@@ -33,16 +33,31 @@ compilation_database::auto_detect_from_directory(
     if (!error_message.empty())
         throw error::compilation_database_error(error_message);
 
-    return std::make_unique<compilation_database>(std::move(res), cfg);
+    if (res.get() == nullptr)
+        throw error::compilation_database_error(fmt::format(
+            "Autodetection of compilation database from directory '{}' failed",
+            cfg.compilation_database_dir()));
+
+    // This is a workaround to determine whether Clang loaded a fixed
+    // compilation database or a proper one. This cannot be done with
+    // dynamic_cast if RTTI was not enabled in the LLVM build
+    bool is_fixed{
+        !res->getCompileCommands("no_such_file.no_such_extension").empty()};
+
+    return std::make_unique<compilation_database>(
+        std::move(res), cfg, is_fixed);
 }
 
 compilation_database::compilation_database(
     std::unique_ptr<clang::tooling::CompilationDatabase> base,
-    const clanguml::config::config &cfg)
+    const clanguml::config::config &cfg, bool is_fixed)
     : base_{std::move(base)}
     , config_{cfg}
+    , is_fixed_{is_fixed}
 {
 }
+
+bool compilation_database::is_fixed() const { return is_fixed_; }
 
 const clanguml::config::config &compilation_database::config() const
 {
@@ -88,20 +103,20 @@ std::string compilation_database::guess_language_from_filename(
     return "c++";
 }
 
-long compilation_database::count_matching_commands(
+size_t compilation_database::count_matching_commands(
     const std::vector<std::string> &files) const
 {
-    auto result{0L};
+    if (is_fixed())
+        return files.size();
+
+    auto result{0UL};
 
     auto commands = base().getAllCompileCommands();
 
     for (const auto &command : commands) {
         result += std::count_if(
-            files.begin(), files.end(), [&command](const auto &file) {
-                return (command.Filename == file) ||
-                    (std::filesystem::path{command.Filename}
-                            .lexically_normal()
-                            .string() == file);
+            files.begin(), files.end(), [this, &command](const auto &file) {
+                return match_filename(command, file);
             });
     }
 
@@ -163,4 +178,17 @@ void compilation_database::adjust_compilation_database(
     }
 }
 
+bool compilation_database::match_filename(
+    const clang::tooling::CompileCommand &command,
+    const std::string &file) const
+{
+    auto command_filename = std::filesystem::path{command.Filename};
+
+    if (!command_filename.is_absolute()) {
+        command_filename = config().root_directory() / command_filename;
+    }
+
+    return (command_filename == file) ||
+        (command_filename.lexically_normal().string() == file);
+}
 } // namespace clanguml::common
