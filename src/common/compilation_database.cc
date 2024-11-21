@@ -33,11 +33,16 @@ compilation_database::auto_detect_from_directory(
     if (!error_message.empty())
         throw error::compilation_database_error(error_message);
 
-    bool is_fixed{false};
-    if (dynamic_cast<clang::tooling::FixedCompilationDatabase *>(res.get()) !=
-        nullptr) {
-        is_fixed = true;
-    }
+    if (res.get() == nullptr)
+        throw error::compilation_database_error(fmt::format(
+            "Autodetection of compilation database from directory '{}' failed",
+            cfg.compilation_database_dir()));
+
+    // This is a workaround to determine whether Clang loaded a fixed
+    // compilation database or a proper one. This cannot be done with
+    // dynamic_cast if RTTI was not enabled in the LLVM build
+    bool is_fixed{
+        !res->getCompileCommands("no_such_file.no_such_extension").empty()};
 
     return std::make_unique<compilation_database>(
         std::move(res), cfg, is_fixed);
