@@ -116,7 +116,7 @@ public class CompileCommandsLogger : Logger
             for(int i = 0; i < argIndex; i++) {
                 if(cmdArgs[i] == "/I") {
                     compileFlags.Add("-I");
-                    compileFlags.Add(NormalizePath(cmdArgs[i+1]));
+                    compileFlags.Add(NormalizeCommandArgument(cmdArgs[i+1]));
                     i++;
 
                     continue;
@@ -124,14 +124,14 @@ public class CompileCommandsLogger : Logger
 
                 if(cmdArgs[i].StartsWith("/I")) {
                     compileFlags.Add("-I");
-                    compileFlags.Add(NormalizePath(cmdArgs[i].Substring(2)));
+                    compileFlags.Add(NormalizeCommandArgument(cmdArgs[i].Substring(2)));
 
                     continue;
                 }
 
                 if(cmdArgs[i] == "/external:I") {
                     compileFlags.Add("-isystem");
-                    compileFlags.Add(NormalizePath(cmdArgs[i+1]));
+                    compileFlags.Add(NormalizeCommandArgument(cmdArgs[i+1]));
                     i++;
 
                     continue;
@@ -139,7 +139,7 @@ public class CompileCommandsLogger : Logger
 
                 if(cmdArgs[i].StartsWith("/external:I")) {
                     compileFlags.Add("-isystem");
-                    compileFlags.Add(NormalizePath(cmdArgs[i].Substring(2)));
+                    compileFlags.Add(NormalizeCommandArgument(cmdArgs[i].Substring(2)));
 
                     continue;
                 }
@@ -209,7 +209,15 @@ public class CompileCommandsLogger : Logger
 
                 streamWriter.WriteLine(String.Format( "   \"directory\": \"{0}\",", directoryPath));
 
-                streamWriter.WriteLine(String.Format("   \"command\": \"{0}\",", compileCommandWithFilename));
+                streamWriter.Write("   \"arguments\": [");
+
+                streamWriter.Write(string.Format("\"{0}\"", GetCompilerFrontend(filename)));
+                foreach (string arg in compileFlags) {
+                    streamWriter.Write(string.Format(", \"{0}\"", HttpUtility.JavaScriptStringEncode(arg)));
+                }
+                streamWriter.Write(string.Format(", \"{0}\"", filename.Replace("\\", "/")));
+
+                streamWriter.WriteLine("],");
 
                 streamWriter.Write(String.Format("   \"file\": \"{0}\"", filename.Replace("\\", "/")));
 
@@ -285,6 +293,17 @@ public class CompileCommandsLogger : Logger
         }
 
         return false;
+    }
+
+    public static string NormalizeCommandArgument(string input) {
+        string result = input.Replace("\\", "/");
+
+        if (string.IsNullOrEmpty(result))
+        {
+            return result;
+        }
+
+        return result;
     }
 
     public static string NormalizePath(string input)
