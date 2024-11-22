@@ -2211,6 +2211,10 @@ std::unique_ptr<model::function> translation_unit_visitor::build_function_model(
                 param->getType(), declaration.getASTContext(), false)));
     }
 
+    if (declaration.isVariadic()) {
+        function_model_ptr->add_parameter("...");
+    }
+
     return function_model_ptr;
 }
 
