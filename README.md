@@ -80,18 +80,10 @@ Installation instructions for `Linux`, `macos` and `Windows` can be found
 `clang-uml` requires an up-to-date
 [compile_commands.json](https://clang.llvm.org/docs/JSONCompilationDatabase.html)
 file, containing the list of commands used for compiling the source code.
-Nowadays, this file can be generated rather easily using multiple methods:
 
-* For [CMake](https://cmake.org/) projects, simply invoke the `cmake` command
-  as `cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ...`
-* For Make projects checkout [compiledb](https://github.com/nickdiego/compiledb)
-  or [Bear](https://github.com/rizsotto/Bear)
-* For Boost-based projects
-  try [commands_to_compilation_database](https://github.com/tee3/commands_to_compilation_database)
-* For SCons, invoke `compilation_db` tool (requires SCons > 4.0.0)
-* For Bazel, try [bazel-compile-commands-extractor](https://github.com/hedronvision/bazel-compile-commands-extractor)
-* For Microsoft Visual Studio projects try [Clang Power Tools](https://www.clangpowertools.com)
-* For Objective-C based XCode projects see [xcpretty](https://github.com/xcpretty/xcpretty)
+See my repository [compile_commands_gallery](https://github.com/bkryza/compile_commands_gallery)
+for examples on how to generate `compile_commands.json` from some of the
+existing C++ build systems.
 
 ### Invocation
 

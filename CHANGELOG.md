@@ -1,5 +1,14 @@
 # CHANGELOG
 
+  * Improved rendering of variadic functions in sequence diagrams (#342)
+  * Fixed handling of compilation databases with relative paths (#341)
+  * Added custom clang_tool to fix progress bar issues (#336)
+  * Fixed paths_filter regression in sequence diagrams (#338) 
+  * Fixed t20003 and t20005 on MSVC (#80)
+  * Fixed scripts for running tests on MSVC (#334)
+  * Performance improvements (#332)
+  * Added support to apply element filter to specific element types (#328)
+
 ### 0.5.5
  * Updated code to work with LLVM 19 (#319)
  * Added support for Objective C (#296)
