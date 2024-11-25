@@ -149,6 +149,9 @@ find_package(yaml-cpp)
 if(MSVC)
     add_definitions(-DYAML_CPP_STATIC_DEFINE)
 endif(MSVC)
+if(APPLE)
+    set(YAML_CPP_LIBRARIES yaml-cpp::yaml-cpp)
+endif(APPLE)
 message(STATUS "Found yaml-cpp at: ${YAML_CPP_INCLUDE_DIR}, library: ${YAML_CPP_LIBRARIES}")
 
 #
