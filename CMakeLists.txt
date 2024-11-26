@@ -146,11 +146,13 @@ find_package(Threads REQUIRED)
 #
 message(STATUS "Checking for yaml-cpp...")
 find_package(yaml-cpp)
-set(YAML_CPP_LIBRARIES yaml-cpp::yaml-cpp)
 if(MSVC)
     add_definitions(-DYAML_CPP_STATIC_DEFINE)
 endif(MSVC)
-message(STATUS "Found yaml-cpp at ${YAML_CPP_INCLUDE_DIR}")
+if(APPLE)
+    set(YAML_CPP_LIBRARIES yaml-cpp::yaml-cpp)
+endif(APPLE)
+message(STATUS "Found yaml-cpp at: ${YAML_CPP_INCLUDE_DIR}, library: ${YAML_CPP_LIBRARIES}")
 
 #
 # Setup backward-cpp, libdw and libunwind

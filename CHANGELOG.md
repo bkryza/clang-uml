@@ -1,9 +1,10 @@
 # CHANGELOG
 
+### 0.5.6
   * Improved rendering of variadic functions in sequence diagrams (#342)
   * Fixed handling of compilation databases with relative paths (#341)
   * Added custom clang_tool to fix progress bar issues (#336)
-  * Fixed paths_filter regression in sequence diagrams (#338) 
+  * Fixed paths_filter regression in sequence diagrams (#338)
   * Fixed t20003 and t20005 on MSVC (#80)
   * Fixed scripts for running tests on MSVC (#334)
   * Performance improvements (#332)
@@ -33,7 +34,7 @@
  * Fixed handling of enums in class diagram context filter (#275)
  * Added Nix clang wrapper for improved include paths handling (Thanks
    @pogobanane)
- * Refactored test cases (#272) 
+ * Refactored test cases (#272)
 
 ### 0.5.2
  * Fixed generation of empty packages in class diagrams (#253)
@@ -72,7 +73,7 @@
  * Fixed random typos and omissions in docs (#208)
  * Fixed handling of diagram hyperlinks with sources outside of project dir (#213)
  * Fixed test case t00014 on macos (#176)
- * Added automatic generation of diagram images using PlantUML and MermaidJS (#204) 
+ * Added automatic generation of diagram images using PlantUML and MermaidJS (#204)
  * Added radius parameter to context filter (#201)
 
 ### 0.4.1
@@ -126,7 +127,7 @@
 
 ### 0.3.4
   * Added diagram metadata to PlantUML and JSON generators (#27)
-  * Improved template specialization matching for variadic and function 
+  * Improved template specialization matching for variadic and function
     template parameters (#118)
   * Fixed compilation and tests on LLVM 16 (#108)
 
