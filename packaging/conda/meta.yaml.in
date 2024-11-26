@@ -23,20 +23,20 @@ requirements:
     - {{ compiler('cxx') }}
     - conda-forge::pkg-config
     - conda-forge::yaml-cpp 0.8.0
-    - conda-forge::clangdev 17.0.6
-    - conda-forge::libclang 17.0.6
-    - conda-forge::libclang-cpp 17.0.6
+    - conda-forge::clangdev 19.1.4
+    - conda-forge::libclang 19.1.4
+    - conda-forge::libclang-cpp 19.1.4
     - conda-forge::cmake
     - conda-forge::git
     - conda-forge::make # [unix]
   run:
     - conda-forge::yaml-cpp 0.8.0
-    - conda-forge::libclang 17.0.6
-    - conda-forge::libclang-cpp 17.0.6
+    - conda-forge::libclang 19.1.4
+    - conda-forge::libclang-cpp 19.1.4
 
 test:
   commands:
-    - $PREFIX/bin/clang-uml --version
+    - LD_LIBRARY_PATH=$PREFIX/lib $PREFIX/bin/clang-uml --version
 
 about:
   home: https://github.com/bkryza/clang-uml
