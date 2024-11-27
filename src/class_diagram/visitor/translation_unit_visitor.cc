@@ -1397,6 +1397,18 @@ void translation_unit_visitor::process_class_children(
             process_field(*field, c);
     }
 
+    // First we have to collect any `typedef enum` declarations, which should
+    // not be rendered as members (typedefs are visited here after enums)
+    std::set<const clang::EnumDecl *> typedeffed_enums;
+    for (const auto *decl : cls->decls()) {
+        if (decl->getKind() == clang::Decl::Typedef) {
+            const auto *typedeffed_enum = common::get_typedef_enum_decl(
+                clang::dyn_cast<clang::TypedefDecl>(decl));
+            if (typedeffed_enum != nullptr)
+                typedeffed_enums.emplace(typedeffed_enum);
+        }
+    }
+
     // Static fields have to be processed by iterating over variable
     // declarations
     for (const auto *decl : cls->decls()) {
@@ -1408,7 +1420,9 @@ void translation_unit_visitor::process_class_children(
                 process_static_field(*variable_declaration, c);
             }
         }
-        else if (decl->getKind() == clang::Decl::Enum) {
+        else if (decl->getKind() == clang::Decl::Enum &&
+            typedeffed_enums.count(
+                clang::dyn_cast_or_null<clang::EnumDecl>(decl)) == 0) {
             const auto *enum_decl =
                 clang::dyn_cast_or_null<clang::EnumDecl>(decl);
             if (enum_decl == nullptr)
@@ -2158,6 +2172,7 @@ void translation_unit_visitor::process_field(
     [[maybe_unused]] bool template_instantiation_added_as_aggregation{false};
     // The actual field type
     auto field_type = field_declaration.getType();
+
     // String representation of the field type
     auto type_name =
         common::to_string(field_type, field_declaration.getASTContext());

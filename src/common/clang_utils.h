@@ -362,7 +362,7 @@ std::optional<size_t> get_array_size(const clang::ArrayType &type);
  * @param decl typedef decl
  * @return Pointer to underlying type or nullptr
  */
-const clang::Type *get_unqualified_type(clang::TypedefDecl *decl);
+const clang::Type *get_unqualified_type(const clang::TypedefDecl *decl);
 
 /**
  * Get pointer to enum decl in typedef decl
@@ -370,5 +370,5 @@ const clang::Type *get_unqualified_type(clang::TypedefDecl *decl);
  * @param decl typedef decl
  * @return Pointer to enum decl inside typedef
  */
-const clang::EnumDecl *get_typedef_enum_decl(clang::TypedefDecl *decl);
+const clang::EnumDecl *get_typedef_enum_decl(const clang::TypedefDecl *decl);
 } // namespace clanguml::common

@@ -1134,7 +1134,7 @@ void set_source_location(clang::SourceManager &source_manager,
     element.set_location_id(location.getHashValue());
 }
 
-const clang::Type *get_unqualified_type(clang::TypedefDecl *decl)
+const clang::Type *get_unqualified_type(const clang::TypedefDecl *decl)
 {
     const auto *type_source_info = decl->getTypeSourceInfo();
 
@@ -1144,8 +1144,11 @@ const clang::Type *get_unqualified_type(clang::TypedefDecl *decl)
     return type_source_info->getType().split().Ty;
 }
 
-const clang::EnumDecl *get_typedef_enum_decl(clang::TypedefDecl *decl)
+const clang::EnumDecl *get_typedef_enum_decl(const clang::TypedefDecl *decl)
 {
+    if (decl == nullptr)
+        return nullptr;
+
     const clang::Type *unqualified_type = get_unqualified_type(decl);
 
     if (unqualified_type->getTypeClass() == clang::Type::Elaborated) {
