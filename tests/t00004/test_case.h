@@ -31,6 +31,8 @@ TEST_CASE("t00004")
         REQUIRE(IsClass(src, "A::AA"));
         REQUIRE(IsClass(src, "A::AA::AAA"));
         REQUIRE(IsEnum(src, "B::AA"));
+        REQUIRE(IsEnum(src, "B::BB"));
+        REQUIRE(IsEnum(src, "B::CC"));
         REQUIRE(IsEnum(src, "A::AA::Lights"));
         REQUIRE(IsInnerClass(src, "A", "A::AA"));
         REQUIRE(IsInnerClass(src, "A::AA", "A::AA::AAA"));

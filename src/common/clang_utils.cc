@@ -1133,4 +1133,35 @@ void set_source_location(clang::SourceManager &source_manager,
     element.set_column(column);
     element.set_location_id(location.getHashValue());
 }
+
+const clang::Type *get_unqualified_type(clang::TypedefDecl *decl)
+{
+    const auto *type_source_info = decl->getTypeSourceInfo();
+
+    if (type_source_info == nullptr)
+        return nullptr;
+
+    return type_source_info->getType().split().Ty;
+}
+
+const clang::EnumDecl *get_typedef_enum_decl(clang::TypedefDecl *decl)
+{
+    const clang::Type *unqualified_type = get_unqualified_type(decl);
+
+    if (unqualified_type->getTypeClass() == clang::Type::Elaborated) {
+        const auto *tag_decl =
+            clang::cast<clang::ElaboratedType>(unqualified_type)
+                ->getNamedType()
+                ->getAsTagDecl();
+
+        if (tag_decl == nullptr)
+            return nullptr;
+
+        const auto *enum_decl = clang::dyn_cast<clang::EnumDecl>(tag_decl);
+        if (enum_decl != nullptr && enum_decl->getIdentifier() == nullptr)
+            return enum_decl;
+    }
+
+    return nullptr;
+}
 } // namespace clanguml::common

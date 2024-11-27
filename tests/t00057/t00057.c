@@ -33,6 +33,8 @@ typedef struct {
     int g1;
 } t00057_G;
 
+typedef enum { h1, h2, h3 } t00057_H;
+
 struct t00057_R {
     struct t00057_A a;
     t00057_B b;
@@ -41,4 +43,5 @@ struct t00057_R {
     struct t00057_E *e;
     struct t00057_F *f;
     struct t00057_G *g;
+    t00057_H h;
 };

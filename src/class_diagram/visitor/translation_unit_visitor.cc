@@ -98,14 +98,36 @@ bool translation_unit_visitor::VisitNamespaceDecl(clang::NamespaceDecl *ns)
     return true;
 }
 
+bool translation_unit_visitor::VisitTypedefDecl(clang::TypedefDecl *decl)
+{
+    if (const auto *enm = common::get_typedef_enum_decl(decl)) {
+        // Associate a typedef with an anonymous declaration so that it can
+        // be later used to assign proper name to enum
+        if (!should_include(enm))
+            return true;
+
+        LOG_DBG("= Visiting typedef enum declaration {} at {}",
+            enm->getQualifiedNameAsString(),
+            enm->getLocation().printToString(source_manager()));
+
+        auto e_ptr = create_enum_declaration(enm, decl);
+
+        if (e_ptr && diagram().should_include(*e_ptr))
+            add_enum(std::move(e_ptr));
+    }
+
+    return true; // Continue traversing
+}
+
 bool translation_unit_visitor::VisitEnumDecl(clang::EnumDecl *enm)
 {
     assert(enm != nullptr);
 
-    // Anonymous enum values should be rendered as class fields
-    // with type enum
-    if (enm->getNameAsString().empty())
+    // Anonymous enum values are either class fields with type enum or
+    // `typedef enum` declarations
+    if (enm->getNameAsString().empty()) {
         return true;
+    }
 
     if (!should_include(enm))
         return true;
@@ -114,59 +136,41 @@ bool translation_unit_visitor::VisitEnumDecl(clang::EnumDecl *enm)
         enm->getQualifiedNameAsString(),
         enm->getLocation().printToString(source_manager()));
 
+    auto e_ptr = create_enum_declaration(enm, nullptr);
+
+    if (e_ptr && diagram().should_include(*e_ptr))
+        add_enum(std::move(e_ptr));
+
+    return true;
+}
+
+std::unique_ptr<clanguml::class_diagram::model::enum_>
+translation_unit_visitor::create_enum_declaration(
+    const clang::EnumDecl *enm, const clang::TypedefDecl *typedef_decl)
+{
     auto e_ptr = std::make_unique<enum_>(config().using_namespace());
     auto &e = *e_ptr;
 
-    std::string qualified_name = common::get_qualified_name(*enm);
-
     auto ns{common::get_tag_namespace(*enm)};
-
-    const auto *parent = enm->getParent();
 
     // Id of parent class or struct in which this enum is potentially nested
     std::optional<eid_t> parent_id_opt;
+    [[maybe_unused]] namespace_ parent_ns;
+    find_record_parent_id(enm, parent_id_opt, parent_ns);
 
-    if (parent != nullptr) {
-        const auto *parent_record_decl =
-            clang::dyn_cast<clang::RecordDecl>(parent);
-
-        if (parent_record_decl != nullptr) {
-            eid_t local_id{parent_record_decl->getID()};
-
-            // First check if the parent has been added to the diagram as
-            // regular class
-            parent_id_opt = id_mapper().get_global_id(local_id);
-
-            // If not, check if the parent template declaration is in the model
-            if (!parent_id_opt) {
-                if (parent_record_decl->getDescribedTemplate() != nullptr) {
-                    local_id =
-                        parent_record_decl->getDescribedTemplate()->getID();
-                    parent_id_opt = id_mapper().get_global_id(local_id);
-                }
-            }
-        }
-    }
-
-    const auto *lexical_parent = enm->getLexicalParent();
-    if (!parent_id_opt && lexical_parent != nullptr) {
-        if (const auto *parent_interface_decl =
-                clang::dyn_cast<clang::ObjCInterfaceDecl>(lexical_parent);
-            parent_interface_decl != nullptr) {
-
-            eid_t ast_id{parent_interface_decl->getID()};
-
-            // First check if the parent has been added to the diagram as
-            // regular class
-            parent_id_opt = id_mapper().get_global_id(ast_id);
-        }
-    }
+    std::string enm_name;
+    if (enm->getNameAsString().empty() && typedef_decl != nullptr)
+        enm_name = typedef_decl->getNameAsString();
+    else if (parent_id_opt)
+        enm_name = enm->getNameAsString();
+    else
+        enm_name = common::get_tag_name(*enm);
 
     if (parent_id_opt && diagram().find<class_>(*parent_id_opt)) {
         auto parent_class = diagram().find<class_>(*parent_id_opt);
 
         e.set_namespace(ns);
-        e.set_name(parent_class.value().name() + "##" + enm->getNameAsString());
+        e.set_name(parent_class.value().name(), enm_name);
         e.set_id(common::to_id(e.full_name(false)));
         e.add_relationship({relationship_t::kContainment, *parent_id_opt});
         e.nested(true);
@@ -175,13 +179,13 @@ bool translation_unit_visitor::VisitEnumDecl(clang::EnumDecl *enm)
         auto parent_class = diagram().find<objc_interface>(*parent_id_opt);
 
         e.set_namespace(ns);
-        e.set_name(parent_class.value().name() + "##" + enm->getNameAsString());
+        e.set_name(parent_class.value().name(), enm_name);
         e.set_id(common::to_id(e.full_name(false)));
         e.add_relationship({relationship_t::kContainment, *parent_id_opt});
         e.nested(true);
     }
     else {
-        e.set_name(common::get_tag_name(*enm));
+        e.set_name(enm_name);
         e.set_namespace(ns);
         e.set_id(common::to_id(e.full_name(false)));
     }
@@ -193,7 +197,7 @@ bool translation_unit_visitor::VisitEnumDecl(clang::EnumDecl *enm)
     set_owning_module(*enm, e);
 
     if (e.skip())
-        return true;
+        return {};
 
     e.set_style(e.style_spec());
 
@@ -201,9 +205,7 @@ bool translation_unit_visitor::VisitEnumDecl(clang::EnumDecl *enm)
         e.constants().push_back(ev->getNameAsString());
     }
 
-    add_enum(std::move(e_ptr));
-
-    return true;
+    return e_ptr;
 }
 
 bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
@@ -1089,49 +1091,9 @@ void translation_unit_visitor::process_record_parent(
 {
 
     std::optional<eid_t> id_opt;
+    namespace_ parent_ns = ns;
 
-    auto parent_ns = ns;
-
-    // NOTE: `parent` here means class or structure is nested in the parent,
-    //       not inheritance
-    const auto *parent = cls->getParent();
-
-    if (parent != nullptr) {
-        if (const auto *parent_record_decl =
-                clang::dyn_cast<clang::RecordDecl>(parent);
-            parent_record_decl != nullptr) {
-            parent_ns = common::get_tag_namespace(*parent_record_decl);
-
-            eid_t ast_id{parent_record_decl->getID()};
-            // First check if the parent has been added to the diagram as
-            // regular class
-            id_opt = id_mapper().get_global_id(ast_id);
-
-            // If not, check if the parent template declaration is in the
-            // model
-            if (!id_opt) {
-                if (parent_record_decl->getDescribedTemplate() != nullptr) {
-                    ast_id =
-                        parent_record_decl->getDescribedTemplate()->getID();
-                    id_opt = id_mapper().get_global_id(ast_id);
-                }
-            }
-        }
-    }
-
-    const auto *lexical_parent = cls->getLexicalParent();
-    if (lexical_parent != nullptr) {
-        if (const auto *parent_interface_decl =
-                clang::dyn_cast<clang::ObjCInterfaceDecl>(lexical_parent);
-            parent_interface_decl != nullptr) {
-
-            eid_t ast_id{parent_interface_decl->getID()};
-
-            // First check if the parent has been added to the diagram as
-            // regular class
-            id_opt = id_mapper().get_global_id(ast_id);
-        }
-    }
+    find_record_parent_id(cls, id_opt, parent_ns);
 
     if (id_opt && diagram().find<class_>(*id_opt)) {
         process_record_parent_by_type<class_>(*id_opt, c, parent_ns, cls);
@@ -2392,6 +2354,52 @@ void translation_unit_visitor::process_field(
 
     if (diagram().should_include(field)) {
         c.add_member(std::move(field));
+    }
+}
+
+void translation_unit_visitor::find_record_parent_id(const clang::TagDecl *decl,
+    std::optional<eid_t> &parent_id_opt, namespace_ &parent_ns) const
+{
+    const auto *parent = decl->getParent();
+
+    if (parent != nullptr) {
+        if (const auto *parent_record_decl =
+                clang::dyn_cast<clang::RecordDecl>(parent);
+            parent_record_decl != nullptr) {
+            parent_ns = common::get_tag_namespace(*parent_record_decl);
+
+            eid_t local_id{parent_record_decl->getID()};
+
+            // First check if the parent has been added to the diagram as
+            // regular class
+            parent_id_opt = id_mapper().get_global_id(local_id);
+
+            // If not, check if the parent template declaration is in the model
+            if (!parent_id_opt) {
+                if (parent_record_decl->getDescribedTemplate() != nullptr) {
+                    local_id =
+                        parent_record_decl->getDescribedTemplate()->getID();
+                    parent_id_opt = id_mapper().get_global_id(local_id);
+                }
+            }
+        }
+    }
+
+    if (parent_id_opt)
+        return;
+
+    const auto *lexical_parent = decl->getLexicalParent();
+    if (lexical_parent != nullptr) {
+        if (const auto *parent_interface_decl =
+                clang::dyn_cast<clang::ObjCInterfaceDecl>(lexical_parent);
+            parent_interface_decl != nullptr) {
+
+            eid_t ast_id{parent_interface_decl->getID()};
+
+            // First check if the parent has been added to the diagram as
+            // regular class
+            parent_id_opt = id_mapper().get_global_id(ast_id);
+        }
     }
 }
 

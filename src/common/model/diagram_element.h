@@ -108,6 +108,17 @@ public:
     }
 
     /**
+     * Set diagram elements name for nested elements.
+     *
+     * @param parent Parents name.
+     * @param name Elements name.
+     */
+    void set_name(const std::string &parent, const std::string &name)
+    {
+        set_name(fmt::format("{}##{}", parent, name));
+    }
+
+    /**
      * Return diagram element name.
      *
      * @return Diagram element name.

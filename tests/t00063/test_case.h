@@ -27,5 +27,10 @@ TEST_CASE("t00063")
         REQUIRE(IsClass(src, "A"));
         REQUIRE(!IsEnum(src, "B"));
         REQUIRE(!IsEnum(src, "C"));
+        REQUIRE(!IsEnum(src, "D"));
+
+        REQUIRE(IsClass(src, "R"));
+        REQUIRE(!IsEnum(src, "RR"));
+        REQUIRE(!IsEnum(src, "RRR"));
     });
 }

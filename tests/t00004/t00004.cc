@@ -6,8 +6,12 @@ enum Color { Red, Green, Blue };
 class B {
 public:
     enum AA { AA_1, AA_2, AA_3 };
+    typedef enum { BB_1, BB_2, BB_3 } BB;
+    typedef enum CC { CC_1, CC_2, CC_3 } CC_t;
 
     AA aa;
+    BB bb;
+    CC cc;
     Color *color;
 };
 

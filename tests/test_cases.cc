@@ -708,7 +708,28 @@ int main(int argc, char *argv[])
     std::vector<const char *> argvv = {
         "clang-uml", "--config", "./test_config_data/simple.yml"};
 
-    argvv.push_back("-q");
+    bool default_to_quiet{true};
+    for (int i = 1; i < argc; i++) {
+        if (strcmp(argv[i], "-v") == 0) {
+            argvv.push_back("-v");
+            default_to_quiet = false;
+        }
+        else if (strcmp(argv[i], "-vv") == 0) {
+            argvv.push_back("-vv");
+            default_to_quiet = false;
+        }
+        else if (strcmp(argv[i], "-vvv") == 0) {
+            argvv.push_back("-vvv");
+            default_to_quiet = false;
+        }
+        else if (strcmp(argv[i], "-q") == 0) {
+            argvv.push_back("-q");
+            default_to_quiet = false;
+        }
+    }
+
+    if (default_to_quiet)
+        argvv.push_back("-q");
 
     clih.handle_options(argvv.size(), argvv.data());
 
