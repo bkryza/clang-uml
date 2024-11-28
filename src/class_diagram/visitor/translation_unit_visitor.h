@@ -105,6 +105,8 @@ public:
 
     virtual bool VisitCXXRecordDecl(clang::CXXRecordDecl *d);
 
+    virtual bool VisitTypedefDecl(clang::TypedefDecl *decl);
+
     virtual bool VisitEnumDecl(clang::EnumDecl *e);
 
     virtual bool VisitClassTemplateDecl(
@@ -175,6 +177,16 @@ private:
      */
     std::unique_ptr<clanguml::class_diagram::model::class_>
     create_class_declaration(clang::CXXRecordDecl *cls);
+
+    /**
+     * @brief Create enum element model from enum (e.g. struct) declaration
+     *
+     * @param rec Enum declaration
+     * @return Enum diagram element model
+     */
+    std::unique_ptr<clanguml::class_diagram::model::enum_>
+    create_enum_declaration(
+        const clang::EnumDecl *enm, const clang::TypedefDecl *typedef_decl);
 
     /**
      * @brief Create class element model from record (e.g. struct) declaration
@@ -541,6 +553,9 @@ private:
     void process_record_parent_by_type(eid_t parent_id, class_ &c,
         namespace_ parent_ns, const clang::RecordDecl *decl);
 
+    void find_record_parent_id(const clang::TagDecl *decl,
+        std::optional<eid_t> &parent_id_opt, namespace_ &parent_ns) const;
+
     template_builder_t template_builder_;
 
     std::map<eid_t, std::unique_ptr<clanguml::class_diagram::model::class_>>
@@ -551,6 +566,9 @@ private:
             common::model::access_t,
             std::optional<size_t> /* destination_multiplicity */>>
         anonymous_struct_relationships_;
+
+    std::map<const clang::EnumDecl *, const clang::TypedefDecl *>
+        typedef_enum_decls_;
 
     /**
      * When visiting CXX records we need to know if they have already been

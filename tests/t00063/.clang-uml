@@ -9,4 +9,7 @@ diagrams:
     exclude:
       element_types:
         - enum
+      elements:
+        - type: member
+          name: clanguml::t00063::R::d
     using_namespace: clanguml::t00063

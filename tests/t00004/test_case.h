@@ -30,7 +30,6 @@ TEST_CASE("t00004")
         REQUIRE(IsClass(src, "A"));
         REQUIRE(IsClass(src, "A::AA"));
         REQUIRE(IsClass(src, "A::AA::AAA"));
-        REQUIRE(IsEnum(src, "B::AA"));
         REQUIRE(IsEnum(src, "A::AA::Lights"));
         REQUIRE(IsInnerClass(src, "A", "A::AA"));
         REQUIRE(IsInnerClass(src, "A::AA", "A::AA::AAA"));
@@ -38,6 +37,16 @@ TEST_CASE("t00004")
 
         REQUIRE(IsMethod<Public, Const>(src, "A", "foo"));
         REQUIRE(IsMethod<Public, Const>(src, "A", "foo2"));
+
+        REQUIRE(IsEnum(src, "B::AA"));
+        REQUIRE(IsEnum(src, "B::BB"));
+        REQUIRE(IsEnum(src, "B::CC"));
+
+        REQUIRE(IsField<Public>(src, "B", "cc", "CC"));
+        REQUIRE(IsField<Public>(src, "B", "bb", "BB"));
+        REQUIRE(!IsField<Public>(src, "B", "BB_1", "enum"));
+        REQUIRE(!IsField<Public>(src, "B", "BB_2", "enum"));
+        REQUIRE(!IsField<Public>(src, "B", "BB_3", "enum"));
 
         REQUIRE(IsClassTemplate(src, "C<T>"));
         REQUIRE(IsInnerClass(src, "C<T>", "C::AA"));

@@ -31,6 +31,7 @@ TEST_CASE("t00057")
         REQUIRE(IsClass(src, "t00057_E"));
         REQUIRE(IsClass(src, "t00057_F"));
         REQUIRE(IsClass(src, "t00057_G"));
+        REQUIRE(IsEnum(src, "t00057_H"));
         REQUIRE(!IsClass(src, "(anonymous)"));
         REQUIRE(IsClass(src, "t00057_R"));
 
