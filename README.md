@@ -81,8 +81,8 @@ Installation instructions for `Linux`, `macos` and `Windows` can be found
 [compile_commands.json](https://clang.llvm.org/docs/JSONCompilationDatabase.html)
 file, containing the list of commands used for compiling the source code.
 
-See my repository [compile_commands_gallery](https://github.com/bkryza/compile_commands_gallery)
-for examples on how to generate `compile_commands.json` from some of the
+See [here](https://blog.bkryza.com/posts/compile-commands-json-gallery/)
+for instructions on how to generate `compile_commands.json` using some of the
 existing C++ build systems.
 
 ### Invocation
