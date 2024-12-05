@@ -77,6 +77,10 @@ target_link_libraries(
     clang-umllib
     Threads::Threads)
 
+if(WITH_GRAPHML)
+    target_link_libraries(clang-uml Boost::graph)
+endif(WITH_GRAPHML)
+
 #
 # Setup install options
 #

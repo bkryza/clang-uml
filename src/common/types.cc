@@ -96,6 +96,8 @@ std::string to_string(const generator_type_t type)
         return "mermaid";
     case generator_type_t::json:
         return "json";
+    case generator_type_t::graphml:
+        return "graphml";
     default:
         return "<unknown>";
     }

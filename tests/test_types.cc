@@ -62,4 +62,5 @@ TEST_CASE("Test to_string")
     REQUIRE_EQ(to_string(generator_type_t::plantuml), "plantuml");
     REQUIRE_EQ(to_string(generator_type_t::mermaid), "mermaid");
     REQUIRE_EQ(to_string(generator_type_t::json), "json");
+    REQUIRE_EQ(to_string(generator_type_t::graphml), "graphml");
 }

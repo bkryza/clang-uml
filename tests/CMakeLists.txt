@@ -94,6 +94,10 @@ if(MSVC)
     list(APPEND CLANG_UML_TEST_LIBRARIES "Version.lib")
 endif(MSVC)
 
+if(WITH_GRAPHML)
+    list(APPEND CLANG_UML_TEST_LIBRARIES Boost::graph)
+endif(WITH_GRAPHML)
+
 list(FIND CMAKE_CXX_COMPILE_FEATURES cxx_std_20 SUPPORTS_CXX_STD_20)
 
 # Remove test cases which require C++20 if they are not supported here

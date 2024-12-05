@@ -323,6 +323,15 @@ struct json_t : public diagram_source_t<nlohmann::json> {
     inline static const std::string diagram_type_name{"JSON"};
 };
 
+struct graphml_t
+    : public diagram_source_t<common::generators::graphml::graph_t> {
+    using diagram_source_t::diagram_source_t;
+    using source_type = common::generators::graphml::graph_t;
+    using generator_tag = clanguml::common::generators::graphml_generator_tag;
+
+    inline static const std::string diagram_type_name{"GraphML"};
+};
+
 std::optional<nlohmann::json> get_element_by_id(
     const nlohmann::json &j, const std::string &id)
 {
@@ -484,6 +493,13 @@ bool diagram_source_t<nlohmann::json>::contains(std::string name) const
     return false;
 }
 
+template <>
+bool diagram_source_t<common::generators::graphml::graph_t>::contains(
+    std::string name) const
+{
+    return false;
+}
+
 template <> std::string diagram_source_t<std::string>::to_string() const
 {
     return src;
@@ -492,6 +508,26 @@ template <> std::string diagram_source_t<std::string>::to_string() const
 template <> std::string diagram_source_t<nlohmann::json>::to_string() const
 {
     return src.dump(2);
+}
+
+template <>
+std::string
+diagram_source_t<common::generators::graphml::graph_t>::to_string() const
+{
+    using common::generators::graphml::graph_t;
+    using common::generators::graphml::vertex_t;
+
+    std::stringstream ostr;
+
+    boost::dynamic_properties dp;
+    dp.property("id", get(&vertex_t::id, const_cast<graph_t &>(src)));
+    dp.property("type", get(&vertex_t::type, const_cast<graph_t &>(src)));
+    dp.property("name", get(&vertex_t::name, const_cast<graph_t &>(src)));
+    dp.property("url", get(&vertex_t::url, const_cast<graph_t &>(src)));
+
+    boost::write_graphml(ostr, src, dp, false);
+
+    return ostr.str();
 }
 
 struct QualifiedName {
