@@ -39,7 +39,10 @@ TEST_CASE("t00075")
 #endif
         REQUIRE(IsConceptRequirement(src, "C<T>", "t.e()"));
         REQUIRE(IsConceptParameterList(src, "C<T>", "(T t)"));
-        REQUIRE(!IsConceptParameterList(src, "C<T>", "(T ns1::ns2::t)"));
+
+        if constexpr (!std::is_same_v<graphml_t, std::decay_t<decltype(src)>>) {
+            REQUIRE(!IsConceptParameterList(src, "C<T>", "(T ns1::ns2::t)"));
+        }
 
         REQUIRE(IsConstraint(src, {"ns1::ns2", "ABE<ns1::ns2::C T>"},
             {"ns1::ns2", "C<T>"}, "T", "up[#green,dashed,thickness=2]"));

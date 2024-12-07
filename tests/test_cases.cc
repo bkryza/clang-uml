@@ -133,16 +133,20 @@ auto render_diagram(
     else if constexpr (std::is_same_v<GeneratorType,
                            clanguml::test::graphml_t>) {
 
-        clanguml::common::generators::graphml::graph_t g;
-        boost::dynamic_properties dp;
-        using clanguml::common::generators::graphml::vertex_t;
+        //        clanguml::common::generators::graphml::graph_t g;
+        //        boost::dynamic_properties dp;
+        //        using clanguml::common::generators::graphml::vertex_t;
+        //
+        //        dp.property("id", get(&vertex_t::id, g));
+        //        dp.property("type", get(&vertex_t::type, g));
+        //        dp.property("name", get(&vertex_t::name, g));
+        //        dp.property("url", get(&vertex_t::url, g));
+        //
+        //        boost::read_graphml(ss, g.graph(), dp);
 
-        dp.property("id", get(&vertex_t::id, g));
-        dp.property("type", get(&vertex_t::type, g));
-        dp.property("name", get(&vertex_t::name, g));
-        dp.property("url", get(&vertex_t::url, g));
+        pugi::xml_document g;
 
-        boost::read_graphml(ss, g.graph(), dp);
+        g.load(ss);
 
         return g;
     }
@@ -196,7 +200,7 @@ void save_diagram(const std::filesystem::path &path, const T &diagram)
 {
     static_assert(std::is_same_v<T, std::string> ||
         std::is_same_v<T, nlohmann::json> ||
-        std::is_same_v<T, clanguml::common::generators::graphml::graph_t>);
+        std::is_same_v<T, clanguml::common::generators::graphml::graphml_t>);
 
     std::filesystem::create_directories(path.parent_path());
     std::ofstream ofs;
@@ -205,16 +209,8 @@ void save_diagram(const std::filesystem::path &path, const T &diagram)
         ofs << std::setw(2) << diagram;
     }
     else if constexpr (std::is_same_v<T,
-                           clanguml::common::generators::graphml::graph_t>) {
-        boost::dynamic_properties dp;
-        using clanguml::common::generators::graphml::vertex_t;
-
-        dp.property("id", get(&vertex_t::id, const_cast<T &>(diagram)));
-        dp.property("type", get(&vertex_t::type, const_cast<T &>(diagram)));
-        dp.property("name", get(&vertex_t::name, const_cast<T &>(diagram)));
-        dp.property("url", get(&vertex_t::url, const_cast<T &>(diagram)));
-
-        boost::write_graphml(ofs, diagram, dp, false);
+                           clanguml::common::generators::graphml::graphml_t>) {
+        diagram.save(ofs, " ");
     }
     else {
         ofs << diagram;
@@ -248,7 +244,7 @@ void save_mermaid(const std::string &path, const std::string &filename,
 }
 
 void save_graphml(const std::string &path, const std::string &filename,
-    const clanguml::common::generators::graphml::graph_t &g)
+    const clanguml::common::generators::graphml::graphml_t &g)
 {
     std::filesystem::path p{path};
     p /= filename;
@@ -528,7 +524,6 @@ void CHECK_INCLUDE_DIAGRAM(const clanguml::config::config &config,
 /// Class diagram tests
 ///
 #include "t00002/test_case.h"
-/*
 #include "t00003/test_case.h"
 #include "t00004/test_case.h"
 #include "t00005/test_case.h"
@@ -582,6 +577,7 @@ void CHECK_INCLUDE_DIAGRAM(const clanguml::config::config &config,
 #include "t00053/test_case.h"
 #include "t00054/test_case.h"
 #include "t00055/test_case.h"
+
 #if defined(ENABLE_CXX_STD_20_TEST_CASES)
 #include "t00056/test_case.h"
 #endif
@@ -636,7 +632,7 @@ void CHECK_INCLUDE_DIAGRAM(const clanguml::config::config &config,
 #if defined(ENABLE_OBJECTIVE_C_TEST_CASES)
 #include "t00088/test_case.h"
 #endif
-
+/*
 ///
 /// Sequence diagram tests
 ///

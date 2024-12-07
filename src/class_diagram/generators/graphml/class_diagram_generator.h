@@ -54,7 +54,7 @@ using clanguml::common::model::access_t;
 using clanguml::common::model::package;
 using clanguml::common::model::relationship_t;
 
-using clanguml::common::generators::graphml::graph_t;
+using clanguml::common::generators::graphml::graphml_node_t;
 
 using namespace clanguml::util;
 
@@ -75,7 +75,9 @@ public:
      *
      * @param ostr Output stream.
      */
-    void generate_diagram(graph_t &parent) const override;
+    void generate_diagram(graphml_node_t &parent) const override;
+
+    void generate_keys(graphml_node_t &parent) const override;
 
     /**
      * Render class element into a GraphML node.
@@ -83,7 +85,7 @@ public:
      * @param c class diagram element
      * @param parent GraphML node
      */
-    void generate(const class_ &c, graph_t &parent) const;
+    void generate(const class_ &c, graphml_node_t &parent) const;
 
     /**
      * Render ObjC interface or protocol element into a GraphML node.
@@ -91,7 +93,7 @@ public:
      * @param c enum diagram element
      * @param parent GraphML node
      */
-    void generate(const objc_interface &c, graph_t &parent) const;
+    void generate(const objc_interface &c, graphml_node_t &parent) const;
 
     /**
      * Render enum element into a GraphML node.
@@ -99,7 +101,7 @@ public:
      * @param c enum diagram element
      * @param parent GraphML node
      */
-    void generate(const enum_ &c, graph_t &parent) const;
+    void generate(const enum_ &c, graphml_node_t &parent) const;
 
     /**
      * Render concept element into a GraphML node.
@@ -107,7 +109,7 @@ public:
      * @param c concept diagram element
      * @param parent JSON node
      */
-    void generate(const concept_ &c, graph_t &parent) const;
+    void generate(const concept_ &c, graphml_node_t &parent) const;
 
     /**
      * Render package element into a GraphML node.
@@ -115,7 +117,7 @@ public:
      * @param p package diagram element
      * @param parent GraphML node
      */
-    void generate(const package &p, graph_t &parent) const;
+    void generate(const package &p, graphml_node_t &parent) const;
 
     /**
      * @brief In a nested diagram, generate the top level elements.
@@ -126,14 +128,14 @@ public:
      *
      * @param parent GraphML node
      */
-    void generate_top_level_elements(graph_t &parent) const;
+    void generate_top_level_elements(graphml_node_t &parent) const;
 
     /**
      * @brief Generate all relationships in the diagram.
      *
      * @param parent GraphML node
      */
-    void generate_relationships(graph_t &parent) const;
+    void generate_relationships(graphml_node_t &parent) const;
 
     /**
      * @brief Generate all relationships originating at a diagram element.
@@ -143,11 +145,20 @@ public:
      * @param parent JSON node
      */
     template <typename T>
-    void generate_relationships(const T &c, graph_t &parent) const;
+    void generate_relationships(const T &c, graphml_node_t &parent) const;
+
+protected:
+    void init_property_keys() override;
+
+    void generate_key(pugi::xml_node &parent, const std::string &attr_name,
+        const std::string &for_value, const std::string &id_value,
+        const std::string &attr_type = "string") const;
+
+    mutable uint64_t edge_id_{0};
 };
 
 template <typename T>
-void generator::generate_relationships(const T &c, graph_t &parent) const
+void generator::generate_relationships(const T &c, graphml_node_t &parent) const
 {
     const auto &model =
         common_generator<diagram_config, diagram_model>::model();
@@ -162,26 +173,28 @@ void generator::generate_relationships(const T &c, graph_t &parent) const
             continue;
         }
 
-        const auto target_id = target_element.value().id().value();
-        const auto src_id = c.id().value();
+        const auto target_id = *node_ids_.get(target_element.value().alias());
+        const auto src_id = *node_ids_.get(c.alias());
 
-        if (parent.vertex(target_id) == graph_t::null_vertex())
-            continue;
+        auto edge_node = parent.append_child("edge");
 
-        if (parent.vertex(src_id) == graph_t::null_vertex())
-            continue;
+        edge_node.append_attribute("id") = fmt::format("e{}", edge_id_++);
+        edge_node.append_attribute("source") = src_id;
+        edge_node.append_attribute("target") = target_id;
 
-        boost::add_edge_by_label(src_id, target_id, parent);
+        add_data(edge_node, edge_properties().get("type"), to_string(r.type()));
+        if (!r.label().empty())
+            add_data(edge_node, edge_properties().get("label"), r.label());
 
-        //        nlohmann::json rel = r;
-        //        rel["source"] = std::to_string(c.id().value());
-        //        parent["relationships"].push_back(rel);
+        if (r.access() != access_t::kNone)
+            add_data(edge_node, edge_properties().get("access"),
+                to_string(r.access()));
     }
 }
 
 template <>
 void generator::generate_relationships<package>(
-    const package &p, graph_t &parent) const;
+    const package &p, graphml_node_t &parent) const;
 
 } // namespace json
 } // namespace generators

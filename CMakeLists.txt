@@ -97,21 +97,6 @@ endif(ADDRESS_SANITIZER)
 include(LLVMSetup)
 
 #
-# Setup Boost Graph if needed
-#
-option(WITH_GRAPHML "Enable GraphML output" ON)
-if(WITH_GRAPHML)
-set(Boost_USE_STATIC_LIBS ON)
-set(Boost_USE_MULTITHREADED ON)
-set(Boost_USE_STATIC_RUNTIME OFF)
-find_package(Boost 1.70.0 COMPONENTS graph)
-
-if(Boost_FOUND)
-    include_directories(${Boost_INCLUDE_DIRS})
-endif(Boost_FOUND)
-endif(WITH_GRAPHML)
-
-#
 # Setup custom compile options depending on various compiler and environment
 # quirks
 #
@@ -195,6 +180,7 @@ endif()
 # Setup thirdparty sources
 #
 set(THIRDPARTY_HEADERS_DIR ${PROJECT_SOURCE_DIR}/thirdparty/)
+add_subdirectory(thirdparty/pugixml)
 
 #
 # Setup include directories

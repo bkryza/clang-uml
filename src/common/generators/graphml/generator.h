@@ -24,22 +24,14 @@
 #include "util/util.h"
 #include "version/version.h"
 
-#include <boost/graph/adjacency_list.hpp>
-#include <boost/graph/graph_traits.hpp>
-#include <boost/graph/graphml.hpp>
-#include <boost/graph/labeled_graph.hpp>
 #include <clang/Basic/Version.h>
 #include <clang/Frontend/CompilerInstance.h>
 #include <clang/Tooling/CompilationDatabase.h>
 #include <clang/Tooling/Tooling.h>
 #include <glob/glob.hpp>
+#include <pugixml/pugixml.hpp>
 
-#include <boost/property_map/dynamic_property_map.hpp>
 #include <ostream>
-
-namespace clanguml::common::model {
-
-} // namespace clanguml::common::model
 
 namespace clanguml::common::generators::graphml {
 
@@ -48,22 +40,47 @@ using clanguml::common::model::element;
 using clanguml::common::model::message_t;
 using clanguml::common::model::relationship_t;
 
-struct vertex_t {
-    std::string id;
-    std::string type;
-    std::string name;
-    std::string url;
-};
+using key_property_map_t = std::map</*property name*/ std::string,
+    /*key id*/ std::string>;
 
-// template <typename T>
-using graph_adjacency_list_t =
-    boost::adjacency_list<boost::vecS, boost::vecS, boost::directedS, vertex_t>;
-
-// template <typename T>
-using graph_t =
-    boost::labeled_graph<graph_adjacency_list_t, uint64_t, boost::hash_mapS>;
+using graphml_t = pugi::xml_document;
+using graphml_node_t = pugi::xml_node;
 
 std::string render_name(std::string name);
+
+class property_keymap_t {
+public:
+    property_keymap_t(std::string prefix)
+        : prefix_{std::move(prefix)}
+    {
+    }
+
+    [[maybe_unused]] std::string add(const std::string &name)
+    {
+        map_[name] = fmt::format("{}{}", prefix_, next_data_key_id_++);
+        return map_[name];
+    }
+    //
+    //    std::string generate(const std::string &name)
+    //    {
+    //        map_[name] = fmt::format("{}{}", prefix_, next_data_key_id_++);
+    //        return map_[name];
+    //    }
+
+    std::optional<std::string> get(const std::string &name) const
+    {
+        if (map_.count(name) == 0)
+            return {};
+
+        return map_.at(name);
+    }
+
+private:
+    uint64_t next_data_key_id_{0};
+
+    std::string prefix_;
+    key_property_map_t map_;
+};
 
 /**
  * @brief Base class for diagram generators
@@ -99,14 +116,64 @@ public:
      *
      * @param ostr Output stream
      */
-    virtual void generate_diagram(graph_t &parent) const = 0;
+    virtual void generate_diagram(graphml_node_t &parent) const = 0;
 
     /**
      * @brief Generate metadata element with diagram metadata
      *
      * @param parent Root JSON object
      */
-    void generate_metadata(graph_t &parent) const;
+    void generate_metadata(graphml_t &parent) const;
+
+    virtual void generate_keys(graphml_node_t &parent) const = 0;
+
+    template <typename T> void add_url(pugi::xml_node &node, const T &c) const;
+
+    const property_keymap_t &graph_properties() const
+    {
+        return graph_properties_;
+    }
+
+    const property_keymap_t &node_properties() const
+    {
+        return node_properties_;
+    }
+
+    const property_keymap_t &edge_properties() const
+    {
+        return edge_properties_;
+    }
+
+    pugi::xml_node make_node(
+        graphml_node_t &parent, const std::string &id) const;
+
+    pugi::xml_node make_graph(
+        graphml_node_t &parent, const std::string &id) const;
+
+    pugi::xml_node make_subgraph(graphml_node_t &parent, const std::string &id,
+        const std::string &name = "", const std::string &type = "") const;
+
+    void add_data(pugi::xml_node &node, const std::optional<std::string> &key,
+        const std::string &value) const;
+
+    void add_cdata(pugi::xml_node &node, const std::optional<std::string> &key,
+        const std::string &value) const;
+
+protected:
+    virtual void init_property_keys() = 0;
+
+    property_keymap_t &graph_properties() { return graph_properties_; }
+    property_keymap_t &node_properties() { return node_properties_; }
+    property_keymap_t &edge_properties() { return edge_properties_; }
+
+    mutable property_keymap_t graph_ids_{"g"};
+    mutable property_keymap_t node_ids_{"n"};
+    mutable property_keymap_t edge_ids_{"e"};
+
+private:
+    mutable property_keymap_t graph_properties_{"gd"};
+    mutable property_keymap_t node_properties_{"nd"};
+    mutable property_keymap_t edge_properties_{"ed"};
 };
 
 template <typename DiagramModel, typename DiagramConfig>
@@ -120,7 +187,7 @@ std::ostream &operator<<(
 template <typename C, typename D>
 void generator<C, D>::generate(std::ostream &ostr) const
 {
-    //    const auto &config = generators::generator<C, D>::config();
+    const auto &config = generators::generator<C, D>::config();
     //    const auto &model = generators::generator<C, D>::model();
     //
     //    if (!config.allow_empty_diagrams() && model.is_empty()) {
@@ -136,37 +203,160 @@ void generator<C, D>::generate(std::ostream &ostr) const
     //        j["title"] = config.title();
     //    }
     //
-    graph_t graph;
+    graphml_t graph;
 
-    generate_diagram(graph);
-    //
-    //    generate_metadata(j);
-    //
-    //    ostr << j;
-    boost::dynamic_properties dp;
-    dp.property("id", get(&vertex_t::id, graph));
-    dp.property("type", get(&vertex_t::type, graph));
-    dp.property("name", get(&vertex_t::name, graph));
-    dp.property("url", get(&vertex_t::url, graph));
+    auto node_decl = graph.append_child(pugi::node_declaration);
+    node_decl.append_attribute("version") = "1.0";
+    node_decl.append_attribute("encoding") = "UTF-8";
 
-    std::stringstream ss;
-    boost::write_graphml(ss, graph, dp, false);
+    generate_metadata(graph);
 
-    LOG_ERROR("LABLED_GRAPH: {}", ss.str());
+    auto graphml = graph.append_child("graphml");
+    graphml.append_attribute("xmlns") = "http://graphml.graphdrawing.org/xmlns";
+    graphml.append_attribute("xmlns:xsi") =
+        "http://www.w3.org/2001/XMLSchema-instance";
+    graphml.append_attribute("xsi:schemaLocation") =
+        "http://graphml.graphdrawing.org/xmlns "
+        "http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd";
 
-    boost::write_graphml(ostr, graph, dp, false);
+    if (config.title) {
+        graphml.append_child("desc")
+            .append_child(pugi::node_cdata)
+            .set_value(config.title());
+    }
+
+    generate_keys(graphml);
+
+    auto graph_node = make_graph(graphml, "G");
+
+    if (config.using_namespace) {
+        add_data(graph_node, graph_properties().get("using_namespace"),
+            config.using_namespace().to_string());
+    }
+
+    generate_diagram(graph_node);
+
+    //    std::stringstream ss;
+    //    graph.save(ss, "  ");
+    //    LOG_ERROR("GraphML: {}", ss.str());
+
+    graph.save(ostr, "  ");
 }
 
 template <typename C, typename D>
-void generator<C, D>::generate_metadata(graph_t &parent) const
+void generator<C, D>::generate_metadata(graphml_t &parent) const
 {
-    //    if (generators::generator<C, D>::config().generate_metadata()) {
-    //        parent["metadata"]["clang_uml_version"] =
-    //        clanguml::version::version(); parent["metadata"]["schema_version"]
-    //        =
-    //            clanguml::version::json_generator_schema_version();
-    //        parent["metadata"]["llvm_version"] = clang::getClangFullVersion();
-    //    }
+    if (generators::generator<C, D>::config().generate_metadata()) {
+        auto comment = parent.append_child(pugi::node_comment);
+        comment.set_value(fmt::format(
+            "Generated with clang-uml {}", clanguml::version::version()));
+
+        comment = parent.append_child(pugi::node_comment);
+        comment.set_value(
+            fmt::format("LLVM version {}", clang::getClangFullVersion()));
+    }
 }
 
+template <typename C, typename D>
+pugi::xml_node generator<C, D>::make_node(
+    graphml_node_t &parent, const std::string &id) const
+{
+    auto result = parent.append_child("node");
+    result.append_attribute("id") = id;
+    return result;
+}
+
+template <typename C, typename D>
+pugi::xml_node generator<C, D>::make_graph(
+    graphml_node_t &parent, const std::string &id) const
+{
+    auto result = parent.append_child("graph");
+    result.append_attribute("id") = graph_ids_.add(id);
+    result.append_attribute("edgedefault").set_value("directed");
+    result.append_attribute("parse.nodeids").set_value("canonical");
+    result.append_attribute("parse.edgeids").set_value("canonical");
+    result.append_attribute("parse.order").set_value("nodesfirst");
+    return result;
+}
+
+template <typename C, typename D>
+pugi::xml_node generator<C, D>::make_subgraph(graphml_node_t &parent,
+    const std::string &id, const std::string &name,
+    const std::string &type) const
+{
+    auto graph_node = parent.append_child("node");
+    graph_node.append_attribute("id") = node_ids_.add(id);
+
+    if (!name.empty())
+        add_data(graph_node, node_properties().get("name"), name);
+
+    if (!type.empty())
+        add_data(graph_node, node_properties().get("type"), type);
+
+    auto result = graph_node.append_child("graph");
+    result.append_attribute("id") = graph_ids_.add(id);
+    result.append_attribute("edgedefault").set_value("directed");
+    result.append_attribute("parse.nodeids").set_value("canonical");
+    result.append_attribute("parse.edgeids").set_value("canonical");
+    result.append_attribute("parse.order").set_value("nodesfirst");
+    return result;
+}
+
+template <typename C, typename D>
+void generator<C, D>::add_data(pugi::xml_node &node,
+    const std::optional<std::string> &key, const std::string &value) const
+{
+    if (key.has_value()) {
+        auto data = node.append_child("data");
+        data.append_attribute("key") = *key;
+        data.text().set(value);
+    }
+}
+
+template <typename C, typename D>
+void generator<C, D>::add_cdata(pugi::xml_node &node,
+    const std::optional<std::string> &key, const std::string &value) const
+{
+    if (key.has_value()) {
+        auto data = node.append_child("data");
+        data.append_attribute("key") = *key;
+        data.append_child(pugi::node_cdata).set_value(value);
+    }
+}
+
+template <typename C, typename D>
+template <typename T>
+void generator<C, D>::add_url(pugi::xml_node &node, const T &c) const
+{
+    auto maybe_link_pattern =
+        clanguml::common::generators::generator<C, D>::get_link_pattern(c);
+
+    if (maybe_link_pattern) {
+        const auto &[link_prefix, link_pattern] = *maybe_link_pattern;
+        auto ec =
+            clanguml::common::generators::generator<C, D>::element_context(c);
+        common::generators::make_context_source_relative(ec, link_prefix);
+
+        auto url = clanguml::common::generators::generator<C, D>::env().render(
+            std::string_view{link_pattern}, ec);
+
+        add_data(node, node_properties().get("url"), url);
+    }
+
+    auto maybe_tooltip_pattern =
+        clanguml::common::generators::generator<C, D>::get_tooltip_pattern(c);
+
+    if (maybe_tooltip_pattern) {
+        const auto &[tooltip_prefix, tooltip_pattern] = *maybe_tooltip_pattern;
+        auto ec =
+            clanguml::common::generators::generator<C, D>::element_context(c);
+        common::generators::make_context_source_relative(ec, tooltip_prefix);
+
+        auto tooltip =
+            clanguml::common::generators::generator<C, D>::env().render(
+                std::string_view{tooltip_pattern}, ec);
+
+        add_data(node, node_properties().get("tooltip"), tooltip);
+    }
+}
 } // namespace clanguml::common::generators::graphml

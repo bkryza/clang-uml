@@ -22,58 +22,59 @@ namespace clanguml::common {
 namespace model {
 using nlohmann::json;
 
-//void to_json(nlohmann::json &j, const source_location &sl)
+// void to_json(nlohmann::json &j, const source_location &sl)
 //{
-//    j = json{{"file", sl.file_relative()},
-//        {"translation_unit", sl.translation_unit()}, {"line", sl.line()},
-//        {"column", sl.column()}};
-//}
+//     j = json{{"file", sl.file_relative()},
+//         {"translation_unit", sl.translation_unit()}, {"line", sl.line()},
+//         {"column", sl.column()}};
+// }
 //
-//void to_json(nlohmann::json &j, const element &c)
+// void to_json(nlohmann::json &j, const element &c)
 //{
-//    j = json{{"id", std::to_string(c.id().value())},
-//        {"name", common::generators::graphml::render_name(c.name())},
-//        {"namespace", c.get_namespace().to_string()}, {"type", c.type_name()},
-//        {"display_name",
-//            common::generators::graphml::render_name(c.full_name(true))}};
+//     j = json{{"id", std::to_string(c.id().value())},
+//         {"name", common::generators::graphml::render_name(c.name())},
+//         {"namespace", c.get_namespace().to_string()}, {"type",
+//         c.type_name()},
+//         {"display_name",
+//             common::generators::graphml::render_name(c.full_name(true))}};
 //
-//    if (const auto &comment = c.comment(); comment)
-//        j["comment"] = comment.value();
+//     if (const auto &comment = c.comment(); comment)
+//         j["comment"] = comment.value();
 //
-//    if (!c.file().empty()) {
-//        j["source_location"] =
-//            dynamic_cast<const common::model::source_location &>(c);
-//    }
-//}
+//     if (!c.file().empty()) {
+//         j["source_location"] =
+//             dynamic_cast<const common::model::source_location &>(c);
+//     }
+// }
 //
-//void to_json(nlohmann::json &j, const template_parameter &c)
+// void to_json(nlohmann::json &j, const template_parameter &c)
 //{
-//    j["kind"] = to_string(c.kind());
-//    if (const auto &t = c.type(); t)
-//        j["type"] = t.value();
-//    if (const auto &n = c.name(); n)
-//        j["name"] = n.value();
-//    if (const auto &d = c.default_value(); d)
-//        j["default"] = d.value();
-//    j["is_variadic"] = c.is_variadic();
-//    j["template_parameters"] = c.template_params();
-//}
+//     j["kind"] = to_string(c.kind());
+//     if (const auto &t = c.type(); t)
+//         j["type"] = t.value();
+//     if (const auto &n = c.name(); n)
+//         j["name"] = n.value();
+//     if (const auto &d = c.default_value(); d)
+//         j["default"] = d.value();
+//     j["is_variadic"] = c.is_variadic();
+//     j["template_parameters"] = c.template_params();
+// }
 //
-//void to_json(nlohmann::json &j, const relationship &c)
+// void to_json(nlohmann::json &j, const relationship &c)
 //{
-//    j["type"] = to_string(c.type());
-//    j["destination"] = std::to_string(c.destination().value());
-//    if (!c.multiplicity_source().empty())
-//        j["multiplicity_source"] = c.multiplicity_source();
-//    if (!c.multiplicity_destination().empty())
-//        j["multiplicity_destination"] = c.multiplicity_destination();
-//    if (c.access() != access_t::kNone)
-//        j["access"] = to_string(c.access());
-//    if (!c.label().empty())
-//        j["label"] = c.label();
-//    if (const auto &comment = c.comment(); comment)
-//        j["comment"] = comment.value();
-//}
+//     j["type"] = to_string(c.type());
+//     j["destination"] = std::to_string(c.destination().value());
+//     if (!c.multiplicity_source().empty())
+//         j["multiplicity_source"] = c.multiplicity_source();
+//     if (!c.multiplicity_destination().empty())
+//         j["multiplicity_destination"] = c.multiplicity_destination();
+//     if (c.access() != access_t::kNone)
+//         j["access"] = to_string(c.access());
+//     if (!c.label().empty())
+//         j["label"] = c.label();
+//     if (const auto &comment = c.comment(); comment)
+//         j["comment"] = comment.value();
+// }
 } // namespace model
 
 namespace generators::graphml {

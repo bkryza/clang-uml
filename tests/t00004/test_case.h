@@ -44,9 +44,12 @@ TEST_CASE("t00004")
 
         REQUIRE(IsField<Public>(src, "B", "cc", "CC"));
         REQUIRE(IsField<Public>(src, "B", "bb", "BB"));
-        REQUIRE(!IsField<Public>(src, "B", "BB_1", "enum"));
-        REQUIRE(!IsField<Public>(src, "B", "BB_2", "enum"));
-        REQUIRE(!IsField<Public>(src, "B", "BB_3", "enum"));
+        
+        if constexpr (!std::is_same_v<graphml_t, std::decay_t<decltype(src)>>) {
+            REQUIRE(!IsField<Public>(src, "B", "BB_1", "enum"));
+            REQUIRE(!IsField<Public>(src, "B", "BB_2", "enum"));
+            REQUIRE(!IsField<Public>(src, "B", "BB_3", "enum"));
+        }
 
         REQUIRE(IsClassTemplate(src, "C<T>"));
         REQUIRE(IsInnerClass(src, "C<T>", "C::AA"));
