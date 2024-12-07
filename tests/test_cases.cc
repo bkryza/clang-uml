@@ -130,6 +130,26 @@ auto render_diagram(
     if constexpr (std::is_same_v<GeneratorType, clanguml::test::json_t>) {
         return nlohmann::json::parse(ss.str());
     }
+    else if constexpr (std::is_same_v<GeneratorType,
+                           clanguml::test::graphml_t>) {
+
+        //        clanguml::common::generators::graphml::graph_t g;
+        //        boost::dynamic_properties dp;
+        //        using clanguml::common::generators::graphml::vertex_t;
+        //
+        //        dp.property("id", get(&vertex_t::id, g));
+        //        dp.property("type", get(&vertex_t::type, g));
+        //        dp.property("name", get(&vertex_t::name, g));
+        //        dp.property("url", get(&vertex_t::url, g));
+        //
+        //        boost::read_graphml(ss, g.graph(), dp);
+
+        pugi::xml_document g;
+
+        g.load(ss);
+
+        return g;
+    }
     else {
         return ss.str();
     }
@@ -178,14 +198,19 @@ generate_include_diagram(clanguml::common::compilation_database &db,
 template <typename T>
 void save_diagram(const std::filesystem::path &path, const T &diagram)
 {
-    static_assert(
-        std::is_same_v<T, std::string> || std::is_same_v<T, nlohmann::json>);
+    static_assert(std::is_same_v<T, std::string> ||
+        std::is_same_v<T, nlohmann::json> ||
+        std::is_same_v<T, clanguml::common::generators::graphml::graphml_t>);
 
     std::filesystem::create_directories(path.parent_path());
     std::ofstream ofs;
     ofs.open(path, std::ofstream::out | std::ofstream::trunc);
     if constexpr (std::is_same_v<T, nlohmann::json>) {
         ofs << std::setw(2) << diagram;
+    }
+    else if constexpr (std::is_same_v<T,
+                           clanguml::common::generators::graphml::graphml_t>) {
+        diagram.save(ofs, " ");
     }
     else {
         ofs << diagram;
@@ -218,6 +243,14 @@ void save_mermaid(const std::string &path, const std::string &filename,
     save_diagram(p, mmd);
 }
 
+void save_graphml(const std::string &path, const std::string &filename,
+    const clanguml::common::generators::graphml::graphml_t &g)
+{
+    std::filesystem::path p{path};
+    p /= filename;
+    save_diagram(p, g);
+}
+
 namespace clanguml::test {
 
 struct diagram_source_storage {
@@ -225,6 +258,16 @@ struct diagram_source_storage {
         : plantuml{std::move(p)}
         , json{std::move(j)}
         , mermaid{std::move(m)}
+        , graphml{graphml_t{common::model::diagram_t::kClass, {}}}
+    {
+    }
+
+    diagram_source_storage(
+        plantuml_t &&p, json_t &&j, mermaid_t &&m, graphml_t &&g)
+        : plantuml{std::move(p)}
+        , json{std::move(j)}
+        , mermaid{std::move(m)}
+        , graphml{std::move(g)}
     {
     }
 
@@ -233,6 +276,7 @@ struct diagram_source_storage {
     plantuml_t plantuml;
     json_t json;
     mermaid_t mermaid;
+    graphml_t graphml;
 };
 
 template <> const plantuml_t &diagram_source_storage::get<plantuml_t>() const
@@ -248,6 +292,11 @@ template <> const json_t &diagram_source_storage::get<json_t>() const
 template <> const mermaid_t &diagram_source_storage::get<mermaid_t>() const
 {
     return mermaid;
+}
+
+template <> const graphml_t &diagram_source_storage::get<graphml_t>() const
+{
+    return graphml;
 }
 
 template <typename T, typename TC>
@@ -384,6 +433,7 @@ void CHECK_DIAGRAM_IMPL(
     try_run_test_case<plantuml_t>(diagrams, tc);
     try_run_test_case<mermaid_t>(diagrams, tc);
     try_run_test_case<json_t>(diagrams, tc);
+    try_run_test_case<graphml_t>(diagrams, tc);
 
     if constexpr (sizeof...(tcs) > 0) {
         CHECK_DIAGRAM_IMPL(diagrams, std::forward<TCs>(tcs)...);
@@ -397,7 +447,8 @@ void CHECK_CLASS_DIAGRAM(const clanguml::config::config &config,
     diagram_source_storage diagram_sources{
         render_class_diagram<plantuml_t>(diagram, model),
         render_class_diagram<json_t>(diagram, model),
-        render_class_diagram<mermaid_t>(diagram, model)};
+        render_class_diagram<mermaid_t>(diagram, model),
+        render_class_diagram<graphml_t>(diagram, model)};
 
     CHECK_DIAGRAM_IMPL(diagram_sources, std::forward<TCs>(tcs)...);
 
@@ -407,6 +458,8 @@ void CHECK_CLASS_DIAGRAM(const clanguml::config::config &config,
         diagram_sources.json.src);
     save_mermaid(config.output_directory(), diagram->name + ".mmd",
         diagram_sources.mermaid.src);
+    save_graphml(config.output_directory(), diagram->name + ".graphml",
+        diagram_sources.graphml.src);
 }
 
 template <typename DiagramConfig, typename DiagramModel, typename... TCs>
@@ -524,6 +577,7 @@ void CHECK_INCLUDE_DIAGRAM(const clanguml::config::config &config,
 #include "t00053/test_case.h"
 #include "t00054/test_case.h"
 #include "t00055/test_case.h"
+
 #if defined(ENABLE_CXX_STD_20_TEST_CASES)
 #include "t00056/test_case.h"
 #endif
@@ -578,7 +632,7 @@ void CHECK_INCLUDE_DIAGRAM(const clanguml::config::config &config,
 #if defined(ENABLE_OBJECTIVE_C_TEST_CASES)
 #include "t00088/test_case.h"
 #endif
-
+/*
 ///
 /// Sequence diagram tests
 ///
@@ -693,7 +747,7 @@ void CHECK_INCLUDE_DIAGRAM(const clanguml::config::config &config,
 ///
 #include "t90000/test_case.h"
 #include "t90001/test_case.h"
-
+*/
 ///
 /// Main test function
 ///

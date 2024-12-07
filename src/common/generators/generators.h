@@ -17,6 +17,7 @@
  */
 #pragma once
 
+#include "class_diagram/generators/graphml/class_diagram_generator.h"
 #include "class_diagram/generators/json/class_diagram_generator.h"
 #include "class_diagram/generators/mermaid/class_diagram_generator.h"
 #include "class_diagram/generators/plantuml/class_diagram_generator.h"
@@ -111,6 +112,9 @@ struct json_generator_tag {
 struct mermaid_generator_tag {
     inline static const std::string extension = "mmd";
 };
+struct graphml_generator_tag {
+    inline static const std::string extension = "graphml";
+};
 /** @} */
 
 /** @defgroup diagram_generator_t Diagram generator selector
@@ -120,6 +124,8 @@ struct mermaid_generator_tag {
  *
  * @{
  */
+struct not_supported { };
+
 // plantuml
 template <typename DiagramConfig, typename GeneratorType>
 struct diagram_generator_t;
@@ -184,6 +190,27 @@ template <>
 struct diagram_generator_t<clanguml::config::include_diagram,
     mermaid_generator_tag> {
     using type = clanguml::include_diagram::generators::mermaid::generator;
+};
+// graphml
+template <>
+struct diagram_generator_t<clanguml::config::class_diagram,
+    graphml_generator_tag> {
+    using type = clanguml::class_diagram::generators::graphml::generator;
+};
+template <>
+struct diagram_generator_t<clanguml::config::sequence_diagram,
+    graphml_generator_tag> {
+    using type = not_supported;
+};
+template <>
+struct diagram_generator_t<clanguml::config::package_diagram,
+    graphml_generator_tag> {
+    using type = not_supported;
+};
+template <>
+struct diagram_generator_t<clanguml::config::include_diagram,
+    graphml_generator_tag> {
+    using type = not_supported;
 };
 /** @} */
 

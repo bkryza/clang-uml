@@ -64,7 +64,8 @@ cli_flow_t cli_handler::parse(int argc, const char **argv)
         generator_type_names{
             {"plantuml", clanguml::common::generator_type_t::plantuml},
             {"json", clanguml::common::generator_type_t::json},
-            {"mermaid", clanguml::common::generator_type_t::mermaid}};
+            {"mermaid", clanguml::common::generator_type_t::mermaid},
+            {"graphml", clanguml::common::generator_type_t::graphml}};
 
     app.add_option("-c,--config", config_path,
         "Location of configuration file, when '-' read from stdin");

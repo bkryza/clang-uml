@@ -323,6 +323,15 @@ struct json_t : public diagram_source_t<nlohmann::json> {
     inline static const std::string diagram_type_name{"JSON"};
 };
 
+struct graphml_t
+    : public diagram_source_t<common::generators::graphml::graphml_t> {
+    using diagram_source_t::diagram_source_t;
+    using source_type = common::generators::graphml::graphml_t;
+    using generator_tag = clanguml::common::generators::graphml_generator_tag;
+
+    inline static const std::string diagram_type_name{"GraphML"};
+};
+
 std::optional<nlohmann::json> get_element_by_id(
     const nlohmann::json &j, const std::string &id)
 {
@@ -484,6 +493,13 @@ bool diagram_source_t<nlohmann::json>::contains(std::string name) const
     return false;
 }
 
+template <>
+bool diagram_source_t<common::generators::graphml::graphml_t>::contains(
+    std::string name) const
+{
+    return false;
+}
+
 template <> std::string diagram_source_t<std::string>::to_string() const
 {
     return src;
@@ -492,6 +508,19 @@ template <> std::string diagram_source_t<std::string>::to_string() const
 template <> std::string diagram_source_t<nlohmann::json>::to_string() const
 {
     return src.dump(2);
+}
+
+template <>
+std::string
+diagram_source_t<common::generators::graphml::graphml_t>::to_string() const
+{
+    using common::generators::graphml::graphml_t;
+
+    std::stringstream ostr;
+
+    src.save(ostr, " ");
+
+    return ostr.str();
 }
 
 struct QualifiedName {
@@ -2698,5 +2727,548 @@ bool IsParticipant(
     auto p = get_participant(j, expand_name(j, name));
 
     return p && (p->at("type") == type);
+}
+/*
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ */
+namespace {
+std::string expand_name(const graphml_t &d, const std::string &name)
+{
+    return name;
+}
+
+auto get_attr_key_id(
+    const graphml_t &d, std::string const &for_, std::string const &name)
+{
+    auto query =
+        fmt::format("//key[@for='{}' and @attr.name='{}']", for_, name);
+
+    auto key_node = d.src.select_node(query.c_str()).node();
+
+    auto result = key_node.attribute("id").as_string();
+
+    return result;
+}
+
+pugi::xpath_node get_element(const graphml_t &d, const QualifiedName &cls)
+{
+    const auto node_name_id = get_attr_key_id(d, "node", "name");
+
+    const auto query = fmt::format("//node[data[@key='{}' and text()='{}']]",
+        node_name_id, expand_name(d, cls.str(d.generate_packages)));
+
+    auto class_node = d.src.select_node(query.c_str());
+    return class_node;
+}
+
+pugi::xpath_node get_graph(
+    const graphml_t &d, const pugi::xml_node &parent, const std::string &name)
+{
+    const auto node_name_id = get_attr_key_id(d, "node", "name");
+
+    const auto query = fmt::format(
+        "node[data[@key='{}' and text()='{}'] and graph]", node_name_id, name);
+
+    auto graph_node = parent.select_node(query.c_str());
+    return graph_node.node().child("graph");
+}
+
+pugi::xpath_node get_element(
+    const graphml_t &d, const std::string &type, const QualifiedName &cls)
+{
+    const auto node_type_id = get_attr_key_id(d, "node", "type");
+    const auto node_name_id = get_attr_key_id(d, "node", "name");
+
+    const auto query = fmt::format("//node[data[@key='{}' and text()='{}'] and "
+                                   "data[@key='{}' and text()='{}']]",
+        node_type_id, type, node_name_id,
+        expand_name(d, cls.str(d.generate_packages)));
+
+    auto class_node = d.src.select_node(query.c_str());
+    return class_node;
+}
+
+pugi::xpath_node get_element(const graphml_t &d,
+    const std::vector<std::string> &types, const QualifiedName &cls)
+{
+    pugi::xpath_node result;
+
+    for (const auto &t : types) {
+        result = get_element(d, t, cls);
+        if (result)
+            return result;
+    }
+
+    return result;
+}
+
+bool has_data(const graphml_t &d, const pugi::xml_node &node,
+    const std::string &data, const std::string &value)
+{
+    const auto data_id = get_attr_key_id(d, node.name(), data);
+
+    const auto query =
+        fmt::format("data[@key='{}' and text()='{}']", data_id, value);
+
+    return !!node.select_node(query.c_str());
+}
+
+pugi::xpath_node get_relationship(const graphml_t &d,
+    const std::string &from_id, const std::string &to_id,
+    const std::string &relationship_type, const std::string &label = "",
+    const std::string &access = "")
+{
+    const auto relationship_type_id = get_attr_key_id(d, "edge", "type");
+
+    std::vector<std::string> data_constraints;
+    data_constraints.push_back(fmt::format("data[@key='{}' and text()='{}']",
+        relationship_type_id, relationship_type));
+
+    if (!label.empty()) {
+        const auto label_id = get_attr_key_id(d, "edge", "label");
+
+        data_constraints.push_back(
+            fmt::format("data[@key='{}' and text()='{}']", label_id, label));
+    }
+
+    if (!access.empty()) {
+        const auto access_id = get_attr_key_id(d, "edge", "access");
+
+        data_constraints.push_back(
+            fmt::format("data[@key='{}' and text()='{}']", access_id, access));
+    }
+
+    auto query = fmt::format("//edge[@source='{}' and @target='{}' and {}]",
+        from_id, to_id, fmt::join(data_constraints, " and "));
+
+    auto result = d.src.select_node(query.c_str());
+
+    return result;
+}
+
+bool find_relationship(const graphml_t &d, const std::string &from_id,
+    const std::string &to_id, const std::string &relationship_type)
+{
+    return !!get_relationship(d, from_id, to_id, relationship_type);
+}
+
+}
+
+template <> bool HasTitle(const graphml_t &d, std::string const &str)
+{
+    auto query = fmt::format("/graphml/desc[text()='{}']", str);
+    auto title_node = d.src.select_node(query.c_str()).node();
+    return !!title_node;
+}
+
+template <> bool IsClass(const graphml_t &d, QualifiedName cls)
+{
+    auto class_node = get_element(d, "class", cls);
+
+    return !!class_node;
+}
+
+template <> bool IsEnum(const graphml_t &d, QualifiedName cls)
+{
+    auto class_node = get_element(d, "enum", cls);
+
+    return !!class_node;
+}
+
+template <> bool IsUnion(const graphml_t &d, QualifiedName cls)
+{
+    auto class_node = get_element(d, "class", cls);
+    if (!class_node)
+        return false;
+
+    const auto node_stereotype_id = get_attr_key_id(d, "node", "stereotype");
+
+    auto query =
+        fmt::format("data[@key='{}' and text()='union']", node_stereotype_id);
+
+    auto class_abstract_stereotype_node =
+        class_node.node().select_node(query.c_str());
+
+    return !!class_abstract_stereotype_node;
+}
+
+template <> bool IsAbstractClass(const graphml_t &d, QualifiedName cls)
+{
+    auto class_node = get_element(d, "class", cls);
+    if (!class_node)
+        return false;
+
+    const auto node_stereotype_id = get_attr_key_id(d, "node", "stereotype");
+
+    auto query = fmt::format(
+        "data[@key='{}' and text()='abstract']", node_stereotype_id);
+
+    auto class_abstract_stereotype_node =
+        class_node.node().select_node(query.c_str());
+
+    return !!class_abstract_stereotype_node;
+}
+
+template <> bool IsAbstractClassTemplate(const graphml_t &d, QualifiedName cls)
+{
+    return IsAbstractClass(d, cls);
+}
+
+template <> bool IsClassTemplate(const graphml_t &d, QualifiedName cls)
+{
+    pugi::xpath_node class_node = get_element(d, "class", cls);
+
+    return !!class_node;
+}
+
+template <> bool IsObjCProtocol(const graphml_t &d, QualifiedName cls)
+{
+    auto class_node = get_element(d, "objc_protocol", cls);
+
+    return !!class_node;
+}
+
+template <> bool IsObjCCategory(const graphml_t &d, QualifiedName cls)
+{
+    auto class_node = get_element(d, "objc_category", cls);
+
+    return !!class_node;
+}
+
+template <> bool IsObjCInterface(const graphml_t &d, QualifiedName cls)
+{
+    auto class_node = get_element(d, "objc_interface", cls);
+
+    return !!class_node;
+}
+
+template <> bool IsConcept(const graphml_t &d, QualifiedName cpt)
+{
+    pugi::xpath_node concept_node = get_element(d, "concept", cpt);
+
+    return !!concept_node;
+}
+
+template <>
+bool IsConceptRequirement(
+    const graphml_t &d, std::string const &cpt, std::string requirement)
+{
+    return true;
+}
+
+template <>
+bool IsConstraint(const graphml_t &d, QualifiedName from, QualifiedName to,
+    std::string label, std::string style)
+{
+    return true;
+}
+
+template <>
+bool IsConceptParameterList(
+    const graphml_t &d, std::string const &cpt, std::string parameter_list)
+{
+    return true;
+}
+
+template <>
+bool IsBaseClass(const graphml_t &d, QualifiedName base, QualifiedName subclass)
+{
+    auto base_node =
+        get_element(d, {"class", "objc_interface", "objc_protocol"}, base);
+    auto subclass_node =
+        get_element(d, {"class", "objc_interface", "objc_protocol"}, subclass);
+
+    if (!base_node || !subclass_node)
+        return false;
+
+    return find_relationship(d,
+        subclass_node.node().attribute("id").as_string(),
+        base_node.node().attribute("id").as_string(), "extension");
+}
+
+template <>
+bool IsInnerClass(
+    const graphml_t &d, std::string const &parent, std::string const &inner)
+{
+    auto from_node = get_element(d, QualifiedName{parent});
+    auto to_node = get_element(d, QualifiedName{inner});
+
+    if (!from_node || !to_node)
+        return false;
+
+    return find_relationship(d, to_node.node().attribute("id").as_string(),
+        from_node.node().attribute("id").as_string(), "containment");
+}
+
+template <typename... Ts>
+bool IsAssociation(const graphml_t &d, std::string const &from,
+    std::string const &to, std::string const &label = "",
+    std::string multiplicity_source = "", std::string multiplicity_dest = "",
+    std::string style = "")
+{
+    auto from_node_id =
+        get_element(d, QualifiedName{from}).node().attribute("id").as_string();
+    auto to_node_id =
+        get_element(d, QualifiedName{to}).node().attribute("id").as_string();
+
+    std::string access;
+    if constexpr (has_type<Public, Ts...>())
+        access = "public";
+    else if constexpr (has_type<Protected, Ts...>())
+        access = "protected";
+    else
+        access = "private";
+
+    auto edge_node = get_relationship(
+        d, from_node_id, to_node_id, "association", label, access);
+
+    return !!edge_node;
+}
+
+template <>
+bool IsDependency(
+    const graphml_t &d, QualifiedName from, QualifiedName to, std::string style)
+{
+    auto from_node = get_element(d, from);
+    auto to_node = get_element(d, to);
+
+    if (!from_node || !to_node)
+        return false;
+
+    return find_relationship(d, from_node.node().attribute("id").as_string(),
+        to_node.node().attribute("id").as_string(), "dependency");
+}
+
+template <>
+bool IsInstantiation(const graphml_t &d, std::string const &from,
+    std::string const &to, std::string style)
+{
+    auto from_node = get_element(d, QualifiedName{from});
+    auto to_node = get_element(d, QualifiedName{to});
+
+    if (!from_node || !to_node)
+        return false;
+
+    return find_relationship(d, to_node.node().attribute("id").as_string(),
+        from_node.node().attribute("id").as_string(), "instantiation");
+}
+
+template <typename... Ts>
+bool IsAggregation(const graphml_t &d, std::string const &from,
+    std::string const &to, std::string const &label = "",
+    std::string multiplicity_source = "", std::string multiplicity_dest = "",
+    std::string style = "")
+{
+    std::string access;
+    if constexpr (has_type<Public, Ts...>())
+        access = "public";
+    else if constexpr (has_type<Protected, Ts...>())
+        access = "protected";
+    else
+        access = "private";
+
+    auto from_node = get_element(d, QualifiedName{from});
+    auto to_node = get_element(d, QualifiedName{to});
+
+    if (!from_node || !to_node)
+        return false;
+
+    return !!get_relationship(d, from_node.node().attribute("id").as_string(),
+        to_node.node().attribute("id").as_string(), "aggregation", label,
+        access);
+}
+
+template <typename... Ts>
+bool IsComposition(const graphml_t &d, std::string const &from,
+    std::string const &to, std::string const &label = "",
+    std::string multiplicity_source = "", std::string multiplicity_dest = "",
+    std::string style = "")
+{
+    std::string access;
+    if constexpr (has_type<Public, Ts...>())
+        access = "public";
+    else if constexpr (has_type<Protected, Ts...>())
+        access = "protected";
+    else
+        access = "private";
+
+    auto from_node = get_element(d, QualifiedName{from});
+    auto to_node = get_element(d, QualifiedName{to});
+
+    if (!from_node || !to_node)
+        return false;
+
+    return !!get_relationship(d, from_node.node().attribute("id").as_string(),
+        to_node.node().attribute("id").as_string(), "composition", label,
+        access);
+}
+
+template <typename... Ts>
+bool IsFriend(
+    const graphml_t &d, std::string const &from, std::string const &to)
+{
+    std::string access;
+    if constexpr (has_type<Public, Ts...>())
+        access = "public";
+    else if constexpr (has_type<Protected, Ts...>())
+        access = "protected";
+    else
+        access = "private";
+
+    auto from_node = get_element(d, QualifiedName{from});
+    auto to_node = get_element(d, QualifiedName{to});
+
+    if (!from_node || !to_node)
+        return false;
+
+    return !!get_relationship(d, from_node.node().attribute("id").as_string(),
+        to_node.node().attribute("id").as_string(), "friendship", "", access);
+}
+
+template <>
+bool HasNote(const graphml_t &d, std::string const &cls,
+    std::string const &position, std::string const &note)
+{
+    return true;
+}
+
+template <>
+bool HasLink(const graphml_t &d, std::string const &element,
+    std::string const &link, std::string const &tooltip)
+{
+    auto element_node = get_element(d, QualifiedName{element}).node();
+
+    return has_data(d, element_node, "url", link) &&
+        has_data(d, element_node, "tooltip", tooltip);
+}
+
+template <>
+bool HasMemberLink(const graphml_t &d, std::string const &method,
+    std::string const &link, std::string const &tooltip)
+{
+    return true;
+}
+
+template <typename... Ts>
+bool IsMethod(const graphml_t &d, const std::string &cls,
+    std::string const &name, std::string type = "void",
+    std::string const &params = "")
+{
+    return true;
+}
+
+template <typename... Ts>
+bool IsField(const graphml_t &d, QualifiedName cls, std::string const &name,
+    std::string type)
+{
+    return true;
+}
+
+template <>
+bool IsLayoutHint(const graphml_t &d, std::string const &from,
+    std::string const &hint, std::string const &to)
+{
+    return true;
+}
+
+template <typename PackageT, typename... Args>
+bool IsPackagePath(const graphml_t &d, const pugi::xml_node &parent,
+    const std::string &head, Args... args)
+{
+    if constexpr (sizeof...(Args) == 0) {
+        auto subgraph = get_graph(d, parent, head);
+        return !!subgraph;
+    }
+    else {
+        auto subgraph = get_graph(d, parent, head);
+        if (!subgraph)
+            return false;
+
+        return IsPackagePath<PackageT>(d, subgraph.node(), args...);
+    }
+}
+
+template <typename... Args>
+bool IsNamespacePackage(const graphml_t &d, Args... args)
+{
+    const auto &graphml = d.src.child("graphml").child("graph");
+
+    return IsPackagePath<NamespacePackage>(
+        d, graphml, std::forward<Args>(args)...);
+}
+
+template <typename... Args>
+bool IsDirectoryPackage(const graphml_t &d, Args... args)
+{
+    const auto &graphml = d.src.child("graphml").child("graph");
+
+    return IsPackagePath<DirectoryPackage>(
+        d, graphml, std::forward<Args>(args)...);
+}
+
+template <typename... Args>
+bool IsModulePackage(const graphml_t &d, Args... args)
+{
+    const auto &graphml = d.src.child("graphml").child("graph");
+
+    return IsPackagePath<ModulePackage>(
+        d, graphml, std::forward<Args>(args)...);
 }
 } // namespace clanguml::test

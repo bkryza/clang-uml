@@ -88,7 +88,7 @@ else()
 endif(NOT ENABLE_CUDA_TEST_CASES)
 
 set(CLANG_UML_TEST_LIBRARIES clang-umllib ${YAML_CPP_LIBRARIES}
-                             ${LIBTOOLING_LIBS} Threads::Threads)
+                             ${LIBTOOLING_LIBS} pugixml::pugixml Threads::Threads)
 
 if(MSVC)
     list(APPEND CLANG_UML_TEST_LIBRARIES "Version.lib")

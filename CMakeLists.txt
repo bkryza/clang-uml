@@ -180,6 +180,7 @@ endif()
 # Setup thirdparty sources
 #
 set(THIRDPARTY_HEADERS_DIR ${PROJECT_SOURCE_DIR}/thirdparty/)
+add_subdirectory(thirdparty/pugixml)
 
 #
 # Setup include directories

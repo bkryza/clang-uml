@@ -101,21 +101,28 @@ void generate_diagram_select_generator(const std::string &od,
     using diagram_generator =
         typename diagram_generator_t<DiagramConfig, GeneratorTag>::type;
 
-    std::stringstream buffer;
-    buffer << diagram_generator(
-        dynamic_cast<DiagramConfig &>(*diagram), *model);
+    if constexpr (!std::is_same_v<diagram_generator, not_supported>) {
 
-    // Only open the file after the diagram has been generated successfully
-    // in order not to overwrite previous diagram in case of failure
-    auto path = std::filesystem::path{od} /
-        fmt::format("{}.{}", name, GeneratorTag::extension);
-    std::ofstream ofs;
-    ofs.open(path, std::ofstream::out | std::ofstream::trunc);
-    ofs << buffer.str();
+        std::stringstream buffer;
+        buffer << diagram_generator(
+            dynamic_cast<DiagramConfig &>(*diagram), *model);
 
-    ofs.close();
+        // Only open the file after the diagram has been generated successfully
+        // in order not to overwrite previous diagram in case of failure
+        auto path = std::filesystem::path{od} /
+            fmt::format("{}.{}", name, GeneratorTag::extension);
+        std::ofstream ofs;
+        ofs.open(path, std::ofstream::out | std::ofstream::trunc);
+        ofs << buffer.str();
 
-    LOG_INFO("Written {} diagram to {}", name, path.string());
+        ofs.close();
+
+        LOG_INFO("Written {} diagram to {}", name, path.string());
+    }
+    else {
+        LOG_INFO("Serialization to {} not supported for {}",
+            GeneratorTag::extension, name);
+    }
 }
 
 template <typename DiagramConfig>
@@ -169,6 +176,11 @@ void generate_diagram_impl(const std::string &name,
         else if (generator_type == generator_type_t::mermaid) {
             generate_diagram_select_generator<diagram_config,
                 mermaid_generator_tag>(
+                runtime_config.output_directory, name, diagram, model);
+        }
+        else if (generator_type == generator_type_t::graphml) {
+            generate_diagram_select_generator<diagram_config,
+                graphml_generator_tag>(
                 runtime_config.output_directory, name, diagram, model);
         }
 

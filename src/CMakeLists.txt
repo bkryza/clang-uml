@@ -74,6 +74,7 @@ target_link_libraries(
     ${LIBTOOLING_LIBS}
     ${MSVC_LIBRARIES}
     ${BACKWARD_CPP_LIBRARIES}
+    pugixml::pugixml
     clang-umllib
     Threads::Threads)
 

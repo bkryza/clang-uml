@@ -86,7 +86,8 @@ private:
 enum class generator_type_t {
     plantuml, /*!< Diagrams will be generated in PlantUML format */
     json,     /*!< Diagrams will be generated in JSON format */
-    mermaid   /*!< Diagrams will be generated in MermaidJS format */
+    mermaid,   /*!< Diagrams will be generated in MermaidJS format */
+    graphml   /*!< Diagrams will be generated in GraphML format */
 };
 
 std::string to_string(const std::string &s);
