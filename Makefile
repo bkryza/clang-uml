@@ -150,6 +150,7 @@ test_diagrams: test
 	mkdir -p debug/tests/diagrams/mermaid
 	plantuml -tsvg -nometadata -o plantuml debug/tests/diagrams/*.puml
 	python3 util/validate_json.py debug/tests/diagrams/*.json
+	python3 util/validate_graphml.py debug/tests/diagrams/*.graphml
 	python3 util/generate_mermaid.py debug/tests/diagrams/*.mmd
 
 document_test_cases: test_diagrams
