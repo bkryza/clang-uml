@@ -1,5 +1,5 @@
 /**
- * @file src/common/generators/json/generator.h
+ * @file src/common/generators/graphml/generator.h
  *
  * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
@@ -18,6 +18,7 @@
 #pragma once
 
 #include "common/generators/generator.h"
+#include "common/model/element_view.h"
 #include "common/model/filters/diagram_filter.h"
 #include "config/config.h"
 #include "util/error.h"
@@ -60,12 +61,6 @@ public:
         map_[name] = fmt::format("{}{}", prefix_, next_data_key_id_++);
         return map_[name];
     }
-    //
-    //    std::string generate(const std::string &name)
-    //    {
-    //        map_[name] = fmt::format("{}{}", prefix_, next_data_key_id_++);
-    //        return map_[name];
-    //    }
 
     std::optional<std::string> get(const std::string &name) const
     {
@@ -116,7 +111,23 @@ public:
      *
      * @param ostr Output stream
      */
-    virtual void generate_diagram(graphml_node_t &parent) const = 0;
+    void generate_diagram(graphml_node_t &parent) const
+    {
+        generate_top_level_elements(parent);
+
+        generate_relationships(parent);
+    }
+
+    /**
+     * @brief In a nested diagram, generate the top level elements.
+     *
+     * This method iterates over the top level elements. In case the diagram
+     * is nested (i.e. includes packages), for each package it recursively
+     * call generation of elements contained in each package.
+     *
+     * @param parent GraphML node
+     */
+    virtual void generate_top_level_elements(graphml_node_t &parent) const = 0;
 
     /**
      * @brief Generate metadata element with diagram metadata
@@ -125,7 +136,31 @@ public:
      */
     void generate_metadata(graphml_t &parent) const;
 
-    virtual void generate_keys(graphml_node_t &parent) const = 0;
+    /**
+     * @brief Generate diagram package
+     *
+     * @param p Diagram package element
+     * @param parent Parent JSON node
+     */
+    virtual void generate(
+        const model::package &p, graphml_node_t &parent) const = 0;
+
+    /**
+     * @brief Generate all relationships in the diagram.
+     *
+     * @param parent GraphML node
+     */
+    virtual void generate_relationships(graphml_node_t &parent) const;
+
+    /**
+     * @brief Generate all relationships originating at a diagram element.
+     *
+     * @tparam T Type of diagram element
+     * @param c Diagram diagram element
+     * @param parent JSON node
+     */
+    virtual void generate_relationships(
+        const model::diagram_element &c, graphml_node_t &parent) const;
 
     template <typename T> void add_url(pugi::xml_node &node, const T &c) const;
 
@@ -160,7 +195,13 @@ public:
         const std::string &value) const;
 
 protected:
-    virtual void init_property_keys() = 0;
+    virtual void init_property_keys() const;
+
+    virtual void generate_keys(graphml_node_t &parent) const;
+
+    void generate_key(pugi::xml_node &parent, const std::string &attr_name,
+        const std::string &for_value, const std::string &id_value,
+        const std::string &attr_type = "string") const;
 
     property_keymap_t &graph_properties() { return graph_properties_; }
     property_keymap_t &node_properties() { return node_properties_; }
@@ -174,6 +215,8 @@ private:
     mutable property_keymap_t graph_properties_{"gd"};
     mutable property_keymap_t node_properties_{"nd"};
     mutable property_keymap_t edge_properties_{"ed"};
+
+    mutable uint64_t edge_id_{0};
 };
 
 template <typename DiagramModel, typename DiagramConfig>
@@ -188,21 +231,7 @@ template <typename C, typename D>
 void generator<C, D>::generate(std::ostream &ostr) const
 {
     const auto &config = generators::generator<C, D>::config();
-    //    const auto &model = generators::generator<C, D>::model();
-    //
-    //    if (!config.allow_empty_diagrams() && model.is_empty()) {
-    //        throw clanguml::error::empty_diagram_error{model.type(),
-    //        model.name(),
-    //            "Diagram configuration resulted in empty diagram."};
-    //    }
-    //
-    //    nlohmann::json j;
-    //    j["name"] = model.name();
-    //    j["diagram_type"] = to_string(model.type());
-    //    if (config.title) {
-    //        j["title"] = config.title();
-    //    }
-    //
+
     graphml_t graph;
 
     auto node_decl = graph.append_child(pugi::node_declaration);
@@ -236,11 +265,76 @@ void generator<C, D>::generate(std::ostream &ostr) const
 
     generate_diagram(graph_node);
 
-    //    std::stringstream ss;
-    //    graph.save(ss, "  ");
-    //    LOG_ERROR("GraphML: {}", ss.str());
-
     graph.save(ostr, "  ");
+}
+
+template <typename C, typename D>
+void generator<C, D>::generator::generate_relationships(
+    graphml_node_t &parent) const
+{
+    for (const auto &p : generator<C, D>::model()) {
+        if (auto *pkg = dynamic_cast<model::package *>(p.get()); pkg) {
+            generate_relationships(*pkg, parent);
+        }
+        else {
+            generator<C, D>::model().dynamic_apply(p.get(),
+                [&](auto *el) { generate_relationships(*el, parent); });
+        }
+    }
+}
+
+template <typename C, typename D>
+void generator<C, D>::generate_relationships(
+    const model::diagram_element &c, graphml_node_t &parent) const
+{
+    const auto &model = generator<C, D>::model();
+
+    for (const auto &r : c.relationships()) {
+        auto target_element = model.get(r.destination());
+        if (!target_element.has_value()) {
+            LOG_DBG("Skipping {} relation from '{}' to '{}' due "
+                    "to unresolved destination id",
+                to_string(r.type()), c.full_name(true),
+                r.destination().value());
+            continue;
+        }
+
+        const auto target_id = *node_ids_.get(target_element.value().alias());
+        const auto src_id = *node_ids_.get(c.alias());
+
+        auto edge_node = parent.append_child("edge");
+
+        edge_node.append_attribute("id") = fmt::format("e{}", edge_id_++);
+        edge_node.append_attribute("source") = src_id;
+        edge_node.append_attribute("target") = target_id;
+
+        add_data(edge_node, edge_properties().get("type"), to_string(r.type()));
+        if (!r.label().empty())
+            add_data(edge_node, edge_properties().get("label"), r.label());
+
+        if (r.access() != access_t::kNone)
+            add_data(edge_node, edge_properties().get("access"),
+                to_string(r.access()));
+    }
+
+    if (const auto *p = dynamic_cast<const model::package *>(&c);
+        p != nullptr) {
+        for (const auto &subpackage : *p) {
+            if (dynamic_cast<model::package *>(subpackage.get()) != nullptr) {
+                const auto &sp = dynamic_cast<model::package &>(*subpackage);
+                if (!sp.is_empty() ||
+                    (model.type() == model::diagram_t::kPackage))
+                    generate_relationships(sp, parent);
+            }
+            else {
+                model.dynamic_apply(subpackage.get(), [&](auto *el) {
+                    if (model.should_include(*el)) {
+                        generate_relationships(*el, parent);
+                    }
+                });
+            }
+        }
+    }
 }
 
 template <typename C, typename D>
@@ -293,13 +387,7 @@ pugi::xml_node generator<C, D>::make_subgraph(graphml_node_t &parent,
     if (!type.empty())
         add_data(graph_node, node_properties().get("type"), type);
 
-    auto result = graph_node.append_child("graph");
-    result.append_attribute("id") = graph_ids_.add(id);
-    result.append_attribute("edgedefault").set_value("directed");
-    result.append_attribute("parse.nodeids").set_value("canonical");
-    result.append_attribute("parse.edgeids").set_value("canonical");
-    result.append_attribute("parse.order").set_value("nodesfirst");
-    return result;
+    return graph_node;
 }
 
 template <typename C, typename D>
@@ -333,14 +421,25 @@ void generator<C, D>::add_url(pugi::xml_node &node, const T &c) const
 
     if (maybe_link_pattern) {
         const auto &[link_prefix, link_pattern] = *maybe_link_pattern;
-        auto ec =
-            clanguml::common::generators::generator<C, D>::element_context(c);
-        common::generators::make_context_source_relative(ec, link_prefix);
+        try {
+            auto ec =
+                clanguml::common::generators::generator<C, D>::element_context(
+                    c);
+            common::generators::make_context_source_relative(ec, link_prefix);
 
-        auto url = clanguml::common::generators::generator<C, D>::env().render(
-            std::string_view{link_pattern}, ec);
+            auto url =
+                clanguml::common::generators::generator<C, D>::env().render(
+                    std::string_view{link_pattern}, ec);
 
-        add_data(node, node_properties().get("url"), url);
+            add_data(node, node_properties().get("url"), url);
+        }
+        catch (const inja::json::parse_error &e) {
+            LOG_ERROR("Failed to parse Jinja template: {}", link_pattern);
+        }
+        catch (const std::exception &e) {
+            LOG_ERROR("Failed to render PlantUML directive: \n{}\n due to: {}",
+                link_pattern, e.what());
+        }
     }
 
     auto maybe_tooltip_pattern =
@@ -348,15 +447,85 @@ void generator<C, D>::add_url(pugi::xml_node &node, const T &c) const
 
     if (maybe_tooltip_pattern) {
         const auto &[tooltip_prefix, tooltip_pattern] = *maybe_tooltip_pattern;
-        auto ec =
-            clanguml::common::generators::generator<C, D>::element_context(c);
-        common::generators::make_context_source_relative(ec, tooltip_prefix);
+        try {
+            auto ec =
+                clanguml::common::generators::generator<C, D>::element_context(
+                    c);
+            common::generators::make_context_source_relative(
+                ec, tooltip_prefix);
 
-        auto tooltip =
-            clanguml::common::generators::generator<C, D>::env().render(
-                std::string_view{tooltip_pattern}, ec);
+            auto tooltip =
+                clanguml::common::generators::generator<C, D>::env().render(
+                    std::string_view{tooltip_pattern}, ec);
 
-        add_data(node, node_properties().get("tooltip"), tooltip);
+            add_data(node, node_properties().get("tooltip"), tooltip);
+        }
+        catch (const inja::json::parse_error &e) {
+            LOG_ERROR("Failed to parse Jinja template: {}", tooltip_pattern);
+        }
+        catch (const std::exception &e) {
+            LOG_ERROR("Failed to render PlantUML directive: \n{}\n due to: {}",
+                tooltip_pattern, e.what());
+        }
     }
+}
+
+template <typename C, typename D>
+void generator<C, D>::generator::generate_key(pugi::xml_node &parent,
+    const std::string &attr_name, const std::string &for_value,
+    const std::string &id_value, const std::string &attr_type) const
+{
+    auto key = parent.append_child("key");
+    key.append_attribute("attr.name") = attr_name.c_str();
+    key.append_attribute("attr.type") = attr_type.c_str();
+    key.append_attribute("for") = for_value.c_str();
+    key.append_attribute("id") = id_value.c_str();
+}
+
+template <typename C, typename D>
+void generator<C, D>::generate_keys(graphml_node_t &parent) const
+{
+    init_property_keys();
+
+    // Graph properties
+    generate_key(parent, "id", "graph", *graph_properties().get("id"));
+    generate_key(parent, "type", "graph", *graph_properties().get("type"));
+    generate_key(parent, "using_namespace", "graph",
+        *graph_properties().get("using_namespace"));
+
+    // Node properties
+    generate_key(parent, "id", "node", *node_properties().get("id"));
+    generate_key(parent, "type", "node", *node_properties().get("type"));
+    generate_key(parent, "name", "node", *node_properties().get("name"));
+    generate_key(
+        parent, "stereotype", "node", *node_properties().get("stereotype"));
+    generate_key(parent, "url", "node", *node_properties().get("url"));
+    generate_key(parent, "tooltip", "node", *node_properties().get("tooltip"));
+
+    // Edge properties
+    generate_key(parent, "type", "edge", *edge_properties().get("type"));
+    generate_key(parent, "access", "edge", *edge_properties().get("access"));
+    generate_key(parent, "label", "edge", *edge_properties().get("label"));
+    generate_key(parent, "url", "edge", *edge_properties().get("url"));
+}
+
+template <typename C, typename D>
+void generator<C, D>::init_property_keys() const
+{
+    graph_properties_.add("id");
+    graph_properties_.add("type");
+    graph_properties_.add("using_namespace");
+
+    node_properties_.add("id");
+    node_properties_.add("type");
+    node_properties_.add("name");
+    node_properties_.add("stereotype");
+    node_properties_.add("url");
+    node_properties_.add("tooltip");
+
+    edge_properties_.add("type");
+    edge_properties_.add("url");
+    edge_properties_.add("label");
+    edge_properties_.add("access");
 }
 } // namespace clanguml::common::generators::graphml

@@ -35,10 +35,7 @@
 #include <iostream>
 #include <sstream>
 
-namespace clanguml {
-namespace class_diagram {
-namespace generators {
-namespace graphml {
+namespace clanguml::class_diagram::generators::graphml {
 
 using diagram_config = clanguml::config::class_diagram;
 using diagram_model = clanguml::class_diagram::model::diagram;
@@ -50,11 +47,10 @@ using clanguml::class_diagram::model::class_element;
 using clanguml::class_diagram::model::concept_;
 using clanguml::class_diagram::model::enum_;
 using clanguml::class_diagram::model::objc_interface;
+using clanguml::common::generators::graphml::graphml_node_t;
 using clanguml::common::model::access_t;
 using clanguml::common::model::package;
 using clanguml::common::model::relationship_t;
-
-using clanguml::common::generators::graphml::graphml_node_t;
 
 using namespace clanguml::util;
 
@@ -66,18 +62,6 @@ public:
     generator(diagram_config &config, diagram_model &model);
 
     using common_generator<diagram_config, diagram_model>::generate;
-
-    /**
-     * @brief Main generator method.
-     *
-     * This method is called first and coordinates the entire diagram
-     * generation.
-     *
-     * @param ostr Output stream.
-     */
-    void generate_diagram(graphml_node_t &parent) const override;
-
-    void generate_keys(graphml_node_t &parent) const override;
 
     /**
      * Render class element into a GraphML node.
@@ -117,86 +101,9 @@ public:
      * @param p package diagram element
      * @param parent GraphML node
      */
-    void generate(const package &p, graphml_node_t &parent) const;
+    void generate(const package &p, graphml_node_t &parent) const override;
 
-    /**
-     * @brief In a nested diagram, generate the top level elements.
-     *
-     * This method iterates over the top level elements. In case the diagram
-     * is nested (i.e. includes packages), for each package it recursively
-     * call generation of elements contained in each package.
-     *
-     * @param parent GraphML node
-     */
-    void generate_top_level_elements(graphml_node_t &parent) const;
-
-    /**
-     * @brief Generate all relationships in the diagram.
-     *
-     * @param parent GraphML node
-     */
-    void generate_relationships(graphml_node_t &parent) const;
-
-    /**
-     * @brief Generate all relationships originating at a diagram element.
-     *
-     * @tparam T Type of diagram element
-     * @param c Diagram diagram element
-     * @param parent JSON node
-     */
-    template <typename T>
-    void generate_relationships(const T &c, graphml_node_t &parent) const;
-
-protected:
-    void init_property_keys() override;
-
-    void generate_key(pugi::xml_node &parent, const std::string &attr_name,
-        const std::string &for_value, const std::string &id_value,
-        const std::string &attr_type = "string") const;
-
-    mutable uint64_t edge_id_{0};
+    void generate_top_level_elements(graphml_node_t &parent) const override;
 };
 
-template <typename T>
-void generator::generate_relationships(const T &c, graphml_node_t &parent) const
-{
-    const auto &model =
-        common_generator<diagram_config, diagram_model>::model();
-
-    for (const auto &r : c.relationships()) {
-        auto target_element = model.get(r.destination());
-        if (!target_element.has_value()) {
-            LOG_DBG("Skipping {} relation from '{}' to '{}' due "
-                    "to unresolved destination id",
-                to_string(r.type()), c.full_name(true),
-                r.destination().value());
-            continue;
-        }
-
-        const auto target_id = *node_ids_.get(target_element.value().alias());
-        const auto src_id = *node_ids_.get(c.alias());
-
-        auto edge_node = parent.append_child("edge");
-
-        edge_node.append_attribute("id") = fmt::format("e{}", edge_id_++);
-        edge_node.append_attribute("source") = src_id;
-        edge_node.append_attribute("target") = target_id;
-
-        add_data(edge_node, edge_properties().get("type"), to_string(r.type()));
-        if (!r.label().empty())
-            add_data(edge_node, edge_properties().get("label"), r.label());
-
-        if (r.access() != access_t::kNone)
-            add_data(edge_node, edge_properties().get("access"),
-                to_string(r.access()));
-    }
-}
-
-template <>
-void generator::generate_relationships<package>(
-    const package &p, graphml_node_t &parent) const;
-
-} // namespace json
-} // namespace generators
-} // namespace class_diagram
-} // namespace clanguml
+} // namespace clanguml::class_diagram::generators::graphml

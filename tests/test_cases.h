@@ -3271,4 +3271,41 @@ bool IsModulePackage(const graphml_t &d, Args... args)
     return IsPackagePath<ModulePackage>(
         d, graphml, std::forward<Args>(args)...);
 }
+
+template <> bool HasComment(const graphml_t &d, std::string const &comment)
+{
+    // Comments are not included in GraphML
+    return true;
+}
+
+template <> bool IsDeprecated(const graphml_t &d, const std::string &name)
+{
+    auto node = get_element(d, QualifiedName{name});
+    if (!node)
+        return false;
+
+    const auto node_stereotype_id = get_attr_key_id(d, "node", "stereotype");
+
+    auto query = fmt::format(
+        "data[@key='{}' and text()='deprecated']", node_stereotype_id);
+
+    auto class_abstract_stereotype_node =
+        node.node().select_node(query.c_str());
+
+    return !!class_abstract_stereotype_node;
+}
+
+template <>
+bool IsPackageDependency(
+    const graphml_t &d, std::string const &from, std::string const &to)
+{
+    auto from_node = get_element(d, QualifiedName{from});
+    auto to_node = get_element(d, QualifiedName{to});
+
+    if (!from_node || !to_node)
+        return false;
+
+    return !!get_relationship(d, from_node.node().attribute("id").as_string(),
+        to_node.node().attribute("id").as_string(), "dependency");
+}
 } // namespace clanguml::test

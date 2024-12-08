@@ -25,67 +25,10 @@ namespace clanguml::class_diagram::generators::graphml {
 generator::generator(diagram_config &config, diagram_model &model)
     : common_generator<diagram_config, diagram_model>{config, model}
 {
-    init_property_keys();
-}
-
-void generator::generate_diagram(graphml_node_t &parent) const
-{
-    /*
-       if (config().using_namespace)
-           parent["using_namespace"] = config().using_namespace().to_string();
-
-       if (config().using_module)
-           parent["using_module"] = config().using_module();
-
-       if (config().generate_packages.has_value)
-           parent["package_type"] = to_string(config().package_type());
-       parent["elements"] = std::vector<nlohmann::json>{};
-       parent["relationships"] = std::vector<nlohmann::json>{};
-   */
-
-    generate_top_level_elements(parent);
-
-    generate_relationships(parent);
-}
-
-void generator::generate_key(pugi::xml_node &parent,
-    const std::string &attr_name, const std::string &for_value,
-    const std::string &id_value, const std::string &attr_type) const
-{
-    auto key = parent.append_child("key");
-    key.append_attribute("attr.name") = attr_name.c_str();
-    key.append_attribute("attr.type") = attr_type.c_str();
-    key.append_attribute("for") = for_value.c_str();
-    key.append_attribute("id") = id_value.c_str();
-}
-
-void generator::generate_keys(graphml_node_t &parent) const
-{
-    generate_key(parent, "id", "graph", *graph_properties().get("id"));
-    generate_key(parent, "name", "graph", *graph_properties().get("name"));
-    generate_key(parent, "type", "graph", *graph_properties().get("type"));
-    generate_key(parent, "using_namespace", "graph",
-        *graph_properties().get("using_namespace"));
-
-    // Node properties
-    generate_key(parent, "id", "node", *node_properties().get("id"));
-    generate_key(parent, "type", "node", *node_properties().get("type"));
-    generate_key(parent, "name", "node", *node_properties().get("name"));
-    generate_key(
-        parent, "stereotype", "node", *node_properties().get("stereotype"));
-    generate_key(parent, "url", "node", *node_properties().get("url"));
-    generate_key(parent, "tooltip", "node", *node_properties().get("tooltip"));
-
-    // Edge properties
-    generate_key(parent, "type", "edge", *edge_properties().get("type"));
-    generate_key(parent, "access", "edge", *edge_properties().get("access"));
-    generate_key(parent, "label", "edge", *edge_properties().get("label"));
-    generate_key(parent, "url", "edge", *edge_properties().get("url"));
 }
 
 void generator::generate_top_level_elements(graphml_node_t &parent) const
 {
-
     for (const auto &p : model()) {
         if (auto *pkg = dynamic_cast<package *>(p.get()); pkg) {
             if (!pkg->is_empty())
@@ -103,8 +46,8 @@ void generator::generate(const package &p, graphml_node_t &parent) const
     const auto &uns = config().using_namespace();
     using namespace common::generators::graphml;
 
-    //    nlohmann::json package_object;
     pugi::xml_node package_node;
+    pugi::xml_node graph_node;
 
     if (config().generate_packages()) {
         // Don't generate packages from namespaces filtered out by
@@ -114,6 +57,7 @@ void generator::generate(const package &p, graphml_node_t &parent) const
 
             package_node = make_subgraph(parent, p.alias(), p.name(),
                 to_string(config().package_type()));
+            graph_node = make_graph(package_node, p.alias());
         }
     }
 
@@ -122,7 +66,7 @@ void generator::generate(const package &p, graphml_node_t &parent) const
             const auto &sp = dynamic_cast<package &>(*subpackage);
             if (!sp.is_empty()) {
                 if (config().generate_packages()) {
-                    generate(sp, package_node);
+                    generate(sp, graph_node);
                 }
                 else
                     generate(sp, parent);
@@ -131,17 +75,13 @@ void generator::generate(const package &p, graphml_node_t &parent) const
         else {
             model().dynamic_apply(subpackage.get(), [&](auto *el) {
                 if (config().generate_packages()) {
-                    generate(*el, package_node);
+                    generate(*el, graph_node);
                 }
                 else
                     generate(*el, parent);
             });
         }
     }
-
-    //    if (config().generate_packages() && !package_object.empty()) {
-    //        parent["elements"].push_back(std::move(package_object));
-    //    }
 }
 
 void generator::generate(const class_ &c, graphml_node_t &parent) const
@@ -197,14 +137,6 @@ void generator::generate(const concept_ &c, graphml_node_t &parent) const
     add_data(node, node_properties().get("type"), c.type_name());
     add_cdata(node, node_properties().get("name"), render_name(full_name));
     add_url(node, c);
-
-    //    nlohmann::json object = c;
-    //
-    //    if (!config().generate_fully_qualified_name())
-    //        object["display_name"] =
-    //            common::generators::graphml::render_name(c.full_name_no_ns());
-    //
-    //    parent["elements"].push_back(std::move(object));
 }
 
 void generator::generate(const objc_interface &c, graphml_node_t &parent) const
@@ -216,70 +148,6 @@ void generator::generate(const objc_interface &c, graphml_node_t &parent) const
     add_data(
         node, node_properties().get("name"), render_name(c.full_name(true)));
     add_url(node, c);
-    //    nlohmann::json object = c;
-    //
-    //    // Perform config dependent postprocessing on generated class
-    //    if (!config().generate_fully_qualified_name())
-    //        object["display_name"] =
-    //            common::generators::graphml::render_name(c.full_name_no_ns());
-    //
-    //    object["display_name"] =
-    //        config().simplify_template_type(object["display_name"]);
-    //
-    //    parent["elements"].push_back(std::move(object));
-}
-
-void generator::generate_relationships(graphml_node_t &parent) const
-{
-    for (const auto &p : model()) {
-        if (auto *pkg = dynamic_cast<package *>(p.get()); pkg) {
-            generate_relationships(*pkg, parent);
-        }
-        else {
-            model().dynamic_apply(p.get(),
-                [&](auto *el) { generate_relationships(*el, parent); });
-        }
-    }
-}
-
-template <>
-void generator::generate_relationships<package>(
-    const package &p, graphml_node_t &parent) const
-{
-    for (const auto &subpackage : p) {
-        if (dynamic_cast<package *>(subpackage.get()) != nullptr) {
-            const auto &sp = dynamic_cast<package &>(*subpackage);
-            if (!sp.is_empty())
-                generate_relationships(sp, parent);
-        }
-        else {
-            model().dynamic_apply(subpackage.get(), [&](auto *el) {
-                if (model().should_include(*el)) {
-                    generate_relationships(*el, parent);
-                }
-            });
-        }
-    }
-}
-
-void generator::init_property_keys()
-{
-    graph_properties().add("id");
-    graph_properties().add("name");
-    graph_properties().add("type");
-    graph_properties().add("using_namespace");
-
-    node_properties().add("id");
-    node_properties().add("type");
-    node_properties().add("name");
-    node_properties().add("stereotype");
-    node_properties().add("url");
-    node_properties().add("tooltip");
-
-    edge_properties().add("type");
-    edge_properties().add("url");
-    edge_properties().add("label");
-    edge_properties().add("access");
 }
 
 } // namespace clanguml::class_diagram::generators::graphml

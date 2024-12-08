@@ -132,18 +132,6 @@ auto render_diagram(
     }
     else if constexpr (std::is_same_v<GeneratorType,
                            clanguml::test::graphml_t>) {
-
-        //        clanguml::common::generators::graphml::graph_t g;
-        //        boost::dynamic_properties dp;
-        //        using clanguml::common::generators::graphml::vertex_t;
-        //
-        //        dp.property("id", get(&vertex_t::id, g));
-        //        dp.property("type", get(&vertex_t::type, g));
-        //        dp.property("name", get(&vertex_t::name, g));
-        //        dp.property("url", get(&vertex_t::url, g));
-        //
-        //        boost::read_graphml(ss, g.graph(), dp);
-
         pugi::xml_document g;
 
         g.load(ss);
@@ -461,7 +449,8 @@ void CHECK_PACKAGE_DIAGRAM(const clanguml::config::config &config,
     diagram_source_storage diagram_sources{
         render_package_diagram<plantuml_t>(diagram, model),
         render_package_diagram<json_t>(diagram, model),
-        render_package_diagram<mermaid_t>(diagram, model)};
+        render_package_diagram<mermaid_t>(diagram, model),
+        render_package_diagram<graphml_t>(diagram, model)};
 
     CHECK_DIAGRAM_IMPL(diagram_sources, std::forward<TCs>(tcs)...);
 
@@ -471,6 +460,8 @@ void CHECK_PACKAGE_DIAGRAM(const clanguml::config::config &config,
         diagram_sources.template get<json_t>().src);
     save_mermaid(config.output_directory(), diagram->name + ".mmd",
         diagram_sources.template get<mermaid_t>().src);
+    save_graphml(config.output_directory(), diagram->name + ".graphml",
+        diagram_sources.template get<graphml_t>().src);
 }
 
 template <typename DiagramConfig, typename DiagramModel, typename... TCs>

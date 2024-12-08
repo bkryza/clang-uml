@@ -19,6 +19,8 @@
 
 #include "common/types.h"
 
+#include <set>
+
 namespace clanguml::common::model {
 
 using clanguml::common::eid_t;

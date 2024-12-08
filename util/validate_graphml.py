@@ -30,7 +30,6 @@ def validate_xml(xml_path, schema):
         raise Exception("Invalid schema")
 
 
-
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print(f"Usage: {sys.argv[0]} <path_to_xml_file>")
