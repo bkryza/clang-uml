@@ -38,7 +38,7 @@ TEST_CASE("t00087")
         REQUIRE(IsMethod<Public>(src, "FooClass", "bar"));
 
         REQUIRE(IsField<Private>(src, "FooClass", "foo_", "int"));
-        
+
         if constexpr (!std::is_same_v<graphml_t, std::decay_t<decltype(src)>>) {
             REQUIRE(!IsField<Private>(src, "FooClass", "pImpl_", "void *"));
         }
