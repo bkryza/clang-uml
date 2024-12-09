@@ -286,6 +286,8 @@ bool translation_unit_visitor::VisitTypeAliasTemplateDecl(
     tbuilder().build_from_template_specialization_type(
         *template_specialization_ptr, cls, *template_type_specialization_ptr);
 
+    template_specialization_ptr->is_template(true);
+
     if (diagram().should_include(*template_specialization_ptr)) {
         const auto name = template_specialization_ptr->full_name(true);
         const auto id = template_specialization_ptr->id();
@@ -1532,6 +1534,8 @@ void translation_unit_visitor::process_method(
                 unaliased_type->getTemplateName().getAsTemplateDecl(),
                 *unaliased_type, &c);
 
+            template_specialization_ptr->is_template();
+
             if (diagram().should_include(*template_specialization_ptr)) {
                 relationships.emplace_back(template_specialization_ptr->id(),
                     relationship_t::kDependency);
@@ -2013,6 +2017,8 @@ void translation_unit_visitor::process_function_parameter(
                 *template_specialization_ptr,
                 templ->getTemplateName().getAsTemplateDecl(), *templ, &c);
 
+            template_specialization_ptr->is_template(true);
+
             if (diagram().should_include(*template_specialization_ptr)) {
                 relationships.emplace_back(template_specialization_ptr->id(),
                     relationship_t::kDependency);
@@ -2274,6 +2280,7 @@ void translation_unit_visitor::process_field(
                 ->getTemplateName()
                 .getAsTemplateDecl(),
             *template_field_type, {&c});
+        template_specialization_ptr->is_template(true);
 
         if (!field.skip_relationship() && template_specialization_ptr) {
             const auto &template_specialization = *template_specialization_ptr;

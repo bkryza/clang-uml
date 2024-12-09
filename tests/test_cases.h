@@ -2030,7 +2030,7 @@ template <> bool IsClassTemplate(const json_t &d, QualifiedName cls)
 {
     auto e =
         get_element(d.src, expand_name(d.src, cls.str(d.generate_packages)));
-    return e && e->at("type") == "class";
+    return e && e->at("type") == "class" && e->at("is_template");
 }
 
 template <> bool IsAbstractClassTemplate(const json_t &d, QualifiedName cls)
@@ -2995,7 +2995,8 @@ template <> bool IsClassTemplate(const graphml_t &d, QualifiedName cls)
 {
     pugi::xpath_node class_node = get_element(d, "class", cls);
 
-    return !!class_node;
+    return !!class_node &&
+        has_data(d, class_node.node(), "is_template", "true");
 }
 
 template <> bool IsObjCProtocol(const graphml_t &d, QualifiedName cls)

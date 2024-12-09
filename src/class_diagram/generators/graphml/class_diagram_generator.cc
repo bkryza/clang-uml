@@ -22,9 +22,21 @@
 
 namespace clanguml::class_diagram::generators::graphml {
 
+using clanguml::common::to_string;
+
 generator::generator(diagram_config &config, diagram_model &model)
     : common_generator<diagram_config, diagram_model>{config, model}
 {
+}
+
+std::vector<std::pair<std::string, common::generators::graphml::property_type>>
+generator::node_property_names() const
+{
+    auto defaults =
+        common_generator<diagram_config, diagram_model>::node_property_names();
+    defaults.emplace_back(
+        "is_template", common::generators::graphml::property_type::kBoolean);
+    return defaults;
 }
 
 void generator::generate_top_level_elements(graphml_node_t &parent) const
@@ -101,9 +113,11 @@ void generator::generate(const class_ &c, graphml_node_t &parent) const
     if (c.is_abstract()) {
         add_data(class_node, "stereotype", "abstract");
     }
-    if (c.is_union()) {
+    else if (c.is_union()) {
         add_data(class_node, "stereotype", "union");
     }
+    add_data(class_node, "is_template", to_string(c.is_template()));
+
     add_url(class_node, c);
 }
 

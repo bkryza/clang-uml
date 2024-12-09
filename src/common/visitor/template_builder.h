@@ -1768,6 +1768,8 @@ template_builder<VisitorT>::try_as_record_type(
         build_from_class_template_specialization(
             *tag_argument, *class_template_specialization);
 
+        tag_argument->is_template(true);
+
         if (tag_argument) {
             argument.set_type(tag_argument->name_and_ns());
             for (const auto &p : tag_argument->template_params())

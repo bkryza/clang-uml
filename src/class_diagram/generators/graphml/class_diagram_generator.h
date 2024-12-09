@@ -63,6 +63,10 @@ public:
 
     using common_generator<diagram_config, diagram_model>::generate;
 
+    std::vector<
+        std::pair<std::string, common::generators::graphml::property_type>>
+    node_property_names() const override;
+
     /**
      * Render class element into a GraphML node.
      *
