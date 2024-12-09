@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<styles>
+  <style name="clang-uml" scope="edge" selectionOnly="false">
+    <mapping>
+      <source name="type" origin="customProperty" type="string"/>
+      <target name="arrowTarget" type="arrow">
+        <hints/>
+      </target>
+      <conversion type="discrete">
+        <discrete>
+          <value>extension</value>
+          <result>
+            <arrow type="white_delta"/>
+          </result>
+        </discrete>
+        <discrete>
+          <value>association</value>
+          <result>
+            <arrow type="short"/>
+          </result>
+        </discrete>
+        <discrete>
+          <value>dependency</value>
+          <result>
+            <arrow type="plain"/>
+          </result>
+        </discrete>
+        <discrete>
+          <value>containment</value>
+          <result>
+            <arrow type="convex"/>
+          </result>
+        </discrete>
+        <discrete>
+          <value>composition</value>
+          <result>
+            <arrow type="none"/>
+          </result>
+        </discrete>
+        <discrete>
+          <value>aggregation</value>
+          <result>
+            <arrow type="none"/>
+          </result>
+        </discrete>
+      </conversion>
+    </mapping>
+    <mapping>
+      <source name="type" origin="customProperty" type="string"/>
+      <target name="arrowSource" type="arrow">
+        <hints/>
+      </target>
+      <conversion type="discrete">
+        <discrete>
+          <value>aggregation</value>
+          <result>
+            <arrow type="white_diamond"/>
+          </result>
+        </discrete>
+        <discrete>
+          <value>composition</value>
+          <result>
+            <arrow type="diamond"/>
+          </result>
+        </discrete>
+      </conversion>
+    </mapping>
+    <mapping>
+      <source name="type" origin="customProperty" type="string"/>
+      <target name="lineLineType" type="lineType">
+        <hints/>
+      </target>
+      <conversion type="discrete">
+        <discrete>
+          <value>dependency</value>
+          <result>
+            <lineType type="dashed" width="1.0"/>
+          </result>
+        </discrete>
+      </conversion>
+    </mapping>
+    <mapping>
+      <source name="label" origin="customProperty" type="string"/>
+      <target name="labelText" type="string">
+        <hints/>
+      </target>
+      <conversion type="asIs"/>
+    </mapping>
+  </style>
+  <style name="clang-uml" scope="node" selectionOnly="false">
+    <mapping>
+      <source name="name" origin="customProperty" type="string"/>
+      <target name="labelText" type="string">
+        <hints>
+          <hint type="int">0</hint>
+          <hint type="string">replace</hint>
+          <hint type="boolean">true</hint>
+        </hints>
+      </target>
+      <conversion type="asIs"/>
+    </mapping>
+    <mapping>
+      <source name="url" origin="dataProperty" type="string"/>
+      <target name="url" type="string">
+        <hints/>
+      </target>
+      <conversion type="asIs"/>
+    </mapping>
+    <mapping>
+      <source name="type" origin="customProperty" type="string"/>
+      <target name="labelBackgroundColor" type="color">
+        <hints/>
+      </target>
+      <conversion type="discrete">
+        <discrete>
+          <value>class</value>
+          <result>#ffcc00</result>
+        </discrete>
+        <discrete>
+          <value>concept</value>
+          <result>#99cc00</result>
+        </discrete>
+      </conversion>
+    </mapping>
+  </style>
+</styles>
