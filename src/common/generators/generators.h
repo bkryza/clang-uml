@@ -26,6 +26,7 @@
 #include "common/generators/clang_tool.h"
 #include "common/model/filters/diagram_filter_factory.h"
 #include "config/config.h"
+#include "include_diagram/generators/graphml/include_diagram_generator.h"
 #include "include_diagram/generators/json/include_diagram_generator.h"
 #include "include_diagram/generators/mermaid/include_diagram_generator.h"
 #include "include_diagram/generators/plantuml/include_diagram_generator.h"
@@ -211,7 +212,7 @@ struct diagram_generator_t<clanguml::config::package_diagram,
 template <>
 struct diagram_generator_t<clanguml::config::include_diagram,
     graphml_generator_tag> {
-    using type = not_supported;
+    using type = clanguml::include_diagram::generators::graphml::generator;
 };
 /** @} */
 

@@ -48,8 +48,7 @@ void generator::generate(const package &p, graphml_node_t &parent) const
         add_url(package_node, p);
 
         if (p.is_deprecated())
-            add_data(package_node, node_properties().get("stereotype"),
-                "deprecated");
+            add_data(package_node, "stereotype", "deprecated");
 
         auto graph_node = make_graph(package_node, p.alias());
 

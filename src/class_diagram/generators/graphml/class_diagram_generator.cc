@@ -95,14 +95,14 @@ void generator::generate(const class_ &c, graphml_node_t &parent) const
         full_name = c.full_name(true);
 
     auto class_node = make_node(parent, node_ids_.add(c.alias()));
-    add_data(class_node, node_properties().get("type"), c.type_name());
-    add_cdata(class_node, node_properties().get("name"),
+    add_data(class_node, "type", c.type_name());
+    add_cdata(class_node, "name",
         config().simplify_template_type(render_name(full_name)));
     if (c.is_abstract()) {
-        add_data(class_node, node_properties().get("stereotype"), "abstract");
+        add_data(class_node, "stereotype", "abstract");
     }
     if (c.is_union()) {
-        add_data(class_node, node_properties().get("stereotype"), "union");
+        add_data(class_node, "stereotype", "union");
     }
     add_url(class_node, c);
 }
@@ -118,8 +118,8 @@ void generator::generate(const enum_ &e, graphml_node_t &parent) const
         full_name = e.full_name(true);
 
     auto node = make_node(parent, node_ids_.add(e.alias()));
-    add_data(node, node_properties().get("type"), e.type_name());
-    add_cdata(node, node_properties().get("name"), render_name(full_name));
+    add_data(node, "type", e.type_name());
+    add_cdata(node, "name", render_name(full_name));
     add_url(node, e);
 }
 
@@ -134,8 +134,8 @@ void generator::generate(const concept_ &c, graphml_node_t &parent) const
         full_name = c.full_name(true);
 
     auto node = make_node(parent, node_ids_.add(c.alias()));
-    add_data(node, node_properties().get("type"), c.type_name());
-    add_cdata(node, node_properties().get("name"), render_name(full_name));
+    add_data(node, "type", c.type_name());
+    add_cdata(node, "name", render_name(full_name));
     add_url(node, c);
 }
 
@@ -144,9 +144,8 @@ void generator::generate(const objc_interface &c, graphml_node_t &parent) const
     using namespace common::generators::graphml;
 
     auto node = make_node(parent, node_ids_.add(c.alias()));
-    add_data(node, node_properties().get("type"), c.type_name());
-    add_data(
-        node, node_properties().get("name"), render_name(c.full_name(true)));
+    add_data(node, "type", c.type_name());
+    add_data(node, "name", render_name(c.full_name(true)));
     add_url(node, c);
 }
 

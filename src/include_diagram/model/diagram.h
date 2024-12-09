@@ -40,7 +40,7 @@ using nested_trait_fspath = clanguml::common::model::nested_trait<source_file,
  * @brief Class representing an include diagram model.
  */
 class diagram : public clanguml::common::model::diagram,
-                public clanguml::common::model::element_view<source_file>,
+                public clanguml::common::model::element_views<source_file>,
                 public nested_trait_fspath {
 public:
     diagram() = default;

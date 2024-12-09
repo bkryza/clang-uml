@@ -1252,12 +1252,14 @@ bool HasMemberLink(const plantuml_t &d, std::string const &method,
 
 template <> bool IsFolder(const plantuml_t &d, std::string const &path)
 {
-    return d.contains("folder \"" + util::split(path, "/").back() + "\"");
+    const std::filesystem::path p{path};
+    return d.contains("folder \"" + p.filename().string() + "\"");
 }
 
 template <> bool IsFile(const plantuml_t &d, std::string const &path)
 {
-    return d.contains("file \"" + util::split(path, "/").back() + "\"");
+    const std::filesystem::path p{path};
+    return d.contains("file \"" + p.filename().string() + "\"");
 }
 
 template <> bool IsSystemHeader(const plantuml_t &d, std::string const &path)
@@ -2728,66 +2730,7 @@ bool IsParticipant(
 
     return p && (p->at("type") == type);
 }
-/*
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- */
+
 namespace {
 std::string expand_name(const graphml_t &d, const std::string &name)
 {
@@ -2816,6 +2759,33 @@ pugi::xpath_node get_element(const graphml_t &d, const QualifiedName &cls)
 
     auto class_node = d.src.select_node(query.c_str());
     return class_node;
+}
+
+pugi::xml_node get_element(
+    const graphml_t &d, const pugi::xml_node &parent, const QualifiedName &cls)
+{
+    const auto node_name_id = get_attr_key_id(d, "node", "name");
+
+    const auto query = fmt::format("node[data[@key='{}' and text()='{}']]",
+        node_name_id, expand_name(d, cls.str(d.generate_packages)));
+
+    auto class_node = parent.select_node(query.c_str());
+    if (!class_node)
+        return {};
+
+    return class_node.node();
+}
+
+pugi::xpath_node get_graph_node(
+    const graphml_t &d, const pugi::xml_node &parent, const std::string &name)
+{
+    const auto node_name_id = get_attr_key_id(d, "node", "name");
+
+    const auto query = fmt::format(
+        "node[data[@key='{}' and text()='{}'] and graph]", node_name_id, name);
+
+    auto graph_node = parent.child("graph").select_node(query.c_str());
+    return graph_node.node();
 }
 
 pugi::xpath_node get_graph(
@@ -2859,6 +2829,34 @@ pugi::xpath_node get_element(const graphml_t &d,
     return result;
 }
 
+pugi::xml_node get_nested_element(
+    const graphml_t &d, const std::vector<std::string> &p)
+{
+    if (p.empty())
+        return {};
+
+    auto it = p.begin();
+
+    auto subgraph = get_graph_node(d, d.src.child("graphml"), *it);
+
+    while (true) {
+        if (!subgraph)
+            return {};
+
+        it++;
+
+        if (it == p.end())
+            break;
+
+        subgraph = get_graph_node(d, subgraph.node(), *it);
+    }
+
+    if (!subgraph)
+        return {};
+
+    return subgraph.node();
+}
+
 bool has_data(const graphml_t &d, const pugi::xml_node &node,
     const std::string &data, const std::string &value)
 {
@@ -2868,6 +2866,28 @@ bool has_data(const graphml_t &d, const pugi::xml_node &node,
         fmt::format("data[@key='{}' and text()='{}']", data_id, value);
 
     return !!node.select_node(query.c_str());
+}
+
+pugi::xml_node get_file_node(const graphml_t &d, const pugi::xml_node &parent,
+    const std::filesystem::path &path_fs)
+{
+    assert(path_fs.is_relative());
+
+    std::filesystem::path path_parent_fs{path_fs.parent_path()};
+
+    if (path_parent_fs.empty())
+        return get_element(
+            d, parent, QualifiedName{path_fs.filename().string()});
+
+    std::vector<std::string> p{path_parent_fs.begin(), path_parent_fs.end()};
+
+    auto parent_node = get_nested_element(d, p);
+
+    if (!parent_node || !has_data(d, parent_node, "type", "folder"))
+        return {};
+
+    return get_element(d, parent_node.child("graph"),
+        QualifiedName{path_fs.filename().string()});
 }
 
 pugi::xpath_node get_relationship(const graphml_t &d,
@@ -3308,4 +3328,80 @@ bool IsPackageDependency(
     return !!get_relationship(d, from_node.node().attribute("id").as_string(),
         to_node.node().attribute("id").as_string(), "dependency");
 }
+
+template <> bool IsFolder(const graphml_t &d, std::string const &path)
+{
+    std::filesystem::path path_fs{path};
+
+    assert(path_fs.is_relative());
+
+    std::vector<std::string> p{path_fs.begin(), path_fs.end()};
+
+    const auto node = get_nested_element(d, p);
+
+    if (!node)
+        return false;
+
+    return !!has_data(d, node, "type", "folder");
+}
+
+template <> bool IsFile(const graphml_t &d, std::string const &path)
+{
+    auto file_node = get_file_node(
+        d, d.src.child("graphml").child("graph"), std::filesystem::path{path});
+
+    if (!file_node)
+        return false;
+
+    return !!has_data(d, file_node, "type", "file");
+}
+
+template <> bool IsSystemHeader(const graphml_t &d, std::string const &path)
+{
+    auto file_node = get_element(d, QualifiedName{path}).node();
+
+    if (!file_node)
+        return false;
+
+    return !!has_data(d, file_node, "type", "file") &&
+        !!has_data(d, file_node, "stereotype", "header") &&
+        !has_data(d, file_node, "stereotype", "source") &&
+        !!has_data(d, file_node, "is_system", "true");
+}
+
+template <>
+bool IsHeaderDependency(const graphml_t &d, std::string const &from,
+    std::string const &to, std::string style)
+{
+    assert(d.diagram_type == common::model::diagram_t::kInclude);
+
+    auto from_node = get_file_node(
+        d, d.src.child("graphml").child("graph"), std::filesystem::path{from});
+    auto to_node = get_file_node(
+        d, d.src.child("graphml").child("graph"), std::filesystem::path{to});
+
+    if (!from_node || !to_node)
+        return false;
+
+    return find_relationship(d, from_node.attribute("id").as_string(),
+        to_node.attribute("id").as_string(), "association");
+}
+
+template <>
+bool IsSystemHeaderDependency(const graphml_t &d, std::string const &from,
+    std::string const &to, std::string style)
+{
+    assert(d.diagram_type == common::model::diagram_t::kInclude);
+
+    auto from_node = get_file_node(
+        d, d.src.child("graphml").child("graph"), std::filesystem::path{from});
+    auto to_node = get_element(d, QualifiedName{to});
+
+    if (!from_node || !to_node)
+        return false;
+
+    return find_relationship(d, from_node.attribute("id").as_string(),
+        to_node.node().attribute("id").as_string(), "dependency");
+}
+
 } // namespace clanguml::test

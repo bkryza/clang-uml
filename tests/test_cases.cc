@@ -471,7 +471,8 @@ void CHECK_INCLUDE_DIAGRAM(const clanguml::config::config &config,
     diagram_source_storage diagram_sources{
         render_include_diagram<plantuml_t>(diagram, model),
         render_include_diagram<json_t>(diagram, model),
-        render_include_diagram<mermaid_t>(diagram, model)};
+        render_include_diagram<mermaid_t>(diagram, model),
+        render_include_diagram<graphml_t>(diagram, model)};
 
     CHECK_DIAGRAM_IMPL(diagram_sources, std::forward<TCs>(tcs)...);
 
@@ -481,6 +482,8 @@ void CHECK_INCLUDE_DIAGRAM(const clanguml::config::config &config,
         diagram_sources.template get<json_t>().src);
     save_mermaid(config.output_directory(), diagram->name + ".mmd",
         diagram_sources.template get<mermaid_t>().src);
+    save_graphml(config.output_directory(), diagram->name + ".graphml",
+        diagram_sources.template get<graphml_t>().src);
 }
 } // namespace clanguml::test
 

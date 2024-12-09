@@ -27,4 +27,25 @@ std::string render_name(std::string name)
     return name;
 }
 
+std::string to_string(const property_type t)
+{
+    switch (t) {
+    case property_type::kBoolean:
+        return "boolean";
+    case property_type::kInt:
+        return "int";
+    case property_type::kLong:
+        return "long";
+    case property_type::kFloat:
+        return "float";
+    case property_type::kDouble:
+        return "double";
+    case property_type::kString:
+        return "string";
+    default:
+        assert(false);
+        return "";
+    }
+}
+
 } // namespace clanguml::common::generators::graphml

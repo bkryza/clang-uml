@@ -161,7 +161,7 @@ document_test_cases: test_diagrams
 clanguml_diagrams: debug
 	mkdir -p docs/diagrams/plantuml
 	mkdir -p docs/diagrams/mermaid
-	debug/src/clang-uml -g plantuml -g json -g mermaid -p
+	debug/src/clang-uml -g plantuml -g json -g mermaid -g graphml -p
 	# Convert .puml files to svg images
 	plantuml -tsvg -nometadata -o plantuml docs/diagrams/*.puml
 	# Convert .mmd files to svg images
