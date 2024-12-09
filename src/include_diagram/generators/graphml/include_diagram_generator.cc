@@ -32,8 +32,8 @@ generator::node_property_names() const
 {
     auto defaults =
         common_generator<diagram_config, diagram_model>::node_property_names();
-    defaults.push_back(
-        {"is_system", common::generators::graphml::property_type::kBoolean});
+    defaults.emplace_back(
+        "is_system", common::generators::graphml::property_type::kBoolean);
     return defaults;
 }
 

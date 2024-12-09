@@ -65,4 +65,4 @@ void generator::generate(const package &p, graphml_node_t &parent) const
     }
 }
 
-} // namespace clanguml::package_diagram::generators::json
+} // namespace clanguml::package_diagram::generators::graphml

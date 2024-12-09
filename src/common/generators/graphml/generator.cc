@@ -48,4 +48,45 @@ std::string to_string(const property_type t)
     }
 }
 
+property_keymap_t::property_keymap_t(std::string prefix)
+    : prefix_{std::move(prefix)}
+{
+}
+
+[[maybe_unused]] std::pair<std::string, property_type> property_keymap_t::add(
+    const std::string &name, const property_type pt)
+{
+    map_[name] = {fmt::format("{}{}", prefix_, next_data_key_id_++), pt};
+    return map_[name];
+}
+
+auto property_keymap_t::get(const std::string &name) const
+    -> std::optional<std::pair<std::string, property_type>>
+{
+    if (map_.count(name) == 0)
+        return {};
+
+    return map_.at(name);
+}
+
+graphml_node_map_t::graphml_node_map_t(std::string prefix)
+    : prefix_{std::move(prefix)}
+{
+}
+
+[[maybe_unused]] std::string graphml_node_map_t::add(const std::string &name)
+{
+    map_[name] = fmt::format("{}{}", prefix_, next_node_id_++);
+    return map_[name];
+}
+
+std::optional<std::string> graphml_node_map_t::get(
+    const std::string &name) const
+{
+    if (map_.count(name) == 0)
+        return {};
+
+    return map_.at(name);
+}
+
 } // namespace clanguml::common::generators::graphml

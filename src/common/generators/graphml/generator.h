@@ -57,7 +57,7 @@ enum class xml_node_t { kGraph, kNode, kEdge };
  */
 enum class property_type { kBoolean, kInt, kLong, kFloat, kDouble, kString };
 
-std::string to_string(const property_type t);
+std::string to_string(property_type t);
 
 using key_property_map_t = std::map</*property name*/ std::string,
     std::pair</*property id*/ std::string, /*property type*/ property_type>>;
@@ -68,26 +68,13 @@ using key_property_map_t = std::map</*property name*/ std::string,
  */
 class property_keymap_t {
 public:
-    property_keymap_t(std::string prefix)
-        : prefix_{std::move(prefix)}
-    {
-    }
+    property_keymap_t(std::string prefix);
 
-    [[maybe_unused]] auto add(const std::string &name,
-        const property_type pt = property_type::kString)
-    {
-        map_[name] = {fmt::format("{}{}", prefix_, next_data_key_id_++), pt};
-        return map_[name];
-    }
+    [[maybe_unused]] std::pair<std::string, property_type> add(
+        const std::string &name, property_type pt = property_type::kString);
 
-    auto get(const std::string &name) const
-        -> std::optional<std::pair<std::string, property_type>>
-    {
-        if (map_.count(name) == 0)
-            return {};
-
-        return map_.at(name);
-    }
+    std::optional<std::pair<std::string, property_type>> get(
+        const std::string &name) const;
 
 private:
     uint64_t next_data_key_id_{0};
@@ -103,25 +90,11 @@ private:
  */
 class graphml_node_map_t {
 public:
-    graphml_node_map_t(std::string prefix)
-        : prefix_{std::move(prefix)}
-    {
-    }
+    graphml_node_map_t(std::string prefix);
 
-    [[maybe_unused]] std::string add(const std::string &name,
-        const property_type pt = property_type::kString)
-    {
-        map_[name] = fmt::format("{}{}", prefix_, next_node_id_++);
-        return map_[name];
-    }
+    [[maybe_unused]] std::string add(const std::string &name);
 
-    auto get(const std::string &name) const -> std::optional<std::string>
-    {
-        if (map_.count(name) == 0)
-            return {};
-
-        return map_.at(name);
-    }
+    std::optional<std::string> get(const std::string &name) const;
 
 private:
     uint64_t next_node_id_{0};
@@ -379,14 +352,18 @@ void generator<C, D>::generate_relationships(
             continue;
         }
 
-        const auto target_id = *node_ids_.get(target_element.value().alias());
-        const auto src_id = *node_ids_.get(c.alias());
+        const auto maybe_target_id =
+            node_ids_.get(target_element.value().alias());
+        const auto maybe_src_id = node_ids_.get(c.alias());
+
+        if (!maybe_src_id || !maybe_target_id)
+            continue;
 
         auto edge_node = parent.append_child("edge");
 
         edge_node.append_attribute("id") = fmt::format("e{}", edge_id_++);
-        edge_node.append_attribute("source") = src_id;
-        edge_node.append_attribute("target") = target_id;
+        edge_node.append_attribute("source") = *maybe_src_id;
+        edge_node.append_attribute("target") = *maybe_target_id;
 
         add_data(edge_node, "type", to_string(r.type()));
         if (!r.label().empty())

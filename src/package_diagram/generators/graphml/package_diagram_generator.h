@@ -60,4 +60,4 @@ public:
     void generate_top_level_elements(graphml_node_t &parent) const override;
 };
 
-} // namespace clanguml::package_diagram::generators::json
+} // namespace clanguml::package_diagram::generators::graphml
