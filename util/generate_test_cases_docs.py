@@ -40,7 +40,7 @@ with open(r'tests/test_cases.yaml') as f:
             for test_case in test_cases:
                 tc_index.write(f' * [{test_case["name"]}](./test_cases/{test_case["name"]}.md) - {test_case["title"]}\n')
 
-    # Generate invididual documentation docs
+    # Generate individual documentation docs
     for test_group, test_cases in test_groups.items():
         for test_case in test_cases:
             name = test_case['name']
@@ -92,5 +92,15 @@ with open(r'tests/test_cases.yaml') as f:
                         with open(jd) as f:
                             contents = f.read()
                             tc.write("```json\n")
+                            tc.write(contents)
+                            tc.write("\n```\n")
+
+                tc.write("## Generated GraphML models\n")
+                for diagram_name, _ in config_dict['diagrams'].items():
+                    jd = f'debug/tests/diagrams/{diagram_name}.graphml'
+                    if os.path.exists(jd):
+                        with open(jd) as f:
+                            contents = f.read()
+                            tc.write("```xml\n")
                             tc.write(contents)
                             tc.write("\n```\n")
