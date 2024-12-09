@@ -214,6 +214,34 @@ struct diagram_generator_t<clanguml::config::include_diagram,
     graphml_generator_tag> {
     using type = clanguml::include_diagram::generators::graphml::generator;
 };
+
+template <typename GeneratorTag>
+constexpr bool generator_supports_diagram_type(
+    clanguml::common::model::diagram_t dt)
+{
+    using clanguml::common::model::diagram_t;
+
+    switch (dt) {
+    case diagram_t::kClass:
+        return !std::is_same_v<not_supported,
+            typename diagram_generator_t<clanguml::config::class_diagram,
+                GeneratorTag>::type>;
+    case diagram_t::kSequence:
+        return !std::is_same_v<not_supported,
+            typename diagram_generator_t<clanguml::config::sequence_diagram,
+                GeneratorTag>::type>;
+    case diagram_t::kPackage:
+        return std::is_same_v<not_supported,
+            typename diagram_generator_t<clanguml::config::package_diagram,
+                GeneratorTag>::type>;
+    case diagram_t::kInclude:
+        return std::is_same_v<not_supported,
+            typename diagram_generator_t<clanguml::config::include_diagram,
+                GeneratorTag>::type>;
+    default:
+        return false;
+    }
+}
 /** @} */
 
 /**

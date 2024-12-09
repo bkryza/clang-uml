@@ -250,6 +250,38 @@ int generate_diagrams(const std::vector<std::string> &diagram_names,
         if (!diagram_names.empty() && !util::contains(diagram_names, name))
             continue;
 
+        // If none of the generators supports the diagram type - skip it
+        bool at_least_one_generator_supports_diagram_type{false};
+        for (const auto generator_type : runtime_config.generators) {
+            if (generator_type == generator_type_t::plantuml) {
+                if (generator_supports_diagram_type<plantuml_generator_tag>(
+                        diagram->type()))
+                    at_least_one_generator_supports_diagram_type = true;
+            }
+            else if (generator_type == generator_type_t::json) {
+                if (generator_supports_diagram_type<json_generator_tag>(
+                        diagram->type()))
+                    at_least_one_generator_supports_diagram_type = true;
+            }
+            else if (generator_type == generator_type_t::mermaid) {
+                if (generator_supports_diagram_type<mermaid_generator_tag>(
+                        diagram->type()))
+                    at_least_one_generator_supports_diagram_type = true;
+            }
+            else if (generator_type == generator_type_t::graphml) {
+                if (generator_supports_diagram_type<graphml_generator_tag>(
+                        diagram->type()))
+                    at_least_one_generator_supports_diagram_type = true;
+            }
+        }
+
+        if (!at_least_one_generator_supports_diagram_type) {
+            LOG_INFO("Diagram '{}' not supported by any of selected "
+                     "generators - skipping...",
+                name);
+            continue;
+        }
+
         const auto &valid_translation_units = translation_units_map.at(name);
 
         LOG_DBG("Found {} possible translation units for diagram '{}'",
