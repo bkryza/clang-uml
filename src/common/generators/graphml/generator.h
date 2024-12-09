@@ -380,11 +380,11 @@ void generator<C, D>::generate_metadata(graphml_t &parent) const
     if (generators::generator<C, D>::config().generate_metadata()) {
         auto comment = parent.append_child(pugi::node_comment);
         comment.set_value(fmt::format(
-            "Generated with clang-uml {}", clanguml::version::version()));
+            " Generated with clang-uml {} ", clanguml::version::version()));
 
         comment = parent.append_child(pugi::node_comment);
         comment.set_value(
-            fmt::format("LLVM version {}", clang::getClangFullVersion()));
+            fmt::format(" LLVM version {} ", clang::getClangFullVersion()));
     }
 }
 
