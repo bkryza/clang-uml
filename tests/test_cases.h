@@ -3204,10 +3204,29 @@ bool IsFriend(
 }
 
 template <>
-bool HasNote(const graphml_t &d, std::string const &cls,
+bool HasNote(const graphml_t &d, std::string const &element,
     std::string const &position, std::string const &note)
 {
-    return true;
+    if (note.empty())
+        return true;
+
+    auto element_node = get_element(d, QualifiedName{element}).node();
+
+    const auto node_name_id = get_attr_key_id(d, "node", "name");
+    const auto node_type_id = get_attr_key_id(d, "node", "type");
+
+    const auto select_all_notes =
+        fmt::format("//node[data[@key='{}' and text()='note']]", node_type_id);
+
+    auto note_results = d.src.select_nodes(select_all_notes.c_str());
+    for (const auto &note_result : note_results) {
+        if (has_data(d, note_result.node(), "name", note) ||
+            has_data(d, note_result.node(), "name", util::ltrim(note))) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 template <>

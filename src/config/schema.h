@@ -290,7 +290,7 @@ types:
             after: !optional [string]
             cmd: !optional string
         graphml: !optional
-            notes: !optional [notes_t]
+            notes: !optional notes_t
         relative_to: !optional string
         using_namespace: !optional [string, [string]]
         using_module: !optional string
@@ -326,7 +326,7 @@ types:
             after: !optional [string]
             cmd: !optional string
         graphml: !optional
-            notes: !optional [notes_t]
+            notes: !optional notes_t
         relative_to: !optional string
         using_namespace: !optional [string, [string]]
         generate_metadata: !optional bool

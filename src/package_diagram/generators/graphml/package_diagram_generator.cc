@@ -33,6 +33,9 @@ void generator::generate_top_level_elements(graphml_node_t &parent) const
         auto &pkg = dynamic_cast<package &>(*p);
         generate(pkg, parent);
     }
+
+    generate_notes(
+        common_generator<diagram_config, diagram_model>::model(), parent);
 }
 
 void generator::generate(const package &p, graphml_node_t &parent) const
@@ -56,12 +59,16 @@ void generator::generate(const package &p, graphml_node_t &parent) const
             auto &pkg = dynamic_cast<package &>(*subpackage);
             generate(pkg, graph_node);
         }
+
+        generate_notes(p, graph_node);
     }
     else {
         for (const auto &subpackage : p) {
             auto &pkg = dynamic_cast<package &>(*subpackage);
             generate(pkg, parent);
         }
+
+        generate_notes(p, parent);
     }
 }
 

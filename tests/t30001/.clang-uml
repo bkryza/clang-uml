@@ -28,5 +28,11 @@ diagrams:
         - '{% set e=element("B::AA") %}N_0003({{ e.comment.formatted }})'
         - 'N_0002 -.- {{ alias("A::AA") }}'
         - 'N_0003 -.- {{ alias("B::AA") }}'
-
-
+    graphml:
+      notes:
+        'clanguml::t30001::A::AA::AAA"':
+          - 'A AAA note...'
+        'clanguml::t30001::A::AA':
+          - '{% set e=element("A::AA") %}{{ e.comment.formatted }}'
+        'clanguml::t30001::B::AA':
+          - '{% set e=element("B::AA") %}{{ e.comment.formatted }}'
