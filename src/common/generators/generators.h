@@ -231,11 +231,11 @@ constexpr bool generator_supports_diagram_type(
             typename diagram_generator_t<clanguml::config::sequence_diagram,
                 GeneratorTag>::type>;
     case diagram_t::kPackage:
-        return std::is_same_v<not_supported,
+        return !std::is_same_v<not_supported,
             typename diagram_generator_t<clanguml::config::package_diagram,
                 GeneratorTag>::type>;
     case diagram_t::kInclude:
-        return std::is_same_v<not_supported,
+        return !std::is_same_v<not_supported,
             typename diagram_generator_t<clanguml::config::include_diagram,
                 GeneratorTag>::type>;
     default:
