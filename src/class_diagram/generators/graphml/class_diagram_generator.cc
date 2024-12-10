@@ -94,6 +94,12 @@ void generator::generate(const package &p, graphml_node_t &parent) const
             });
         }
     }
+
+    // When generating packages as subgraphs, we want to render the note nodes
+    // and their relationship to their elements within the subgraph
+    if (config().generate_packages()) {
+        generate_notes(p, package_node);
+    }
 }
 
 void generator::generate(const class_ &c, graphml_node_t &parent) const

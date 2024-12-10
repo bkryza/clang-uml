@@ -276,61 +276,13 @@ template <typename C, typename D>
 void generator<C, D>::generate_mermaid_directives(
     std::ostream &ostr, const std::vector<std::string> &directives) const
 {
-
-    const auto &config = generators::generator<C, D>::config();
-    const auto &model = generators::generator<C, D>::model();
-
     using common::model::namespace_;
 
     for (const auto &d : directives) {
-        try {
-            // Render the directive with template engine first
-            std::string directive{generators::generator<C, D>::env().render(
-                std::string_view{d}, generators::generator<C, D>::context())};
-
-            // Now search for alias `@A()` directives in the text
-            // (this is deprecated)
-            std::tuple<std::string, size_t, size_t> alias_match;
-            while (util::find_element_alias(directive, alias_match)) {
-                const auto full_name =
-                    config.using_namespace() | std::get<0>(alias_match);
-                auto element_opt = model.get(full_name.to_string());
-
-                if (element_opt)
-                    directive.replace(std::get<1>(alias_match),
-                        std::get<2>(alias_match), element_opt.value().alias());
-                else {
-                    LOG_ERROR("Cannot find clang-uml alias for element {}",
-                        full_name.to_string());
-                    directive.replace(std::get<1>(alias_match),
-                        std::get<2>(alias_match), "UNKNOWN_ALIAS");
-                }
-            }
-
-            ostr << indent(1) << directive << '\n';
-        }
-        catch (const clanguml::error::uml_alias_missing &e) {
-            LOG_ERROR(
-                "Failed to render MermaidJS directive due to unresolvable "
-                "alias: {}",
-                e.what());
-        }
-        catch (const inja::json::parse_error &e) {
-            LOG_ERROR("Failed to parse Jinja template: {}", d);
-        }
-        catch (const inja::json::exception &e) {
-            LOG_ERROR("Failed to render MermaidJS directive: \n{}\n due to: {}",
-                d, e.what());
-        }
-        catch (const std::regex_error &e) {
-            LOG_ERROR("Failed to render MermaidJS directive: \n{}\n due to "
-                      "std::regex_error: {}",
-                d, e.what());
-        }
-        catch (const std::exception &e) {
-            LOG_ERROR("Failed to render PlantUML directive: \n{}\n due to: {}",
-                d, e.what());
-        }
+        auto rendered_directive =
+            generators::generator<C, D>::render_template(d);
+        if (rendered_directive)
+            ostr << indent(1) << *rendered_directive << '\n';
     }
 }
 

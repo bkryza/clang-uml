@@ -123,7 +123,8 @@ public:
         using namespace std::string_literals;
         return {
             {"id"s, property_type::kString},
-            {"type"s, property_type::kString},
+            {"diagram_type"s, property_type::kString},
+            {"name"s, property_type::kString},
             {"using_namespace"s, property_type::kString},
         };
     }
@@ -174,6 +175,10 @@ public:
     {
         generate_top_level_elements(parent);
 
+        generate_notes(clanguml::common::generators::generator<ConfigType,
+                           DiagramType>::model(),
+            parent);
+
         generate_relationships(parent);
     }
 
@@ -187,6 +192,15 @@ public:
      * @param parent GraphML node
      */
     virtual void generate_top_level_elements(graphml_node_t &parent) const = 0;
+
+    /**
+     * @brief Generate any notes to be attached to diagram elements
+     *
+     * @param e Diagram element
+     * @param parent Parent GraphML package node to attach the note to
+     */
+    template <typename T>
+    void generate_notes(const T &e, graphml_node_t &parent) const;
 
     /**
      * @brief Generate metadata element with diagram metadata
@@ -275,6 +289,7 @@ private:
     mutable property_keymap_t edge_properties_{"ed"};
 
     mutable uint64_t edge_id_{0};
+    mutable uint64_t note_id_{0};
 };
 
 template <typename DiagramModel, typename DiagramConfig>
@@ -371,6 +386,73 @@ void generator<C, D>::generate_relationships(
 
         if (r.access() != access_t::kNone)
             add_data(edge_node, "access", to_string(r.access()));
+    }
+}
+
+template <typename C, typename D>
+template <typename T>
+void generator<C, D>::generate_notes(const T &p, graphml_node_t &parent) const
+{
+    const auto &config = generators::generator<C, D>::config();
+
+    std::vector<std::pair</* element node id */ std::string,
+        /* note node id */ std::string>>
+        note_id_map;
+
+    // First generate the note XML nodes
+    auto note_index{0U};
+    for (const auto &e : p) {
+        // First try to extract notes from comment decorators (i.e. \uml
+        // directives in code comments)
+        for (const auto &decorator : e->decorators()) {
+            auto note = std::dynamic_pointer_cast<decorators::note>(decorator);
+            if (note && note->applies_to_diagram(config.name)) {
+                auto note_id = node_ids_.add(
+                    fmt::format("{}-N_{}", e->alias(), note_index));
+                auto maybe_element_node_id = node_ids_.get(e->alias());
+                if (maybe_element_node_id) {
+                    auto note_node = make_node(parent, note_id);
+                    add_data(note_node, "type", "note");
+                    add_data(note_node, "name", note->text, true);
+                    note_id_map.emplace_back(*maybe_element_node_id, note_id);
+                    note_index++;
+                }
+            }
+        }
+
+        // Now try to extract notes from `graphml` configuration file section
+        if (config.graphml &&
+            config.graphml().notes.count(e->full_name(false))) {
+            for (const auto &note :
+                config.graphml().notes.at(e->full_name(false))) {
+                auto note_id = node_ids_.add(
+                    fmt::format("{}-N_{}", e->alias(), note_index));
+                auto maybe_element_node_id = node_ids_.get(e->alias());
+                if (maybe_element_node_id) {
+                    auto rendered_note =
+                        generators::generator<C, D>::render_template(note);
+                    if (rendered_note) {
+                        auto note_node = make_node(parent, note_id);
+                        add_data(note_node, "type", "note");
+                        add_data(note_node, "name", *rendered_note, true);
+                        note_id_map.emplace_back(
+                            *maybe_element_node_id, note_id);
+                        note_index++;
+                    }
+                }
+            }
+        }
+    }
+
+    // Now generate the edges connecting note nodes to element notes
+    for (const auto &[element_node_id, note_node_id] : note_id_map) {
+        auto edge_node = parent.append_child("edge");
+
+        edge_node.append_attribute("id") = fmt::format("e{}", edge_id_++);
+        edge_node.append_attribute("source") = note_node_id;
+        edge_node.append_attribute("target") = element_node_id;
+
+        add_data(edge_node, "type", "none");
     }
 }
 

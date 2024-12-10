@@ -270,6 +270,12 @@ void mermaid::append(const mermaid &r)
         cmd = r.cmd;
 }
 
+void graphml::append(const graphml &r)
+{
+    auto tmp = r.notes;
+    notes.merge(tmp);
+}
+
 std::filesystem::path inheritable_diagram_options::root_directory() const
 {
     return weakly_canonical(absolute(base_directory() / relative_to()));
@@ -289,6 +295,7 @@ void inheritable_diagram_options::inherit(
     exclude.override(parent.exclude);
     puml.override(parent.puml);
     mermaid.override(parent.mermaid);
+    graphml.override(parent.graphml);
     generate_method_arguments.override(parent.generate_method_arguments);
     fold_repeated_activities.override(parent.fold_repeated_activities);
     generate_concept_requirements.override(

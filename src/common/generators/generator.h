@@ -91,6 +91,9 @@ public:
     std::optional<std::pair<std::string, std::string>> get_tooltip_pattern(
         const common::model::source_location &sl) const;
 
+    std::optional<std::string> render_template(
+        const std::string jinja_template) const;
+
     /**
      * @brief Initialize diagram Jinja context
      */
@@ -331,5 +334,62 @@ generator<C, D>::get_tooltip_pattern(
     }
 
     return config().generate_links().get_tooltip_pattern(sl.file_relative());
+}
+
+template <typename C, typename D>
+std::optional<std::string> generator<C, D>::render_template(
+    const std::string jinja_template) const
+{
+    std::optional<std::string> result;
+    try {
+        // Render the directive with template engine first
+        std::string rendered_template{generator<C, D>::env().render(
+            std::string_view{jinja_template}, generator<C, D>::context())};
+
+        // Now search for alias `@A()` directives in the text
+        // (this is deprecated)
+        std::tuple<std::string, size_t, size_t> alias_match;
+        while (util::find_element_alias(rendered_template, alias_match)) {
+            const auto full_name = generator<C, D>::config().using_namespace() |
+                std::get<0>(alias_match);
+            auto element_opt =
+                generator<C, D>::model().get(full_name.to_string());
+
+            if (element_opt)
+                rendered_template.replace(std::get<1>(alias_match),
+                    std::get<2>(alias_match), element_opt.value().alias());
+            else {
+                LOG_WARN("Cannot find clang-uml alias for element {}",
+                    full_name.to_string());
+                rendered_template.replace(std::get<1>(alias_match),
+                    std::get<2>(alias_match), "UNKNOWN_ALIAS");
+            }
+        }
+
+        result = rendered_template;
+    }
+    catch (const clanguml::error::uml_alias_missing &e) {
+        LOG_WARN("Failed to render PlantUML directive due to unresolvable "
+                 "alias: {}",
+            e.what());
+    }
+    catch (const inja::json::parse_error &e) {
+        LOG_WARN("Failed to parse Jinja template: {}", jinja_template);
+    }
+    catch (const inja::json::exception &e) {
+        LOG_WARN("Failed to render PlantUML directive: \n{}\n due to: {}",
+            jinja_template, e.what());
+    }
+    catch (const std::regex_error &e) {
+        LOG_WARN("Failed to render PlantUML directive: \n{}\n due to "
+                 "std::regex_error: {}",
+            jinja_template, e.what());
+    }
+    catch (const std::exception &e) {
+        LOG_WARN("Failed to render PlantUML directive: \n{}\n due to: {}",
+            jinja_template, e.what());
+    }
+
+    return result;
 }
 } // namespace clanguml::common::generators

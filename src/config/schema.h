@@ -24,6 +24,7 @@ namespace clanguml::config {
 const std::string schema_str = R"(
 types:
     map_t<K;V>: { $K: V }
+    string_list_t: [string]
     comment_parser_t: !variant
         - plain
         - clang
@@ -174,6 +175,7 @@ types:
     filter_mode_t: !variant
         - basic
         - advanced
+    notes_t: map_t<string;string_list_t>
     class_diagram_t:
         type: !variant [class]
         #
@@ -198,6 +200,8 @@ types:
             before: !optional [string]
             after: !optional [string]
             cmd: !optional string
+        graphml: !optional
+            notes: !optional notes_t
         relative_to: !optional string
         using_namespace: !optional [string, [string]]
         using_module: !optional string
@@ -285,6 +289,8 @@ types:
             before: !optional [string]
             after: !optional [string]
             cmd: !optional string
+        graphml: !optional
+            notes: !optional [notes_t]
         relative_to: !optional string
         using_namespace: !optional [string, [string]]
         using_module: !optional string
@@ -319,6 +325,8 @@ types:
             before: !optional [string]
             after: !optional [string]
             cmd: !optional string
+        graphml: !optional
+            notes: !optional [notes_t]
         relative_to: !optional string
         using_namespace: !optional [string, [string]]
         generate_metadata: !optional bool
@@ -369,6 +377,8 @@ root:
         before: !optional [string]
         after: !optional [string]
         cmd: !optional string
+    graphml: !optional
+        notes: !optional [notes_t]
     relative_to: !optional string
     using_namespace: !optional [string, [string]]
     using_module: !optional string
