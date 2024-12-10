@@ -92,7 +92,7 @@ public:
         const common::model::source_location &sl) const;
 
     std::optional<std::string> render_template(
-        const std::string jinja_template) const;
+        const std::string &jinja_template) const;
 
     /**
      * @brief Initialize diagram Jinja context
@@ -338,7 +338,7 @@ generator<C, D>::get_tooltip_pattern(
 
 template <typename C, typename D>
 std::optional<std::string> generator<C, D>::render_template(
-    const std::string jinja_template) const
+    const std::string &jinja_template) const
 {
     std::optional<std::string> result;
     try {

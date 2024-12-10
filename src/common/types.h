@@ -90,7 +90,7 @@ enum class generator_type_t {
     graphml   /*!< Diagrams will be generated in GraphML format */
 };
 
-std::string to_string(const bool v);
+std::string to_string(bool v);
 
 std::string to_string(const std::string &s);
 
