@@ -88,10 +88,12 @@ else()
 endif(NOT ENABLE_CUDA_TEST_CASES)
 
 set(CLANG_UML_TEST_LIBRARIES clang-umllib ${YAML_CPP_LIBRARIES}
-                             ${LIBTOOLING_LIBS} pugixml::pugixml Threads::Threads)
+                             ${LIBTOOLING_LIBS} Threads::Threads)
 
 if(MSVC)
     list(APPEND CLANG_UML_TEST_LIBRARIES "Version.lib")
+else(MSVC)
+    list(APPEND CLANG_UML_TEST_LIBRARIES pugixml::pugixml)
 endif(MSVC)
 
 list(FIND CMAKE_CXX_COMPILE_FEATURES cxx_std_20 SUPPORTS_CXX_STD_20)

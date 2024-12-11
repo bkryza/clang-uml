@@ -721,12 +721,16 @@ void translation_unit_visitor::find_relationships_in_constraint_expression(
         return;
     found_relationships_t relationships;
 
-    common::if_dyn_cast<clang::UnresolvedLookupExpr>(expr, [&](const auto *ul) {
-        for (const auto ta : ul->template_arguments()) {
-            find_relationships(ta.getArgument().getAsType(), relationships,
-                relationship_t::kConstraint);
-        }
-    });
+    common::if_dyn_cast<clang::UnresolvedLookupExpr>(
+        expr, [&](const clang::UnresolvedLookupExpr *ul) {
+            for (const auto ta : ul->template_arguments()) {
+                if (ta.getArgument().getKind() !=
+                    clang::TemplateArgument::ArgKind::Type)
+                    continue;
+                find_relationships(ta.getArgument().getAsType(), relationships,
+                    relationship_t::kConstraint);
+            }
+        });
 
     common::if_dyn_cast<clang::ConceptSpecializationExpr>(
         expr, [&](const auto *cs) {
@@ -798,10 +802,8 @@ void translation_unit_visitor::process_concept_specialization_relationships(
                 }
             }
             else {
-                auto type_name =
-                    common::to_string(ta.getAsType(), cpt->getASTContext());
-                LOG_DBG(
-                    "=== Unsupported concept type parameter: {}", type_name);
+                LOG_DBG("Unsupported concept type parameter in concept: {}",
+                    cpt_name);
             }
             argument_index++;
         }

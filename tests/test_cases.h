@@ -2458,7 +2458,10 @@ template <> bool IsFolder(const graphml_t &d, std::string const &path)
 
     assert(path_fs.is_relative());
 
-    std::vector<std::string> p{path_fs.begin(), path_fs.end()};
+    std::vector<std::string> p;
+    for (const auto &pt : path_fs) {
+        p.emplace_back(pt.string());
+    }
 
     const auto node = get_nested_element(d, p);
 

@@ -177,10 +177,18 @@ else()
 endif()
 
 #
+# Setup pugixml
+#
+if(MSVC)
+    add_definitions(-DPUGIXML_HEADER_ONLY)
+else(MSVC)
+    add_subdirectory(thirdparty/pugixml)
+endif(MSVC)
+
+#
 # Setup thirdparty sources
 #
 set(THIRDPARTY_HEADERS_DIR ${PROJECT_SOURCE_DIR}/thirdparty/)
-add_subdirectory(thirdparty/pugixml)
 
 #
 # Setup include directories

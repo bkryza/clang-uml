@@ -709,7 +709,10 @@ pugi::xml_node get_file_node(const graphml_t &d, const pugi::xml_node &parent,
         return get_element(
             d, parent, QualifiedName{path_fs.filename().string()});
 
-    std::vector<std::string> p{path_parent_fs.begin(), path_parent_fs.end()};
+    std::vector<std::string> p;
+    for (const auto &pt : path_parent_fs) {
+        p.emplace_back(pt.string());
+    };
 
     auto parent_node = get_nested_element(d, p);
 
