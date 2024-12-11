@@ -37,6 +37,10 @@ TEST_CASE("t30001")
         REQUIRE(IsNamespacePackage(src, "B"s, "BB"s));
         REQUIRE(IsNamespacePackage(src, "B"s));
 
+        if constexpr (!std::is_same_v<json_t, std::decay_t<decltype(src)>>) {
+            REQUIRE(HasNote(src, "AAA", "right", "A AAA note..."));
+        }
+
         REQUIRE(
             HasNote(src, "AA", "top", "This is namespace AA in namespace A"));
 

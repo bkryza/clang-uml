@@ -15,7 +15,7 @@ diagrams:
       before:
         - "' t30001 test diagram of type {{ diagram.type }}"
       after:
-        - 'note right of {{ alias("A::AA::AAA") }}: A AAA note...'
+        - ' note right of {{ alias("A::AA::AAA") }} : A AAA note...'
         - '{% set e=element("A::AA") %} note top of {{ alias("A::AA") }} : {{ e.comment.formatted }}'
         - '{% set e=element("B::AA") %} note top of {{ alias("B::AA") }} : {{ e.comment.formatted }}'
     mermaid:
@@ -30,7 +30,7 @@ diagrams:
         - 'N_0003 -.- {{ alias("B::AA") }}'
     graphml:
       notes:
-        'clanguml::t30001::A::AA::AAA"':
+        'clanguml::t30001::A::AA::AAA':
           - 'A AAA note...'
         'clanguml::t30001::A::AA':
           - '{% set e=element("A::AA") %}{{ e.comment.formatted }}'
