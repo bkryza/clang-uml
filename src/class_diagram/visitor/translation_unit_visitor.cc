@@ -2437,10 +2437,8 @@ void translation_unit_visitor::add_incomplete_forward_declarations()
 
 void translation_unit_visitor::resolve_local_to_global_ids()
 {
-    // TODO: Refactor to a map with relationships attached to references
-    //       to elements
-    diagram().for_all_elements([&](auto &elements) {
-        for (const auto &el : elements) {
+    diagram().for_all_elements([&](auto &element_view) {
+        for (const auto &el : element_view) {
             for (auto &rel : el.get().relationships()) {
                 if (!rel.destination().is_global()) {
                     const auto maybe_id =
@@ -2454,6 +2452,7 @@ void translation_unit_visitor::resolve_local_to_global_ids()
                     }
                 }
             }
+            el.get().remove_duplicate_relationships();
         }
     });
 }

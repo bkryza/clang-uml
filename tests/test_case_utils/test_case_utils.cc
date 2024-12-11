@@ -16,26 +16,14 @@
  * limitations under the License.
  */
 
-#include "class_diagram/generators/mermaid/class_diagram_generator.h"
-#include "class_diagram/generators/plantuml/class_diagram_generator.h"
 #include "class_diagram/model/diagram.h"
-#include "class_diagram/visitor/translation_unit_visitor.h"
-#include "common/clang_utils.h"
-#include "common/compilation_database.h"
 #include "common/generators/generators.h"
 #include "config/config.h"
-#include "include_diagram/generators/plantuml/include_diagram_generator.h"
-#include "include_diagram/visitor/translation_unit_visitor.h"
-#include "package_diagram/generators/plantuml/package_diagram_generator.h"
-#include "package_diagram/visitor/translation_unit_visitor.h"
-#include "sequence_diagram/generators/plantuml/sequence_diagram_generator.h"
-#include "sequence_diagram/visitor/translation_unit_visitor.h"
 #include "util/util.h"
 
 #include "test_case_utils.h"
 
 #include <clang/Tooling/CompilationDatabase.h>
-#include <clang/Tooling/Tooling.h>
 
 #include <algorithm>
 #include <complex>
@@ -755,6 +743,25 @@ pugi::xpath_node get_relationship(const graphml_t &d,
 
         data_constraints.push_back(
             fmt::format("data[@key='{}' and text()='{}']", access_id, access));
+    }
+
+    if (!label.empty()) {
+        // Make sure that labeled relationship is rendered only once
+        auto query = fmt::format("//edge[@source='{}' and @target='{}' and {}]",
+            from_id, to_id, fmt::join(data_constraints, " and "));
+
+        auto result = d.src.select_nodes(query.c_str());
+        if (result.empty())
+            return {};
+
+        if (result.size() > 1) {
+            throw std::runtime_error(
+                fmt::format("Duplicate graphml edge found: {}->{}, {}, [{}]",
+                    from_id, to_id, relationship_type, label));
+            return {};
+        }
+
+        return result.first();
     }
 
     auto query = fmt::format("//edge[@source='{}' and @target='{}' and {}]",

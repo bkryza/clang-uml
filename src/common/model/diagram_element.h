@@ -216,6 +216,13 @@ public:
      */
     void complete(bool completed);
 
+    /**
+     * Due to the fact that a relationship to the same element can be added
+     * once with local TU id and other time with global id, the relationship
+     * set can contain duplicates.
+     */
+    void remove_duplicate_relationships();
+
     virtual void apply_filter(
         const diagram_filter &filter, const std::set<eid_t> &removed);
 
