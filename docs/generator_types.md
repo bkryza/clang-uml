@@ -4,18 +4,21 @@
 
 * [PlantUML](#plantuml)
 * [MermaidJS](#mermaidjs)
+* [GraphML](#graphml)
 * [JSON](#json)
 
 <!-- tocstop -->
 
-Currently, there are 3 types of diagram generators: `plantuml`, `mermaid`
+Currently, there are 3 types of diagram generators: `plantuml`, `mermaid`, `graphml`
 and `json`.
+
+> `graphml` generator does not support sequence diagrams
 
 To specify, which generators should be used on the command line use option `-g`.
 For instance to generate all types of diagrams run `clang-uml` as follows:
 
 ```bash
-clang-uml -g plantuml -g mermaid -g json
+clang-uml -g plantuml -g mermaid -g json -g graphml
 ```
 
 By default, only `plantuml` diagrams are generated.
@@ -69,47 +72,61 @@ An example PlantUML diagram is presented below:
 
 ```plantuml
 @startuml
-class "A" as C_0001371951663534295727
-class C_0001371951663534295727 [[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L7{A}]] {
-+A() = default : void [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L9{A}]]]
-+A(int i) : void [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L10{A}]]]
-+A(A &&) = default : void [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L21{A}]]]
-+A(const A &) = deleted : void [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L22{A}]]]
-+A<T>(T t) : void
-+~A() = default : void [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L23{~A}]]]
-..
-+operator=(A && other) noexcept : A & [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L36{operator=}]]]
-+operator=(A & other) noexcept : A & [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L37{operator=}]]]
-..
-+operator++() : A & [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L30{operator++}]]]
-..
-+auto_method() : int [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L28{auto_method}]]]
-+basic_method() : void [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L25{basic_method}]]]
-+const_method() const : void [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L27{const_method}]]]
-{static} +create_from_int(int i) : A [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L50{create_from_int}]]]
-+default_int(int i = 12) : int [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L44{default_int}]]]
-+default_string(int i, std::string s = "abc") : std::string [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L45{default_string}]]]
-+double_int(const int i) : int [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L41{double_int}]]]
--private_method() : void [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L67{private_method}]]]
-#protected_method() : void [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L58{protected_method}]]]
-+size() constexpr const : std::size_t [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L39{size}]]]
-{static} +static_method() : int [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L26{static_method}]]]
-+sum(const double a, const double b) : int [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L42{sum}]]]
+title Basic class diagram example
+abstract "A" as C_0007901073918843258388
+abstract C_0007901073918843258388 [[https://github.com/bkryza/clang-uml/blob/64b763d4624802c70ee9bb87af5f5444340d46ef/tests/t00002/t00002.cc#L7{This is class A}]] {
+{abstract} +foo_a() = 0 : void [[[https://github.com/bkryza/clang-uml/blob/64b763d4624802c70ee9bb87af5f5444340d46ef/tests/t00002/t00002.cc#L10{foo_a}]]]
+{abstract} +foo_c() = 0 : void [[[https://github.com/bkryza/clang-uml/blob/64b763d4624802c70ee9bb87af5f5444340d46ef/tests/t00002/t00002.cc#L12{foo_c}]]]
 __
--a_ : int [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L70{a_}]]]
-{static} +auto_member : const unsigned long [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L55{auto_member}]]]
--b_ : int [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L70{b_}]]]
--c_ : int [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L70{c_}]]]
-#compare : std::function<bool (const int)> [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L62{compare}]]]
--private_member : int [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L69{private_member}]]]
-#protected_member : int [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L60{protected_member}]]]
-+public_member : int [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L52{public_member}]]]
-{static} +static_const_int : const int [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L54{static_const_int}]]]
-{static} +static_int : int [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L53{static_int}]]]
 }
+class "B" as C_0004753875669499007606
+class C_0004753875669499007606 [[https://github.com/bkryza/clang-uml/blob/64b763d4624802c70ee9bb87af5f5444340d46ef/tests/t00002/t00002.cc#L16{This is class B}]] {
++foo_a() : void [[[https://github.com/bkryza/clang-uml/blob/64b763d4624802c70ee9bb87af5f5444340d46ef/tests/t00002/t00002.cc#L18{foo_a}]]]
+__
+}
+class "C" as C_0009139995436788700062
+class C_0009139995436788700062 [[https://github.com/bkryza/clang-uml/blob/64b763d4624802c70ee9bb87af5f5444340d46ef/tests/t00002/t00002.cc#L27{This is class C - class C has a long comment}]] {
++foo_c() : void [[[https://github.com/bkryza/clang-uml/blob/64b763d4624802c70ee9bb87af5f5444340d46ef/tests/t00002/t00002.cc#L30{foo_c}]]]
+__
+}
+class "D" as C_0000487603959843317797
+class C_0000487603959843317797 [[https://github.com/bkryza/clang-uml/blob/64b763d4624802c70ee9bb87af5f5444340d46ef/tests/t00002/t00002.cc#L36{D}]] {
++foo_a() : void [[[https://github.com/bkryza/clang-uml/blob/64b763d4624802c70ee9bb87af5f5444340d46ef/tests/t00002/t00002.cc#L41{foo_a}]]]
++foo_c() : void [[[https://github.com/bkryza/clang-uml/blob/64b763d4624802c70ee9bb87af5f5444340d46ef/tests/t00002/t00002.cc#L50{foo_c}]]]
+__
+-as : std::vector<A *> [[[https://github.com/bkryza/clang-uml/blob/64b763d4624802c70ee9bb87af5f5444340d46ef/tests/t00002/t00002.cc#L58{as}]]]
+}
+class "E" as C_0017903093362471729766
+class C_0017903093362471729766 [[https://github.com/bkryza/clang-uml/blob/64b763d4624802c70ee9bb87af5f5444340d46ef/tests/t00002/t00002.cc#L61{E}]] {
++foo_a() : void [[[https://github.com/bkryza/clang-uml/blob/64b763d4624802c70ee9bb87af5f5444340d46ef/tests/t00002/t00002.cc#L66{foo_a}]]]
++foo_c() : void [[[https://github.com/bkryza/clang-uml/blob/64b763d4624802c70ee9bb87af5f5444340d46ef/tests/t00002/t00002.cc#L75{foo_c}]]]
+__
+-as : std::vector<A *> [[[https://github.com/bkryza/clang-uml/blob/64b763d4624802c70ee9bb87af5f5444340d46ef/tests/t00002/t00002.cc#L83{as}]]]
+}
+C_0007901073918843258388 <|-- C_0004753875669499007606
 
-'Generated with clang-uml, version 0.3.8
-'LLVM version Ubuntu clang version 15.0.6
+C_0007901073918843258388 <|-- C_0009139995436788700062
+
+C_0000487603959843317797 --> C_0007901073918843258388 : -as
+C_0004753875669499007606 <|-- C_0000487603959843317797
+
+C_0009139995436788700062 <|-- C_0000487603959843317797
+
+C_0017903093362471729766 --> C_0007901073918843258388 : -as
+C_0004753875669499007606 <|-- C_0017903093362471729766
+
+C_0009139995436788700062 <|-- C_0017903093362471729766
+
+ note left of C_0007901073918843258388 : This is class A
+ note top of C_0004753875669499007606 : This is class B
+note right of C_0000487603959843317797
+    
+ This is class D
+ which is a little like B
+ and a little like C
+
+end note
+
 @enduml
 ```
 
@@ -150,43 +167,201 @@ instance:
 An example MermaidJS diagram is presented below:
 
 ```
+---
+title: Basic class diagram example
+---
 classDiagram
-    class C_0001371951663534295727["A"]
-    class C_0001371951663534295727 {
-        +A() : [default] void
-        +A(int i) : void
-        +A(A &&) : [default] void
-        +A(const A &) : void
-        +A<T>(T t) : void
-        +~A() : [default] void
-        +operator=(A && other) : A &
-        +operator=(A & other) : A &
-        +operator++() : A &
-        +auto_method() : int
-        +basic_method() : void
-        +const_method() : [const] void
-        +create_from_int(int i) : A$
-        +default_int(int i = 12) : int
-        +default_string(int i, std::string s = "abc") : std::string
-        +double_int(const int i) : int
-        -private_method() : void
-        #protected_method() : void
-        +size() : [const,constexpr] std::size_t
-        +static_method() : int$
-        +sum(const double a, const double b) : int
-        -a_ : int
-        +auto_member : const unsigned long
-        -b_ : int
-        -c_ : int
-        #compare : std::function&lt;bool &lpar;const int&rpar;&gt;
-        -private_member : int
-        #protected_member : int
-        +public_member : int
-        +static_const_int : const int
-        +static_int : int
+    class C_0007901073918843258388["A"]
+    class C_0007901073918843258388 {
+        <<abstract>>
+        +foo_a() : void*
+        +foo_c() : void*
     }
-    click C_0001371951663534295727 href "https://github.com/bkryza/clang-uml/blob/70e70888231938ba5310a8e0e28b9351beba21ef/tests/t00003/t00003.cc#L7" "A"
+    click C_0007901073918843258388 href "https://github.com/bkryza/clang-uml/blob/64b763d4624802c70ee9bb87af5f5444340d46ef/tests/t00002/t00002.cc#L7" "This is class A"
+    class C_0004753875669499007606["B"]
+    class C_0004753875669499007606 {
+        +foo_a() : void
+    }
+    click C_0004753875669499007606 href "https://github.com/bkryza/clang-uml/blob/64b763d4624802c70ee9bb87af5f5444340d46ef/tests/t00002/t00002.cc#L16" "This is class B"
+    class C_0009139995436788700062["C"]
+    class C_0009139995436788700062 {
+        +foo_c() : void
+    }
+    click C_0009139995436788700062 href "https://github.com/bkryza/clang-uml/blob/64b763d4624802c70ee9bb87af5f5444340d46ef/tests/t00002/t00002.cc#L27" "This is class C - class C has a long comment"
+    class C_0000487603959843317797["D"]
+    class C_0000487603959843317797 {
+        +foo_a() : void
+        +foo_c() : void
+        -as : std::vector&lt;A *&gt;
+    }
+    click C_0000487603959843317797 href "https://github.com/bkryza/clang-uml/blob/64b763d4624802c70ee9bb87af5f5444340d46ef/tests/t00002/t00002.cc#L36" "D"
+    class C_0017903093362471729766["E"]
+    class C_0017903093362471729766 {
+        +foo_a() : void
+        +foo_c() : void
+        -as : std::vector&lt;A *&gt;
+    }
+    click C_0017903093362471729766 href "https://github.com/bkryza/clang-uml/blob/64b763d4624802c70ee9bb87af5f5444340d46ef/tests/t00002/t00002.cc#L61" "E"
+    C_0007901073918843258388 <|-- C_0004753875669499007606 : 
+    C_0007901073918843258388 <|-- C_0009139995436788700062 : 
+    C_0000487603959843317797 --> C_0007901073918843258388 : -as
+    C_0004753875669499007606 <|-- C_0000487603959843317797 : 
+    C_0009139995436788700062 <|-- C_0000487603959843317797 : 
+    C_0017903093362471729766 --> C_0007901073918843258388 : -as
+    C_0004753875669499007606 <|-- C_0017903093362471729766 : 
+    C_0009139995436788700062 <|-- C_0017903093362471729766 : 
+     note for C_0007901073918843258388 "This is class A"
+     note for C_0004753875669499007606 "This is class B"
+    note for C_0000487603959843317797 "
+ This is class D
+ which is a little like B
+ and a little like C
+"
 ```
+
+## GraphML
+
+This generator outputs a [GraphML](http://graphml.graphdrawing.org/) graph representation of the diagram. Currently,
+this generator does not include any fields or methods of classes, but only nodes
+representing their names (qualified or not), templates, etc. It is also limited
+to `class`, `package` and `include` diagrams only.
+
+The config file can contain a special section in diagram config to attach
+custom notes to specified nodes in the diagram, e.g.:
+
+```yaml
+    graphml:
+      notes:
+        'clanguml::t00002::A':
+          - '{% set e=element("A") %}{{ trim(e.comment.brief.0) }}'
+        'clanguml::t00002::B':
+          - '{% set e=element("clanguml::t00002::B") %}{{ trim(e.comment.brief.0) }}'
+        'clanguml::t00002::D':
+          - '{% set e=element("D") %}{{ comment("D").text }}'
+```
+
+An example GraphML diagram is presented below:
+
+```xml
+<?xml version="1.0"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+ <desc><![CDATA[Basic class diagram example]]></desc>
+ <key attr.name="id" attr.type="string" for="graph" id="gd0" />
+ <key attr.name="diagram_type" attr.type="string" for="graph" id="gd1" />
+ <key attr.name="name" attr.type="string" for="graph" id="gd2" />
+ <key attr.name="using_namespace" attr.type="string" for="graph" id="gd3" />
+ <key attr.name="id" attr.type="string" for="node" id="nd0" />
+ <key attr.name="type" attr.type="string" for="node" id="nd1" />
+ <key attr.name="name" attr.type="string" for="node" id="nd2" />
+ <key attr.name="stereotype" attr.type="string" for="node" id="nd3" />
+ <key attr.name="url" attr.type="string" for="node" id="nd4" />
+ <key attr.name="tooltip" attr.type="string" for="node" id="nd5" />
+ <key attr.name="is_template" attr.type="boolean" for="node" id="nd6" />
+ <key attr.name="type" attr.type="string" for="edge" id="ed0" />
+ <key attr.name="access" attr.type="string" for="edge" id="ed1" />
+ <key attr.name="label" attr.type="string" for="edge" id="ed2" />
+ <key attr.name="url" attr.type="string" for="edge" id="ed3" />
+ <graph id="g0" edgedefault="directed" parse.nodeids="canonical" parse.edgeids="canonical" parse.order="nodesfirst">
+  <data key="gd3">clanguml::t00002</data>
+  <node id="n0">
+   <data key="nd1">class</data>
+   <data key="nd2"><![CDATA[A]]></data>
+   <data key="nd3">abstract</data>
+   <data key="nd6">false</data>
+   <data key="nd4">https://github.com/bkryza/clang-uml/blob/64b763d4624802c70ee9bb87af5f5444340d46ef/tests/t00002/t00002.cc#L7</data>
+   <data key="nd5">This is class A</data>
+  </node>
+  <node id="n1">
+   <data key="nd1">class</data>
+   <data key="nd2"><![CDATA[B]]></data>
+   <data key="nd6">false</data>
+   <data key="nd4">https://github.com/bkryza/clang-uml/blob/64b763d4624802c70ee9bb87af5f5444340d46ef/tests/t00002/t00002.cc#L16</data>
+   <data key="nd5">This is class B</data>
+  </node>
+  <node id="n2">
+   <data key="nd1">class</data>
+   <data key="nd2"><![CDATA[C]]></data>
+   <data key="nd6">false</data>
+   <data key="nd4">https://github.com/bkryza/clang-uml/blob/64b763d4624802c70ee9bb87af5f5444340d46ef/tests/t00002/t00002.cc#L27</data>
+   <data key="nd5">This is class C - class C has a long comment</data>
+  </node>
+  <node id="n3">
+   <data key="nd1">class</data>
+   <data key="nd2"><![CDATA[D]]></data>
+   <data key="nd6">false</data>
+   <data key="nd4">https://github.com/bkryza/clang-uml/blob/64b763d4624802c70ee9bb87af5f5444340d46ef/tests/t00002/t00002.cc#L36</data>
+   <data key="nd5">D</data>
+  </node>
+  <node id="n4">
+   <data key="nd1">class</data>
+   <data key="nd2"><![CDATA[E]]></data>
+   <data key="nd6">false</data>
+   <data key="nd4">https://github.com/bkryza/clang-uml/blob/64b763d4624802c70ee9bb87af5f5444340d46ef/tests/t00002/t00002.cc#L61</data>
+   <data key="nd5">E</data>
+  </node>
+  <node id="n5">
+   <data key="nd1">note</data>
+   <data key="nd2"><![CDATA[This is class A]]></data>
+  </node>
+  <node id="n6">
+   <data key="nd1">note</data>
+   <data key="nd2"><![CDATA[This is class B]]></data>
+  </node>
+  <node id="n7">
+   <data key="nd1">note</data>
+   <data key="nd2"><![CDATA[
+ This is class D
+ which is a little like B
+ and a little like C
+]]></data>
+  </node>
+  <edge id="e0" source="n5" target="n0">
+   <data key="ed0">none</data>
+  </edge>
+  <edge id="e1" source="n6" target="n1">
+   <data key="ed0">none</data>
+  </edge>
+  <edge id="e2" source="n7" target="n3">
+   <data key="ed0">none</data>
+  </edge>
+  <edge id="e3" source="n1" target="n0">
+   <data key="ed0">extension</data>
+   <data key="ed1">public</data>
+  </edge>
+  <edge id="e4" source="n2" target="n0">
+   <data key="ed0">extension</data>
+   <data key="ed1">public</data>
+  </edge>
+  <edge id="e5" source="n3" target="n0">
+   <data key="ed0">association</data>
+   <data key="ed2">as</data>
+   <data key="ed1">private</data>
+  </edge>
+  <edge id="e6" source="n3" target="n1">
+   <data key="ed0">extension</data>
+   <data key="ed1">public</data>
+  </edge>
+  <edge id="e7" source="n3" target="n2">
+   <data key="ed0">extension</data>
+   <data key="ed1">public</data>
+  </edge>
+  <edge id="e8" source="n4" target="n0">
+   <data key="ed0">association</data>
+   <data key="ed2">as</data>
+   <data key="ed1">private</data>
+  </edge>
+  <edge id="e9" source="n4" target="n1">
+   <data key="ed0">extension</data>
+   <data key="ed1">public</data>
+  </edge>
+  <edge id="e10" source="n4" target="n2">
+   <data key="ed0">extension</data>
+   <data key="ed1">public</data>
+  </edge>
+ </graph>
+</graphml>
+```
+
 
 ## JSON
 
@@ -202,259 +377,148 @@ An equivalent of the above PlantUML diagram in JSON is presented below:
   "elements": [
     {
       "bases": [],
-      "display_name": "clanguml::t00003::A",
-      "id": "1371951663534295727",
-      "is_abstract": false,
+      "comment": {
+        "brief": [
+          " This is class A\n"
+        ],
+        "formatted": "\\brief This is class A",
+        "paragraph": [
+          " \n"
+        ],
+        "raw": "/// \\brief This is class A",
+        "text": "\n \n"
+      },
+      "display_name": "A",
+      "id": "7901073918843258388",
+      "is_abstract": true,
       "is_nested": false,
       "is_struct": false,
       "is_template": false,
       "is_union": false,
-      "members": [
-        {
-          "access": "public",
-          "is_static": false,
-          "name": "public_member",
-          "source_location": {
-            "column": 9,
-            "file": "../../tests/t00003/t00003.cc",
-            "line": 52,
-            "translation_unit": "../../tests/t00003/t00003.cc"
-          },
-          "type": "int"
-        },
-        {
-          "access": "protected",
-          "is_static": false,
-          "name": "protected_member",
-          "source_location": {
-            "column": 9,
-            "file": "../../tests/t00003/t00003.cc",
-            "line": 60,
-            "translation_unit": "../../tests/t00003/t00003.cc"
-          },
-          "type": "int"
-        },
-        {
-          "access": "protected",
-          "is_static": false,
-          "name": "compare",
-          "source_location": {
-            "column": 36,
-            "file": "../../tests/t00003/t00003.cc",
-            "line": 62,
-            "translation_unit": "../../tests/t00003/t00003.cc"
-          },
-          "type": "std::function<bool (const int)>"
-        },
-        {
-          "access": "private",
-          "is_static": false,
-          "name": "private_member",
-          "source_location": {
-            "column": 9,
-            "file": "../../tests/t00003/t00003.cc",
-            "line": 69,
-            "translation_unit": "../../tests/t00003/t00003.cc"
-          },
-          "type": "int"
-        },
-        {
-          "access": "private",
-          "is_static": false,
-          "name": "a_",
-          "source_location": {
-            "column": 9,
-            "file": "../../tests/t00003/t00003.cc",
-            "line": 70,
-            "translation_unit": "../../tests/t00003/t00003.cc"
-          },
-          "type": "int"
-        },
-        {
-          "access": "private",
-          "is_static": false,
-          "name": "b_",
-          "source_location": {
-            "column": 13,
-            "file": "../../tests/t00003/t00003.cc",
-            "line": 70,
-            "translation_unit": "../../tests/t00003/t00003.cc"
-          },
-          "type": "int"
-        },
-        {
-          "access": "private",
-          "is_static": false,
-          "name": "c_",
-          "source_location": {
-            "column": 17,
-            "file": "../../tests/t00003/t00003.cc",
-            "line": 70,
-            "translation_unit": "../../tests/t00003/t00003.cc"
-          },
-          "type": "int"
-        },
-        {
-          "access": "public",
-          "is_static": true,
-          "name": "static_int",
-          "source_location": {
-            "column": 16,
-            "file": "../../tests/t00003/t00003.cc",
-            "line": 53,
-            "translation_unit": "../../tests/t00003/t00003.cc"
-          },
-          "type": "int"
-        },
-        {
-          "access": "public",
-          "is_static": true,
-          "name": "static_const_int",
-          "source_location": {
-            "column": 22,
-            "file": "../../tests/t00003/t00003.cc",
-            "line": 54,
-            "translation_unit": "../../tests/t00003/t00003.cc"
-          },
-          "type": "const int"
-        },
-        {
-          "access": "public",
-          "is_static": true,
-          "name": "auto_member",
-          "source_location": {
-            "column": 23,
-            "file": "../../tests/t00003/t00003.cc",
-            "line": 55,
-            "translation_unit": "../../tests/t00003/t00003.cc"
-          },
-          "type": "const unsigned long"
-        }
-      ],
+      "members": [],
       "methods": [
         {
           "access": "public",
-          "is_const": false,
-          "is_consteval": false,
-          "is_constexpr": false,
-          "is_constructor": true,
-          "is_copy_assignment": false,
-          "is_defaulted": true,
-          "is_deleted": false,
-          "is_move_assignment": false,
-          "is_noexcept": false,
-          "is_operator": false,
-          "is_pure_virtual": false,
-          "is_static": false,
-          "is_virtual": false,
-          "name": "A",
-          "parameters": [],
-          "source_location": {
-            "column": 5,
-            "file": "../../tests/t00003/t00003.cc",
-            "line": 9,
-            "translation_unit": "../../tests/t00003/t00003.cc"
+          "comment": {
+            "formatted": "Abstract foo_a",
+            "paragraph": [
+              " Abstract foo_a\n"
+            ],
+            "raw": "/// Abstract foo_a",
+            "text": "\n Abstract foo_a\n"
           },
-          "type": "void"
-        },
-        {
-          "access": "public",
-          "is_const": false,
-          "is_consteval": false,
-          "is_constexpr": false,
-          "is_constructor": true,
-          "is_copy_assignment": false,
-          "is_defaulted": false,
-          "is_deleted": false,
-          "is_move_assignment": false,
-          "is_noexcept": false,
-          "is_operator": false,
-          "is_pure_virtual": false,
-          "is_static": false,
-          "is_virtual": false,
-          "name": "A",
-          "parameters": [
-            {
-              "name": "i",
-              "type": "int"
-            }
-          ],
-          "source_location": {
-            "column": 5,
-            "file": "../../tests/t00003/t00003.cc",
-            "line": 10,
-            "translation_unit": "../../tests/t00003/t00003.cc"
-          },
-          "type": "void"
-        },
-        {
-          "access": "public",
-          "is_const": false,
-          "is_consteval": false,
-          "is_constexpr": false,
-          "is_constructor": true,
-          "is_copy_assignment": false,
-          "is_defaulted": true,
-          "is_deleted": false,
-          "is_move_assignment": false,
-          "is_noexcept": false,
-          "is_operator": false,
-          "is_pure_virtual": false,
-          "is_static": false,
-          "is_virtual": false,
-          "name": "A",
-          "parameters": [
-            {
-              "name": "",
-              "type": "clanguml::t00003::A &&"
-            }
-          ],
-          "source_location": {
-            "column": 5,
-            "file": "../../tests/t00003/t00003.cc",
-            "line": 21,
-            "translation_unit": "../../tests/t00003/t00003.cc"
-          },
-          "type": "void"
-        },
-        {
-          "access": "public",
-          "is_const": false,
-          "is_consteval": false,
-          "is_constexpr": false,
-          "is_constructor": true,
-          "is_copy_assignment": false,
-          "is_defaulted": false,
-          "is_deleted": true,
-          "is_move_assignment": false,
-          "is_noexcept": false,
-          "is_operator": false,
-          "is_pure_virtual": false,
-          "is_static": false,
-          "is_virtual": false,
-          "name": "A",
-          "parameters": [
-            {
-              "name": "",
-              "type": "const clanguml::t00003::A &"
-            }
-          ],
-          "source_location": {
-            "column": 5,
-            "file": "../../tests/t00003/t00003.cc",
-            "line": 22,
-            "translation_unit": "../../tests/t00003/t00003.cc"
-          },
-          "type": "void"
-        },
-        {
-          "access": "public",
+          "display_name": "foo_a",
           "is_const": false,
           "is_consteval": false,
           "is_constexpr": false,
           "is_constructor": false,
           "is_copy_assignment": false,
-          "is_defaulted": true,
+          "is_coroutine": false,
+          "is_defaulted": false,
+          "is_deleted": false,
+          "is_move_assignment": false,
+          "is_noexcept": false,
+          "is_operator": false,
+          "is_pure_virtual": true,
+          "is_static": false,
+          "is_virtual": true,
+          "name": "foo_a",
+          "parameters": [],
+          "source_location": {
+            "column": 18,
+            "file": "t00002.cc",
+            "line": 10,
+            "translation_unit": "t00002.cc"
+          },
+          "template_parameters": [],
+          "type": "void"
+        },
+        {
+          "access": "public",
+          "comment": {
+            "formatted": "Abstract foo_c",
+            "paragraph": [
+              " Abstract foo_c\n"
+            ],
+            "raw": "/// Abstract foo_c",
+            "text": "\n Abstract foo_c\n"
+          },
+          "display_name": "foo_c",
+          "is_const": false,
+          "is_consteval": false,
+          "is_constexpr": false,
+          "is_constructor": false,
+          "is_copy_assignment": false,
+          "is_coroutine": false,
+          "is_defaulted": false,
+          "is_deleted": false,
+          "is_move_assignment": false,
+          "is_noexcept": false,
+          "is_operator": false,
+          "is_pure_virtual": true,
+          "is_static": false,
+          "is_virtual": true,
+          "name": "foo_c",
+          "parameters": [],
+          "source_location": {
+            "column": 18,
+            "file": "t00002.cc",
+            "line": 12,
+            "translation_unit": "t00002.cc"
+          },
+          "template_parameters": [],
+          "type": "void"
+        }
+      ],
+      "name": "A",
+      "namespace": "clanguml::t00002",
+      "source_location": {
+        "column": 7,
+        "file": "t00002.cc",
+        "line": 7,
+        "translation_unit": "t00002.cc"
+      },
+      "template_parameters": [],
+      "type": "class"
+    },
+    {
+      "bases": [
+        {
+          "access": "public",
+          "id": "7901073918843258388",
+          "is_virtual": false
+        }
+      ],
+      "comment": {
+        "brief": [
+          " This is class B\n"
+        ],
+        "formatted": "\\brief This is class B",
+        "paragraph": [
+          " \n"
+        ],
+        "raw": "/// \\brief This is class B",
+        "text": "\n \n"
+      },
+      "display_name": "B",
+      "id": "4753875669499007606",
+      "is_abstract": false,
+      "is_nested": false,
+      "is_struct": false,
+      "is_template": false,
+      "is_union": false,
+      "members": [],
+      "methods": [
+        {
+          "access": "public",
+          "display_name": "foo_a",
+          "is_const": false,
+          "is_consteval": false,
+          "is_constexpr": false,
+          "is_constructor": false,
+          "is_copy_assignment": false,
+          "is_coroutine": false,
+          "is_defaulted": false,
           "is_deleted": false,
           "is_move_assignment": false,
           "is_noexcept": false,
@@ -462,481 +526,425 @@ An equivalent of the above PlantUML diagram in JSON is presented below:
           "is_pure_virtual": false,
           "is_static": false,
           "is_virtual": true,
-          "name": "~A",
+          "name": "foo_a",
           "parameters": [],
           "source_location": {
-            "column": 13,
-            "file": "../../tests/t00003/t00003.cc",
-            "line": 23,
-            "translation_unit": "../../tests/t00003/t00003.cc"
+            "column": 18,
+            "file": "t00002.cc",
+            "line": 18,
+            "translation_unit": "t00002.cc"
           },
-          "type": "void"
-        },
-        {
-          "access": "public",
-          "is_const": false,
-          "is_consteval": false,
-          "is_constexpr": false,
-          "is_constructor": false,
-          "is_copy_assignment": false,
-          "is_defaulted": false,
-          "is_deleted": false,
-          "is_move_assignment": false,
-          "is_noexcept": false,
-          "is_operator": false,
-          "is_pure_virtual": false,
-          "is_static": false,
-          "is_virtual": false,
-          "name": "basic_method",
-          "parameters": [],
-          "source_location": {
-            "column": 10,
-            "file": "../../tests/t00003/t00003.cc",
-            "line": 25,
-            "translation_unit": "../../tests/t00003/t00003.cc"
-          },
-          "type": "void"
-        },
-        {
-          "access": "public",
-          "is_const": false,
-          "is_consteval": false,
-          "is_constexpr": false,
-          "is_constructor": false,
-          "is_copy_assignment": false,
-          "is_defaulted": false,
-          "is_deleted": false,
-          "is_move_assignment": false,
-          "is_noexcept": false,
-          "is_operator": false,
-          "is_pure_virtual": false,
-          "is_static": true,
-          "is_virtual": false,
-          "name": "static_method",
-          "parameters": [],
-          "source_location": {
-            "column": 16,
-            "file": "../../tests/t00003/t00003.cc",
-            "line": 26,
-            "translation_unit": "../../tests/t00003/t00003.cc"
-          },
-          "type": "int"
-        },
-        {
-          "access": "public",
-          "is_const": true,
-          "is_consteval": false,
-          "is_constexpr": false,
-          "is_constructor": false,
-          "is_copy_assignment": false,
-          "is_defaulted": false,
-          "is_deleted": false,
-          "is_move_assignment": false,
-          "is_noexcept": false,
-          "is_operator": false,
-          "is_pure_virtual": false,
-          "is_static": false,
-          "is_virtual": false,
-          "name": "const_method",
-          "parameters": [],
-          "source_location": {
-            "column": 10,
-            "file": "../../tests/t00003/t00003.cc",
-            "line": 27,
-            "translation_unit": "../../tests/t00003/t00003.cc"
-          },
-          "type": "void"
-        },
-        {
-          "access": "public",
-          "is_const": false,
-          "is_consteval": false,
-          "is_constexpr": false,
-          "is_constructor": false,
-          "is_copy_assignment": false,
-          "is_defaulted": false,
-          "is_deleted": false,
-          "is_move_assignment": false,
-          "is_noexcept": false,
-          "is_operator": false,
-          "is_pure_virtual": false,
-          "is_static": false,
-          "is_virtual": false,
-          "name": "auto_method",
-          "parameters": [],
-          "source_location": {
-            "column": 10,
-            "file": "../../tests/t00003/t00003.cc",
-            "line": 28,
-            "translation_unit": "../../tests/t00003/t00003.cc"
-          },
-          "type": "int"
-        },
-        {
-          "access": "public",
-          "is_const": false,
-          "is_consteval": false,
-          "is_constexpr": false,
-          "is_constructor": false,
-          "is_copy_assignment": false,
-          "is_defaulted": false,
-          "is_deleted": false,
-          "is_move_assignment": false,
-          "is_noexcept": false,
-          "is_operator": true,
-          "is_pure_virtual": false,
-          "is_static": false,
-          "is_virtual": false,
-          "name": "operator++",
-          "parameters": [],
-          "source_location": {
-            "column": 8,
-            "file": "../../tests/t00003/t00003.cc",
-            "line": 30,
-            "translation_unit": "../../tests/t00003/t00003.cc"
-          },
-          "type": "clanguml::t00003::A &"
-        },
-        {
-          "access": "public",
-          "is_const": false,
-          "is_consteval": false,
-          "is_constexpr": false,
-          "is_constructor": false,
-          "is_copy_assignment": false,
-          "is_defaulted": false,
-          "is_deleted": false,
-          "is_move_assignment": true,
-          "is_noexcept": true,
-          "is_operator": true,
-          "is_pure_virtual": false,
-          "is_static": false,
-          "is_virtual": false,
-          "name": "operator=",
-          "parameters": [
-            {
-              "name": "other",
-              "type": "clanguml::t00003::A &&"
-            }
-          ],
-          "source_location": {
-            "column": 8,
-            "file": "../../tests/t00003/t00003.cc",
-            "line": 36,
-            "translation_unit": "../../tests/t00003/t00003.cc"
-          },
-          "type": "clanguml::t00003::A &"
-        },
-        {
-          "access": "public",
-          "is_const": false,
-          "is_consteval": false,
-          "is_constexpr": false,
-          "is_constructor": false,
-          "is_copy_assignment": true,
-          "is_defaulted": false,
-          "is_deleted": false,
-          "is_move_assignment": false,
-          "is_noexcept": true,
-          "is_operator": true,
-          "is_pure_virtual": false,
-          "is_static": false,
-          "is_virtual": false,
-          "name": "operator=",
-          "parameters": [
-            {
-              "name": "other",
-              "type": "clanguml::t00003::A &"
-            }
-          ],
-          "source_location": {
-            "column": 8,
-            "file": "../../tests/t00003/t00003.cc",
-            "line": 37,
-            "translation_unit": "../../tests/t00003/t00003.cc"
-          },
-          "type": "clanguml::t00003::A &"
-        },
-        {
-          "access": "public",
-          "is_const": true,
-          "is_consteval": false,
-          "is_constexpr": true,
-          "is_constructor": false,
-          "is_copy_assignment": false,
-          "is_defaulted": false,
-          "is_deleted": false,
-          "is_move_assignment": false,
-          "is_noexcept": false,
-          "is_operator": false,
-          "is_pure_virtual": false,
-          "is_static": false,
-          "is_virtual": false,
-          "name": "size",
-          "parameters": [],
-          "source_location": {
-            "column": 27,
-            "file": "../../tests/t00003/t00003.cc",
-            "line": 39,
-            "translation_unit": "../../tests/t00003/t00003.cc"
-          },
-          "type": "std::size_t"
-        },
-        {
-          "access": "public",
-          "is_const": false,
-          "is_consteval": false,
-          "is_constexpr": false,
-          "is_constructor": false,
-          "is_copy_assignment": false,
-          "is_defaulted": false,
-          "is_deleted": false,
-          "is_move_assignment": false,
-          "is_noexcept": false,
-          "is_operator": false,
-          "is_pure_virtual": false,
-          "is_static": false,
-          "is_virtual": false,
-          "name": "double_int",
-          "parameters": [
-            {
-              "name": "i",
-              "type": "const int"
-            }
-          ],
-          "source_location": {
-            "column": 10,
-            "file": "../../tests/t00003/t00003.cc",
-            "line": 41,
-            "translation_unit": "../../tests/t00003/t00003.cc"
-          },
-          "type": "int"
-        },
-        {
-          "access": "public",
-          "is_const": false,
-          "is_consteval": false,
-          "is_constexpr": false,
-          "is_constructor": false,
-          "is_copy_assignment": false,
-          "is_defaulted": false,
-          "is_deleted": false,
-          "is_move_assignment": false,
-          "is_noexcept": false,
-          "is_operator": false,
-          "is_pure_virtual": false,
-          "is_static": false,
-          "is_virtual": false,
-          "name": "sum",
-          "parameters": [
-            {
-              "name": "a",
-              "type": "const double"
-            },
-            {
-              "name": "b",
-              "type": "const double"
-            }
-          ],
-          "source_location": {
-            "column": 10,
-            "file": "../../tests/t00003/t00003.cc",
-            "line": 42,
-            "translation_unit": "../../tests/t00003/t00003.cc"
-          },
-          "type": "int"
-        },
-        {
-          "access": "public",
-          "is_const": false,
-          "is_consteval": false,
-          "is_constexpr": false,
-          "is_constructor": false,
-          "is_copy_assignment": false,
-          "is_defaulted": false,
-          "is_deleted": false,
-          "is_move_assignment": false,
-          "is_noexcept": false,
-          "is_operator": false,
-          "is_pure_virtual": false,
-          "is_static": false,
-          "is_virtual": false,
-          "name": "default_int",
-          "parameters": [
-            {
-              "default_value": "12",
-              "name": "i",
-              "type": "int"
-            }
-          ],
-          "source_location": {
-            "column": 10,
-            "file": "../../tests/t00003/t00003.cc",
-            "line": 44,
-            "translation_unit": "../../tests/t00003/t00003.cc"
-          },
-          "type": "int"
-        },
-        {
-          "access": "public",
-          "is_const": false,
-          "is_consteval": false,
-          "is_constexpr": false,
-          "is_constructor": false,
-          "is_copy_assignment": false,
-          "is_defaulted": false,
-          "is_deleted": false,
-          "is_move_assignment": false,
-          "is_noexcept": false,
-          "is_operator": false,
-          "is_pure_virtual": false,
-          "is_static": false,
-          "is_virtual": false,
-          "name": "default_string",
-          "parameters": [
-            {
-              "name": "i",
-              "type": "int"
-            },
-            {
-              "default_value": "\"abc\"",
-              "name": "s",
-              "type": "std::string"
-            }
-          ],
-          "source_location": {
-            "column": 17,
-            "file": "../../tests/t00003/t00003.cc",
-            "line": 45,
-            "translation_unit": "../../tests/t00003/t00003.cc"
-          },
-          "type": "std::string"
-        },
-        {
-          "access": "public",
-          "is_const": false,
-          "is_consteval": false,
-          "is_constexpr": false,
-          "is_constructor": false,
-          "is_copy_assignment": false,
-          "is_defaulted": false,
-          "is_deleted": false,
-          "is_move_assignment": false,
-          "is_noexcept": false,
-          "is_operator": false,
-          "is_pure_virtual": false,
-          "is_static": true,
-          "is_virtual": false,
-          "name": "create_from_int",
-          "parameters": [
-            {
-              "name": "i",
-              "type": "int"
-            }
-          ],
-          "source_location": {
-            "column": 14,
-            "file": "../../tests/t00003/t00003.cc",
-            "line": 50,
-            "translation_unit": "../../tests/t00003/t00003.cc"
-          },
-          "type": "clanguml::t00003::A"
-        },
-        {
-          "access": "protected",
-          "is_const": false,
-          "is_consteval": false,
-          "is_constexpr": false,
-          "is_constructor": false,
-          "is_copy_assignment": false,
-          "is_defaulted": false,
-          "is_deleted": false,
-          "is_move_assignment": false,
-          "is_noexcept": false,
-          "is_operator": false,
-          "is_pure_virtual": false,
-          "is_static": false,
-          "is_virtual": false,
-          "name": "protected_method",
-          "parameters": [],
-          "source_location": {
-            "column": 10,
-            "file": "../../tests/t00003/t00003.cc",
-            "line": 58,
-            "translation_unit": "../../tests/t00003/t00003.cc"
-          },
-          "type": "void"
-        },
-        {
-          "access": "private",
-          "is_const": false,
-          "is_consteval": false,
-          "is_constexpr": false,
-          "is_constructor": false,
-          "is_copy_assignment": false,
-          "is_defaulted": false,
-          "is_deleted": false,
-          "is_move_assignment": false,
-          "is_noexcept": false,
-          "is_operator": false,
-          "is_pure_virtual": false,
-          "is_static": false,
-          "is_virtual": false,
-          "name": "private_method",
-          "parameters": [],
-          "source_location": {
-            "column": 10,
-            "file": "../../tests/t00003/t00003.cc",
-            "line": 67,
-            "translation_unit": "../../tests/t00003/t00003.cc"
-          },
-          "type": "void"
-        },
-        {
-          "access": "public",
-          "is_const": false,
-          "is_consteval": false,
-          "is_constexpr": false,
-          "is_constructor": true,
-          "is_copy_assignment": false,
-          "is_defaulted": false,
-          "is_deleted": false,
-          "is_move_assignment": false,
-          "is_noexcept": false,
-          "is_operator": false,
-          "is_pure_virtual": false,
-          "is_static": false,
-          "is_virtual": false,
-          "name": "A",
-          "parameters": [
-            {
-              "name": "t",
-              "type": "T"
-            }
-          ],
+          "template_parameters": [],
           "type": "void"
         }
       ],
-      "name": "A",
-      "namespace": "clanguml::t00003",
+      "name": "B",
+      "namespace": "clanguml::t00002",
       "source_location": {
         "column": 7,
-        "file": "../../tests/t00003/t00003.cc",
-        "line": 7,
-        "translation_unit": "../../tests/t00003/t00003.cc"
+        "file": "t00002.cc",
+        "line": 16,
+        "translation_unit": "t00002.cc"
+      },
+      "template_parameters": [],
+      "type": "class"
+    },
+    {
+      "bases": [
+        {
+          "access": "public",
+          "id": "7901073918843258388",
+          "is_virtual": false
+        }
+      ],
+      "comment": {
+        "brief": [
+          " This is class C - class C has a long comment\n"
+        ],
+        "formatted": "@brief This is class C - class C has a long comment\n\nVivamus integer non suscipit taciti mus etiam at primis tempor sagittis sit,\neuismod libero facilisi aptent elementum felis blandit cursus gravida sociis\nerat ante, eleifend lectus nullam dapibus netus feugiat curae curabitur est\nad.",
+        "paragraph": [
+          " \n",
+          " Vivamus integer non suscipit taciti mus etiam at primis tempor sagittis sit,\n euismod libero facilisi aptent elementum felis blandit cursus gravida sociis\n erat ante, eleifend lectus nullam dapibus netus feugiat curae curabitur est\n ad.\n"
+        ],
+        "raw": "/// @brief This is class C - class C has a long comment\n///\n/// Vivamus integer non suscipit taciti mus etiam at primis tempor sagittis sit,\n/// euismod libero facilisi aptent elementum felis blandit cursus gravida sociis\n/// erat ante, eleifend lectus nullam dapibus netus feugiat curae curabitur est\n/// ad.",
+        "text": "\n \n\n Vivamus integer non suscipit taciti mus etiam at primis tempor sagittis sit,\n euismod libero facilisi aptent elementum felis blandit cursus gravida sociis\n erat ante, eleifend lectus nullam dapibus netus feugiat curae curabitur est\n ad.\n"
+      },
+      "display_name": "C",
+      "id": "9139995436788700062",
+      "is_abstract": false,
+      "is_nested": false,
+      "is_struct": false,
+      "is_template": false,
+      "is_union": false,
+      "members": [],
+      "methods": [
+        {
+          "access": "public",
+          "comment": {
+            "formatted": "Do nothing unless override is provided",
+            "paragraph": [
+              " Do nothing unless override is provided\n"
+            ],
+            "raw": "/// Do nothing unless override is provided",
+            "text": "\n Do nothing unless override is provided\n"
+          },
+          "display_name": "foo_c",
+          "is_const": false,
+          "is_consteval": false,
+          "is_constexpr": false,
+          "is_constructor": false,
+          "is_copy_assignment": false,
+          "is_coroutine": false,
+          "is_defaulted": false,
+          "is_deleted": false,
+          "is_move_assignment": false,
+          "is_noexcept": false,
+          "is_operator": false,
+          "is_pure_virtual": false,
+          "is_static": false,
+          "is_virtual": true,
+          "name": "foo_c",
+          "parameters": [],
+          "source_location": {
+            "column": 18,
+            "file": "t00002.cc",
+            "line": 30,
+            "translation_unit": "t00002.cc"
+          },
+          "template_parameters": [],
+          "type": "void"
+        }
+      ],
+      "name": "C",
+      "namespace": "clanguml::t00002",
+      "source_location": {
+        "column": 7,
+        "file": "t00002.cc",
+        "line": 27,
+        "translation_unit": "t00002.cc"
+      },
+      "template_parameters": [],
+      "type": "class"
+    },
+    {
+      "bases": [
+        {
+          "access": "public",
+          "id": "4753875669499007606",
+          "is_virtual": false
+        },
+        {
+          "access": "public",
+          "id": "9139995436788700062",
+          "is_virtual": false
+        }
+      ],
+      "comment": {
+        "formatted": "This is class D\nwhich is a little like B\nand a little like C",
+        "paragraph": [
+          " This is class D\n which is a little like B\n and a little like C\n"
+        ],
+        "raw": "/// This is class D\n/// which is a little like B\n/// and a little like C",
+        "text": "\n This is class D\n which is a little like B\n and a little like C\n"
+      },
+      "display_name": "D",
+      "id": "487603959843317797",
+      "is_abstract": false,
+      "is_nested": false,
+      "is_struct": false,
+      "is_template": false,
+      "is_union": false,
+      "members": [
+        {
+          "access": "private",
+          "comment": {
+            "formatted": "All the A pointers",
+            "paragraph": [
+              " All the A pointers\n"
+            ],
+            "raw": "/// All the A pointers",
+            "text": "\n All the A pointers\n"
+          },
+          "is_static": false,
+          "name": "as",
+          "source_location": {
+            "column": 22,
+            "file": "t00002.cc",
+            "line": 58,
+            "translation_unit": "t00002.cc"
+          },
+          "type": "std::vector<A *>"
+        }
+      ],
+      "methods": [
+        {
+          "access": "public",
+          "comment": {
+            "formatted": "\n Forward foo_a\n     ",
+            "paragraph": [
+              " Forward foo_a\n"
+            ],
+            "raw": "/**\n     * Forward foo_a\n     */",
+            "text": "\n Forward foo_a\n"
+          },
+          "display_name": "foo_a",
+          "is_const": false,
+          "is_consteval": false,
+          "is_constexpr": false,
+          "is_constructor": false,
+          "is_copy_assignment": false,
+          "is_coroutine": false,
+          "is_defaulted": false,
+          "is_deleted": false,
+          "is_move_assignment": false,
+          "is_noexcept": false,
+          "is_operator": false,
+          "is_pure_virtual": false,
+          "is_static": false,
+          "is_virtual": true,
+          "name": "foo_a",
+          "parameters": [],
+          "source_location": {
+            "column": 10,
+            "file": "t00002.cc",
+            "line": 41,
+            "translation_unit": "t00002.cc"
+          },
+          "template_parameters": [],
+          "type": "void"
+        },
+        {
+          "access": "public",
+          "comment": {
+            "formatted": "\n Forward foo_c\n     ",
+            "paragraph": [
+              " Forward foo_c\n"
+            ],
+            "raw": "/**\n     * Forward foo_c\n     */",
+            "text": "\n Forward foo_c\n"
+          },
+          "display_name": "foo_c",
+          "is_const": false,
+          "is_consteval": false,
+          "is_constexpr": false,
+          "is_constructor": false,
+          "is_copy_assignment": false,
+          "is_coroutine": false,
+          "is_defaulted": false,
+          "is_deleted": false,
+          "is_move_assignment": false,
+          "is_noexcept": false,
+          "is_operator": false,
+          "is_pure_virtual": false,
+          "is_static": false,
+          "is_virtual": true,
+          "name": "foo_c",
+          "parameters": [],
+          "source_location": {
+            "column": 10,
+            "file": "t00002.cc",
+            "line": 50,
+            "translation_unit": "t00002.cc"
+          },
+          "template_parameters": [],
+          "type": "void"
+        }
+      ],
+      "name": "D",
+      "namespace": "clanguml::t00002",
+      "source_location": {
+        "column": 7,
+        "file": "t00002.cc",
+        "line": 36,
+        "translation_unit": "t00002.cc"
+      },
+      "template_parameters": [],
+      "type": "class"
+    },
+    {
+      "bases": [
+        {
+          "access": "public",
+          "id": "4753875669499007606",
+          "is_virtual": true
+        },
+        {
+          "access": "public",
+          "id": "9139995436788700062",
+          "is_virtual": true
+        }
+      ],
+      "display_name": "E",
+      "id": "17903093362471729766",
+      "is_abstract": false,
+      "is_nested": false,
+      "is_struct": false,
+      "is_template": false,
+      "is_union": false,
+      "members": [
+        {
+          "access": "private",
+          "comment": {
+            "formatted": "All the A pointers",
+            "paragraph": [
+              " All the A pointers\n"
+            ],
+            "raw": "/// All the A pointers",
+            "text": "\n All the A pointers\n"
+          },
+          "is_static": false,
+          "name": "as",
+          "source_location": {
+            "column": 22,
+            "file": "t00002.cc",
+            "line": 83,
+            "translation_unit": "t00002.cc"
+          },
+          "type": "std::vector<A *>"
+        }
+      ],
+      "methods": [
+        {
+          "access": "public",
+          "comment": {
+            "formatted": "\n Forward foo_a",
+            "paragraph": [
+              " Forward foo_a\n"
+            ],
+            "raw": "///\n    /// Forward foo_a\n    ///",
+            "text": "\n Forward foo_a\n"
+          },
+          "display_name": "foo_a",
+          "is_const": false,
+          "is_consteval": false,
+          "is_constexpr": false,
+          "is_constructor": false,
+          "is_copy_assignment": false,
+          "is_coroutine": false,
+          "is_defaulted": false,
+          "is_deleted": false,
+          "is_move_assignment": false,
+          "is_noexcept": false,
+          "is_operator": false,
+          "is_pure_virtual": false,
+          "is_static": false,
+          "is_virtual": true,
+          "name": "foo_a",
+          "parameters": [],
+          "source_location": {
+            "column": 10,
+            "file": "t00002.cc",
+            "line": 66,
+            "translation_unit": "t00002.cc"
+          },
+          "template_parameters": [],
+          "type": "void"
+        },
+        {
+          "access": "public",
+          "comment": {
+            "formatted": "\n Forward foo_c",
+            "paragraph": [
+              " Forward foo_c\n"
+            ],
+            "raw": "///\n    /// Forward foo_c\n    ///",
+            "text": "\n Forward foo_c\n"
+          },
+          "display_name": "foo_c",
+          "is_const": false,
+          "is_consteval": false,
+          "is_constexpr": false,
+          "is_constructor": false,
+          "is_copy_assignment": false,
+          "is_coroutine": false,
+          "is_defaulted": false,
+          "is_deleted": false,
+          "is_move_assignment": false,
+          "is_noexcept": false,
+          "is_operator": false,
+          "is_pure_virtual": false,
+          "is_static": false,
+          "is_virtual": true,
+          "name": "foo_c",
+          "parameters": [],
+          "source_location": {
+            "column": 10,
+            "file": "t00002.cc",
+            "line": 75,
+            "translation_unit": "t00002.cc"
+          },
+          "template_parameters": [],
+          "type": "void"
+        }
+      ],
+      "name": "E",
+      "namespace": "clanguml::t00002",
+      "source_location": {
+        "column": 7,
+        "file": "t00002.cc",
+        "line": 61,
+        "translation_unit": "t00002.cc"
       },
       "template_parameters": [],
       "type": "class"
     }
   ],
-  "metadata": {
-    "clang_uml_version": "0.3.8",
-    "llvm_version": "Ubuntu clang version 15.0.6",
-    "schema_version": 1
-  },
-  "name": "t00003_class",
-  "relationships": [],
-  "using_namespace": "clanguml::t00003"
+  "name": "t00002_class",
+  "package_type": "namespace",
+  "relationships": [
+    {
+      "access": "public",
+      "destination": "7901073918843258388",
+      "source": "4753875669499007606",
+      "type": "extension"
+    },
+    {
+      "access": "public",
+      "destination": "7901073918843258388",
+      "source": "9139995436788700062",
+      "type": "extension"
+    },
+    {
+      "access": "private",
+      "destination": "7901073918843258388",
+      "label": "as",
+      "source": "487603959843317797",
+      "type": "association"
+    },
+    {
+      "access": "public",
+      "destination": "4753875669499007606",
+      "source": "487603959843317797",
+      "type": "extension"
+    },
+    {
+      "access": "public",
+      "destination": "9139995436788700062",
+      "source": "487603959843317797",
+      "type": "extension"
+    },
+    {
+      "access": "private",
+      "destination": "7901073918843258388",
+      "label": "as",
+      "source": "17903093362471729766",
+      "type": "association"
+    },
+    {
+      "access": "public",
+      "destination": "4753875669499007606",
+      "source": "17903093362471729766",
+      "type": "extension"
+    },
+    {
+      "access": "public",
+      "destination": "9139995436788700062",
+      "source": "17903093362471729766",
+      "type": "extension"
+    }
+  ],
+  "title": "Basic class diagram example",
+  "using_namespace": "clanguml::t00002"
 }
 ```
 

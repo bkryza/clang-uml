@@ -64,17 +64,21 @@ cli_flow_t cli_handler::parse(int argc, const char **argv)
         generator_type_names{
             {"plantuml", clanguml::common::generator_type_t::plantuml},
             {"json", clanguml::common::generator_type_t::json},
-            {"mermaid", clanguml::common::generator_type_t::mermaid}};
+            {"mermaid", clanguml::common::generator_type_t::mermaid},
+            {"graphml", clanguml::common::generator_type_t::graphml}};
 
     app.add_option("-c,--config", config_path,
         "Location of configuration file, when '-' read from stdin");
     app.add_option("-d,--compile-database", compilation_database_dir,
         "Location of compilation database directory");
-    app.add_option("-n,--diagram-name", diagram_names,
-        "List of diagram names to generate");
+    app.add_option(
+        "-n,--diagram-name", diagram_names, "Name of diagram to generate");
     app.add_option("-g,--generator", generators,
-           "Name of the generator (default: plantuml)")
-        ->transform(CLI::CheckedTransformer(generator_type_names));
+           "Name of the generator: plantuml, mermaid, json or graphml "
+           "(default: "
+           "plantuml)")
+        ->transform(CLI::CheckedTransformer(generator_type_names))
+        ->option_text("TEXT ...");
     app.add_option("-o,--output-directory", output_directory,
         "Override output directory specified in config file");
     app.add_option("-t,--thread-count", thread_count,
@@ -86,7 +90,7 @@ cli_flow_t cli_handler::parse(int argc, const char **argv)
         "-p,--progress", progress, "Show progress bars for generated diagrams");
     app.add_flag("-q,--quiet", quiet, "Minimal logging");
     app.add_flag("-l,--list-diagrams", list_diagrams,
-        "Print list of diagrams defined in the config file");
+        "Print list of diagram names defined in the config file");
     app.add_flag("--init", initialize, "Initialize example config file");
     app.add_option("--add-compile-flag", add_compile_flag,
         "Add a compilation flag to each entry in the compilation database");
@@ -95,19 +99,19 @@ cli_flow_t cli_handler::parse(int argc, const char **argv)
         "database");
 #if !defined(_WIN32)
     app.add_option("--query-driver", query_driver,
-        "Query the specific compiler driver to extract system paths and add to "
-        "compile commands (e.g. arm-none-eabi-g++)");
+        "Query the specific compiler driver to extract system paths and add "
+        "them to compile commands (e.g. arm-none-eabi-g++)");
 #endif
     app.add_flag("--allow-empty-diagrams", allow_empty_diagrams,
         "Do not raise an error when generated diagram model is empty");
-    app.add_option(
-        "--add-class-diagram", add_class_diagram, "Add class diagram config");
+    app.add_option("--add-class-diagram", add_class_diagram,
+        "Add example class diagram to config file");
     app.add_option("--add-sequence-diagram", add_sequence_diagram,
-        "Add sequence diagram config");
+        "Add example sequence diagram to config file");
     app.add_option("--add-package-diagram", add_package_diagram,
-        "Add package diagram config");
+        "Add example package diagram to config file");
     app.add_option("--add-include-diagram", add_include_diagram,
-        "Add include diagram config");
+        "Add example include diagram to config");
     app.add_option("--add-diagram-from-template", add_diagram_from_template,
         "Add diagram config based on diagram template");
     app.add_option("--template-var", template_variables,

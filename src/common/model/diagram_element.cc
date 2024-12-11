@@ -103,6 +103,19 @@ bool diagram_element::complete() const { return complete_; }
 
 void diagram_element::complete(bool completed) { complete_ = completed; }
 
+void diagram_element::remove_duplicate_relationships()
+{
+    std::vector<relationship> unique_relationships;
+
+    for (auto &r : relationships_) {
+        if (!util::contains(unique_relationships, r)) {
+            unique_relationships.emplace_back(r);
+        }
+    }
+
+    std::swap(relationships_, unique_relationships);
+}
+
 void diagram_element::apply_filter(
     const diagram_filter &filter, const std::set<eid_t> &removed)
 {

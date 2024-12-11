@@ -77,6 +77,10 @@ target_link_libraries(
     clang-umllib
     Threads::Threads)
 
+if(NOT MSVC)
+    target_link_libraries(clang-uml pugixml::pugixml)
+endif(NOT MSVC)
+
 #
 # Setup install options
 #

@@ -40,7 +40,7 @@ using nested_trait_ns =
  * @brief Package diagram model.
  */
 class diagram : public clanguml::common::model::diagram,
-                public clanguml::common::model::element_view<package>,
+                public clanguml::common::model::element_views<package>,
                 public nested_trait_ns {
 public:
     diagram() = default;

@@ -92,6 +92,8 @@ set(CLANG_UML_TEST_LIBRARIES clang-umllib ${YAML_CPP_LIBRARIES}
 
 if(MSVC)
     list(APPEND CLANG_UML_TEST_LIBRARIES "Version.lib")
+else(MSVC)
+    list(APPEND CLANG_UML_TEST_LIBRARIES pugixml::pugixml)
 endif(MSVC)
 
 list(FIND CMAKE_CXX_COMPILE_FEATURES cxx_std_20 SUPPORTS_CXX_STD_20)
@@ -177,7 +179,8 @@ foreach(TEST_NAME ${TEST_NAMES})
             endif(APPLE)
             target_sources(test_cases_objc PUBLIC ${TEST_CASES_OBJC_SOURCES})
         endif(ENABLE_OBJECTIVE_C_TEST_CASES)
-        target_sources(${TEST_NAME} PUBLIC ${TEST_NAME}.cc ${TEST_CASE_SOURCES})
+        target_sources(${TEST_NAME} PUBLIC ${TEST_NAME}.cc
+                test_case_utils/test_case_utils.cc ${TEST_CASE_SOURCES})
         target_include_directories(${TEST_NAME} PUBLIC ${YAML_CPP_INCLUDE_DIR})
     else()
         target_sources(${TEST_NAME} PUBLIC ${TEST_NAME}.cc)

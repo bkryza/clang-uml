@@ -190,6 +190,18 @@ struct mermaid {
     void append(const mermaid &r);
 };
 
+/**
+ * @brief GraphML diagram config section
+ *
+ * This configuration option can be used to set any GraphML custom options
+ * or attach notes to diagram elements.
+ */
+struct graphml {
+    std::map<std::string, std::vector<std::string>> notes;
+
+    void append(const graphml &r);
+};
+
 enum class context_direction_t { inward, outward, any };
 
 std::string to_string(context_direction_t cd);
@@ -603,6 +615,7 @@ struct inheritable_diagram_options {
     option<filter> exclude{"exclude"};
     option<plantuml> puml{"plantuml", option_inherit_mode::kAppend};
     option<struct mermaid> mermaid{"mermaid", option_inherit_mode::kAppend};
+    option<struct graphml> graphml{"graphml", option_inherit_mode::kAppend};
     option<method_arguments> generate_method_arguments{
         "generate_method_arguments", method_arguments::full};
     option<bool> generate_concept_requirements{

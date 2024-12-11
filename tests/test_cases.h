@@ -33,6 +33,7 @@
 #include "package_diagram/visitor/translation_unit_visitor.h"
 #include "sequence_diagram/generators/plantuml/sequence_diagram_generator.h"
 #include "sequence_diagram/visitor/translation_unit_visitor.h"
+#include "test_case_utils/test_case_utils.h"
 #include "util/util.h"
 
 #define DOCTEST_CONFIG_IMPLEMENT
@@ -54,527 +55,6 @@ load_config(const std::string &test_name);
 
 namespace clanguml::test {
 
-template <typename T, typename... Ts> constexpr bool has_type() noexcept
-{
-    return (std::is_same_v<T, Ts> || ... || false);
-}
-
-struct Public { };
-
-struct Protected { };
-
-struct Private { };
-
-struct Abstract { };
-
-struct Static { };
-
-struct Const { };
-
-struct Constexpr { };
-
-struct Consteval { };
-
-struct Coroutine { };
-
-struct Noexcept { };
-
-struct Default { };
-
-struct Deleted { };
-
-struct Entrypoint { };
-
-struct Exitpoint { };
-
-struct CUDAKernel { };
-struct CUDADevice { };
-
-struct ObjCOptional { };
-
-struct InControlCondition { };
-struct Response { };
-struct NamespacePackage { };
-struct ModulePackage { };
-struct DirectoryPackage { };
-
-template <typename PackageT> std::string package_type_name();
-
-template <> std::string package_type_name<NamespacePackage>()
-{
-    return "namespace";
-}
-
-template <> std::string package_type_name<ModulePackage>() { return "module"; }
-
-template <> std::string package_type_name<DirectoryPackage>()
-{
-    return "directory";
-}
-
-template <typename T> struct diagram_source_t {
-    diagram_source_t(clanguml::common::model::diagram_t dt, T &&s)
-    {
-        diagram_type = dt;
-        src = std::move(s);
-    }
-
-    bool contains(std::string name) const;
-
-    virtual std::string get_alias(std::string name) const
-    {
-        return "__INVALID_ALIAS__";
-    }
-
-    virtual std::string get_alias(std::string ns, std::string name) const
-    {
-        return get_alias(fmt::format("{}::{}", ns, name));
-    }
-
-    bool search(const std::string &pattern) const;
-
-    int64_t find(const std::string &pattern, int64_t offset = 0) const;
-
-    std::string to_string() const;
-
-    T src;
-    clanguml::common::model::diagram_t diagram_type;
-    bool generate_packages{false};
-};
-
-struct plantuml_t : public diagram_source_t<std::string>,
-                    util::memoized<plantuml_t, std::string, std::string> {
-
-    using diagram_source_t::diagram_source_t;
-    using source_type = std::string;
-    using generator_tag = clanguml::common::generators::plantuml_generator_tag;
-
-    inline static const std::string diagram_type_name{"PlantUML"};
-
-    std::string get_alias(std::string name) const override
-    {
-        return memoize(
-            true, [this, name](std::string x) { return get_alias_impl(x); },
-            name);
-    }
-
-    std::string get_alias_impl(std::string name) const
-    {
-        std::vector<std::regex> patterns;
-
-        const std::string alias_regex("([A-Z]_[0-9]+)");
-
-        util::replace_all(name, "(", "\\(");
-        util::replace_all(name, ")", "\\)");
-        util::replace_all(name, " ", "\\s");
-        util::replace_all(name, "*", "\\*");
-        util::replace_all(name, "[", "\\[");
-        util::replace_all(name, "]", "\\]");
-
-        if (diagram_type == common::model::diagram_t::kClass) {
-            patterns.push_back(
-                std::regex{"class\\s\"" + name + "\"\\sas\\s" + alias_regex});
-            patterns.push_back(std::regex{
-                "abstract\\s\"" + name + "\"\\sas\\s" + alias_regex});
-            patterns.push_back(
-                std::regex{"enum\\s\"" + name + "\"\\sas\\s" + alias_regex});
-            patterns.push_back(
-                std::regex{"package\\s\"" + name + "\"\\sas\\s" + alias_regex});
-            patterns.push_back(std::regex{
-                "package\\s\\[" + name + "\\]\\sas\\s" + alias_regex});
-            patterns.push_back(std::regex{
-                "protocol\\s\"" + name + "\"\\sas\\s" + alias_regex});
-        }
-        else if (diagram_type == common::model::diagram_t::kSequence) {
-            patterns.push_back(std::regex{
-                "participant\\s\"" + name + "\"\\sas\\s" + alias_regex});
-        }
-        else if (diagram_type == common::model::diagram_t::kPackage) {
-            patterns.push_back(
-                std::regex{"package\\s\"" + name + "\"\\sas\\s" + alias_regex});
-            patterns.push_back(std::regex{
-                "package\\s\\[" + name + "\\]\\sas\\s" + alias_regex});
-        }
-        else if (diagram_type == common::model::diagram_t::kInclude) {
-            patterns.push_back(
-                std::regex{"file\\s\"" + name + "\"\\sas\\s" + alias_regex});
-            patterns.push_back(
-                std::regex{"folder\\s\"" + name + "\"\\sas\\s" + alias_regex});
-        }
-
-        std::smatch base_match;
-
-        for (const auto &pattern : patterns) {
-            if (std::regex_search(src, base_match, pattern) &&
-                base_match.size() == 2) {
-                std::ssub_match base_sub_match = base_match[1];
-                std::string alias = base_sub_match.str();
-                return trim(alias);
-            }
-        }
-
-        return fmt::format("__INVALID__ALIAS__({})", name);
-    }
-};
-
-struct mermaid_t : public diagram_source_t<std::string>,
-                   util::memoized<mermaid_t, std::string, std::string> {
-    using diagram_source_t::diagram_source_t;
-    using source_type = std::string;
-    using generator_tag = clanguml::common::generators::mermaid_generator_tag;
-
-    inline static const std::string diagram_type_name{"MermaidJS"};
-
-    std::string get_alias(std::string name) const override
-    {
-        return memoize(
-            true, [this, name](std::string x) { return get_alias_impl(x); },
-            name);
-    }
-
-    std::string get_alias_class_diagram_impl(std::string name) const
-    {
-        std::vector<std::regex> patterns;
-
-        const std::string alias_regex("([A-Z]_[0-9]+)");
-
-        util::replace_all(name, "(", "&lpar;");
-        util::replace_all(name, ")", "&rpar;");
-        util::replace_all(name, " ", "\\s");
-        util::replace_all(name, "*", "\\*");
-        util::replace_all(name, "[", "\\[");
-        util::replace_all(name, "]", "\\]");
-        util::replace_all(name, "<", "&lt;");
-        util::replace_all(name, ">", "&gt;");
-        util::replace_all(name, "{", "&lbrace;");
-        util::replace_all(name, "}", "&rbrace;");
-
-        patterns.push_back(
-            std::regex{"class\\s" + alias_regex + "\\[\"" + name + "\"\\]"});
-        patterns.push_back(
-            std::regex{"subgraph\\s" + alias_regex + "\\[" + name + "\\]"});
-        patterns.push_back(
-            std::regex{"\\s\\s" + alias_regex + "\\[" + name + "\\]"}); // file
-
-        std::smatch base_match;
-
-        for (const auto &pattern : patterns) {
-            if (std::regex_search(src, base_match, pattern) &&
-                base_match.size() == 2) {
-                std::ssub_match base_sub_match = base_match[1];
-                std::string alias = base_sub_match.str();
-                return trim(alias);
-            }
-        }
-
-        return fmt::format("__INVALID__ALIAS__({})", name);
-    }
-
-    std::string get_alias_sequence_diagram_impl(std::string name) const
-    {
-        std::vector<std::regex> patterns;
-
-        const std::string alias_regex("([A-Z]_[0-9]+)");
-
-        util::replace_all(name, "(", "\\(");
-        util::replace_all(name, ")", "\\)");
-        util::replace_all(name, " ", "\\s");
-        util::replace_all(name, "*", "\\*");
-        util::replace_all(name, "[", "\\[");
-        util::replace_all(name, "]", "\\]");
-
-        patterns.push_back(std::regex{
-            "participant\\s" + alias_regex + "\\sas\\s" + name + "\\n"});
-        patterns.push_back(std::regex{"participant\\s" + alias_regex +
-            "\\sas\\s<< CUDA Kernel >><br>" + name + "\\n"});
-        patterns.push_back(std::regex{"participant\\s" + alias_regex +
-            "\\sas\\s<< CUDA Device >><br>" + name + "\\n"});
-        patterns.push_back(std::regex{"participant\\s" + alias_regex +
-            "\\sas\\s<< ObjC Interface >><br>" + name + "\\n"});
-
-        std::smatch base_match;
-
-        for (const auto &pattern : patterns) {
-            if (std::regex_search(src, base_match, pattern) &&
-                base_match.size() == 2) {
-                std::ssub_match base_sub_match = base_match[1];
-                std::string alias = base_sub_match.str();
-                return trim(alias);
-            }
-        }
-
-        return fmt::format("__INVALID__ALIAS__({})", name);
-    }
-
-    std::string get_alias_impl(std::string name) const
-    {
-        if (diagram_type == common::model::diagram_t::kSequence)
-            return get_alias_sequence_diagram_impl(name);
-
-        return get_alias_class_diagram_impl(name);
-    }
-};
-
-struct json_t : public diagram_source_t<nlohmann::json> {
-    using diagram_source_t::diagram_source_t;
-    using source_type = nlohmann::json;
-    using generator_tag = clanguml::common::generators::json_generator_tag;
-
-    inline static const std::string diagram_type_name{"JSON"};
-};
-
-std::optional<nlohmann::json> get_element_by_id(
-    const nlohmann::json &j, const std::string &id)
-{
-    if (!j.contains("elements"))
-        return {};
-
-    for (const nlohmann::json &e : j["elements"]) {
-        if (e["id"] == id)
-            return {e};
-
-        if (e["type"] == "namespace" || e["type"] == "folder") {
-            auto maybe_e = get_element_by_id(e, id);
-            if (maybe_e)
-                return maybe_e;
-        }
-    }
-
-    return {};
-}
-
-std::optional<nlohmann::json> get_element(
-    const nlohmann::json &j, const std::string &name)
-{
-    if (!j.contains("elements"))
-        return {};
-
-    for (const nlohmann::json &e : j["elements"]) {
-        if (e["display_name"] == name)
-            return {e};
-
-        if (e["type"] == "namespace" || e["type"] == "folder" ||
-            e["type"] == "directory" || e["type"] == "module") {
-            auto maybe_e = get_element(e, name);
-            if (maybe_e)
-                return maybe_e;
-        }
-    }
-
-    return {};
-}
-
-std::optional<nlohmann::json> get_element(
-    const nlohmann::json &j, const std::string &name, const std::string &type)
-{
-    if (!j.contains("elements"))
-        return {};
-
-    for (const nlohmann::json &e : j["elements"]) {
-        if ((e["display_name"] == name) && (e["type"] == type))
-            return {e};
-
-        if (e["type"] == "namespace" || e["type"] == "folder" ||
-            e["type"] == "directory" || e["type"] == "module") {
-            auto maybe_e = get_element(e, name);
-            if (maybe_e)
-                return maybe_e;
-        }
-    }
-
-    return {};
-}
-
-std::optional<nlohmann::json> get_element(
-    const json_t &src, const std::string &name)
-{
-    return get_element(src.src, name);
-}
-
-std::optional<nlohmann::json> get_participant(
-    const nlohmann::json &j, const std::string &name)
-{
-    if (!j.contains("participants"))
-        return {};
-
-    std::string using_namespace{};
-    if (j.contains("using_namespace")) {
-        using_namespace =
-            fmt::format("{}::", j["using_namespace"].get<std::string>());
-    }
-
-    for (const nlohmann::json &e : j.at("participants")) {
-        if (e["display_name"] == name ||
-            e["full_name"].get<std::string>().substr(using_namespace.size()) ==
-                name)
-            return {e};
-    }
-
-    return {};
-}
-
-auto get_relationship(const nlohmann::json &j, const nlohmann::json &from,
-    const nlohmann::json &to, const std::string &type, const std::string &label)
-{
-    return std::find_if(j["relationships"].begin(), j["relationships"].end(),
-        [&](const auto &it) {
-            auto match = (it["source"] == from) && (it["destination"] == to) &&
-                (it["type"] == type);
-
-            if (match && label.empty())
-                return true;
-
-            if (match && (it["label"] == label))
-                return true;
-
-            return false;
-        });
-}
-
-auto get_relationship(const nlohmann::json &j, const std::string &from,
-    const std::string &to, const std::string &type,
-    const std::string &label = {})
-{
-    auto source = get_element(j, from);
-    auto destination = get_element(j, to);
-
-    if (!(source && destination))
-        return j["relationships"].end();
-
-    return get_relationship(
-        j, source->at("id"), destination->at("id"), type, label);
-}
-
-std::string expand_name(const nlohmann::json &j, const std::string &name)
-{
-    return name;
-}
-
-template <> bool diagram_source_t<std::string>::contains(std::string name) const
-{
-    return util::contains(src, name);
-}
-
-template <>
-int64_t diagram_source_t<std::string>::find(
-    const std::string &pattern, int64_t offset) const
-{
-    std::regex pattern_regex{pattern};
-
-    std::smatch base_match;
-    auto offset_it = src.begin();
-    std::advance(offset_it, offset);
-    bool found =
-        std::regex_search(offset_it, src.end(), base_match, pattern_regex);
-    if (!found)
-        return -1;
-
-    return base_match.position(0);
-}
-
-template <>
-bool diagram_source_t<std::string>::search(const std::string &pattern) const
-{
-    return find(pattern) > -1;
-}
-
-template <>
-bool diagram_source_t<nlohmann::json>::contains(std::string name) const
-{
-    return false;
-}
-
-template <> std::string diagram_source_t<std::string>::to_string() const
-{
-    return src;
-}
-
-template <> std::string diagram_source_t<nlohmann::json>::to_string() const
-{
-    return src.dump(2);
-}
-
-struct QualifiedName {
-    QualifiedName(const char *n)
-        : name{n}
-    {
-    }
-
-    QualifiedName(std::string_view n)
-        : name{n}
-    {
-    }
-
-    QualifiedName(std::string_view ns_, std::string_view n)
-        : ns{ns_}
-        , name{n}
-    {
-    }
-
-    QualifiedName(const char *ns_, const char *n)
-        : ns{ns_}
-        , name{n}
-    {
-    }
-
-    operator std::string() const { return str(); }
-
-    std::string str(bool generate_packages = false) const
-    {
-        if (ns && !generate_packages)
-            return fmt::format("{}::{}", ns.value(), name);
-
-        return name;
-    }
-
-    std::optional<std::string> ns;
-    std::string name;
-};
-
-struct Message {
-    template <typename... Attrs>
-    Message(QualifiedName f, QualifiedName t, std::string m, Attrs &&...attrs)
-        : from{std::move(f)}
-        , to{std::move(t)}
-        , message{std::move(m)}
-        , is_static{has_type<Static, Attrs...>()}
-        , is_incontrolcondition{has_type<InControlCondition, Attrs...>()}
-        , is_response{has_type<Response, Attrs...>()}
-        , is_cuda_kernel{has_type<CUDAKernel, Attrs...>()}
-        , is_cuda_device{has_type<CUDADevice, Attrs...>()}
-    {
-    }
-
-    template <typename... Attrs>
-    Message(Entrypoint &&e, QualifiedName t, std::string m, Attrs &&...attrs)
-        : Message(QualifiedName{""}, std::move(t), {},
-              std::forward<Attrs>(attrs)...)
-    {
-        is_entrypoint = true;
-    }
-
-    template <typename... Attrs>
-    Message(Exitpoint &&e, QualifiedName t, Attrs &&...attrs)
-        : Message(QualifiedName{""}, std::move(t), {},
-              std::forward<Attrs>(attrs)...)
-    {
-        is_exitpoint = true;
-    }
-
-    QualifiedName from;
-    QualifiedName to;
-    std::string message;
-    std::optional<std::string> return_type;
-
-    bool is_static{false};
-    bool is_entrypoint{false};
-    bool is_exitpoint{false};
-    bool is_incontrolcondition{false};
-    bool is_response{false};
-    bool is_cuda_kernel{false};
-    bool is_cuda_device{false};
-};
-
 ///
 /// The following functions declarations define various checks on generated
 /// diagrams.
@@ -583,7 +63,6 @@ struct Message {
 /// @defgroup Test Cases diagram checks
 /// @{
 ///
-
 // Check if generated diagram source starts with pattern
 template <typename DiagramType>
 bool StartsWith(const DiagramType &d, std::string pattern);
@@ -1223,12 +702,14 @@ bool HasMemberLink(const plantuml_t &d, std::string const &method,
 
 template <> bool IsFolder(const plantuml_t &d, std::string const &path)
 {
-    return d.contains("folder \"" + util::split(path, "/").back() + "\"");
+    const std::filesystem::path p{path};
+    return d.contains("folder \"" + p.filename().string() + "\"");
 }
 
 template <> bool IsFile(const plantuml_t &d, std::string const &path)
 {
-    return d.contains("file \"" + util::split(path, "/").back() + "\"");
+    const std::filesystem::path p{path};
+    return d.contains("file \"" + p.filename().string() + "\"");
 }
 
 template <> bool IsSystemHeader(const plantuml_t &d, std::string const &path)
@@ -1929,18 +1410,6 @@ bool IsParticipant(
     return d.contains(fmt::format("participant {}", d.get_alias(name)));
 }
 
-//
-// JSON test helpers
-//
-struct File {
-    explicit File(const std::string &f)
-        : file{f}
-    {
-    }
-
-    const std::string file;
-};
-
 template <> bool HasTitle(const json_t &d, std::string const &str)
 {
     return d.src.contains("title") && d.src["title"] == str;
@@ -1999,7 +1468,7 @@ template <> bool IsClassTemplate(const json_t &d, QualifiedName cls)
 {
     auto e =
         get_element(d.src, expand_name(d.src, cls.str(d.generate_packages)));
-    return e && e->at("type") == "class";
+    return e && e->at("type") == "class" && e->at("is_template");
 }
 
 template <> bool IsAbstractClassTemplate(const json_t &d, QualifiedName cls)
@@ -2480,115 +1949,6 @@ template <> bool IsDeprecated(const json_t &d, const std::string &name)
     return e && e->at("is_deprecated") == true;
 }
 
-namespace json_helpers {
-int find_message_nested(const nlohmann::json &j, const std::string &from,
-    const std::string &to, const std::string &msg,
-    std::optional<std::string> return_type, const nlohmann::json &from_p,
-    const nlohmann::json &to_p, int &count, const int64_t offset,
-    std::optional<int32_t> chain_index = {})
-{
-    if (!j.contains("messages") && !j.contains("message_chains"))
-        return -1;
-
-    const auto &messages = !chain_index.has_value()
-        ? j["messages"]
-        : j["message_chains"][chain_index.value()]["messages"];
-
-    int res{-1};
-
-    for (const auto &m : messages) {
-        if (m.contains("branches")) {
-            for (const auto &b : m["branches"]) {
-                auto nested_res = find_message_nested(
-                    b, from, to, msg, return_type, from_p, to_p, count, offset);
-
-                if (nested_res >= offset)
-                    return nested_res;
-            }
-        }
-        else if (m.contains("messages")) {
-            auto nested_res = find_message_nested(
-                m, from, to, msg, return_type, from_p, to_p, count, offset);
-
-            if (nested_res >= offset)
-                return nested_res;
-        }
-        else {
-            if (count >= offset &&
-                (m["from"]["participant_id"] == from_p["id"]) &&
-                (m["to"]["participant_id"] == to_p["id"]) &&
-                (m["name"] == msg) &&
-                (!return_type || m["return_type"] == *return_type))
-                return count;
-
-            count++;
-        }
-    }
-
-    return res;
-}
-
-int find_message_impl(const nlohmann::json &j, const std::string &from,
-    const std::string &to, const std::string &msg,
-    std::optional<std::string> return_type, int64_t offset,
-    std::optional<int32_t> chain_index = {})
-{
-
-    auto from_p = get_participant(j, from);
-    auto to_p = get_participant(j, to);
-
-    if (!from_p)
-        throw std::runtime_error(
-            fmt::format("Cannot find participant {}", from));
-
-    if (!to_p)
-        throw std::runtime_error(fmt::format("Cannot find participant {}", to));
-
-    assert(from_p->is_object());
-    assert(to_p->is_object());
-
-    // TODO: support diagrams with multiple sequences...
-    int count{0};
-
-    for (const auto &seq : j["sequences"]) {
-        int64_t res{-1};
-
-        res = find_message_nested(seq, from, to, msg, return_type, *from_p,
-            *to_p, count, offset, chain_index);
-
-        if (res >= 0)
-            return res;
-    }
-
-    throw std::runtime_error(fmt::format(
-        "No such message {} {} {} after offset {}", from, to, msg, offset));
-}
-
-int64_t find_message(const nlohmann::json &j, const File &from, const File &to,
-    const std::string &msg, int64_t offset)
-{
-    return find_message_impl(j, from.file, to.file, msg, {}, offset);
-}
-
-int64_t find_message(const nlohmann::json &j, const std::string &from,
-    const std::string &to, const std::string &msg,
-    std::optional<std::string> return_type = {}, int64_t offset = 0)
-{
-    return find_message_impl(
-        j, expand_name(j, from), expand_name(j, to), msg, return_type, offset);
-}
-
-int64_t find_message_in_chain(const nlohmann::json &j, const std::string &from,
-    const std::string &to, const std::string &msg,
-    std::optional<std::string> return_type = {}, int64_t offset = 0,
-    uint32_t chain_index = 0)
-{
-    return find_message_impl(j, expand_name(j, from), expand_name(j, to), msg,
-        return_type, offset, chain_index);
-}
-
-} // namespace detail
-
 template <>
 int64_t FindMessage(
     const json_t &d, const Message &msg, int64_t offset, bool fail)
@@ -2611,32 +1971,6 @@ int64_t FindMessage(
             return -1;
 
         std::cout << "FindMessage failed with error: " << e.what() << "\n";
-
-        throw e;
-    }
-}
-
-int64_t find_message_in_chain(const json_t &d, const Message &msg,
-    int64_t offset, bool fail, uint32_t chain_index)
-{
-    if (msg.is_response) {
-        // TODO: Currently response are not generated as separate messages
-        //       in JSON format
-        return offset;
-    }
-
-    if (msg.is_entrypoint || msg.is_exitpoint)
-        return offset;
-
-    try {
-        return json_helpers::find_message_in_chain(d.src, msg.from.str(),
-            msg.to.str(), msg.message, msg.return_type, offset, chain_index);
-    }
-    catch (std::exception &e) {
-        if (!fail)
-            return -1;
-
-        std::cout << "find_message_in_chain failed with " << e.what() << "\n";
 
         throw e;
     }
@@ -2699,4 +2033,501 @@ bool IsParticipant(
 
     return p && (p->at("type") == type);
 }
+
+template <> bool HasTitle(const graphml_t &d, std::string const &str)
+{
+    auto query = fmt::format("/graphml/desc[text()='{}']", str);
+    auto title_node = d.src.select_node(query.c_str()).node();
+    return !!title_node;
+}
+
+template <> bool IsClass(const graphml_t &d, QualifiedName cls)
+{
+    auto class_node = get_element(d, "class", cls);
+
+    return !!class_node;
+}
+
+template <> bool IsEnum(const graphml_t &d, QualifiedName cls)
+{
+    auto class_node = get_element(d, "enum", cls);
+
+    return !!class_node;
+}
+
+template <> bool IsUnion(const graphml_t &d, QualifiedName cls)
+{
+    auto class_node = get_element(d, "class", cls);
+    if (!class_node)
+        return false;
+
+    const auto node_stereotype_id = get_attr_key_id(d, "node", "stereotype");
+
+    auto query =
+        fmt::format("data[@key='{}' and text()='union']", node_stereotype_id);
+
+    auto class_abstract_stereotype_node =
+        class_node.node().select_node(query.c_str());
+
+    return !!class_abstract_stereotype_node;
+}
+
+template <> bool IsAbstractClass(const graphml_t &d, QualifiedName cls)
+{
+    auto class_node = get_element(d, "class", cls);
+    if (!class_node)
+        return false;
+
+    const auto node_stereotype_id = get_attr_key_id(d, "node", "stereotype");
+
+    auto query = fmt::format(
+        "data[@key='{}' and text()='abstract']", node_stereotype_id);
+
+    auto class_abstract_stereotype_node =
+        class_node.node().select_node(query.c_str());
+
+    return !!class_abstract_stereotype_node;
+}
+
+template <> bool IsAbstractClassTemplate(const graphml_t &d, QualifiedName cls)
+{
+    return IsAbstractClass(d, cls);
+}
+
+template <> bool IsClassTemplate(const graphml_t &d, QualifiedName cls)
+{
+    pugi::xpath_node class_node = get_element(d, "class", cls);
+
+    return !!class_node &&
+        has_data(d, class_node.node(), "is_template", "true");
+}
+
+template <> bool IsObjCProtocol(const graphml_t &d, QualifiedName cls)
+{
+    auto class_node = get_element(d, "objc_protocol", cls);
+
+    return !!class_node;
+}
+
+template <> bool IsObjCCategory(const graphml_t &d, QualifiedName cls)
+{
+    auto class_node = get_element(d, "objc_category", cls);
+
+    return !!class_node;
+}
+
+template <> bool IsObjCInterface(const graphml_t &d, QualifiedName cls)
+{
+    auto class_node = get_element(d, "objc_interface", cls);
+
+    return !!class_node;
+}
+
+template <> bool IsConcept(const graphml_t &d, QualifiedName cpt)
+{
+    pugi::xpath_node concept_node = get_element(d, "concept", cpt);
+
+    return !!concept_node;
+}
+
+template <>
+bool IsConceptRequirement(
+    const graphml_t &d, std::string const &cpt, std::string requirement)
+{
+    return true;
+}
+
+template <>
+bool IsConstraint(const graphml_t &d, QualifiedName from, QualifiedName to,
+    std::string label, std::string style)
+{
+    return true;
+}
+
+template <>
+bool IsConceptParameterList(
+    const graphml_t &d, std::string const &cpt, std::string parameter_list)
+{
+    return true;
+}
+
+template <>
+bool IsBaseClass(const graphml_t &d, QualifiedName base, QualifiedName subclass)
+{
+    auto base_node =
+        get_element(d, {"class", "objc_interface", "objc_protocol"}, base);
+    auto subclass_node =
+        get_element(d, {"class", "objc_interface", "objc_protocol"}, subclass);
+
+    if (!base_node || !subclass_node)
+        return false;
+
+    return find_relationship(d,
+        subclass_node.node().attribute("id").as_string(),
+        base_node.node().attribute("id").as_string(), "extension");
+}
+
+template <>
+bool IsInnerClass(
+    const graphml_t &d, std::string const &parent, std::string const &inner)
+{
+    auto from_node = get_element(d, QualifiedName{parent});
+    auto to_node = get_element(d, QualifiedName{inner});
+
+    if (!from_node || !to_node)
+        return false;
+
+    return find_relationship(d, to_node.node().attribute("id").as_string(),
+        from_node.node().attribute("id").as_string(), "containment");
+}
+
+template <typename... Ts>
+bool IsAssociation(const graphml_t &d, std::string const &from,
+    std::string const &to, std::string const &label = "",
+    std::string multiplicity_source = "", std::string multiplicity_dest = "",
+    std::string style = "")
+{
+    auto from_node_id =
+        get_element(d, QualifiedName{from}).node().attribute("id").as_string();
+    auto to_node_id =
+        get_element(d, QualifiedName{to}).node().attribute("id").as_string();
+
+    std::string access;
+    if constexpr (has_type<Public, Ts...>())
+        access = "public";
+    else if constexpr (has_type<Protected, Ts...>())
+        access = "protected";
+    else
+        access = "private";
+
+    auto edge_node = get_relationship(
+        d, from_node_id, to_node_id, "association", label, access);
+
+    return !!edge_node;
+}
+
+template <>
+bool IsDependency(
+    const graphml_t &d, QualifiedName from, QualifiedName to, std::string style)
+{
+    auto from_node = get_element(d, from);
+    auto to_node = get_element(d, to);
+
+    if (!from_node || !to_node)
+        return false;
+
+    return find_relationship(d, from_node.node().attribute("id").as_string(),
+        to_node.node().attribute("id").as_string(), "dependency");
+}
+
+template <>
+bool IsInstantiation(const graphml_t &d, std::string const &from,
+    std::string const &to, std::string style)
+{
+    auto from_node = get_element(d, QualifiedName{from});
+    auto to_node = get_element(d, QualifiedName{to});
+
+    if (!from_node || !to_node)
+        return false;
+
+    return find_relationship(d, to_node.node().attribute("id").as_string(),
+        from_node.node().attribute("id").as_string(), "instantiation");
+}
+
+template <typename... Ts>
+bool IsAggregation(const graphml_t &d, std::string const &from,
+    std::string const &to, std::string const &label = "",
+    std::string multiplicity_source = "", std::string multiplicity_dest = "",
+    std::string style = "")
+{
+    std::string access;
+    if constexpr (has_type<Public, Ts...>())
+        access = "public";
+    else if constexpr (has_type<Protected, Ts...>())
+        access = "protected";
+    else
+        access = "private";
+
+    auto from_node = get_element(d, QualifiedName{from});
+    auto to_node = get_element(d, QualifiedName{to});
+
+    if (!from_node || !to_node)
+        return false;
+
+    return !!get_relationship(d, from_node.node().attribute("id").as_string(),
+        to_node.node().attribute("id").as_string(), "aggregation", label,
+        access);
+}
+
+template <typename... Ts>
+bool IsComposition(const graphml_t &d, std::string const &from,
+    std::string const &to, std::string const &label = "",
+    std::string multiplicity_source = "", std::string multiplicity_dest = "",
+    std::string style = "")
+{
+    std::string access;
+    if constexpr (has_type<Public, Ts...>())
+        access = "public";
+    else if constexpr (has_type<Protected, Ts...>())
+        access = "protected";
+    else
+        access = "private";
+
+    auto from_node = get_element(d, QualifiedName{from});
+    auto to_node = get_element(d, QualifiedName{to});
+
+    if (!from_node || !to_node)
+        return false;
+
+    return !!get_relationship(d, from_node.node().attribute("id").as_string(),
+        to_node.node().attribute("id").as_string(), "composition", label,
+        access);
+}
+
+template <typename... Ts>
+bool IsFriend(
+    const graphml_t &d, std::string const &from, std::string const &to)
+{
+    std::string access;
+    if constexpr (has_type<Public, Ts...>())
+        access = "public";
+    else if constexpr (has_type<Protected, Ts...>())
+        access = "protected";
+    else
+        access = "private";
+
+    auto from_node = get_element(d, QualifiedName{from});
+    auto to_node = get_element(d, QualifiedName{to});
+
+    if (!from_node || !to_node)
+        return false;
+
+    return !!get_relationship(d, from_node.node().attribute("id").as_string(),
+        to_node.node().attribute("id").as_string(), "friendship", "", access);
+}
+
+template <>
+bool HasNote(const graphml_t &d, std::string const &element,
+    std::string const &position, std::string const &note)
+{
+    if (note.empty())
+        return true;
+
+    auto element_node = get_element(d, QualifiedName{element}).node();
+
+    const auto node_name_id = get_attr_key_id(d, "node", "name");
+    const auto node_type_id = get_attr_key_id(d, "node", "type");
+
+    const auto select_all_notes =
+        fmt::format("//node[data[@key='{}' and text()='note']]", node_type_id);
+
+    auto note_results = d.src.select_nodes(select_all_notes.c_str());
+    for (const auto &note_result : note_results) {
+        if (has_data(d, note_result.node(), "name", note) ||
+            has_data(d, note_result.node(), "name", util::ltrim(note))) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+template <>
+bool HasLink(const graphml_t &d, std::string const &element,
+    std::string const &link, std::string const &tooltip)
+{
+    auto element_node = get_element(d, QualifiedName{element}).node();
+
+    return has_data(d, element_node, "url", link) &&
+        has_data(d, element_node, "tooltip", tooltip);
+}
+
+template <>
+bool HasMemberLink(const graphml_t &d, std::string const &method,
+    std::string const &link, std::string const &tooltip)
+{
+    return true;
+}
+
+template <typename... Ts>
+bool IsMethod(const graphml_t &d, const std::string &cls,
+    std::string const &name, std::string type = "void",
+    std::string const &params = "")
+{
+    return true;
+}
+
+template <typename... Ts>
+bool IsField(const graphml_t &d, QualifiedName cls, std::string const &name,
+    std::string type)
+{
+    return true;
+}
+
+template <>
+bool IsLayoutHint(const graphml_t &d, std::string const &from,
+    std::string const &hint, std::string const &to)
+{
+    return true;
+}
+
+template <typename PackageT, typename... Args>
+bool IsPackagePath(const graphml_t &d, const pugi::xml_node &parent,
+    const std::string &head, Args... args)
+{
+    if constexpr (sizeof...(Args) == 0) {
+        auto subgraph = get_graph(d, parent, head);
+        return !!subgraph;
+    }
+    else {
+        auto subgraph = get_graph(d, parent, head);
+        if (!subgraph)
+            return false;
+
+        return IsPackagePath<PackageT>(d, subgraph.node(), args...);
+    }
+}
+
+template <typename... Args>
+bool IsNamespacePackage(const graphml_t &d, Args... args)
+{
+    const auto &graphml = d.src.child("graphml").child("graph");
+
+    return IsPackagePath<NamespacePackage>(
+        d, graphml, std::forward<Args>(args)...);
+}
+
+template <typename... Args>
+bool IsDirectoryPackage(const graphml_t &d, Args... args)
+{
+    const auto &graphml = d.src.child("graphml").child("graph");
+
+    return IsPackagePath<DirectoryPackage>(
+        d, graphml, std::forward<Args>(args)...);
+}
+
+template <typename... Args>
+bool IsModulePackage(const graphml_t &d, Args... args)
+{
+    const auto &graphml = d.src.child("graphml").child("graph");
+
+    return IsPackagePath<ModulePackage>(
+        d, graphml, std::forward<Args>(args)...);
+}
+
+template <> bool HasComment(const graphml_t &d, std::string const &comment)
+{
+    // Comments are not included in GraphML
+    return true;
+}
+
+template <> bool IsDeprecated(const graphml_t &d, const std::string &name)
+{
+    auto node = get_element(d, QualifiedName{name});
+    if (!node)
+        return false;
+
+    const auto node_stereotype_id = get_attr_key_id(d, "node", "stereotype");
+
+    auto query = fmt::format(
+        "data[@key='{}' and text()='deprecated']", node_stereotype_id);
+
+    auto class_abstract_stereotype_node =
+        node.node().select_node(query.c_str());
+
+    return !!class_abstract_stereotype_node;
+}
+
+template <>
+bool IsPackageDependency(
+    const graphml_t &d, std::string const &from, std::string const &to)
+{
+    auto from_node = get_element(d, QualifiedName{from});
+    auto to_node = get_element(d, QualifiedName{to});
+
+    if (!from_node || !to_node)
+        return false;
+
+    return !!get_relationship(d, from_node.node().attribute("id").as_string(),
+        to_node.node().attribute("id").as_string(), "dependency");
+}
+
+template <> bool IsFolder(const graphml_t &d, std::string const &path)
+{
+    std::filesystem::path path_fs{path};
+
+    assert(path_fs.is_relative());
+
+    std::vector<std::string> p;
+    for (const auto &pt : path_fs) {
+        p.emplace_back(pt.string());
+    }
+
+    const auto node = get_nested_element(d, p);
+
+    if (!node)
+        return false;
+
+    return !!has_data(d, node, "type", "folder");
+}
+
+template <> bool IsFile(const graphml_t &d, std::string const &path)
+{
+    auto file_node = get_file_node(
+        d, d.src.child("graphml").child("graph"), std::filesystem::path{path});
+
+    if (!file_node)
+        return false;
+
+    return !!has_data(d, file_node, "type", "file");
+}
+
+template <> bool IsSystemHeader(const graphml_t &d, std::string const &path)
+{
+    auto file_node = get_element(d, QualifiedName{path}).node();
+
+    if (!file_node)
+        return false;
+
+    return !!has_data(d, file_node, "type", "file") &&
+        !!has_data(d, file_node, "stereotype", "header") &&
+        !has_data(d, file_node, "stereotype", "source") &&
+        !!has_data(d, file_node, "is_system", "true");
+}
+
+template <>
+bool IsHeaderDependency(const graphml_t &d, std::string const &from,
+    std::string const &to, std::string style)
+{
+    assert(d.diagram_type == common::model::diagram_t::kInclude);
+
+    auto from_node = get_file_node(
+        d, d.src.child("graphml").child("graph"), std::filesystem::path{from});
+    auto to_node = get_file_node(
+        d, d.src.child("graphml").child("graph"), std::filesystem::path{to});
+
+    if (!from_node || !to_node)
+        return false;
+
+    return find_relationship(d, from_node.attribute("id").as_string(),
+        to_node.attribute("id").as_string(), "association");
+}
+
+template <>
+bool IsSystemHeaderDependency(const graphml_t &d, std::string const &from,
+    std::string const &to, std::string style)
+{
+    assert(d.diagram_type == common::model::diagram_t::kInclude);
+
+    auto from_node = get_file_node(
+        d, d.src.child("graphml").child("graph"), std::filesystem::path{from});
+    auto to_node = get_element(d, QualifiedName{to});
+
+    if (!from_node || !to_node)
+        return false;
+
+    return find_relationship(d, from_node.attribute("id").as_string(),
+        to_node.node().attribute("id").as_string(), "dependency");
+}
+
 } // namespace clanguml::test

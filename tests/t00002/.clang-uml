@@ -22,3 +22,11 @@ diagrams:
         - '{% set e=element("A") %} note for {{ e.alias }} "{{ trim(e.comment.brief.0) }}"'
         - '{% set e=element("clanguml::t00002::B") %} note for {{ e.alias }} "{{ trim(e.comment.brief.0) }}"'
         - 'note for {{ alias("D") }} "{{ comment("D").text }}"'
+    graphml:
+      notes:
+        'clanguml::t00002::A':
+          - '{% set e=element("A") %}{{ trim(e.comment.brief.0) }}'
+        'clanguml::t00002::B':
+          - '{% set e=element("clanguml::t00002::B") %}{{ trim(e.comment.brief.0) }}'
+        'clanguml::t00002::D':
+          - '{% set e=element("D") %}{{ comment("D").text }}'

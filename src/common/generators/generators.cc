@@ -101,21 +101,28 @@ void generate_diagram_select_generator(const std::string &od,
     using diagram_generator =
         typename diagram_generator_t<DiagramConfig, GeneratorTag>::type;
 
-    std::stringstream buffer;
-    buffer << diagram_generator(
-        dynamic_cast<DiagramConfig &>(*diagram), *model);
+    if constexpr (!std::is_same_v<diagram_generator, not_supported>) {
 
-    // Only open the file after the diagram has been generated successfully
-    // in order not to overwrite previous diagram in case of failure
-    auto path = std::filesystem::path{od} /
-        fmt::format("{}.{}", name, GeneratorTag::extension);
-    std::ofstream ofs;
-    ofs.open(path, std::ofstream::out | std::ofstream::trunc);
-    ofs << buffer.str();
+        std::stringstream buffer;
+        buffer << diagram_generator(
+            dynamic_cast<DiagramConfig &>(*diagram), *model);
 
-    ofs.close();
+        // Only open the file after the diagram has been generated successfully
+        // in order not to overwrite previous diagram in case of failure
+        auto path = std::filesystem::path{od} /
+            fmt::format("{}.{}", name, GeneratorTag::extension);
+        std::ofstream ofs;
+        ofs.open(path, std::ofstream::out | std::ofstream::trunc);
+        ofs << buffer.str();
 
-    LOG_INFO("Written {} diagram to {}", name, path.string());
+        ofs.close();
+
+        LOG_INFO("Written {} diagram to {}", name, path.string());
+    }
+    else {
+        LOG_INFO("Serialization to {} not supported for {}",
+            GeneratorTag::extension, name);
+    }
 }
 
 template <typename DiagramConfig>
@@ -169,6 +176,11 @@ void generate_diagram_impl(const std::string &name,
         else if (generator_type == generator_type_t::mermaid) {
             generate_diagram_select_generator<diagram_config,
                 mermaid_generator_tag>(
+                runtime_config.output_directory, name, diagram, model);
+        }
+        else if (generator_type == generator_type_t::graphml) {
+            generate_diagram_select_generator<diagram_config,
+                graphml_generator_tag>(
                 runtime_config.output_directory, name, diagram, model);
         }
 
@@ -237,6 +249,38 @@ int generate_diagrams(const std::vector<std::string> &diagram_names,
         // line, and this diagram is not in that list - skip it
         if (!diagram_names.empty() && !util::contains(diagram_names, name))
             continue;
+
+        // If none of the generators supports the diagram type - skip it
+        bool at_least_one_generator_supports_diagram_type{false};
+        for (const auto generator_type : runtime_config.generators) {
+            if (generator_type == generator_type_t::plantuml) {
+                if (generator_supports_diagram_type<plantuml_generator_tag>(
+                        diagram->type()))
+                    at_least_one_generator_supports_diagram_type = true;
+            }
+            else if (generator_type == generator_type_t::json) {
+                if (generator_supports_diagram_type<json_generator_tag>(
+                        diagram->type()))
+                    at_least_one_generator_supports_diagram_type = true;
+            }
+            else if (generator_type == generator_type_t::mermaid) {
+                if (generator_supports_diagram_type<mermaid_generator_tag>(
+                        diagram->type()))
+                    at_least_one_generator_supports_diagram_type = true;
+            }
+            else if (generator_type == generator_type_t::graphml) {
+                if (generator_supports_diagram_type<graphml_generator_tag>(
+                        diagram->type()))
+                    at_least_one_generator_supports_diagram_type = true;
+            }
+        }
+
+        if (!at_least_one_generator_supports_diagram_type) {
+            LOG_INFO("Diagram '{}' not supported by any of selected "
+                     "generators - skipping...",
+                name);
+            continue;
+        }
 
         const auto &valid_translation_units = translation_units_map.at(name);
 

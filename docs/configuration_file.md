@@ -58,7 +58,9 @@
 * `mermaid` - verbatim MermaidJS directives which should be added to a diagram
   * `before` - list of directives which will be added before the generated diagram
   * `after` - list of directives which will be added after the generated diagram
-  * 
+* `graphml` - custom properties for GraphML output
+  * `notes` - object whose keys represent fully qualified diagram elements and values are lists of notes to be attached as nodes in the GraphML model
+
 ## Example complete config
 
 ```yaml
@@ -148,7 +150,11 @@ diagrams:
       # Add this line at the end of a Mermaid diagram
       end:
         - 'direction LR'
-```
+    graphml:
+      notes:
+        'clanguml::class_diagram::model::ClassA':
+          - 'This is class ClassA'
+ ```
 
 ## Determining config file location
 

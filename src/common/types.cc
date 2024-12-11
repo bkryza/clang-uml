@@ -83,6 +83,8 @@ int64_t eid_t::ast_local_value() const
     return static_cast<int64_t>(value_);
 }
 
+std::string to_string(const bool v) { return v ? "true" : "false"; }
+
 std::string to_string(const std::string &s) { return s; }
 
 std::string to_string(const string_or_regex &sr) { return sr.to_string(); }
@@ -96,6 +98,8 @@ std::string to_string(const generator_type_t type)
         return "mermaid";
     case generator_type_t::json:
         return "json";
+    case generator_type_t::graphml:
+        return "graphml";
     default:
         return "<unknown>";
     }

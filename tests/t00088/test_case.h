@@ -30,7 +30,10 @@ TEST_CASE("t00088")
         REQUIRE(!IsObjCProtocol(src, "Pr00088"));
 
         REQUIRE(IsMethod<Public>(src, "It00088_Foo", "foo"));
-        REQUIRE(!IsMethod<Public>(src, "It00088_Foo", "bar"));
-        REQUIRE(!IsMethod<Public>(src, "It00088_Foo", "baz:with:"));
+
+        if constexpr (!std::is_same_v<graphml_t, std::decay_t<decltype(src)>>) {
+            REQUIRE(!IsMethod<Public>(src, "It00088_Foo", "bar"));
+            REQUIRE(!IsMethod<Public>(src, "It00088_Foo", "baz:with:"));
+        }
     });
 }

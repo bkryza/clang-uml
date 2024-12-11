@@ -286,6 +286,8 @@ bool translation_unit_visitor::VisitTypeAliasTemplateDecl(
     tbuilder().build_from_template_specialization_type(
         *template_specialization_ptr, cls, *template_type_specialization_ptr);
 
+    template_specialization_ptr->is_template(true);
+
     if (diagram().should_include(*template_specialization_ptr)) {
         const auto name = template_specialization_ptr->full_name(true);
         const auto id = template_specialization_ptr->id();
@@ -719,12 +721,16 @@ void translation_unit_visitor::find_relationships_in_constraint_expression(
         return;
     found_relationships_t relationships;
 
-    common::if_dyn_cast<clang::UnresolvedLookupExpr>(expr, [&](const auto *ul) {
-        for (const auto ta : ul->template_arguments()) {
-            find_relationships(ta.getArgument().getAsType(), relationships,
-                relationship_t::kConstraint);
-        }
-    });
+    common::if_dyn_cast<clang::UnresolvedLookupExpr>(
+        expr, [&](const clang::UnresolvedLookupExpr *ul) {
+            for (const auto ta : ul->template_arguments()) {
+                if (ta.getArgument().getKind() !=
+                    clang::TemplateArgument::ArgKind::Type)
+                    continue;
+                find_relationships(ta.getArgument().getAsType(), relationships,
+                    relationship_t::kConstraint);
+            }
+        });
 
     common::if_dyn_cast<clang::ConceptSpecializationExpr>(
         expr, [&](const auto *cs) {
@@ -796,10 +802,8 @@ void translation_unit_visitor::process_concept_specialization_relationships(
                 }
             }
             else {
-                auto type_name =
-                    common::to_string(ta.getAsType(), cpt->getASTContext());
-                LOG_DBG(
-                    "=== Unsupported concept type parameter: {}", type_name);
+                LOG_DBG("Unsupported concept type parameter in concept: {}",
+                    cpt_name);
             }
             argument_index++;
         }
@@ -1532,6 +1536,8 @@ void translation_unit_visitor::process_method(
                 unaliased_type->getTemplateName().getAsTemplateDecl(),
                 *unaliased_type, &c);
 
+            template_specialization_ptr->is_template();
+
             if (diagram().should_include(*template_specialization_ptr)) {
                 relationships.emplace_back(template_specialization_ptr->id(),
                     relationship_t::kDependency);
@@ -2013,6 +2019,8 @@ void translation_unit_visitor::process_function_parameter(
                 *template_specialization_ptr,
                 templ->getTemplateName().getAsTemplateDecl(), *templ, &c);
 
+            template_specialization_ptr->is_template(true);
+
             if (diagram().should_include(*template_specialization_ptr)) {
                 relationships.emplace_back(template_specialization_ptr->id(),
                     relationship_t::kDependency);
@@ -2274,6 +2282,7 @@ void translation_unit_visitor::process_field(
                 ->getTemplateName()
                 .getAsTemplateDecl(),
             *template_field_type, {&c});
+        template_specialization_ptr->is_template(true);
 
         if (!field.skip_relationship() && template_specialization_ptr) {
             const auto &template_specialization = *template_specialization_ptr;
@@ -2430,10 +2439,8 @@ void translation_unit_visitor::add_incomplete_forward_declarations()
 
 void translation_unit_visitor::resolve_local_to_global_ids()
 {
-    // TODO: Refactor to a map with relationships attached to references
-    //       to elements
-    diagram().for_all_elements([&](auto &elements) {
-        for (const auto &el : elements) {
+    diagram().for_all_elements([&](auto &element_view) {
+        for (const auto &el : element_view) {
             for (auto &rel : el.get().relationships()) {
                 if (!rel.destination().is_global()) {
                     const auto maybe_id =
@@ -2447,6 +2454,7 @@ void translation_unit_visitor::resolve_local_to_global_ids()
                     }
                 }
             }
+            el.get().remove_duplicate_relationships();
         }
     });
 }

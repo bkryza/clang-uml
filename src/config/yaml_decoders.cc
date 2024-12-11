@@ -41,6 +41,7 @@ using clanguml::config::element_filter_t;
 using clanguml::config::filter;
 using clanguml::config::generate_links_config;
 using clanguml::config::git_config;
+using clanguml::config::graphml;
 using clanguml::config::hint_t;
 using clanguml::config::include_diagram;
 using clanguml::config::layout_hint;
@@ -474,6 +475,16 @@ template <> struct convert<mermaid> {
     }
 };
 
+template <> struct convert<graphml> {
+    static bool decode(const Node &node, graphml &rhs)
+    {
+        if (node["notes"])
+            rhs.notes = node["notes"].as<decltype(rhs.notes)>();
+
+        return true;
+    }
+};
+
 template <> struct convert<string_or_regex> {
     static bool decode(const Node &node, string_or_regex &rhs)
     {
@@ -729,6 +740,7 @@ template <typename T> bool decode_diagram(const Node &node, T &rhs)
     get_option(node, rhs.exclude);
     get_option(node, rhs.puml);
     get_option(node, rhs.mermaid);
+    get_option(node, rhs.graphml);
     get_option(node, rhs.git);
     get_option(node, rhs.generate_links);
     get_option(node, rhs.type_aliases);
@@ -954,6 +966,7 @@ template <> struct convert<config> {
         get_option(node, rhs.include_relations_also_as_members);
         get_option(node, rhs.puml);
         get_option(node, rhs.mermaid);
+        get_option(node, rhs.graphml);
         get_option(node, rhs.generate_method_arguments);
         get_option(node, rhs.generate_concept_requirements);
         get_option(node, rhs.generate_packages);

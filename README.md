@@ -14,8 +14,12 @@ YAML configuration files. The main idea behind the
 project is to easily maintain up-to-date diagrams within a code-base or document
 legacy code. The configuration file or files for `clang-uml` define the
 types and contents of each generated diagram.
-The diagrams can be generated in [PlantUML](https://plantuml.com),
-[MermaidJS](https://mermaid.js.org/) and JSON formats.
+
+The diagrams can be generated in the following formats:
+* [PlantUML](https://plantuml.com)
+* [MermaidJS](https://mermaid.js.org/)
+* [GraphML](http://graphml.graphdrawing.org/)
+* JSON
 
 `clang-uml` currently supports C++ up to version 20, as well as C and Objective-C.
 
@@ -457,6 +461,7 @@ This project relies on the following great tools:
 * [Doxygen Awesome](https://jothepro.github.io/doxygen-awesome-css) - Doxygen CSS style
 * [miroir](https://gitlab.com/madyanov/miroir) - YAML schema validation library for C++
 * [nanobench](https://github.com/martinus/nanobench) - microbenchmarking library for C++
+* [pugixml](https://github.com/zeux/pugixml) - XML parser for C++ with XPath support
 
 ## Contributing
 

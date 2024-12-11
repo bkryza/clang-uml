@@ -17,6 +17,7 @@
  */
 #pragma once
 
+#include "class_diagram/generators/graphml/class_diagram_generator.h"
 #include "class_diagram/generators/json/class_diagram_generator.h"
 #include "class_diagram/generators/mermaid/class_diagram_generator.h"
 #include "class_diagram/generators/plantuml/class_diagram_generator.h"
@@ -25,10 +26,12 @@
 #include "common/generators/clang_tool.h"
 #include "common/model/filters/diagram_filter_factory.h"
 #include "config/config.h"
+#include "include_diagram/generators/graphml/include_diagram_generator.h"
 #include "include_diagram/generators/json/include_diagram_generator.h"
 #include "include_diagram/generators/mermaid/include_diagram_generator.h"
 #include "include_diagram/generators/plantuml/include_diagram_generator.h"
 #include "indicators/indicators.hpp"
+#include "package_diagram/generators/graphml/package_diagram_generator.h"
 #include "package_diagram/generators/json/package_diagram_generator.h"
 #include "package_diagram/generators/mermaid/package_diagram_generator.h"
 #include "package_diagram/generators/plantuml/package_diagram_generator.h"
@@ -111,6 +114,9 @@ struct json_generator_tag {
 struct mermaid_generator_tag {
     inline static const std::string extension = "mmd";
 };
+struct graphml_generator_tag {
+    inline static const std::string extension = "graphml";
+};
 /** @} */
 
 /** @defgroup diagram_generator_t Diagram generator selector
@@ -120,6 +126,8 @@ struct mermaid_generator_tag {
  *
  * @{
  */
+struct not_supported { };
+
 // plantuml
 template <typename DiagramConfig, typename GeneratorType>
 struct diagram_generator_t;
@@ -185,6 +193,55 @@ struct diagram_generator_t<clanguml::config::include_diagram,
     mermaid_generator_tag> {
     using type = clanguml::include_diagram::generators::mermaid::generator;
 };
+// graphml
+template <>
+struct diagram_generator_t<clanguml::config::class_diagram,
+    graphml_generator_tag> {
+    using type = clanguml::class_diagram::generators::graphml::generator;
+};
+template <>
+struct diagram_generator_t<clanguml::config::sequence_diagram,
+    graphml_generator_tag> {
+    using type = not_supported;
+};
+template <>
+struct diagram_generator_t<clanguml::config::package_diagram,
+    graphml_generator_tag> {
+    using type = clanguml::package_diagram::generators::graphml::generator;
+};
+template <>
+struct diagram_generator_t<clanguml::config::include_diagram,
+    graphml_generator_tag> {
+    using type = clanguml::include_diagram::generators::graphml::generator;
+};
+
+template <typename GeneratorTag>
+constexpr bool generator_supports_diagram_type(
+    clanguml::common::model::diagram_t dt)
+{
+    using clanguml::common::model::diagram_t;
+
+    switch (dt) {
+    case diagram_t::kClass:
+        return !std::is_same_v<not_supported,
+            typename diagram_generator_t<clanguml::config::class_diagram,
+                GeneratorTag>::type>;
+    case diagram_t::kSequence:
+        return !std::is_same_v<not_supported,
+            typename diagram_generator_t<clanguml::config::sequence_diagram,
+                GeneratorTag>::type>;
+    case diagram_t::kPackage:
+        return !std::is_same_v<not_supported,
+            typename diagram_generator_t<clanguml::config::package_diagram,
+                GeneratorTag>::type>;
+    case diagram_t::kInclude:
+        return !std::is_same_v<not_supported,
+            typename diagram_generator_t<clanguml::config::include_diagram,
+                GeneratorTag>::type>;
+    default:
+        return false;
+    }
+}
 /** @} */
 
 /**
