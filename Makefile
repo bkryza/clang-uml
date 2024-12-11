@@ -162,6 +162,9 @@ clanguml_diagrams: debug
 	mkdir -p docs/diagrams/plantuml
 	mkdir -p docs/diagrams/mermaid
 	debug/src/clang-uml -g plantuml -g json -g mermaid -g graphml -p
+	python3 util/validate_json.py docs/diagrams/*.json
+	python3 util/validate_graphml.py docs/diagrams/*.graphml
+	python3 util/generate_mermaid.py docs/diagrams/*.mmd
 	# Convert .puml files to svg images
 	plantuml -tsvg -nometadata -o plantuml docs/diagrams/*.puml
 	# Convert .mmd files to svg images

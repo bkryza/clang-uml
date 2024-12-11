@@ -43,6 +43,18 @@
             <arrow type="none"/>
           </result>
         </discrete>
+        <discrete>
+          <value>none</value>
+          <result>
+            <arrow type="none"/>
+          </result>
+        </discrete>
+        <discrete>
+          <value>instantiation</value>
+          <result>
+            <arrow type="white_delta"/>
+          </result>
+        </discrete>
       </conversion>
     </mapping>
     <mapping>
@@ -63,6 +75,12 @@
             <arrow type="diamond"/>
           </result>
         </discrete>
+        <discrete>
+          <value>none</value>
+          <result>
+            <arrow type="none"/>
+          </result>
+        </discrete>
       </conversion>
     </mapping>
     <mapping>
@@ -73,6 +91,24 @@
       <conversion type="discrete">
         <discrete>
           <value>dependency</value>
+          <result>
+            <lineType type="dashed" width="1.0"/>
+          </result>
+        </discrete>
+        <discrete>
+          <value>none</value>
+          <result>
+            <lineType type="dashed_dotted" width="1.0"/>
+          </result>
+        </discrete>
+        <discrete>
+          <value>instantiation</value>
+          <result>
+            <lineType type="dashed" width="1.0"/>
+          </result>
+        </discrete>
+        <discrete>
+          <value>constraint</value>
           <result>
             <lineType type="dashed" width="1.0"/>
           </result>
@@ -108,7 +144,7 @@
     </mapping>
     <mapping>
       <source name="type" origin="customProperty" type="string"/>
-      <target name="labelBackgroundColor" type="color">
+      <target name="fillColor" type="color">
         <hints/>
       </target>
       <conversion type="discrete">
@@ -118,7 +154,29 @@
         </discrete>
         <discrete>
           <value>concept</value>
+          <result>#00ccff</result>
+        </discrete>
+        <discrete>
+          <value>enum</value>
           <result>#99cc00</result>
+        </discrete>
+        <discrete>
+          <value>note</value>
+          <result>#c0c0c0</result>
+        </discrete>
+      </conversion>
+    </mapping>
+    <mapping>
+      <source name="type" origin="customProperty" type="string"/>
+      <target name="borderStyleLineType" type="lineType">
+        <hints/>
+      </target>
+      <conversion type="discrete">
+        <discrete>
+          <value>note</value>
+          <result>
+            <lineType type="line" width="1.0"/>
+          </result>
         </discrete>
       </conversion>
     </mapping>

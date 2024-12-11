@@ -1,6 +1,7 @@
 # CHANGELOG
 
-  *  Added support for typedef enum (#346)
+  * Added support for GraphML (#348)
+  * Added support for typedef enum (#346)
 
 ### 0.5.6
   * Improved rendering of variadic functions in sequence diagrams (#342)
