@@ -41,8 +41,7 @@ compilation_database::auto_detect_from_directory(
     // This is a workaround to determine whether Clang loaded a fixed
     // compilation database or a proper one. This cannot be done with
     // dynamic_cast if RTTI was not enabled in the LLVM build
-    bool is_fixed{
-        !res->getCompileCommands("no_such_file.no_such_extension").empty()};
+    bool is_fixed{res->getAllFiles().empty()};
 
     return std::make_unique<compilation_database>(
         std::move(res), cfg, is_fixed);
