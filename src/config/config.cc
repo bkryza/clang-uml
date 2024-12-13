@@ -354,10 +354,21 @@ bool inheritable_diagram_options::generate_fully_qualified_name() const
 std::vector<std::string> diagram::glob_translation_units(
     const std::vector<std::string> &compilation_database_files) const
 {
+
+    // Make sure that the paths are in preferred format for a given platform
+    // before intersecting the matches with compliation database
+    std::vector<std::string> compilation_database_paths;
+    compilation_database_paths.reserve(compilation_database_files.size());
+    for (const auto &cdf : compilation_database_files) {
+        std::filesystem::path p{cdf};
+        p.make_preferred();
+        compilation_database_paths.emplace_back(p.string());
+    }
+
     // If glob is not defined use all translation units from the
     // compilation database
     if (!glob.has_value || (glob().include.empty() && glob().exclude.empty())) {
-        return compilation_database_files;
+        return compilation_database_paths;
     }
 
     // Otherwise, get all translation units matching the glob from diagram
@@ -373,8 +384,8 @@ std::vector<std::string> diagram::glob_translation_units(
             std::regex regex_pattern(
                 g.to_string(), std::regex_constants::optimize);
 
-            std::copy_if(compilation_database_files.begin(),
-                compilation_database_files.end(),
+            std::copy_if(compilation_database_paths.begin(),
+                compilation_database_paths.end(),
                 std::back_inserter(glob_matches),
                 [&regex_pattern](const auto &tu) {
                     std::smatch m;
@@ -407,7 +418,7 @@ std::vector<std::string> diagram::glob_translation_units(
     }
 
     if (glob().include.empty())
-        glob_matches = compilation_database_files;
+        glob_matches = compilation_database_paths;
 
     for (const auto &g : glob().exclude) {
         if (g.is_regex()) {
@@ -416,7 +427,7 @@ std::vector<std::string> diagram::glob_translation_units(
             std::regex regex_pattern(
                 g.to_string(), std::regex_constants::optimize);
 
-            for (const auto &cdf : compilation_database_files) {
+            for (const auto &cdf : compilation_database_paths) {
                 std::smatch m;
                 if (std::regex_search(cdf, m, regex_pattern)) {
                     glob_matches.erase(
@@ -454,8 +465,12 @@ std::vector<std::string> diagram::glob_translation_units(
     // Calculate intersection between glob matches and compilation database
     std::vector<std::string> result;
     for (const auto &gm : glob_matches) {
-        if (util::contains(compilation_database_files, gm))
-            result.emplace_back(gm);
+        std::filesystem::path gm_path{gm};
+        gm_path.make_preferred();
+        if (util::contains(compilation_database_paths, gm_path) ||
+            util::contains(compilation_database_files, gm)) {
+            result.emplace_back(gm_path.string());
+        }
     }
 
     return result;
