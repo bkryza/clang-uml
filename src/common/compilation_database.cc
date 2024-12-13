@@ -110,13 +110,8 @@ size_t compilation_database::count_matching_commands(
 
     auto result{0UL};
 
-    auto commands = base().getAllCompileCommands();
-
-    for (const auto &command : commands) {
-        result += std::count_if(
-            files.begin(), files.end(), [this, &command](const auto &file) {
-                return match_filename(command, file);
-            });
+    for (const auto &f : files) {
+        result += getCompileCommands(f).size();
     }
 
     return result;
