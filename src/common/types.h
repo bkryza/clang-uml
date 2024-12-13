@@ -94,6 +94,8 @@ std::string to_string(bool v);
 
 std::string to_string(const std::string &s);
 
+std::string to_string(const std::filesystem::path &p);
+
 std::string to_string(generator_type_t type);
 
 /**

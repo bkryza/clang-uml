@@ -66,6 +66,11 @@ types:
     regex_t:
         r: string
     regex_or_string_t: [string, regex_t]
+    glob_explicit_t:
+        include: [regex_or_string_t]
+        exclude: [regex_or_string_t]
+    regex_or_string_list_t: [regex_or_string_t]
+    glob_t: !optional [glob_explicit_t,[regex_or_string_t]]
     element_types_filter_t: !variant
         - class
         - enum
@@ -189,7 +194,7 @@ types:
         exclude: !optional filter_t
         generate_links: !optional generate_links_t
         git: !optional git_t
-        glob: !optional [regex_or_string_t]
+        glob: !optional glob_t
         include: !optional filter_t
         plantuml: !optional
             before: !optional [string]
@@ -235,7 +240,7 @@ types:
         filter_mode: !optional filter_mode_t
         include_system_headers: !optional bool
         git: !optional git_t
-        glob: !optional [regex_or_string_t]
+        glob: !optional glob_t
         include: !optional filter_t
         plantuml: !optional
             before: !optional [string]
@@ -277,7 +282,7 @@ types:
         exclude: !optional filter_t
         generate_links: !optional generate_links_t
         git: !optional git_t
-        glob: !optional [regex_or_string_t]
+        glob: !optional glob_t
         filter_mode: !optional filter_mode_t
         include_system_headers: !optional bool
         include: !optional filter_t
@@ -315,7 +320,7 @@ types:
         exclude: !optional filter_t
         generate_links: !optional generate_links_t
         git: !optional git_t
-        glob: !optional [regex_or_string_t]
+        glob: !optional glob_t
         include: !optional filter_t
         plantuml: !optional
             before: !optional [string]
@@ -367,7 +372,7 @@ root:
     exclude: !optional filter_t
     generate_links: !optional generate_links_t
     git: !optional git_t
-    glob: !optional [regex_or_string_t]
+    glob: !optional glob_t
     include: !optional filter_t
     plantuml: !optional
         before: !optional [string]

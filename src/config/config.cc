@@ -356,28 +356,31 @@ std::vector<std::string> diagram::glob_translation_units(
 {
     // If glob is not defined use all translation units from the
     // compilation database
-    if (!glob.has_value) {
+    if (!glob.has_value || (glob().include.empty() && glob().exclude.empty())) {
         return compilation_database_files;
     }
 
     // Otherwise, get all translation units matching the glob from diagram
     // configuration
-    std::vector<std::string> result{};
+    std::vector<std::string> glob_matches{};
 
     LOG_DBG("Looking for translation units in {}", root_directory().string());
 
-    for (const auto &g : glob()) {
+    for (const auto &g : glob().include) {
         if (g.is_regex()) {
-            LOG_DBG("Searching glob regex {}", g.to_string());
+            LOG_DBG("Matching inclusive glob regex {}", g.to_string());
 
             std::regex regex_pattern(
                 g.to_string(), std::regex_constants::optimize);
 
             std::copy_if(compilation_database_files.begin(),
-                compilation_database_files.end(), std::back_inserter(result),
+                compilation_database_files.end(),
+                std::back_inserter(glob_matches),
                 [&regex_pattern](const auto &tu) {
                     std::smatch m;
-                    return std::regex_search(tu, m, regex_pattern);
+
+                    return exists(std::filesystem::path{tu}) &&
+                        std::regex_search(tu, m, regex_pattern);
                 });
         }
         else {
@@ -398,9 +401,61 @@ std::vector<std::string> diagram::glob_translation_units(
                 const auto path =
                     std::filesystem::canonical(root_directory() / match);
 
-                result.emplace_back(path.string());
+                glob_matches.emplace_back(path.string());
             }
         }
+    }
+
+    if (glob().include.empty())
+        glob_matches = compilation_database_files;
+
+    for (const auto &g : glob().exclude) {
+        if (g.is_regex()) {
+            LOG_DBG("Matching exclusive glob regex {}", g.to_string());
+
+            std::regex regex_pattern(
+                g.to_string(), std::regex_constants::optimize);
+
+            for (const auto &cdf : compilation_database_files) {
+                std::smatch m;
+                if (std::regex_search(cdf, m, regex_pattern)) {
+                    glob_matches.erase(
+                        remove(begin(glob_matches), end(glob_matches), cdf),
+                        glob_matches.end());
+                }
+            }
+        }
+        else {
+            std::filesystem::path absolute_glob_path{g.to_string()};
+
+#ifdef _MSC_VER
+            if (!absolute_glob_path.has_root_name())
+#else
+            if (!absolute_glob_path.is_absolute())
+#endif
+                absolute_glob_path = root_directory() / absolute_glob_path;
+
+            LOG_DBG("Searching exclusive glob path {}",
+                absolute_glob_path.string());
+
+            auto matches = glob::glob(absolute_glob_path.string(), true, false);
+
+            for (const auto &match : matches) {
+                const auto path =
+                    std::filesystem::canonical(root_directory() / match);
+
+                glob_matches.erase(remove(begin(glob_matches),
+                                       end(glob_matches), path.string()),
+                    glob_matches.end());
+            }
+        }
+    }
+
+    // Calculate intersection between glob matches and compilation database
+    std::vector<std::string> result;
+    for (const auto &gm : glob_matches) {
+        if (util::contains(compilation_database_files, gm))
+            result.emplace_back(gm);
     }
 
     return result;

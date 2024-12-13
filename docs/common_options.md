@@ -74,6 +74,23 @@ configuration file as follows:
      - r: ".*test.*cpp$"
 ```
 
+This is a simplified `glob` definition, which assumes that are patterns are
+inclusive, i.e. only matching files will be processed. It is also possible
+to specify exclusive patterns, in a more elaborate `glob` definition:
+
+```yaml
+   glob:
+     include:
+       - src/**/*.cc
+     exclude:
+       - src/main.cc
+```
+
+which will include all `.cc` files in `src` directory recursively, but will
+exclude `src/main.cc`. If the `glob` definition includes only `exclude`, than
+then exclusion pattern will be matched against all files in compilation
+database.
+
 The glob patterns only need to match the translation units, which are also in
 the `compile_commands.json` file, i.e. any files that match the glob patterns,
 but are not in `compile_commands.json` will be ignored. In case the `glob`
