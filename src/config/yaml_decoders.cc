@@ -41,6 +41,7 @@ using clanguml::config::element_filter_t;
 using clanguml::config::filter;
 using clanguml::config::generate_links_config;
 using clanguml::config::git_config;
+using clanguml::config::glob_t;
 using clanguml::config::graphml;
 using clanguml::config::hint_t;
 using clanguml::config::include_diagram;
@@ -848,6 +849,27 @@ template <> struct convert<include_diagram> {
         get_option(node, rhs.get_relative_to());
 
         return true;
+    }
+};
+
+//
+// layout_hint Yaml decoder
+//
+template <> struct convert<glob_t> {
+    static bool decode(const Node &node, glob_t &rhs)
+    {
+        if (node.Type() == NodeType::Sequence) {
+            rhs.include = node.as<std::vector<string_or_regex>>();
+            return true;
+        }
+
+        if (node.Type() == NodeType::Map) {
+            rhs.include = node["include"].as<std::vector<string_or_regex>>();
+            rhs.exclude = node["exclude"].as<std::vector<string_or_regex>>();
+            return true;
+        }
+
+        return false;
     }
 };
 

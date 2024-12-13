@@ -1171,8 +1171,14 @@ tvl::value_t paths_filter::match(
 
     if ((type() == filter_t::kInclusive && tvl::is_false(res)) ||
         (type() == filter_t::kExclusive && tvl::is_true(res))) {
-        LOG_TRACE(
-            "Source file {} rejected by paths_filter", p.full_name(false));
+        LOG_TRACE("Source file {} [{}] rejected by paths_filter",
+            p.full_name(false), source_file_path.string());
+    }
+
+    if ((type() == filter_t::kInclusive && tvl::is_true(res)) ||
+        (type() == filter_t::kExclusive && tvl::is_false(res))) {
+        LOG_TRACE("Source file {} [{}] accepted by paths_filter",
+            p.full_name(false), source_file_path.string());
     }
 
     return res;

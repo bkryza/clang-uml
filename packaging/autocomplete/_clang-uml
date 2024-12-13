@@ -28,7 +28,7 @@ if [ ${#templates[@]} -eq 0 ]; then
     templates=()
 fi
 
-local -a generators=(plantuml json mermaid)
+local -a generators=(plantuml json mermaid graphml)
 
 _arguments \
   {-h,--help}'[Print this help message and exit]' \

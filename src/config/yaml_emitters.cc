@@ -268,6 +268,15 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const source_location &sc)
     return out;
 }
 
+YAML::Emitter &operator<<(YAML::Emitter &out, const glob_t &g)
+{
+    out << YAML::BeginMap;
+    out << YAML::Key << "include" << YAML::Value << g.include;
+    out << YAML::Key << "exclude" << YAML::Value << g.exclude;
+    out << YAML::EndMap;
+    return out;
+}
+
 YAML::Emitter &operator<<(YAML::Emitter &out, const config &c)
 {
     out << YAML::BeginMap;

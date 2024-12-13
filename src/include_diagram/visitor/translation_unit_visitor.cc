@@ -44,7 +44,7 @@ translation_unit_visitor::include_visitor::include_visitor(
 #if LLVM_VERSION_MAJOR >= 19
 void translation_unit_visitor::include_visitor::InclusionDirective(
     clang::SourceLocation hash_loc, const clang::Token & /*include_tok*/,
-    clang::StringRef /*file_name*/, bool is_angled,
+    clang::StringRef file_name, bool is_angled,
     clang::CharSourceRange /*filename_range*/, clang::OptionalFileEntryRef file,
     clang::StringRef /*search_path*/, clang::StringRef relative_path,
     const clang::Module * /* suggested_module */, bool /*imported*/,
@@ -52,7 +52,7 @@ void translation_unit_visitor::include_visitor::InclusionDirective(
 #elif LLVM_VERSION_MAJOR >= 16
 void translation_unit_visitor::include_visitor::InclusionDirective(
     clang::SourceLocation hash_loc, const clang::Token & /*include_tok*/,
-    clang::StringRef /*file_name*/, bool is_angled,
+    clang::StringRef file_name, bool is_angled,
     clang::CharSourceRange /*filename_range*/, clang::OptionalFileEntryRef file,
     clang::StringRef /*search_path*/, clang::StringRef relative_path,
     const clang::Module * /*imported*/,
@@ -60,7 +60,7 @@ void translation_unit_visitor::include_visitor::InclusionDirective(
 #elif LLVM_VERSION_MAJOR > 14
 void translation_unit_visitor::include_visitor::InclusionDirective(
     clang::SourceLocation hash_loc, const clang::Token & /*include_tok*/,
-    clang::StringRef /*file_name*/, bool is_angled,
+    clang::StringRef file_name, bool is_angled,
     clang::CharSourceRange /*filename_range*/,
     clang::Optional<clang::FileEntryRef> file, clang::StringRef /*search_path*/,
     clang::StringRef relative_path, const clang::Module * /*imported*/,
@@ -68,7 +68,7 @@ void translation_unit_visitor::include_visitor::InclusionDirective(
 #else
 void translation_unit_visitor::include_visitor::InclusionDirective(
     clang::SourceLocation hash_loc, const clang::Token & /*include_tok*/,
-    clang::StringRef /*file_name*/, bool is_angled,
+    clang::StringRef file_name, bool is_angled,
     clang::CharSourceRange /*filename_range*/, const clang::FileEntry *file,
     clang::StringRef /*search_path*/, clang::StringRef relative_path,
     const clang::Module * /*imported*/,
@@ -79,10 +79,14 @@ void translation_unit_visitor::include_visitor::InclusionDirective(
     using common::model::source_file;
     using common::model::source_file_t;
 
+    // First process the file which contains the include directive
     auto current_file =
         std::filesystem::path{source_manager().getFilename(hash_loc).str()};
+
+    std::string file_name_str = file_name.str();
     current_file = std::filesystem::absolute(current_file);
     current_file = current_file.lexically_normal();
+    const auto current_dir = current_file.parent_path();
 
     auto current_file_id = process_source_file(current_file);
     if (!current_file_id)
@@ -90,26 +94,50 @@ void translation_unit_visitor::include_visitor::InclusionDirective(
 
     assert(diagram().get(current_file_id.value()));
 
+    // Now try to figure out the full path to the included header
+    std::filesystem::path real_include_path
+    {
 #if LLVM_VERSION_MAJOR > 14
-    if (!file.has_value())
-        return;
-    auto include_path = std::filesystem::path(file->getDir().getName().str());
+        file->getFileEntry().tryGetRealPathName().str()
 #else
-    if (file == nullptr)
-        return;
-    auto include_path = std::filesystem::path(file->getDir()->getName().str());
+        std::filesystem::path real_include_path{file->tryGetRealPathName().str()
 #endif
-    include_path = include_path / file->getName().str();
-    include_path = include_path.lexically_normal();
+    };
 
-    LOG_DBG("Processing include directive {} in file {}", include_path.string(),
-        current_file.string());
+    if (real_include_path.empty()) {
+        // Try to figure out the actual path to the include file somehow
+#if LLVM_VERSION_MAJOR > 14
+        if (!file.has_value())
+            return;
+        auto include_path_parent =
+            std::filesystem::path(file->getDir().getName().str());
+        const std::string include_file_dir{file->getDir().getName()};
+#else
+            if (file == nullptr)
+                return;
+            auto include_path_parent =
+                std::filesystem::path(file->getDir()->getName().str());
+            const std::string include_file_dir{file->getDir()->getName()};
+#endif
 
-    auto relative_include_path =
-        std::filesystem::relative(include_path, config().root_directory());
+        const std::string include_name{file->getName().str()};
+        const auto include_path_pre_normalization =
+            std::filesystem::path{include_file_dir} / include_name;
 
-    if (diagram().should_include(source_file{include_path})) {
-        process_internal_header(include_path,
+        real_include_path = include_path_pre_normalization.lexically_normal();
+    }
+    else {
+        real_include_path = real_include_path.lexically_normal();
+    }
+
+    const auto root_directory = config().root_directory();
+
+    LOG_DBG("Processing include directive {} [{}] in file {}", file_name_str,
+        real_include_path.string(), current_file.string());
+
+    if (diagram().should_include(source_file{real_include_path})) {
+        LOG_DBG("Processing internal header: {}", real_include_path.string());
+        process_internal_header(real_include_path,
             file_type != clang::SrcMgr::CharacteristicKind::C_User,
             current_file_id.value());
     }
@@ -118,7 +146,8 @@ void translation_unit_visitor::include_visitor::InclusionDirective(
             relative_path.str(), current_file_id.value());
     }
     else {
-        LOG_DBG("Skipping include directive to file {}", include_path.string());
+        LOG_DBG("Skipping include directive to file {}",
+            real_include_path.string());
     }
 }
 

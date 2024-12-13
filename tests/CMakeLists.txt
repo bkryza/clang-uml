@@ -111,11 +111,6 @@ else()
     message(STATUS "Enabling C++20 test cases")
 endif()
 
-if(APPLE)
-    # On Apple Clang <coroutine> header is not available
-    list(FILTER TEST_CASE_SOURCES EXCLUDE REGEX ".*t00069.*")
-endif(APPLE)
-
 set(TEST_NAMES
     test_types
     test_util

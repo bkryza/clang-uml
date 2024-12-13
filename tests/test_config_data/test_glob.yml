@@ -1,0 +1,26 @@
+relative_to: ../../..
+diagrams:
+  glob_simple:
+    type: class
+    glob:
+      - src/**/*.cc
+  glob_empty:
+    type: class
+  glob_explicit:
+    type: class
+    glob:
+      include:
+        - src/**/*.cc
+      exclude:
+        - src/main.cc
+  glob_simple_regex:
+    type: class
+    glob:
+      - r: "_visitor.cc"
+  glob_explicit_regex:
+    type: class
+    glob:
+      include:
+        - r: "src.*.cc"
+      exclude:
+        - r: "main.cc$"

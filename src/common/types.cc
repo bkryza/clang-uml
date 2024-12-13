@@ -89,6 +89,8 @@ std::string to_string(const std::string &s) { return s; }
 
 std::string to_string(const string_or_regex &sr) { return sr.to_string(); }
 
+std::string to_string(const std::filesystem::path &p) { return p.string(); }
+
 std::string to_string(const generator_type_t type)
 {
     switch (type) {

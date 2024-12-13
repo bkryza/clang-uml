@@ -148,6 +148,14 @@ enum class filter_mode_t {
 std::string to_string(filter_mode_t cp);
 
 /**
+ * @brief Glob config section for including and excluding TUs
+ */
+struct glob_t {
+    std::vector<common::string_or_regex> include;
+    std::vector<common::string_or_regex> exclude;
+};
+
+/**
  * @brief PlantUML diagram config section
  *
  * This configuration option can be used to add any PlantUML directives
@@ -604,7 +612,7 @@ struct inheritable_diagram_options {
      */
     option<std::filesystem::path> &get_relative_to() { return relative_to; }
 
-    option<std::vector<common::string_or_regex>> glob{"glob"};
+    option<glob_t> glob{"glob"};
     option<common::model::namespace_> using_namespace{"using_namespace"};
     option<std::string> using_module{"using_module"};
     option<bool> include_relations_also_as_members{

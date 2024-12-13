@@ -36,7 +36,7 @@ TEST_CASE("Test config simple")
     CHECK(cfg.diagrams.size() == 1);
     auto &diagram = *cfg.diagrams["class_main"];
     CHECK(diagram.type() == clanguml::common::model::diagram_t::kClass);
-    CHECK(diagram.glob().size() == 2);
+    CHECK(diagram.glob().include.size() == 2);
     CHECK(clanguml::util::contains(diagram.using_namespace(), "clanguml"));
     CHECK(diagram.generate_method_arguments() ==
         clanguml::config::method_arguments::full);
@@ -109,17 +109,17 @@ TEST_CASE("Test config inherited")
     CHECK(cfg.diagrams.size() == 2);
     auto &def = *cfg.diagrams["class_default"];
     CHECK(def.type() == clanguml::common::model::diagram_t::kClass);
-    CHECK(def.glob().size() == 2);
-    CHECK(def.glob()[0] == "src/**/*.cc");
-    CHECK(def.glob()[1] == "src/**/*.h");
+    CHECK(def.glob().include.size() == 2);
+    CHECK(def.glob().include[0] == "src/**/*.cc");
+    CHECK(def.glob().include[1] == "src/**/*.h");
     CHECK(clanguml::util::contains(def.using_namespace(), "clanguml"));
     CHECK(def.generate_packages() == false);
     CHECK(def.generate_links == false);
 
     auto &cus = *cfg.diagrams["class_custom"];
     CHECK(cus.type() == clanguml::common::model::diagram_t::kClass);
-    CHECK(cus.glob().size() == 1);
-    CHECK(cus.glob()[0] == "src/main.cc");
+    CHECK(cus.glob().include.size() == 1);
+    CHECK(cus.glob().include[0] == "src/main.cc");
     CHECK(cus.using_namespace().starts_with({"clanguml::ns1"}));
     CHECK(cus.include_relations_also_as_members());
     CHECK(cus.generate_packages() == false);
@@ -139,17 +139,17 @@ TEST_CASE("Test config includes")
     CHECK(cfg.diagrams.size() == 2);
     auto &def = *cfg.diagrams["class_1"];
     CHECK(def.type() == clanguml::common::model::diagram_t::kClass);
-    CHECK(def.glob().size() == 2);
-    CHECK(def.glob()[0] == "src/**/*.cc");
-    CHECK(def.glob()[1] == "src/**/*.h");
+    CHECK(def.glob().include.size() == 2);
+    CHECK(def.glob().include[0] == "src/**/*.cc");
+    CHECK(def.glob().include[1] == "src/**/*.h");
     CHECK(clanguml::util::contains(def.using_namespace(), "clanguml"));
     CHECK(def.generate_method_arguments() ==
         clanguml::config::method_arguments::none);
 
     auto &cus = *cfg.diagrams["class_2"];
     CHECK(cus.type() == clanguml::common::model::diagram_t::kClass);
-    CHECK(cus.glob().size() == 1);
-    CHECK(cus.glob()[0] == "src/main.cc");
+    CHECK(cus.glob().include.size() == 1);
+    CHECK(cus.glob().include[0] == "src/main.cc");
     CHECK(cus.using_namespace().starts_with({"clanguml::ns1"}));
     CHECK(cus.include_relations_also_as_members());
     CHECK(cus.generate_method_arguments() ==
@@ -468,6 +468,186 @@ TEST_CASE("Test config element_filter_t::filtered_type to_string")
         "function_template");
     CHECK(to_string(element_filter_t::filtered_type::objc_method) ==
         "objc_method");
+}
+
+TEST_CASE("Test config glob")
+{
+    auto cfg = clanguml::config::load("./test_config_data/test_glob.yml");
+
+    CHECK(cfg.diagrams.size() == 5);
+    auto &def = *cfg.diagrams["glob_simple"];
+    CHECK(def.type() == clanguml::common::model::diagram_t::kClass);
+    CHECK(def.glob().include.size() == 1);
+    //    CHECK(def.glob().include[0] == "src/**/*.cc");
+
+    def = *cfg.diagrams["glob_empty"];
+    CHECK(def.type() == clanguml::common::model::diagram_t::kClass);
+    CHECK(!def.glob);
+
+    def = *cfg.diagrams["glob_explicit"];
+    CHECK(def.type() == clanguml::common::model::diagram_t::kClass);
+    CHECK(def.glob().include.size() == 1);
+    CHECK(def.glob().exclude.size() == 1);
+
+    CHECK(def.glob().include[0] == "src/**/*.cc");
+    CHECK(def.glob().exclude[0] == "src/main.cc");
+}
+
+TEST_CASE("Test config glob matching - simple")
+{
+    using clanguml::common::to_string;
+
+    auto cfg = clanguml::config::load("./test_config_data/test_glob.yml");
+
+    auto &def = *cfg.diagrams["glob_simple"];
+
+    auto root_directory = cfg.root_directory();
+
+    auto main_cc = root_directory / "src/main.cc";
+    auto util_cc = root_directory / "src/util/util.cc";
+    auto pugixml_cpp = root_directory / "thirdparty/pugixml/pugixml.cpp";
+
+    std::vector<std::filesystem::path> db_paths = {main_cc, pugixml_cpp};
+
+    std::vector<std::string> db;
+    std::transform(db_paths.begin(), db_paths.end(), std::back_inserter(db),
+        [](const auto &p) { return p.string(); });
+
+    auto res = def.glob_translation_units(db);
+
+    CHECK(clanguml::util::contains(res, to_string(main_cc.make_preferred())));
+    CHECK_FALSE(
+        clanguml::util::contains(res, to_string(util_cc.make_preferred())));
+    CHECK_FALSE(
+        clanguml::util::contains(res, to_string(pugixml_cpp.make_preferred())));
+}
+
+TEST_CASE("Test config glob matching - empty")
+{
+    using clanguml::common::to_string;
+
+    auto cfg = clanguml::config::load("./test_config_data/test_glob.yml");
+
+    auto &def = *cfg.diagrams["glob_empty"];
+
+    auto root_directory = cfg.root_directory();
+
+    auto main_cc = root_directory / "src/main.cc";
+    auto util_cc = root_directory / "src/util/util.cc";
+    auto pugixml_cpp = root_directory / "thirdparty/pugixml/pugixml.cpp";
+
+    std::vector<std::filesystem::path> db_paths = {main_cc, pugixml_cpp};
+
+    std::vector<std::string> db;
+    std::transform(db_paths.begin(), db_paths.end(), std::back_inserter(db),
+        [](const auto &p) { return p.string(); });
+
+    const auto res = def.glob_translation_units(db);
+
+    CHECK(clanguml::util::contains(res, to_string(main_cc.make_preferred())));
+    CHECK_FALSE(
+        clanguml::util::contains(res, to_string(util_cc.make_preferred())));
+    CHECK(
+        clanguml::util::contains(res, to_string(pugixml_cpp.make_preferred())));
+}
+
+TEST_CASE("Test config glob matching - explicit")
+{
+    using clanguml::common::to_string;
+
+    auto cfg = clanguml::config::load("./test_config_data/test_glob.yml");
+
+    auto &def = *cfg.diagrams["glob_explicit"];
+
+    auto root_directory = cfg.root_directory();
+
+    auto main_cc = root_directory / "src/main.cc";
+    auto util_cc = root_directory / "src/util/util.cc";
+    auto no_such_file_cc = root_directory / "src/no_such_file.cc";
+    auto pugixml_cpp = root_directory / "thirdparty/pugixml/pugixml.cpp";
+
+    std::vector<std::filesystem::path> db_paths = {
+        main_cc, util_cc, no_such_file_cc, pugixml_cpp};
+
+    std::vector<std::string> db;
+    std::transform(db_paths.begin(), db_paths.end(), std::back_inserter(db),
+        [](const auto &p) { return p.string(); });
+
+    const auto res = def.glob_translation_units(db);
+
+    CHECK_FALSE(
+        clanguml::util::contains(res, to_string(main_cc.make_preferred())));
+    CHECK(clanguml::util::contains(res, to_string(util_cc.make_preferred())));
+    CHECK_FALSE(clanguml::util::contains(
+        res, to_string(no_such_file_cc.make_preferred())));
+    CHECK_FALSE(
+        clanguml::util::contains(res, to_string(pugixml_cpp.make_preferred())));
+}
+
+TEST_CASE("Test config glob matching - simple regex")
+{
+    using clanguml::common::to_string;
+
+    auto cfg = clanguml::config::load("./test_config_data/test_glob.yml");
+
+    auto &def = *cfg.diagrams["glob_simple_regex"];
+
+    auto root_directory = cfg.root_directory();
+
+    auto main_cc = root_directory / "src/main.cc";
+    auto util_cc = root_directory / "src/util/util.cc";
+    auto no_such_file_cc = root_directory / "src/no_such_file.cc";
+    auto pugixml_cpp = root_directory / "thirdparty/pugixml/pugixml.cpp";
+    auto visitor_cc = root_directory /
+        "src/class_diagram/visitor/translation_unit_visitor.cc";
+
+    std::vector<std::filesystem::path> db_paths = {
+        main_cc, util_cc, no_such_file_cc, visitor_cc, pugixml_cpp};
+
+    std::vector<std::string> db;
+    std::transform(db_paths.begin(), db_paths.end(), std::back_inserter(db),
+        [](const auto &p) { return p.string(); });
+
+    const auto res = def.glob_translation_units(db);
+
+    CHECK(res.size() == 1);
+    CHECK(
+        clanguml::util::contains(res, to_string(visitor_cc.make_preferred())));
+}
+
+TEST_CASE("Test config glob matching - explicit regex")
+{
+    using clanguml::common::to_string;
+
+    auto cfg = clanguml::config::load("./test_config_data/test_glob.yml");
+
+    auto &def = *cfg.diagrams["glob_explicit_regex"];
+
+    auto root_directory = cfg.root_directory();
+
+    auto main_cc = root_directory / "src/main.cc";
+    auto util_cc = root_directory / "src/util/util.cc";
+    auto no_such_file_cc = root_directory / "src/no_such_file.cc";
+    auto pugixml_cpp = root_directory / "thirdparty/pugixml/pugixml.cpp";
+    auto visitor_cc = root_directory /
+        "src/class_diagram/visitor/translation_unit_visitor.cc";
+
+    std::vector<std::filesystem::path> db_paths = {
+        main_cc, util_cc, no_such_file_cc, visitor_cc, pugixml_cpp};
+
+    std::vector<std::string> db;
+    std::transform(db_paths.begin(), db_paths.end(), std::back_inserter(db),
+        [](const auto &p) { return p.string(); });
+
+    const auto res = def.glob_translation_units(db);
+
+    CHECK(res.size() == 2);
+
+    CHECK(clanguml::util::contains(res, to_string(util_cc.make_preferred())));
+    CHECK_FALSE(clanguml::util::contains(
+        res, to_string(no_such_file_cc.make_preferred())));
+    CHECK(
+        clanguml::util::contains(res, to_string(visitor_cc.make_preferred())));
 }
 
 ///
