@@ -503,9 +503,11 @@ TEST_CASE("Test config glob matching - simple")
 
     auto root_directory = cfg.root_directory();
 
-    std::vector<std::filesystem::path> db_paths = {
-        root_directory / "src/main.cc",
-        root_directory / "thirdparty/pugixml/pugixml.cpp"};
+    auto main_cc = root_directory / "src/main.cc";
+    auto util_cc = root_directory / "src/util/util.cc";
+    auto pugixml_cpp = root_directory / "thirdparty/pugixml/pugixml.cpp";
+
+    std::vector<std::filesystem::path> db_paths = {main_cc, pugixml_cpp};
 
     std::vector<std::string> db;
     std::transform(db_paths.begin(), db_paths.end(), std::back_inserter(db),
@@ -513,12 +515,11 @@ TEST_CASE("Test config glob matching - simple")
 
     auto res = def.glob_translation_units(db);
 
-    CHECK(clanguml::util::contains(
-        res, to_string(root_directory / "src/main.cc")));
-    CHECK_FALSE(clanguml::util::contains(
-        res, to_string(root_directory / "src/util/util.cc")));
-    CHECK_FALSE(clanguml::util::contains(
-        res, to_string(root_directory / "thirdparty/pugixml/pugixml.cpp")));
+    CHECK(clanguml::util::contains(res, to_string(main_cc.make_preferred())));
+    CHECK_FALSE(
+        clanguml::util::contains(res, to_string(util_cc.make_preferred())));
+    CHECK_FALSE(
+        clanguml::util::contains(res, to_string(pugixml_cpp.make_preferred())));
 }
 
 TEST_CASE("Test config glob matching - empty")
@@ -531,9 +532,11 @@ TEST_CASE("Test config glob matching - empty")
 
     auto root_directory = cfg.root_directory();
 
-    std::vector<std::filesystem::path> db_paths = {
-        root_directory / "src/main.cc",
-        root_directory / "thirdparty/pugixml/pugixml.cpp"};
+    auto main_cc = root_directory / "src/main.cc";
+    auto util_cc = root_directory / "src/util/util.cc";
+    auto pugixml_cpp = root_directory / "thirdparty/pugixml/pugixml.cpp";
+
+    std::vector<std::filesystem::path> db_paths = {main_cc, pugixml_cpp};
 
     std::vector<std::string> db;
     std::transform(db_paths.begin(), db_paths.end(), std::back_inserter(db),
@@ -541,12 +544,11 @@ TEST_CASE("Test config glob matching - empty")
 
     const auto res = def.glob_translation_units(db);
 
-    CHECK(clanguml::util::contains(
-        res, to_string(root_directory / "src/main.cc")));
-    CHECK_FALSE(clanguml::util::contains(
-        res, to_string(root_directory / "src/util/util.cc")));
-    CHECK(clanguml::util::contains(
-        res, to_string(root_directory / "thirdparty/pugixml/pugixml.cpp")));
+    CHECK(clanguml::util::contains(res, to_string(main_cc.make_preferred())));
+    CHECK_FALSE(
+        clanguml::util::contains(res, to_string(util_cc.make_preferred())));
+    CHECK(
+        clanguml::util::contains(res, to_string(pugixml_cpp.make_preferred())));
 }
 
 TEST_CASE("Test config glob matching - explicit")
@@ -559,10 +561,13 @@ TEST_CASE("Test config glob matching - explicit")
 
     auto root_directory = cfg.root_directory();
 
+    auto main_cc = root_directory / "src/main.cc";
+    auto util_cc = root_directory / "src/util/util.cc";
+    auto no_such_file_cc = root_directory / "src/no_such_file.cc";
+    auto pugixml_cpp = root_directory / "thirdparty/pugixml/pugixml.cpp";
+
     std::vector<std::filesystem::path> db_paths = {
-        root_directory / "src/main.cc", root_directory / "src/util/util.cc",
-        root_directory / "src/no_such_file.cc",
-        root_directory / "thirdparty/pugixml/pugixml.cpp"};
+        main_cc, util_cc, no_such_file_cc, pugixml_cpp};
 
     std::vector<std::string> db;
     std::transform(db_paths.begin(), db_paths.end(), std::back_inserter(db),
@@ -570,14 +575,13 @@ TEST_CASE("Test config glob matching - explicit")
 
     const auto res = def.glob_translation_units(db);
 
+    CHECK_FALSE(
+        clanguml::util::contains(res, to_string(main_cc.make_preferred())));
+    CHECK(clanguml::util::contains(res, to_string(util_cc.make_preferred())));
     CHECK_FALSE(clanguml::util::contains(
-        res, to_string(root_directory / "src/main.cc")));
-    CHECK(clanguml::util::contains(
-        res, to_string(root_directory / "src/util/util.cc")));
-    CHECK_FALSE(clanguml::util::contains(
-        res, to_string(root_directory / "src/no_such_file.cc")));
-    CHECK_FALSE(clanguml::util::contains(
-        res, to_string(root_directory / "thirdparty/pugixml/pugixml.cpp")));
+        res, to_string(no_such_file_cc.make_preferred())));
+    CHECK_FALSE(
+        clanguml::util::contains(res, to_string(pugixml_cpp.make_preferred())));
 }
 
 TEST_CASE("Test config glob matching - simple regex")
@@ -590,12 +594,15 @@ TEST_CASE("Test config glob matching - simple regex")
 
     auto root_directory = cfg.root_directory();
 
+    auto main_cc = root_directory / "src/main.cc";
+    auto util_cc = root_directory / "src/util/util.cc";
+    auto no_such_file_cc = root_directory / "src/no_such_file.cc";
+    auto pugixml_cpp = root_directory / "thirdparty/pugixml/pugixml.cpp";
+    auto visitor_cc = root_directory /
+        "src/class_diagram/visitor/translation_unit_visitor.cc";
+
     std::vector<std::filesystem::path> db_paths = {
-        root_directory / "src/main.cc", root_directory / "src/util/util.cc",
-        root_directory / "src/no_such_file.cc",
-        root_directory /
-            "src/class_diagram/visitor/translation_unit_visitor.cc",
-        root_directory / "thirdparty/pugixml/pugixml.cpp"};
+        main_cc, util_cc, no_such_file_cc, visitor_cc, pugixml_cpp};
 
     std::vector<std::string> db;
     std::transform(db_paths.begin(), db_paths.end(), std::back_inserter(db),
@@ -604,9 +611,8 @@ TEST_CASE("Test config glob matching - simple regex")
     const auto res = def.glob_translation_units(db);
 
     CHECK(res.size() == 1);
-    CHECK(clanguml::util::contains(res,
-        to_string(root_directory /
-            "src/class_diagram/visitor/translation_unit_visitor.cc")));
+    CHECK(
+        clanguml::util::contains(res, to_string(visitor_cc.make_preferred())));
 }
 
 TEST_CASE("Test config glob matching - explicit regex")
@@ -619,12 +625,15 @@ TEST_CASE("Test config glob matching - explicit regex")
 
     auto root_directory = cfg.root_directory();
 
+    auto main_cc = root_directory / "src/main.cc";
+    auto util_cc = root_directory / "src/util/util.cc";
+    auto no_such_file_cc = root_directory / "src/no_such_file.cc";
+    auto pugixml_cpp = root_directory / "thirdparty/pugixml/pugixml.cpp";
+    auto visitor_cc = root_directory /
+        "src/class_diagram/visitor/translation_unit_visitor.cc";
+
     std::vector<std::filesystem::path> db_paths = {
-        root_directory / "src/main.cc", root_directory / "src/util/util.cc",
-        root_directory / "src/no_such_file.cc",
-        root_directory /
-            "src/class_diagram/visitor/translation_unit_visitor.cc",
-        root_directory / "thirdparty/pugixml/pugixml.cpp"};
+        main_cc, util_cc, no_such_file_cc, visitor_cc, pugixml_cpp};
 
     std::vector<std::string> db;
     std::transform(db_paths.begin(), db_paths.end(), std::back_inserter(db),
@@ -634,13 +643,11 @@ TEST_CASE("Test config glob matching - explicit regex")
 
     CHECK(res.size() == 2);
 
-    CHECK(clanguml::util::contains(
-        res, to_string(root_directory / "src/util/util.cc")));
+    CHECK(clanguml::util::contains(res, to_string(util_cc.make_preferred())));
     CHECK_FALSE(clanguml::util::contains(
-        res, to_string(root_directory / "src/no_such_file.cc")));
-    CHECK(clanguml::util::contains(res,
-        to_string(root_directory /
-            "src/class_diagram/visitor/translation_unit_visitor.cc")));
+        res, to_string(no_such_file_cc.make_preferred())));
+    CHECK(
+        clanguml::util::contains(res, to_string(visitor_cc.make_preferred())));
 }
 
 ///
