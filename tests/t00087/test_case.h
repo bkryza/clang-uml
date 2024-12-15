@@ -32,6 +32,8 @@ TEST_CASE("t00087")
         if constexpr (!std::is_same_v<graphml_t, std::decay_t<decltype(src)>>) {
             REQUIRE(!IsMethod<Public, Const>(src, "FooClass", "getFoo"));
             REQUIRE(!IsMethod<Public>(src, "FooClass", "setFoo", "int"));
+            REQUIRE(!IsMethod<Public>(
+                src, "FooClass", "makeFooClass_static", "void"));
         }
 
         REQUIRE(IsMethod<Public>(src, "FooClass", "foo"));
@@ -41,6 +43,8 @@ TEST_CASE("t00087")
 
         if constexpr (!std::is_same_v<graphml_t, std::decay_t<decltype(src)>>) {
             REQUIRE(!IsField<Private>(src, "FooClass", "pImpl_", "void *"));
+            REQUIRE(
+                !IsField<Public>(src, "FooClass", "fooCount_static", "int"));
         }
     });
 }

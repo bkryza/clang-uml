@@ -2103,12 +2103,14 @@ void translation_unit_visitor::process_static_field(
         field_declaration.getNameAsString(),
         config().simplify_template_type(type_name)};
 
+    field.set_qualified_name(field_declaration.getQualifiedNameAsString());
+
     field.is_static(true);
 
     process_comment(field_declaration, field);
     set_source_location(field_declaration, field);
 
-    if (field.skip())
+    if (field.skip() || !diagram().should_include(field))
         return;
 
     if (!field.skip_relationship()) {

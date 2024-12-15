@@ -16,6 +16,10 @@ public:
     void foo() { }
 
     void bar() { }
+
+    static void makeFooClass_static() { }
+
+    static int fooCount_static;
 };
 
 enum FooEnum {};

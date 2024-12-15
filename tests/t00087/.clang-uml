@@ -17,6 +17,12 @@ diagrams:
         - type: method
           name:
             r: '.*FooClass::(get|set).*'
+        - type: method
+          name:
+            r: '.*FooClass::.*_static'
         - type: member
           name: 'clanguml::t00087::FooClass::pImpl_'
+        - type: member
+          name:
+            r: '.*FooClass::.*_static'
         - bar
