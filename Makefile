@@ -194,7 +194,7 @@ format:
 
 .PHONY: debug_tidy
 tidy: debug
-	run-clang-tidy-17 -extra-arg=-Wno-unknown-warning-option -j $(NUMPROC) -p debug "./clang-uml/src"
+	run-clang-tidy-17 -extra-arg=-Wno-unknown-warning-option -j $(NUMPROC) -p debug "${PWD}/src"
 
 .PHONY: check-formatting
 check-formatting:
