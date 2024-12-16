@@ -33,5 +33,13 @@ TEST_CASE("t00012")
             "C<std::map<int,"
             "std::vector<std::vector<std::vector<std::string>>>>,3,3,"
             "3>"));
+
+        if constexpr (!std::is_same_v<json_t, std::decay_t<decltype(src)>>) {
+            REQUIRE(HasNote(src,
+                "C<std::map<int,"
+                "std::vector<std::vector<std::vector<std::string>>>>,3,3,"
+                "3>",
+                "right", "Long template annotation"));
+        }
     });
 }

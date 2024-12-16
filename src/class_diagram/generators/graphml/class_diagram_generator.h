@@ -21,6 +21,7 @@
 #include "class_diagram/model/concept.h"
 #include "class_diagram/model/diagram.h"
 #include "class_diagram/model/enum.h"
+#include "class_diagram/model/jinja_context.h"
 #include "class_diagram/visitor/translation_unit_visitor.h"
 #include "common/generators/graphml/generator.h"
 #include "common/generators/nested_element_stack.h"
@@ -51,6 +52,7 @@ using clanguml::common::generators::graphml::graphml_node_t;
 using clanguml::common::model::access_t;
 using clanguml::common::model::package;
 using clanguml::common::model::relationship_t;
+using common::jinja::jinja_context;
 
 using namespace clanguml::util;
 

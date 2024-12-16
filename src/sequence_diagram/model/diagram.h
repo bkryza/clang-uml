@@ -212,13 +212,6 @@ public:
     std::string to_alias(const std::string &full_name) const;
 
     /**
-     * @brief Return the elements JSON context for inja templates.
-     *
-     * @return JSON node with elements context.
-     */
-    inja::json context() const override;
-
-    /**
      * @brief Debug method for printing entire diagram to console.
      */
     void print() const;

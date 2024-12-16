@@ -37,26 +37,28 @@ void generator::generate_link(
     if (e.file_relative().empty())
         return;
 
-    auto context = element_context(e);
+    inja::json e_ctx = common::jinja::jinja_context<class_element>(e);
+
+    auto context = element_context(e, e_ctx);
 
     auto maybe_link_pattern = get_link_pattern(e);
     if (maybe_link_pattern) {
         const auto &[link_prefix, link_pattern] = *maybe_link_pattern;
-        auto ec = element_context(e);
+        auto ec = element_context(e, e_ctx);
         common::generators::make_context_source_relative(ec, link_prefix);
 
         ostr << " [[[";
-        ostr << env().render(std::string_view{link_pattern}, context);
+        ostr << *common::jinja::render_template(env(), ec, link_pattern);
     }
 
     auto maybe_tooltip_pattern = get_tooltip_pattern(e);
 
     if (maybe_tooltip_pattern) {
         const auto &[tooltip_prefix, tooltip_pattern] = *maybe_tooltip_pattern;
-        auto ec = element_context(e);
+        auto ec = element_context(e, e_ctx);
         common::generators::make_context_source_relative(ec, tooltip_prefix);
         ostr << "{";
-        ostr << env().render(std::string_view{tooltip_pattern}, ec);
+        ostr << *common::jinja::render_template(env(), ec, tooltip_pattern);
         ostr << "}";
     }
     ostr << "]]]";

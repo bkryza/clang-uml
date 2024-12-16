@@ -154,13 +154,6 @@ public:
     std::string to_alias(eid_t id) const;
 
     /**
-     * @brief Return the elements JSON context for inja templates.
-     *
-     * @return JSON node with elements context.
-     */
-    inja::json context() const override;
-
-    /**
      * @brief Check whether the diagram is empty
      *
      * @return True, if diagram is empty

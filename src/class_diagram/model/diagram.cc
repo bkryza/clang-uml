@@ -233,24 +233,6 @@ std::string diagram::to_alias(eid_t id) const
     throw error::uml_alias_missing(fmt::format("Missing alias for {}", id));
 }
 
-inja::json diagram::context() const
-{
-    inja::json ctx;
-    ctx["name"] = name();
-    ctx["type"] = "class";
-
-    inja::json::array_t elements{};
-
-    for_all_elements([&](auto &&elements_view) mutable {
-        for (const auto &el : elements_view)
-            elements.emplace_back(el.get().context());
-    });
-
-    ctx["elements"] = elements;
-
-    return ctx;
-}
-
 void diagram::remove_redundant_dependencies()
 {
     using common::eid_t;

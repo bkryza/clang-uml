@@ -55,24 +55,6 @@ std::string diagram::to_alias(const std::string &full_name) const
     return full_name;
 }
 
-inja::json diagram::context() const
-{
-    inja::json ctx;
-    ctx["name"] = name();
-    ctx["type"] = "sequence";
-
-    inja::json::array_t elements{};
-
-    // Add classes
-    for (const auto &[id, p] : participants_) {
-        elements.emplace_back(p->context());
-    }
-
-    ctx["elements"] = elements;
-
-    return ctx;
-}
-
 void diagram::add_participant(std::unique_ptr<participant> p)
 {
     const auto participant_id = p->id();

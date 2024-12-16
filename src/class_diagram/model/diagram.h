@@ -248,13 +248,6 @@ public:
     void remove_redundant_dependencies();
 
     /**
-     * @brief Return the elements JSON context for inja templates.
-     *
-     * @return JSON node with elements context.
-     */
-    inja::json context() const override;
-
-    /**
      * @brief Check whether the diagram is empty
      *
      * @return True, if diagram is empty

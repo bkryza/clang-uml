@@ -182,13 +182,6 @@ public:
         std::ostream &out, const diagram_element &rhs);
 
     /**
-     * Return elements inja JSON context.
-     *
-     * @return Element context.
-     */
-    virtual inja::json context() const;
-
-    /**
      * Whether this element is nested in another element.
      *
      * @return

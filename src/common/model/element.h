@@ -140,8 +140,6 @@ public:
 
     friend std::ostream &operator<<(std::ostream &out, const element &rhs);
 
-    inja::json context() const override;
-
 protected:
     /**
      * Return elements full name.

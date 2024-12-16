@@ -122,8 +122,6 @@ public:
     opt_ref<diagram_element> get_with_namespace(const std::string &name,
         const common::model::namespace_ &ns) const override;
 
-    inja::json context() const override;
-
     /**
      * @brief Check whether the diagram is empty
      *

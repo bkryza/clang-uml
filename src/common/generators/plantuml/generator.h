@@ -334,7 +334,9 @@ void generator<C, D>::generate_plantuml_directives(
 
     for (const auto &d : directives) {
         auto rendered_directive =
-            generators::generator<C, D>::render_template(d);
+            common::jinja::render_template(generators::generator<C, D>::env(),
+                generators::generator<C, D>::context(), d);
+
         if (rendered_directive)
             ostr << *rendered_directive << '\n';
     }
@@ -408,12 +410,15 @@ void generator<C, D>::generate_link(std::ostream &ostr, const E &e) const
         return;
     }
 
+    inja::json e_ctx =
+        common::jinja::jinja_context<common::model::diagram_element>(e);
+
     const auto &[link_prefix, link_pattern] = *maybe_link_pattern;
 
     ostr << " [[";
     try {
         if (!link_pattern.empty()) {
-            auto ec = generators::generator<C, D>::element_context(e);
+            auto ec = generators::generator<C, D>::element_context(e, e_ctx);
             common::generators::make_context_source_relative(ec, link_prefix);
             ostr << generators::generator<C, D>::env().render(
                 std::string_view{link_pattern}, ec);
@@ -435,7 +440,7 @@ void generator<C, D>::generate_link(std::ostream &ostr, const E &e) const
 
         ostr << "{";
         try {
-            auto ec = generators::generator<C, D>::element_context(e);
+            auto ec = generators::generator<C, D>::element_context(e, e_ctx);
             common::generators::make_context_source_relative(
                 ec, tooltip_prefix);
             if (!tooltip_pattern.empty()) {

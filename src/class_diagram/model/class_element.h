@@ -73,13 +73,6 @@ public:
     void set_type(const std::string &type);
 
     /**
-     * @brief Get elements inja context in JSON.
-     *
-     * @return Context in JSON
-     */
-    virtual inja::json context() const;
-
-    /**
      * @brief Set class elements qualified name.
      *
      * This method sets the fully qualified path of the class element,

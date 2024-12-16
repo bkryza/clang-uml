@@ -429,8 +429,8 @@ void generator<C, D>::generate_notes(const T &p, graphml_node_t &parent) const
                     fmt::format("{}-N_{}", e->alias(), note_index));
                 auto maybe_element_node_id = node_ids_.get(e->alias());
                 if (maybe_element_node_id) {
-                    auto rendered_note =
-                        generators::generator<C, D>::render_template(note);
+                    auto rendered_note = common::jinja::render_template(
+                        generator<C, D>::env(), note);
                     if (rendered_note) {
                         auto note_node = make_node(parent, note_id);
                         add_data(note_node, "type", "note");
@@ -547,12 +547,15 @@ void generator<C, D>::add_url(pugi::xml_node &node, const T &c) const
     auto maybe_link_pattern =
         clanguml::common::generators::generator<C, D>::get_link_pattern(c);
 
+    inja::json e_ctx =
+        common::jinja::jinja_context<common::model::diagram_element>(c);
+
     if (maybe_link_pattern) {
         const auto &[link_prefix, link_pattern] = *maybe_link_pattern;
         try {
             auto ec =
                 clanguml::common::generators::generator<C, D>::element_context(
-                    c);
+                    c, e_ctx);
             common::generators::make_context_source_relative(ec, link_prefix);
 
             auto url =
@@ -582,7 +585,7 @@ void generator<C, D>::add_url(pugi::xml_node &node, const T &c) const
         try {
             auto ec =
                 clanguml::common::generators::generator<C, D>::element_context(
-                    c);
+                    c, e_ctx);
             common::generators::make_context_source_relative(
                 ec, tooltip_prefix);
 

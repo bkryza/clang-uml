@@ -213,9 +213,12 @@ void generator<C, D>::generate_link(std::ostream &ostr, const E &e) const
 
     const auto &[link_prefix, link_pattern] = *maybe_link_pattern;
 
+    inja::json e_ctx =
+        common::jinja::jinja_context<common::model::diagram_element>(e);
+
     ostr << indent(1) << "click " << e.alias() << " href \"";
     try {
-        auto ec = generators::generator<C, D>::element_context(e);
+        auto ec = generators::generator<C, D>::element_context(e, e_ctx);
         common::generators::make_context_source_relative(ec, link_prefix);
         std::string link{};
         if (!link_pattern.empty()) {
@@ -246,7 +249,8 @@ void generator<C, D>::generate_link(std::ostream &ostr, const E &e) const
         if (!tooltip_pattern.empty()) {
             ostr << " \"";
             try {
-                auto ec = generators::generator<C, D>::element_context(e);
+                auto ec =
+                    generators::generator<C, D>::element_context(e, e_ctx);
                 common::generators::make_context_source_relative(
                     ec, tooltip_prefix);
                 auto tooltip_text = generators::generator<C, D>::env().render(
@@ -279,8 +283,8 @@ void generator<C, D>::generate_mermaid_directives(
     using common::model::namespace_;
 
     for (const auto &d : directives) {
-        auto rendered_directive =
-            generators::generator<C, D>::render_template(d);
+        auto rendered_directive = common::jinja::render_template(
+            generator<C, D>::env(), generators::generator<C, D>::context(), d);
         if (rendered_directive)
             ostr << indent(1) << *rendered_directive << '\n';
     }

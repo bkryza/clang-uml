@@ -17,6 +17,8 @@
  */
 #pragma once
 
+#include "common/model/diagram_element.h"
+#include "common/model/jinja_context.h"
 #include "common/model/source_location.h"
 #include "util/error.h"
 #include "util/util.h"
@@ -81,18 +83,15 @@ public:
      * @return Diagram model
      */
     const DiagramType &model() const { return model_; }
-    const DiagramType &get_model() const { return model_; }
 
-    template <typename E> inja::json element_context(const E &e) const;
+    template <typename E>
+    inja::json element_context(const E &e, inja::json e_ctx) const;
 
     std::optional<std::pair<std::string, std::string>> get_link_pattern(
         const common::model::source_location &sl) const;
 
     std::optional<std::pair<std::string, std::string>> get_tooltip_pattern(
         const common::model::source_location &sl) const;
-
-    std::optional<std::string> render_template(
-        const std::string &jinja_template) const;
 
     /**
      * @brief Initialize diagram Jinja context
@@ -133,11 +132,6 @@ template <typename C, typename D> void generator<C, D>::init_context()
         m_context["git"]["commit"] = config.git().commit;
         m_context["git"]["toplevel"] = config.git().toplevel;
     }
-}
-
-template <typename C, typename D> void generator<C, D>::update_context() const
-{
-    m_context["diagram"] = model().context();
 }
 
 template <typename C, typename D>
@@ -211,8 +205,10 @@ template <typename C, typename D> void generator<C, D>::init_env()
         auto element_opt = model.get_with_namespace(
             args[0]->get<std::string>(), config.using_namespace());
 
-        if (element_opt.has_value())
-            res = element_opt.value().context();
+        if (element_opt.has_value()) {
+            res = common::jinja::jinja_context<model::element>(
+                dynamic_cast<const model::element &>(element_opt.value()));
+        }
 
         return res;
     });
@@ -223,8 +219,9 @@ template <typename C, typename D> void generator<C, D>::init_env()
     //   {{ element("A").alias }}
     //
     m_env.add_callback("alias", 1, [&model, &config](inja::Arguments &args) {
-        auto element_opt = model.get_with_namespace(
-            args[0]->get<std::string>(), config.using_namespace());
+        const auto &element_name = args[0]->get<std::string>();
+        auto element_opt =
+            model.get_with_namespace(element_name, config.using_namespace());
 
         if (!element_opt.has_value())
             throw clanguml::error::uml_alias_missing(
@@ -260,12 +257,13 @@ template <typename C, typename D> void generator<C, D>::init_env()
 
 template <typename C, typename D>
 template <typename E>
-inja::json generator<C, D>::element_context(const E &e) const
+inja::json generator<C, D>::element_context(const E &e, inja::json e_ctx) const
 {
     const auto &diagram_context = context();
 
     inja::json ctx;
-    ctx["element"] = e.context();
+    ctx["element"] = e_ctx;
+
 #if _MSC_VER
     if (diagram_context.contains("git")) {
 #else
@@ -336,60 +334,4 @@ generator<C, D>::get_tooltip_pattern(
     return config().generate_links().get_tooltip_pattern(sl.file_relative());
 }
 
-template <typename C, typename D>
-std::optional<std::string> generator<C, D>::render_template(
-    const std::string &jinja_template) const
-{
-    std::optional<std::string> result;
-    try {
-        // Render the directive with template engine first
-        std::string rendered_template{generator<C, D>::env().render(
-            std::string_view{jinja_template}, generator<C, D>::context())};
-
-        // Now search for alias `@A()` directives in the text
-        // (this is deprecated)
-        std::tuple<std::string, size_t, size_t> alias_match;
-        while (util::find_element_alias(rendered_template, alias_match)) {
-            const auto full_name = generator<C, D>::config().using_namespace() |
-                std::get<0>(alias_match);
-            auto element_opt =
-                generator<C, D>::model().get(full_name.to_string());
-
-            if (element_opt)
-                rendered_template.replace(std::get<1>(alias_match),
-                    std::get<2>(alias_match), element_opt.value().alias());
-            else {
-                LOG_WARN("Cannot find clang-uml alias for element {}",
-                    full_name.to_string());
-                rendered_template.replace(std::get<1>(alias_match),
-                    std::get<2>(alias_match), "UNKNOWN_ALIAS");
-            }
-        }
-
-        result = rendered_template;
-    }
-    catch (const clanguml::error::uml_alias_missing &e) {
-        LOG_WARN("Failed to render PlantUML directive due to unresolvable "
-                 "alias: {}",
-            e.what());
-    }
-    catch (const inja::json::parse_error &e) {
-        LOG_WARN("Failed to parse Jinja template: {}", jinja_template);
-    }
-    catch (const inja::json::exception &e) {
-        LOG_WARN("Failed to render PlantUML directive: \n{}\n due to: {}",
-            jinja_template, e.what());
-    }
-    catch (const std::regex_error &e) {
-        LOG_WARN("Failed to render PlantUML directive: \n{}\n due to "
-                 "std::regex_error: {}",
-            jinja_template, e.what());
-    }
-    catch (const std::exception &e) {
-        LOG_WARN("Failed to render PlantUML directive: \n{}\n due to: {}",
-            jinja_template, e.what());
-    }
-
-    return result;
-}
 } // namespace clanguml::common::generators

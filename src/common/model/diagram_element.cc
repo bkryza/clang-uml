@@ -81,20 +81,6 @@ void diagram_element::append(const decorated_element &e)
     decorated_element::append(e);
 }
 
-inja::json diagram_element::context() const
-{
-    inja::json ctx;
-    ctx["name"] = name();
-    ctx["type"] = type_name();
-    ctx["alias"] = alias();
-    ctx["full_name"] = full_name(false);
-    auto maybe_doxygen_link = doxygen_link();
-    if (maybe_doxygen_link)
-        ctx["doxygen_link"] = maybe_doxygen_link.value();
-
-    return ctx;
-}
-
 bool diagram_element::is_nested() const { return nested_; }
 
 void diagram_element::nested(bool nested) { nested_ = nested; }
