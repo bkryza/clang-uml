@@ -205,58 +205,33 @@ template <typename C, typename D>
 template <typename E>
 void generator<C, D>::generate_link(std::ostream &ostr, const E &e) const
 {
-    using common::generators::make_context_source_relative;
-    using common::jinja::render_template;
+    const auto maybe_link = generator<C, D>::render_link(e);
+    const auto maybe_tooltip = generator<C, D>::render_tooltip(e);
 
-    if (e.file().empty() && e.file_relative().empty())
+    if (!maybe_link && !maybe_tooltip)
         return;
 
-    auto maybe_link_pattern = generators::generator<C, D>::get_link_pattern(e);
-
-    if (maybe_link_pattern) {
-
-        const auto &[link_prefix, link_pattern] = *maybe_link_pattern;
-
+    if (maybe_link) {
         ostr << indent(1) << "click " << e.alias() << " href \"";
-        inja::json ec = element_context<diagram_element>(
-            e, generators::generator<C, D>::context());
 
-        make_context_source_relative(ec, link_prefix);
-
-        auto link = render_template(
-            generators::generator<C, D>::env(), ec, link_pattern);
-
-        if (!link || link->empty())
+        if (!maybe_link || maybe_link->empty())
             ostr << " ";
         else
-            ostr << *link;
+            ostr << *maybe_link;
 
         ostr << "\"";
     }
 
-    auto maybe_tooltip_pattern =
-        generators::generator<C, D>::get_tooltip_pattern(e);
+    if (maybe_tooltip && !maybe_tooltip->empty()) {
+        auto tooltip = *maybe_tooltip;
+        ostr << " \"";
 
-    if (maybe_tooltip_pattern) {
-        const auto &[tooltip_prefix, tooltip_pattern] = *maybe_tooltip_pattern;
+        util::replace_all(tooltip, "\"", "&bdquo;");
+        ostr << tooltip;
 
-        if (!tooltip_pattern.empty()) {
-            ostr << " \"";
-            inja::json ec = element_context<diagram_element>(
-                e, generators::generator<C, D>::context());
-
-            make_context_source_relative(ec, tooltip_prefix);
-
-            auto tooltip_text = render_template(
-                generators::generator<C, D>::env(), ec, tooltip_pattern)
-                                    .value_or(" ");
-
-            util::replace_all(tooltip_text, "\"", "&bdquo;");
-            ostr << tooltip_text;
-
-            ostr << "\"";
-        }
+        ostr << "\"";
     }
+
     ostr << "\n";
 }
 

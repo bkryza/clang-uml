@@ -50,7 +50,7 @@ void generator::generate(const source_file &f, graphml_node_t &parent) const
         auto package_node =
             make_subgraph(parent, f.alias(), f.name(), "folder");
 
-        add_url(package_node, f);
+        generate_link(package_node, f);
 
         auto graph_node = make_graph(package_node, f.alias());
 
@@ -74,7 +74,7 @@ void generator::generate(const source_file &f, graphml_node_t &parent) const
             add_data(file_node, "stereotype", "source");
         }
 
-        add_url(file_node, f);
+        generate_link(file_node, f);
     }
 }
 

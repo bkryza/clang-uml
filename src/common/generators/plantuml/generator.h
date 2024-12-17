@@ -403,50 +403,19 @@ template <typename C, typename D>
 template <typename E>
 void generator<C, D>::generate_link(std::ostream &ostr, const E &e) const
 {
-    using common::generators::make_context_source_relative;
-    using common::jinja::render_template;
+    const auto maybe_link = generator<C, D>::render_link(e);
+    const auto maybe_tooltip = generator<C, D>::render_tooltip(e);
 
-    if (e.file().empty() && e.file_relative().empty())
+    if (!maybe_link && !maybe_tooltip)
         return;
-
-    auto maybe_link_pattern = generators::generator<C, D>::get_link_pattern(e);
-
-    if (!maybe_link_pattern)
-        return;
-
-    const auto &[link_prefix, link_pattern] = *maybe_link_pattern;
 
     ostr << " [[";
-    if (!link_pattern.empty()) {
-        inja::json ec = element_context<diagram_element>(
-            e, generators::generator<C, D>::context());
 
-        make_context_source_relative(ec, link_prefix);
+    ostr << maybe_link.value_or("");
 
-        ostr << render_template(
-            generators::generator<C, D>::env(), ec, link_pattern)
-                    .value_or("");
-    }
+    if (maybe_tooltip)
+        ostr << "{" << *maybe_tooltip << "}";
 
-    auto maybe_tooltip_pattern =
-        generators::generator<C, D>::get_tooltip_pattern(e);
-
-    if (maybe_tooltip_pattern) {
-        const auto &[tooltip_prefix, tooltip_pattern] = *maybe_tooltip_pattern;
-
-        ostr << "{";
-        inja::json ec = element_context<diagram_element>(
-            e, generators::generator<C, D>::context());
-
-        make_context_source_relative(ec, tooltip_prefix);
-
-        if (!tooltip_pattern.empty()) {
-            ostr << render_template(
-                generators::generator<C, D>::env(), ec, tooltip_pattern)
-                        .value_or("");
-        }
-        ostr << "}";
-    }
     ostr << "]]";
 }
 

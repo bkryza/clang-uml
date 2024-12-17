@@ -238,7 +238,8 @@ public:
     virtual void generate_relationships(
         const model::diagram_element &c, graphml_node_t &parent) const;
 
-    template <typename T> void add_url(pugi::xml_node &node, const T &c) const;
+    template <typename T>
+    void generate_link(pugi::xml_node &node, const T &c) const;
 
     const property_keymap_t &graph_properties() const
     {
@@ -544,42 +545,17 @@ void generator<C, D>::add_cdata(pugi::xml_node &node,
 
 template <typename C, typename D>
 template <typename T>
-void generator<C, D>::add_url(pugi::xml_node &node, const T &c) const
+void generator<C, D>::generate_link(pugi::xml_node &node, const T &c) const
 {
-    using common::generators::make_context_source_relative;
-    using common::jinja::render_template;
+    const auto maybe_link = generator<C, D>::render_link(c);
+    const auto maybe_tooltip = generator<C, D>::render_tooltip(c);
 
-    auto maybe_link_pattern =
-        clanguml::common::generators::generator<C, D>::get_link_pattern(c);
-
-    if (maybe_link_pattern) {
-        const auto &[link_prefix, link_pattern] = *maybe_link_pattern;
-        inja::json ec = element_context<diagram_element>(
-            c, generators::generator<C, D>::context());
-
-        make_context_source_relative(ec, link_prefix);
-
-        auto url = jinja::render_template(
-            generators::generator<C, D>::env(), ec, link_pattern);
-
-        if (url)
-            add_data(node, "url", *url);
+    if (maybe_link) {
+        add_data(node, "url", *maybe_link);
     }
 
-    auto maybe_tooltip_pattern =
-        clanguml::common::generators::generator<C, D>::get_tooltip_pattern(c);
-
-    if (maybe_tooltip_pattern) {
-        const auto &[tooltip_prefix, tooltip_pattern] = *maybe_tooltip_pattern;
-        inja::json ec = element_context<diagram_element>(
-            c, generators::generator<C, D>::context());
-
-        make_context_source_relative(ec, tooltip_prefix);
-
-        auto tooltip = jinja::render_template(
-            generators::generator<C, D>::env(), ec, tooltip_pattern);
-        if (tooltip)
-            add_data(node, "tooltip", *tooltip);
+    if (maybe_tooltip) {
+        add_data(node, "tooltip", *maybe_tooltip);
     }
 }
 

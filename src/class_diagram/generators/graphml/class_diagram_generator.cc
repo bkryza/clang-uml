@@ -124,7 +124,7 @@ void generator::generate(const class_ &c, graphml_node_t &parent) const
     }
     add_data(class_node, "is_template", to_string(c.is_template()));
 
-    add_url(class_node, c);
+    generate_link(class_node, c);
 }
 
 void generator::generate(const enum_ &e, graphml_node_t &parent) const
@@ -140,7 +140,7 @@ void generator::generate(const enum_ &e, graphml_node_t &parent) const
     auto node = make_node(parent, node_ids_.add(e.alias()));
     add_data(node, "type", e.type_name());
     add_cdata(node, "name", render_name(full_name));
-    add_url(node, e);
+    generate_link(node, e);
 }
 
 void generator::generate(const concept_ &c, graphml_node_t &parent) const
@@ -156,7 +156,7 @@ void generator::generate(const concept_ &c, graphml_node_t &parent) const
     auto node = make_node(parent, node_ids_.add(c.alias()));
     add_data(node, "type", c.type_name());
     add_cdata(node, "name", render_name(full_name));
-    add_url(node, c);
+    generate_link(node, c);
 }
 
 void generator::generate(const objc_interface &c, graphml_node_t &parent) const
@@ -166,7 +166,7 @@ void generator::generate(const objc_interface &c, graphml_node_t &parent) const
     auto node = make_node(parent, node_ids_.add(c.alias()));
     add_data(node, "type", c.type_name());
     add_data(node, "name", render_name(c.full_name(true)));
-    add_url(node, c);
+    generate_link(node, c);
 }
 
 } // namespace clanguml::class_diagram::generators::graphml
