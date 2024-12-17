@@ -21,16 +21,17 @@
 namespace clanguml::common::jinja {
 
 void to_json(
-    inja::json &ctx, const jinja_context<include_diagram::model::diagram> &d)
+    inja::json &ctx, const diagram_context<include_diagram::model::diagram> &d)
 {
     ctx["name"] = d.get().name();
     ctx["type"] = "include";
 
     inja::json::array_t elements{};
 
-    d.get().view<include_diagram::model::source_file>().for_each(
+    d.get().view<common::model::source_file>().for_each(
         [&](auto &&element) mutable {
-            elements.emplace_back(jinja_context(element));
+            elements.emplace_back(
+                diagram_context<common::model::source_file>(element));
         });
 
     ctx["elements"] = elements;

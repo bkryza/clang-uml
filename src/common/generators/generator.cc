@@ -9,7 +9,7 @@ namespace clanguml::common::generators {
 
 template <typename C, typename D> void generator<C, D>::update_context() const
 {
-    m_context["diagram"] = common::jinja::jinja_context<D>(model());
+    m_context["diagram"] = common::jinja::diagram_context<D>(model());
 }
 
 //

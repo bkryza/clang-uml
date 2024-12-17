@@ -84,9 +84,6 @@ public:
      */
     const DiagramType &model() const { return model_; }
 
-    template <typename E>
-    inja::json element_context(const E &e, inja::json e_ctx) const;
-
     std::optional<std::pair<std::string, std::string>> get_link_pattern(
         const common::model::source_location &sl) const;
 
@@ -206,7 +203,7 @@ template <typename C, typename D> void generator<C, D>::init_env()
             args[0]->get<std::string>(), config.using_namespace());
 
         if (element_opt.has_value()) {
-            res = common::jinja::jinja_context<model::element>(
+            res = common::jinja::diagram_context<model::element>(
                 dynamic_cast<const model::element &>(element_opt.value()));
         }
 
@@ -253,61 +250,6 @@ template <typename C, typename D> void generator<C, D>::init_env()
 
         return res;
     });
-}
-
-template <typename C, typename D>
-template <typename E>
-inja::json generator<C, D>::element_context(const E &e, inja::json e_ctx) const
-{
-    const auto &diagram_context = context();
-
-    inja::json ctx;
-    ctx["element"] = e_ctx;
-
-#if _MSC_VER
-    if (diagram_context.contains("git")) {
-#else
-    if (diagram_context.template contains("git")) {
-#endif
-        ctx["git"] = diagram_context["git"];
-    }
-
-    if (!e.file().empty()) {
-        std::filesystem::path file{e.file()};
-        std::string git_relative_path = file.string();
-        if (!e.file_relative().empty()) {
-#if _MSC_VER
-            if (file.is_absolute() && ctx.contains("git")) {
-#else
-            if (file.is_absolute() &&
-                diagram_context.template contains("git")) {
-#endif
-                git_relative_path = std::filesystem::relative(
-                    file, diagram_context["git"]["toplevel"])
-                                        .string();
-                ctx["element"]["source"]["path"] =
-                    util::path_to_url(git_relative_path);
-            }
-            else {
-                ctx["element"]["source"]["path"] = e.file();
-            }
-        }
-        else {
-            git_relative_path = "";
-            ctx["element"]["source"]["path"] = e.file();
-        }
-
-        ctx["element"]["source"]["full_path"] = file.string();
-        ctx["element"]["source"]["name"] = file.filename().string();
-        ctx["element"]["source"]["line"] = e.line();
-    }
-
-    const auto &maybe_comment = e.comment();
-    if (maybe_comment) {
-        ctx["element"]["comment"] = maybe_comment.value();
-    }
-
-    return ctx;
 }
 
 template <typename C, typename D>

@@ -26,9 +26,9 @@
 namespace clanguml::common::jinja {
 
 void to_json(inja::json &ctx,
-    const jinja_context<class_diagram::model::class_element> &d);
+    const element_context<class_diagram::model::class_element> &d);
 
 void to_json(
-    inja::json &ctx, const jinja_context<class_diagram::model::diagram> &d);
+    inja::json &ctx, const diagram_context<class_diagram::model::diagram> &d);
 
 } // namespace clanguml::common::jinja

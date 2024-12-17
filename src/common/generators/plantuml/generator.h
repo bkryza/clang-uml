@@ -33,7 +33,9 @@
 
 namespace clanguml::common::generators::plantuml {
 
+using clanguml::common::jinja::element_context;
 using clanguml::common::model::access_t;
+using clanguml::common::model::diagram_element;
 using clanguml::common::model::element;
 using clanguml::common::model::message_t;
 using clanguml::common::model::relationship;
@@ -401,35 +403,29 @@ template <typename C, typename D>
 template <typename E>
 void generator<C, D>::generate_link(std::ostream &ostr, const E &e) const
 {
+    using common::generators::make_context_source_relative;
+    using common::jinja::render_template;
+
     if (e.file().empty() && e.file_relative().empty())
         return;
 
     auto maybe_link_pattern = generators::generator<C, D>::get_link_pattern(e);
 
-    if (!maybe_link_pattern) {
+    if (!maybe_link_pattern)
         return;
-    }
-
-    inja::json e_ctx =
-        common::jinja::jinja_context<common::model::diagram_element>(e);
 
     const auto &[link_prefix, link_pattern] = *maybe_link_pattern;
 
     ostr << " [[";
-    try {
-        if (!link_pattern.empty()) {
-            auto ec = generators::generator<C, D>::element_context(e, e_ctx);
-            common::generators::make_context_source_relative(ec, link_prefix);
-            ostr << generators::generator<C, D>::env().render(
-                std::string_view{link_pattern}, ec);
-        }
-    }
-    catch (const inja::json::parse_error &e) {
-        LOG_ERROR("Failed to parse Jinja template: {}", link_pattern);
-    }
-    catch (const std::exception &e) {
-        LOG_ERROR("Failed to render PlantUML directive: \n{}\n due to: {}",
-            link_pattern, e.what());
+    if (!link_pattern.empty()) {
+        inja::json ec = element_context<diagram_element>(
+            e, generators::generator<C, D>::context());
+
+        make_context_source_relative(ec, link_prefix);
+
+        ostr << render_template(
+            generators::generator<C, D>::env(), ec, link_pattern)
+                    .value_or("");
     }
 
     auto maybe_tooltip_pattern =
@@ -439,21 +435,15 @@ void generator<C, D>::generate_link(std::ostream &ostr, const E &e) const
         const auto &[tooltip_prefix, tooltip_pattern] = *maybe_tooltip_pattern;
 
         ostr << "{";
-        try {
-            auto ec = generators::generator<C, D>::element_context(e, e_ctx);
-            common::generators::make_context_source_relative(
-                ec, tooltip_prefix);
-            if (!tooltip_pattern.empty()) {
-                ostr << generators::generator<C, D>::env().render(
-                    std::string_view{tooltip_pattern}, ec);
-            }
-        }
-        catch (const inja::json::parse_error &e) {
-            LOG_ERROR("Failed to parse Jinja template: {}", tooltip_pattern);
-        }
-        catch (const std::exception &e) {
-            LOG_ERROR("Failed to render PlantUML directive: \n{}\n due to: {}",
-                tooltip_pattern, e.what());
+        inja::json ec = element_context<diagram_element>(
+            e, generators::generator<C, D>::context());
+
+        make_context_source_relative(ec, tooltip_prefix);
+
+        if (!tooltip_pattern.empty()) {
+            ostr << render_template(
+                generators::generator<C, D>::env(), ec, tooltip_pattern)
+                        .value_or("");
         }
         ostr << "}";
     }

@@ -23,15 +23,15 @@ namespace clanguml::common::jinja {
 using namespace clanguml::common::model;
 
 void to_json(
-    inja::json &ctx, const jinja_context<package_diagram::model::diagram> &d)
+    inja::json &ctx, const diagram_context<package_diagram::model::diagram> &d)
 {
     ctx["name"] = d.get().name();
     ctx["type"] = "package";
 
     inja::json::array_t elements{};
 
-    d.get().view<common::model::package>().for_each([&](auto &&e) mutable {
-        elements.emplace_back(jinja_context<element>(e));
+    d.get().view<package>().for_each([&](auto &&e) mutable {
+        elements.emplace_back(diagram_context<element>(e));
     });
 
     ctx["elements"] = elements;

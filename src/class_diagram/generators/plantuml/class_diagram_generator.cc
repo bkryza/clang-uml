@@ -37,28 +37,30 @@ void generator::generate_link(
     if (e.file_relative().empty())
         return;
 
-    inja::json e_ctx = common::jinja::jinja_context<class_element>(e);
-
-    auto context = element_context(e, e_ctx);
-
     auto maybe_link_pattern = get_link_pattern(e);
     if (maybe_link_pattern) {
         const auto &[link_prefix, link_pattern] = *maybe_link_pattern;
-        auto ec = element_context(e, e_ctx);
-        common::generators::make_context_source_relative(ec, link_prefix);
+        inja::json context = common::jinja::element_context<class_element>(
+            e, common_generator<diagram_config, diagram_model>::context());
+
+        common::generators::make_context_source_relative(context, link_prefix);
 
         ostr << " [[[";
-        ostr << *common::jinja::render_template(env(), ec, link_pattern);
+        ostr << common::jinja::render_template(env(), context, link_pattern)
+                    .value_or("");
     }
 
     auto maybe_tooltip_pattern = get_tooltip_pattern(e);
 
     if (maybe_tooltip_pattern) {
         const auto &[tooltip_prefix, tooltip_pattern] = *maybe_tooltip_pattern;
-        auto ec = element_context(e, e_ctx);
-        common::generators::make_context_source_relative(ec, tooltip_prefix);
+        inja::json context = common::jinja::element_context<class_element>(
+            e, common_generator<diagram_config, diagram_model>::context());
+        common::generators::make_context_source_relative(
+            context, tooltip_prefix);
         ostr << "{";
-        ostr << *common::jinja::render_template(env(), ec, tooltip_pattern);
+        ostr << common::jinja::render_template(env(), context, tooltip_pattern)
+                    .value_or("");
         ostr << "}";
     }
     ostr << "]]]";

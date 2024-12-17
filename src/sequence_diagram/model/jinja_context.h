@@ -24,7 +24,7 @@
 
 namespace clanguml::common::jinja {
 
-void to_json(
-    inja::json &ctx, const jinja_context<sequence_diagram::model::diagram> &d);
+void to_json(inja::json &ctx,
+    const diagram_context<sequence_diagram::model::diagram> &d);
 
 } // namespace clanguml::common::jinja

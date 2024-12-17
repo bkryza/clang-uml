@@ -36,7 +36,9 @@
 
 namespace clanguml::common::generators::graphml {
 
+using clanguml::common::jinja::element_context;
 using clanguml::common::model::access_t;
+using clanguml::common::model::diagram_element;
 using clanguml::common::model::element;
 using clanguml::common::model::message_t;
 using clanguml::common::model::relationship_t;
@@ -544,37 +546,24 @@ template <typename C, typename D>
 template <typename T>
 void generator<C, D>::add_url(pugi::xml_node &node, const T &c) const
 {
+    using common::generators::make_context_source_relative;
+    using common::jinja::render_template;
+
     auto maybe_link_pattern =
         clanguml::common::generators::generator<C, D>::get_link_pattern(c);
 
-    inja::json e_ctx =
-        common::jinja::jinja_context<common::model::diagram_element>(c);
-
     if (maybe_link_pattern) {
         const auto &[link_prefix, link_pattern] = *maybe_link_pattern;
-        try {
-            auto ec =
-                clanguml::common::generators::generator<C, D>::element_context(
-                    c, e_ctx);
-            common::generators::make_context_source_relative(ec, link_prefix);
+        inja::json ec = element_context<diagram_element>(
+            c, generators::generator<C, D>::context());
 
-            auto url =
-                clanguml::common::generators::generator<C, D>::env().render(
-                    std::string_view{link_pattern}, ec);
+        make_context_source_relative(ec, link_prefix);
 
-            add_data(node, "url", url);
-        }
-        catch (const inja::json::parse_error &e) {
-            LOG_ERROR("Failed to parse Jinja template: {}", link_pattern);
-        }
-        catch (const inja::RenderError &e) {
-            LOG_DBG("Failed to render GraphML URL: \n{}\n due to: {}",
-                link_pattern, e.what());
-        }
-        catch (const std::exception &e) {
-            LOG_ERROR("Failed to render GraphML URL: \n{}\n due to: {}",
-                link_pattern, e.what());
-        }
+        auto url = jinja::render_template(
+            generators::generator<C, D>::env(), ec, link_pattern);
+
+        if (url)
+            add_data(node, "url", *url);
     }
 
     auto maybe_tooltip_pattern =
@@ -582,26 +571,15 @@ void generator<C, D>::add_url(pugi::xml_node &node, const T &c) const
 
     if (maybe_tooltip_pattern) {
         const auto &[tooltip_prefix, tooltip_pattern] = *maybe_tooltip_pattern;
-        try {
-            auto ec =
-                clanguml::common::generators::generator<C, D>::element_context(
-                    c, e_ctx);
-            common::generators::make_context_source_relative(
-                ec, tooltip_prefix);
+        inja::json ec = element_context<diagram_element>(
+            c, generators::generator<C, D>::context());
 
-            auto tooltip =
-                clanguml::common::generators::generator<C, D>::env().render(
-                    std::string_view{tooltip_pattern}, ec);
+        make_context_source_relative(ec, tooltip_prefix);
 
-            add_data(node, "tooltip", tooltip);
-        }
-        catch (const inja::json::parse_error &e) {
-            LOG_ERROR("Failed to parse Jinja template: {}", tooltip_pattern);
-        }
-        catch (const std::exception &e) {
-            LOG_ERROR("Failed to render PlantUML directive: \n{}\n due to: {}",
-                tooltip_pattern, e.what());
-        }
+        auto tooltip = jinja::render_template(
+            generators::generator<C, D>::env(), ec, tooltip_pattern);
+        if (tooltip)
+            add_data(node, "tooltip", *tooltip);
     }
 }
 

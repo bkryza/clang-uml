@@ -29,6 +29,9 @@
 
 namespace clanguml::common::jinja {
 
+struct diagram_context_tag;
+struct element_context_tag;
+
 /**
  * @brief Jinja diagram element context wrapper
  *
@@ -37,33 +40,63 @@ namespace clanguml::common::jinja {
  *
  * @tparam T Diagram model element
  */
-template <typename T> class jinja_context {
+template <typename T, typename Tag> class jinja_context {
 public:
-    constexpr explicit jinja_context(const T &e) noexcept
-        : value{e}
+    explicit jinja_context(const T &e, inja::json diagram_context = {}) noexcept
+        : value_{e}
+        , diagram_context_{std::move(diagram_context)}
     {
     }
 
-    constexpr const T &get() const noexcept { return value; }
+    const T &get() const noexcept { return value_; }
 
-    template <typename U> const jinja_context<U> as() const
+    template <typename U> const jinja_context<U, Tag> as() const
     {
-        return jinja_context<U>(dynamic_cast<const U &>(value));
+        return jinja_context<U, Tag>(
+            dynamic_cast<const U &>(value_), diagram_context_);
     }
 
-    const jinja_context<T> &get_context() const { *this; }
+    const inja::json &diagram_context() const { return diagram_context_; }
 
 private:
-    const T &value;
+    const T &value_;
+    inja::json diagram_context_;
 };
 
-void to_json(
-    inja::json &ctx, const jinja_context<common::model::diagram_element> &jc);
+template <typename T>
+using element_context = jinja_context<T, element_context_tag>;
+template <typename T>
+using diagram_context = jinja_context<T, diagram_context_tag>;
 
-void to_json(inja::json &ctx, const jinja_context<common::model::element> &jc);
+void to_json(inja::json &ctx,
+    const element_context<common::model::decorated_element> &jc);
 
 void to_json(
-    inja::json &ctx, const jinja_context<common::model::source_file> &jc);
+    inja::json &ctx, const element_context<common::model::diagram_element> &jc);
+
+void to_json(
+    inja::json &ctx, const element_context<common::model::element> &jc);
+
+void to_json(
+    inja::json &ctx, const element_context<common::model::source_file> &jc);
+
+void to_json(
+    inja::json &ctx, const element_context<common::model::source_location> &jc);
+
+void to_json(inja::json &ctx,
+    const diagram_context<common::model::decorated_element> &jc);
+
+void to_json(
+    inja::json &ctx, const diagram_context<common::model::diagram_element> &jc);
+
+void to_json(
+    inja::json &ctx, const diagram_context<common::model::element> &jc);
+
+void to_json(
+    inja::json &ctx, const diagram_context<common::model::source_file> &jc);
+
+void to_json(
+    inja::json &ctx, const diagram_context<common::model::source_location> &jc);
 
 std::optional<std::string> render_template(inja::Environment &env,
     const inja::json &context, const std::string &jinja_template);

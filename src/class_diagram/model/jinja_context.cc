@@ -23,15 +23,23 @@ namespace clanguml::common::jinja {
 using namespace clanguml::common::model;
 
 void to_json(inja::json &ctx,
-    const jinja_context<class_diagram::model::class_element> &d)
+    const element_context<class_diagram::model::class_element> &d)
 {
-    ctx["name"] = d.get().name();
-    ctx["type"] = d.get().type();
-    ctx["access"] = to_string(d.get().access());
+    to_json(ctx, d.as<decorated_element>());
+
+    ctx["element"]["name"] = d.get().name();
+    ctx["element"]["type"] = d.get().type();
+    ctx["element"]["access"] = to_string(d.get().access());
+
+    if (d.diagram_context().contains("git")) {
+        ctx["git"] = d.diagram_context()["git"];
+    }
+
+    to_json(ctx, d.as<source_location>());
 }
 
 void to_json(
-    inja::json &ctx, const jinja_context<class_diagram::model::diagram> &d)
+    inja::json &ctx, const diagram_context<class_diagram::model::diagram> &d)
 {
     ctx["name"] = d.get().name();
     ctx["type"] = "class";
@@ -40,21 +48,21 @@ void to_json(
 
     d.get().view<class_diagram::model::class_>().for_each(
         [&](auto &&e) mutable {
-            elements.emplace_back(jinja_context<common::model::element>(e));
+            elements.emplace_back(diagram_context<element>(e));
         });
 
     d.get().view<class_diagram::model::enum_>().for_each([&](auto &&e) mutable {
-        elements.emplace_back(jinja_context<element>(e));
+        elements.emplace_back(diagram_context<element>(e));
     });
 
     d.get().view<class_diagram::model::concept_>().for_each(
         [&](auto &&e) mutable {
-            elements.emplace_back(jinja_context<element>(e));
+            elements.emplace_back(diagram_context<element>(e));
         });
 
     d.get().view<class_diagram::model::objc_interface>().for_each(
         [&](auto &&e) mutable {
-            elements.emplace_back(jinja_context<element>(e));
+            elements.emplace_back(diagram_context<element>(e));
         });
 
     ctx["elements"] = elements;

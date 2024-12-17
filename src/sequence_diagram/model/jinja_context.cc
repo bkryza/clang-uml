@@ -23,7 +23,7 @@ namespace clanguml::common::jinja {
 using namespace clanguml::common::model;
 
 void to_json(
-    inja::json &ctx, const jinja_context<sequence_diagram::model::diagram> &d)
+    inja::json &ctx, const diagram_context<sequence_diagram::model::diagram> &d)
 {
     ctx["name"] = d.get().name();
     ctx["type"] = "sequence";
@@ -31,7 +31,7 @@ void to_json(
     inja::json::array_t elements{};
 
     for (const auto &[id, p] : d.get().participants()) {
-        elements.emplace_back(jinja_context<element>(*p));
+        elements.emplace_back(diagram_context<element>(*p));
     }
 
     ctx["elements"] = elements;

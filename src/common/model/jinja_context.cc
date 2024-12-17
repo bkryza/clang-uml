@@ -22,8 +22,132 @@ namespace clanguml::common::jinja {
 
 using namespace clanguml::common::model;
 
-void to_json(inja::json &ctx, const jinja_context<diagram_element> &jc)
+void to_json(inja::json &ctx,
+    const element_context<common::model::decorated_element> &jc)
 {
+    if (const auto maybe_comment = jc.get().comment();
+        maybe_comment.has_value()) {
+        ctx["element"]["comment"] = maybe_comment.value();
+    }
+}
+
+void to_json(inja::json &ctx, const element_context<diagram_element> &jc)
+{
+    to_json(ctx, jc.as<decorated_element>());
+
+    ctx["element"]["name"] = jc.get().name();
+    ctx["element"]["type"] = jc.get().type_name();
+    ctx["element"]["alias"] = jc.get().alias();
+    ctx["element"]["full_name"] = jc.get().full_name(false);
+    auto maybe_doxygen_link = jc.get().doxygen_link();
+    if (maybe_doxygen_link)
+        ctx["element"]["doxygen_link"] = maybe_doxygen_link.value();
+
+    if (jc.diagram_context().contains("git")) {
+        ctx["git"] = jc.diagram_context()["git"];
+    }
+
+    to_json(ctx, jc.as<source_location>());
+}
+
+void to_json(inja::json &ctx, const element_context<element> &jc)
+{
+    to_json(ctx, jc.as<diagram_element>());
+
+    ctx["element"]["namespace"] = jc.get().get_namespace().to_string();
+}
+
+void to_json(inja::json &ctx, const element_context<source_file> &jc)
+{
+    to_json(ctx, jc.as<diagram_element>());
+
+    std::filesystem::path fullNamePath{
+        ctx["element"]["full_name"].get<std::string>()};
+    fullNamePath.make_preferred();
+    ctx["element"]["full_name"] = fullNamePath.string();
+}
+
+void to_json(inja::json &ctx, const diagram_context<source_location> &jc)
+{
+    const auto &e = jc.get();
+
+    if (!e.file().empty()) {
+        const std::filesystem::path file{e.file()};
+        std::string git_relative_path = file.string();
+        if (!e.file_relative().empty()) {
+#if _MSC_VER
+            if (file.is_absolute() && ctx.contains("git")) {
+#else
+            if (file.is_absolute() && ctx.contains("git")) {
+#endif
+                git_relative_path =
+                    std::filesystem::relative(file, ctx["git"]["toplevel"])
+                        .string();
+                ctx["source"]["path"] = util::path_to_url(git_relative_path);
+            }
+            else {
+                ctx["source"]["path"] = e.file();
+            }
+        }
+        else {
+            git_relative_path = "";
+            ctx["source"]["path"] = e.file();
+        }
+
+        ctx["source"]["full_path"] = file.string();
+        ctx["source"]["name"] = file.filename().string();
+        ctx["source"]["line"] = e.line();
+    }
+}
+
+void to_json(inja::json &ctx, const element_context<source_location> &jc)
+{
+    const auto &e = jc.get();
+
+    if (!e.file().empty()) {
+        const std::filesystem::path file{e.file()};
+        std::string git_relative_path = file.string();
+        if (!e.file_relative().empty()) {
+#if _MSC_VER
+            if (file.is_absolute() && ctx.contains("git")) {
+#else
+            if (file.is_absolute() && ctx.contains("git")) {
+#endif
+                git_relative_path =
+                    std::filesystem::relative(file, ctx["git"]["toplevel"])
+                        .string();
+                ctx["element"]["source"]["path"] =
+                    util::path_to_url(git_relative_path);
+            }
+            else {
+                ctx["element"]["source"]["path"] = e.file();
+            }
+        }
+        else {
+            git_relative_path = "";
+            ctx["element"]["source"]["path"] = e.file();
+        }
+
+        ctx["element"]["source"]["full_path"] = file.string();
+        ctx["element"]["source"]["name"] = file.filename().string();
+        ctx["element"]["source"]["line"] = e.line();
+    }
+}
+
+void to_json(inja::json &ctx,
+    const diagram_context<common::model::decorated_element> &jc)
+{
+    if (const auto maybe_comment = jc.get().comment();
+        maybe_comment.has_value()) {
+        ctx["comment"] = maybe_comment.value();
+    }
+}
+
+void to_json(
+    inja::json &ctx, const diagram_context<common::model::diagram_element> &jc)
+{
+    to_json(ctx, jc.as<decorated_element>());
+
     ctx["name"] = jc.get().name();
     ctx["type"] = jc.get().type_name();
     ctx["alias"] = jc.get().alias();
@@ -31,9 +155,11 @@ void to_json(inja::json &ctx, const jinja_context<diagram_element> &jc)
     auto maybe_doxygen_link = jc.get().doxygen_link();
     if (maybe_doxygen_link)
         ctx["doxygen_link"] = maybe_doxygen_link.value();
+
+    to_json(ctx, jc.as<source_location>());
 }
 
-void to_json(inja::json &ctx, const jinja_context<element> &jc)
+void to_json(inja::json &ctx, const diagram_context<common::model::element> &jc)
 {
     to_json(ctx, jc.as<diagram_element>());
 
@@ -44,7 +170,7 @@ void to_json(inja::json &ctx, const jinja_context<element> &jc)
     }
 }
 
-void to_json(inja::json &ctx, const jinja_context<source_file> &jc)
+void to_json(inja::json &ctx, const diagram_context<source_file> &jc)
 {
     to_json(ctx, jc.as<diagram_element>());
 
@@ -57,6 +183,10 @@ std::optional<std::string> render_template(inja::Environment &env,
     const inja::json &context, const std::string &jinja_template)
 {
     std::optional<std::string> result;
+
+    if (jinja_template.empty())
+        return result;
+
     try {
         // Render the directive with template engine first
         auto rendered_template =
