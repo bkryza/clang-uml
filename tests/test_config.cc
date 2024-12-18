@@ -650,6 +650,67 @@ TEST_CASE("Test config glob matching - explicit regex")
         clanguml::util::contains(res, to_string(visitor_cc.make_preferred())));
 }
 
+TEST_CASE("Test config user_data")
+{
+    using clanguml::common::model::access_t;
+    using clanguml::common::model::relationship_t;
+    using clanguml::config::method_type;
+    using clanguml::util::contains;
+
+    auto cfg = clanguml::config::load("./test_config_data/user_data.yml");
+
+    CHECK(cfg.user_data()["name"] == "John Doe");
+    CHECK(cfg.user_data()["homepage"] == "jd.example.com");
+    CHECK(cfg.user_data()["copyright"]["license"] == "MIT");
+    CHECK(cfg.user_data()["copyright"]["year"] == 2024);
+    CHECK(cfg.user_data()["favorite_numbers"][0] == 1);
+    CHECK(cfg.user_data()["favorite_numbers"][1] == 3.1415);
+    CHECK(cfg.user_data()["skip_tests"] == true);
+
+    CHECK(cfg.diagrams.size() == 1);
+}
+
+TEST_CASE("Test config user_data_scalar")
+{
+    using clanguml::common::model::access_t;
+    using clanguml::common::model::relationship_t;
+    using clanguml::config::method_type;
+    using clanguml::util::contains;
+
+    auto cfg =
+        clanguml::config::load("./test_config_data/user_data_scalar.yml");
+
+    CHECK(cfg.user_data() == "my first diagram");
+
+    CHECK(cfg.diagrams.size() == 1);
+}
+
+TEST_CASE("Test config user_data_inherit")
+{
+    using clanguml::common::model::access_t;
+    using clanguml::common::model::relationship_t;
+    using clanguml::config::method_type;
+    using clanguml::util::contains;
+
+    auto cfg =
+        clanguml::config::load("./test_config_data/user_data_inherit.yml");
+
+    CHECK(cfg.user_data()["name"] == "John Doe");
+    CHECK(cfg.user_data()["homepage"] == "jd.example.com");
+    CHECK(cfg.user_data()["copyright"]["license"] == "MIT");
+    CHECK(cfg.user_data()["copyright"]["year"] == 2024);
+    CHECK(cfg.user_data()["favorite_numbers"][0] == 1);
+    CHECK(cfg.user_data()["favorite_numbers"][1] == 3.1415);
+    CHECK(cfg.user_data()["skip_tests"] == true);
+    CHECK(cfg.user_data()["skip_install"] == false);
+
+    CHECK(cfg.diagrams.size() == 1);
+    auto &def = *cfg.diagrams["class_main"];
+    CHECK(def.user_data()["footnote"] == "Do not do this at home");
+    CHECK(def.user_data()["name"] == "John Doe");
+    CHECK(def.user_data()["skip_tests"] == false);
+}
+
 ///
 /// Main test function
 ///

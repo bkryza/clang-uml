@@ -17,6 +17,8 @@
  */
 #pragma once
 
+#include <inja/inja.hpp>
+
 #include <map>
 #include <string>
 #include <utility>
@@ -38,6 +40,8 @@ void append_value(std::map<K, V> &l, const std::map<K, V> &r)
 {
     l.insert(r.begin(), r.end());
 }
+
+template <> void append_value(inja::json &l, const inja::json &r);
 
 /**
  * Possible option inheritance methods from top level to diagram level.

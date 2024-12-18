@@ -750,6 +750,7 @@ template <typename T> bool decode_diagram(const Node &node, T &rhs)
     get_option(node, rhs.generate_metadata);
     get_option(node, rhs.title);
     get_option(node, rhs.get_relative_to());
+    get_option(node, rhs.user_data);
 
     return true;
 }
@@ -1009,6 +1010,7 @@ template <> struct convert<config> {
         get_option(node, rhs.fold_repeated_activities);
         get_option(node, rhs.message_comment_width);
         get_option(node, rhs.type_aliases);
+        get_option(node, rhs.user_data);
 
         rhs.base_directory.set(node["__parent_path"].as<std::string>());
         get_option(node, rhs.get_relative_to());
@@ -1033,6 +1035,57 @@ template <> struct convert<config> {
             }
         }
 
+        return true;
+    }
+};
+
+template <> struct convert<inja::json> {
+    static bool parse_scalar(const YAML::Node &node, inja::json &rhs)
+    {
+        int i;
+        double d;
+        bool b;
+        std::string s;
+
+        if (YAML::convert<int>::decode(node, i)) {
+            rhs = i;
+            return true;
+        }
+        if (YAML::convert<double>::decode(node, d)) {
+            rhs = d;
+            return true;
+        }
+        if (YAML::convert<bool>::decode(node, b)) {
+            rhs = b;
+            return true;
+        }
+        if (YAML::convert<std::string>::decode(node, s)) {
+            rhs = s;
+            return true;
+        }
+
+        return false;
+    }
+
+    static bool decode(const Node &node, inja::json &rhs)
+    {
+        switch (node.Type()) {
+        case YAML::NodeType::Null:
+            break;
+        case YAML::NodeType::Scalar:
+            parse_scalar(node, rhs);
+            break;
+        case YAML::NodeType::Sequence:
+            for (auto &&array_element : node)
+                rhs.emplace_back(array_element.as<inja::json>());
+            break;
+        case YAML::NodeType::Map:
+            for (auto &&it : node)
+                rhs[it.first.as<std::string>()] = it.second.as<inja::json>();
+            break;
+        default:
+            break;
+        }
         return true;
     }
 };

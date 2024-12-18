@@ -323,6 +323,7 @@ void inheritable_diagram_options::inherit(
     generate_metadata.override(parent.generate_metadata);
     allow_empty_diagrams.override(parent.allow_empty_diagrams);
     type_aliases.override(parent.type_aliases);
+    user_data.override(parent.user_data);
 }
 
 std::string inheritable_diagram_options::simplify_template_type(
