@@ -135,6 +135,10 @@ template <typename C, typename D> void generator<C, D>::init_context()
         m_context["git"]["commit"] = config.git().commit;
         m_context["git"]["toplevel"] = config.git().toplevel;
     }
+
+    if (config.user_data) {
+        m_context["user_data"] = config.user_data();
+    }
 }
 
 template <typename C, typename D>
