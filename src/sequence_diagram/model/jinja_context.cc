@@ -37,4 +37,4 @@ void to_json(
     ctx["elements"] = elements;
 }
 
-} // namemodel::diagram_element:common::jinja
+} // namespace clanguml::common::jinja

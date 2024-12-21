@@ -1042,9 +1042,9 @@ template <> struct convert<config> {
 template <> struct convert<inja::json> {
     static bool parse_scalar(const YAML::Node &node, inja::json &rhs)
     {
-        int i;
-        double d;
-        bool b;
+        int i{};
+        double d{};
+        bool b{};
         std::string s;
 
         if (YAML::convert<int>::decode(node, i)) {

@@ -214,8 +214,8 @@ template <typename C, typename D> void generator<C, D>::init_env()
             args[0]->get<std::string>(), config.using_namespace());
 
         if (element_opt.has_value()) {
-            res = common::jinja::diagram_context<model::element>(
-                dynamic_cast<const model::element &>(element_opt.value()));
+            res = common::jinja::diagram_context<model::element>{
+                dynamic_cast<const model::element &>(element_opt.value())};
         }
 
         return res;
