@@ -23,9 +23,14 @@ namespace clanguml::config {
 template <> void append_value(inja::json &l, const inja::json &r)
 {
     if (r.is_object()) {
-        inja::json merged = r;
-        merged.merge_patch(l);
-        l = std::move(merged);
+        if (l.is_null()) {
+            l = r;
+        }
+        else {
+            inja::json merged = r;
+            merged.merge_patch(l);
+            l = std::move(merged);
+        }
     }
 }
 

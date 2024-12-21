@@ -52,6 +52,10 @@ void to_json(inja::json &ctx, const element_context<diagram_element> &jc)
         ctx["git"] = jc.diagram_context()["git"];
     }
 
+    if (jc.diagram_context().contains("user_data")) {
+        ctx["user_data"] = jc.diagram_context()["user_data"];
+    }
+
     to_json(ctx, jc.as<source_location>());
 }
 

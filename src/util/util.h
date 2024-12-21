@@ -183,6 +183,15 @@ std::unique_ptr<T> unique_pointer_cast(std::unique_ptr<S> &&p) noexcept
 }
 
 /**
+ * @brief Split string at first occurence of separator
+ * @param separator
+ * @param input
+ * @return Elements from
+ */
+std::optional<std::pair<std::string, std::string>> split_at_first(
+    const std::string &separator, const std::string &input);
+
+/**
  * @brief Split a string using delimiter
  *
  * Basic string split function, because C++ stdlib does not have one.
