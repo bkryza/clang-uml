@@ -22,6 +22,8 @@ namespace clanguml::common {
 namespace model {
 using nlohmann::json;
 
+using clanguml::common::generators::display_name_adapter;
+
 void to_json(nlohmann::json &j, const source_location &sl)
 {
     j = json{{"file", sl.file_relative()},
@@ -32,10 +34,9 @@ void to_json(nlohmann::json &j, const source_location &sl)
 void to_json(nlohmann::json &j, const element &c)
 {
     j = json{{"id", std::to_string(c.id().value())},
-        {"name", common::generators::json::render_name(c.name())},
+        {"name", display_name_adapter(c).name()},
         {"namespace", c.get_namespace().to_string()}, {"type", c.type_name()},
-        {"display_name",
-            common::generators::json::render_name(c.full_name(true))}};
+        {"display_name", display_name_adapter(c).full_name(true)}};
 
     if (const auto &comment = c.comment(); comment)
         j["comment"] = comment.value();
@@ -75,15 +76,4 @@ void to_json(nlohmann::json &j, const relationship &c)
         j["comment"] = comment.value();
 }
 } // namespace model
-
-namespace generators::json {
-
-std::string render_name(std::string name)
-{
-    util::replace_all(name, "##", "::");
-
-    return name;
-}
-
-} // namespace generators::json
 } // namespace clanguml::common

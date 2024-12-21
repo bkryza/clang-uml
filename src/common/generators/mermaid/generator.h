@@ -46,7 +46,6 @@ std::string to_mermaid(message_t r);
 
 std::string indent(unsigned level);
 
-std::string render_name(std::string name);
 std::string escape_name(std::string name, bool round_brackets = true);
 
 /**

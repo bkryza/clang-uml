@@ -70,5 +70,11 @@ TEST_CASE("t00004")
         REQUIRE(IsAggregation<Public>(src, "B", "B::AA", "aa"));
         REQUIRE(IsAggregation<Private>(
             src, "A::AA::AAA", "A::AA::Lights", "lights"));
+
+        REQUIRE(HasLink(src, "A::AA::AAA",
+            fmt::format("https://github.com/bkryza/clang-uml/blob/{}/tests/"
+                        "t00004/t00004.cc#L26",
+                clanguml::util::get_git_commit()),
+            "A::AA::AAA"));
     });
 }

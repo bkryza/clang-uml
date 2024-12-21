@@ -17,10 +17,11 @@
  */
 
 #include "class_diagram_generator.h"
-
+#include "common/generators/display_adapters.h"
 #include "util/error.h"
 
 namespace clanguml::class_diagram::model {
+using clanguml::common::generators::display_name_adapter;
 using nlohmann::json;
 
 void set_module(nlohmann::json &j, const common::model::element &e)
@@ -33,8 +34,8 @@ void set_module(nlohmann::json &j, const common::model::element &e)
 
 void to_json(nlohmann::json &j, const class_element &c)
 {
-    j["name"] = c.name();
-    j["type"] = common::generators::json::render_name(c.type());
+    j["name"] = display_name_adapter(c).name();
+    j["type"] = display_name_adapter(c).type();
     if (c.access() != common::model::access_t::kNone)
         j["access"] = to_string(c.access());
     if (!c.file().empty())
@@ -173,6 +174,7 @@ void to_json(nlohmann::json &j, const concept_ &c)
 } // namespace clanguml::class_diagram::model
 
 namespace clanguml::class_diagram::generators::json {
+using clanguml::common::generators::display_name_adapter;
 
 generator::generator(diagram_config &config, diagram_model &model)
     : common_generator<diagram_config, diagram_model>{config, model}
@@ -260,8 +262,7 @@ void generator::generate(const class_ &c, nlohmann::json &parent) const
 
     // Perform config dependent postprocessing on generated class
     if (!config().generate_fully_qualified_name())
-        object["display_name"] =
-            common::generators::json::render_name(c.full_name_no_ns());
+        object["display_name"] = display_name_adapter(c).full_name_no_ns();
 
     object["display_name"] =
         config().simplify_template_type(object["display_name"]);
@@ -285,8 +286,7 @@ void generator::generate(const enum_ &e, nlohmann::json &parent) const
     nlohmann::json object = e;
 
     if (!config().generate_fully_qualified_name())
-        object["display_name"] =
-            common::generators::json::render_name(e.full_name_no_ns());
+        object["display_name"] = display_name_adapter(e).full_name_no_ns();
 
     parent["elements"].push_back(std::move(object));
 }
@@ -296,8 +296,7 @@ void generator::generate(const concept_ &c, nlohmann::json &parent) const
     nlohmann::json object = c;
 
     if (!config().generate_fully_qualified_name())
-        object["display_name"] =
-            common::generators::json::render_name(c.full_name_no_ns());
+        object["display_name"] = display_name_adapter(c).full_name_no_ns();
 
     parent["elements"].push_back(std::move(object));
 }
@@ -308,8 +307,7 @@ void generator::generate(const objc_interface &c, nlohmann::json &parent) const
 
     // Perform config dependent postprocessing on generated class
     if (!config().generate_fully_qualified_name())
-        object["display_name"] =
-            common::generators::json::render_name(c.full_name_no_ns());
+        object["display_name"] = display_name_adapter(c).full_name_no_ns();
 
     object["display_name"] =
         config().simplify_template_type(object["display_name"]);

@@ -18,7 +18,11 @@
 
 #include "jinja_context.h"
 
+#include "common/generators/display_adapters.h"
+
 namespace clanguml::common::jinja {
+
+using clanguml::common::generators::display_name_adapter;
 
 using namespace clanguml::common::model;
 
@@ -27,8 +31,8 @@ void to_json(inja::json &ctx,
 {
     to_json(ctx, d.as<decorated_element>());
 
-    ctx["element"]["name"] = d.get().name();
-    ctx["element"]["type"] = d.get().type();
+    ctx["element"]["name"] = display_name_adapter(d.get()).name();
+    ctx["element"]["type"] = display_name_adapter(d.get()).type();
     ctx["element"]["access"] = to_string(d.get().access());
 
     if (d.diagram_context().contains("git")) {

@@ -25,9 +25,9 @@
 namespace clanguml::class_diagram::generators::mermaid {
 
 using clanguml::common::eid_t;
+using clanguml::common::generators::display_name_adapter;
 using clanguml::common::generators::mermaid::escape_name;
 using clanguml::common::generators::mermaid::indent;
-using clanguml::common::generators::mermaid::render_name;
 
 generator::generator(diagram_config &config, diagram_model &model)
     : common_generator<diagram_config, diagram_model>{config, model}
@@ -44,13 +44,13 @@ void generator::generate_diagram_type(std::ostream &ostr) const
 void generator::generate_alias(
     const common::model::element &c, std::ostream &ostr) const
 {
-    const auto full_name = c.full_name(true);
+    const auto full_name = display_name_adapter(c).full_name(true);
 
     assert(!full_name.empty());
 
     print_debug(c, ostr);
 
-    auto class_label = config().simplify_template_type(render_name(full_name));
+    auto class_label = config().simplify_template_type(full_name);
 
     ostr << indent(1) << "class " << c.alias() << "[\""
          << escape_name(class_label) << "\"]\n";
@@ -170,7 +170,8 @@ void generator::generate_method(
 
     print_debug(m, ostr);
 
-    std::string type{uns.relative(config().simplify_template_type(m.type()))};
+    std::string type{uns.relative(
+        config().simplify_template_type(display_name_adapter(m).type()))};
 
     ostr << indent(2) << mermaid_common::to_mermaid(m.access()) << m.name();
 
@@ -220,7 +221,7 @@ void generator::generate_method(
         ostr << fmt::format("[{}] ", fmt::join(method_mods, ","));
     }
 
-    ostr << escape_name(render_name(type));
+    ostr << escape_name(type);
 
     if (m.is_pure_virtual())
         ostr << "*";
@@ -239,7 +240,8 @@ void generator::generate_method(
 
     print_debug(m, ostr);
 
-    std::string type{uns.relative(config().simplify_template_type(m.type()))};
+    std::string type{uns.relative(
+        config().simplify_template_type(display_name_adapter(m).type()))};
 
     ostr << indent(2) << mermaid_common::to_mermaid(m.access()) << m.name();
 
@@ -273,7 +275,7 @@ void generator::generate_method(
         ostr << fmt::format("[{}] ", fmt::join(method_mods, ","));
     }
 
-    ostr << escape_name(render_name(type));
+    ostr << escape_name(type);
 
     if (m.is_static())
         ostr << "$";
@@ -289,8 +291,8 @@ void generator::generate_member(
 
     ostr << indent(2) << mermaid_common::to_mermaid(m.access()) << m.name()
          << " : "
-         << escape_name(uns.relative(
-                config().simplify_template_type(render_name(m.type()))));
+         << escape_name(uns.relative(config().simplify_template_type(
+                display_name_adapter(m).type())));
 }
 
 void generator::generate_member(
@@ -303,8 +305,8 @@ void generator::generate_member(
 
     ostr << indent(2) << mermaid_common::to_mermaid(m.access()) << m.name()
          << " : "
-         << escape_name(uns.relative(
-                config().simplify_template_type(render_name(m.type()))));
+         << escape_name(uns.relative(config().simplify_template_type(
+                display_name_adapter(m).type())));
 }
 
 void generator::generate(const concept_ &c, std::ostream &ostr) const

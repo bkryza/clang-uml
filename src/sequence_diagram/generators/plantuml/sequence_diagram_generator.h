@@ -133,14 +133,6 @@ private:
     std::string generate_alias(const model::participant &participant) const;
 
     /**
-     * @brief Escape the symbols in the name for PlantUML
-     *
-     * @param name Full participant name
-     * @return Escaped name
-     */
-    std::string render_name(std::string name) const;
-
-    /**
      * @brief Generate message call note
      *
      * @param ostr Output stream

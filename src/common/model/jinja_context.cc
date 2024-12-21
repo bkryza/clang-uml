@@ -18,7 +18,11 @@
 
 #include "jinja_context.h"
 
+#include "common/generators/display_adapters.h"
+
 namespace clanguml::common::jinja {
+
+using clanguml::common::generators::display_name_adapter;
 
 using namespace clanguml::common::model;
 
@@ -35,10 +39,11 @@ void to_json(inja::json &ctx, const element_context<diagram_element> &jc)
 {
     to_json(ctx, jc.as<decorated_element>());
 
-    ctx["element"]["name"] = jc.get().name();
+    ctx["element"]["name"] = display_name_adapter(jc.get()).name();
     ctx["element"]["type"] = jc.get().type_name();
     ctx["element"]["alias"] = jc.get().alias();
-    ctx["element"]["full_name"] = jc.get().full_name(false);
+    ctx["element"]["full_name"] =
+        display_name_adapter(jc.get()).full_name(false);
     auto maybe_doxygen_link = jc.get().doxygen_link();
     if (maybe_doxygen_link)
         ctx["element"]["doxygen_link"] = maybe_doxygen_link.value();
@@ -148,10 +153,10 @@ void to_json(
 {
     to_json(ctx, jc.as<decorated_element>());
 
-    ctx["name"] = jc.get().name();
+    ctx["name"] = display_name_adapter(jc.get()).name();
     ctx["type"] = jc.get().type_name();
     ctx["alias"] = jc.get().alias();
-    ctx["full_name"] = jc.get().full_name(false);
+    ctx["full_name"] = display_name_adapter(jc.get()).full_name(false);
     auto maybe_doxygen_link = jc.get().doxygen_link();
     if (maybe_doxygen_link)
         ctx["doxygen_link"] = maybe_doxygen_link.value();

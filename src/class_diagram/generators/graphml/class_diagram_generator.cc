@@ -23,6 +23,7 @@
 namespace clanguml::class_diagram::generators::graphml {
 
 using clanguml::common::to_string;
+using clanguml::common::generators::display_name_adapter;
 
 generator::generator(diagram_config &config, diagram_model &model)
     : common_generator<diagram_config, diagram_model>{config, model}
@@ -108,14 +109,13 @@ void generator::generate(const class_ &c, graphml_node_t &parent) const
 
     std::string full_name;
     if (!config().generate_fully_qualified_name())
-        full_name = c.full_name_no_ns();
+        full_name = display_name_adapter(c).full_name_no_ns();
     else
-        full_name = c.full_name(true);
+        full_name = display_name_adapter(c).full_name(true);
 
     auto class_node = make_node(parent, node_ids_.add(c.alias()));
     add_data(class_node, "type", c.type_name());
-    add_cdata(class_node, "name",
-        config().simplify_template_type(render_name(full_name)));
+    add_cdata(class_node, "name", config().simplify_template_type(full_name));
     if (c.is_abstract()) {
         add_data(class_node, "stereotype", "abstract");
     }
@@ -133,13 +133,13 @@ void generator::generate(const enum_ &e, graphml_node_t &parent) const
 
     std::string full_name;
     if (!config().generate_fully_qualified_name())
-        full_name = e.name();
+        full_name = display_name_adapter(e).name();
     else
-        full_name = e.full_name(true);
+        full_name = display_name_adapter(e).full_name(true);
 
     auto node = make_node(parent, node_ids_.add(e.alias()));
     add_data(node, "type", e.type_name());
-    add_cdata(node, "name", render_name(full_name));
+    add_cdata(node, "name", full_name);
     generate_link(node, e);
 }
 
@@ -149,13 +149,13 @@ void generator::generate(const concept_ &c, graphml_node_t &parent) const
 
     std::string full_name;
     if (!config().generate_fully_qualified_name())
-        full_name = c.full_name_no_ns();
+        full_name = display_name_adapter(c).full_name_no_ns();
     else
-        full_name = c.full_name(true);
+        full_name = display_name_adapter(c).full_name(true);
 
     auto node = make_node(parent, node_ids_.add(c.alias()));
     add_data(node, "type", c.type_name());
-    add_cdata(node, "name", render_name(full_name));
+    add_cdata(node, "name", full_name);
     generate_link(node, c);
 }
 
@@ -165,7 +165,7 @@ void generator::generate(const objc_interface &c, graphml_node_t &parent) const
 
     auto node = make_node(parent, node_ids_.add(c.alias()));
     add_data(node, "type", c.type_name());
-    add_data(node, "name", render_name(c.full_name(true)));
+    add_data(node, "name", display_name_adapter(c).full_name(true));
     generate_link(node, c);
 }
 

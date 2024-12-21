@@ -24,6 +24,8 @@
 
 namespace clanguml::class_diagram::generators::plantuml {
 
+using clanguml::common::generators::display_name_adapter;
+
 generator::generator(diagram_config &config, diagram_model &model)
     : common_generator<diagram_config, diagram_model>{config, model}
     , class_diagram::generators::text_diagram_strategy<generator>{
@@ -66,13 +68,6 @@ void generator::generate_link(
     ostr << "]]]";
 }
 
-std::string generator::render_name(std::string name) const
-{
-    util::replace_all(name, "##", "::");
-
-    return name;
-}
-
 void generator::generate_alias(const class_ &c, std::ostream &ostr) const
 {
     std::string class_type{"class"};
@@ -81,16 +76,15 @@ void generator::generate_alias(const class_ &c, std::ostream &ostr) const
 
     std::string full_name;
     if (!config().generate_fully_qualified_name())
-        full_name = c.full_name_no_ns();
+        full_name = display_name_adapter(c).full_name_no_ns();
     else
-        full_name = c.full_name(true);
+        full_name = display_name_adapter(c).full_name(true);
 
     assert(!full_name.empty());
 
     print_debug(c, ostr);
 
-    ostr << class_type << " \""
-         << config().simplify_template_type(render_name(full_name));
+    ostr << class_type << " \"" << config().simplify_template_type(full_name);
 
     ostr << "\" as " << c.alias() << '\n';
 
@@ -103,9 +97,9 @@ void generator::generate_alias(const enum_ &e, std::ostream &ostr) const
     print_debug(e, ostr);
 
     if (!config().generate_fully_qualified_name())
-        ostr << "enum" << " \"" << e.name();
+        ostr << "enum" << " \"" << display_name_adapter(e).name();
     else
-        ostr << "enum" << " \"" << render_name(e.full_name(true));
+        ostr << "enum" << " \"" << display_name_adapter(e).full_name(true);
 
     ostr << "\" as " << e.alias() << '\n';
 
@@ -120,7 +114,7 @@ void generator::generate_alias(const concept_ &c, std::ostream &ostr) const
     if (!config().generate_fully_qualified_name())
         ostr << "class" << " \"" << c.full_name_no_ns();
     else
-        ostr << "class" << " \"" << render_name(c.full_name(true));
+        ostr << "class" << " \"" << display_name_adapter(c).full_name(true);
 
     ostr << "\" as " << c.alias() << '\n';
 
@@ -138,7 +132,7 @@ void generator::generate_alias(
     else
         ostr << "protocol";
 
-    ostr << " \"" << render_name(e.full_name(true));
+    ostr << " \"" << display_name_adapter(e).full_name(true);
 
     ostr << "\" as " << e.alias() << '\n';
 
@@ -337,9 +331,10 @@ void generator::generate_member(
     if (m.is_static())
         ostr << "{static} ";
 
-    ostr << plantuml_common::to_plantuml(m.access()) << m.name() << " : "
-         << render_name(
-                uns.relative(config().simplify_template_type(m.type())));
+    ostr << plantuml_common::to_plantuml(m.access())
+         << display_name_adapter(m).name() << " : "
+         << uns.relative(config().simplify_template_type(
+                display_name_adapter(m).type()));
 
     if (config().generate_links) {
         generate_link(ostr, m);
@@ -512,9 +507,10 @@ void generator::generate_member(
     if (m.is_static())
         ostr << "{static} ";
 
-    ostr << plantuml_common::to_plantuml(m.access()) << m.name() << " : "
-         << render_name(
-                uns.relative(config().simplify_template_type(m.type())));
+    ostr << plantuml_common::to_plantuml(m.access())
+         << display_name_adapter(m).name() << " : "
+         << uns.relative(config().simplify_template_type(
+                display_name_adapter(m).type()));
 
     if (config().generate_links) {
         generate_link(ostr, m);

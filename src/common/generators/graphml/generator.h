@@ -46,8 +46,6 @@ using clanguml::common::model::relationship_t;
 using graphml_t = pugi::xml_document;
 using graphml_node_t = pugi::xml_node;
 
-std::string render_name(std::string name);
-
 /**
  * The types of graph nodes in the GraphML XML document
  */

@@ -248,9 +248,6 @@ public:
     void start_package(const package &p, std::ostream &ostr) const;
 
     void end_package(const package &p, std::ostream &ostr) const;
-
-private:
-    std::string render_name(std::string name) const;
 };
 
 } // namespace plantuml

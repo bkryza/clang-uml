@@ -166,4 +166,5 @@ private:
     std::optional<std::string> module_;
     bool module_private_{false};
 };
+
 } // namespace clanguml::common::model

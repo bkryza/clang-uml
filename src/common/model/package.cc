@@ -42,6 +42,9 @@ void package::set_deprecated(bool deprecated) { is_deprecated_ = deprecated; }
 
 std::optional<std::string> package::doxygen_link() const
 {
+    if (get_namespace().type() != path_type::kNamespace)
+        return std::nullopt;
+
     auto name = full_name(false);
     util::replace_all(name, "_", "__");
     util::replace_all(name, "::", "_1_1");

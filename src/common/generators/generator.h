@@ -20,6 +20,7 @@
 #include "common/model/diagram_element.h"
 #include "common/model/jinja_context.h"
 #include "common/model/source_location.h"
+#include "display_adapters.h"
 #include "util/error.h"
 #include "util/util.h"
 
