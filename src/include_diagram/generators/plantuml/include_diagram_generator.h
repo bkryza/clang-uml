@@ -76,10 +76,16 @@ public:
     /**
      * @brief Generate diagram element
      *
-     * @param e Source file diagram element
+     * @param f Source file diagram element
      * @param parent Output stream
      */
-    void generate(const source_file &e, std::ostream &ostr) const;
+    void generate(const source_file &f, std::ostream &ostr) const;
+
+private:
+    void generate_with_packages(const source_file &f, std::ostream &ostr) const;
+
+    void generate_without_packages(
+        const source_file &f, std::ostream &ostr) const;
 };
 
 } // namespace clanguml::include_diagram::generators::plantuml

@@ -54,6 +54,17 @@ void generator::generate_relationships(
 
 void generator::generate(const source_file &f, std::ostream &ostr) const
 {
+    if (config().generate_packages && !config().generate_packages()) {
+        generate_without_packages(f, ostr);
+    }
+    else {
+        generate_with_packages(f, ostr);
+    }
+}
+
+void generator::generate_with_packages(
+    const source_file &f, std::ostream &ostr) const
+{
     if (f.type() == common::model::source_file_t::kDirectory) {
         LOG_DBG("Generating directory {}", f.name());
 
@@ -73,6 +84,31 @@ void generator::generate(const source_file &f, std::ostream &ostr) const
         LOG_DBG("Generating file {}", f.name());
 
         ostr << "file \"" << f.name() << "\" as " << f.alias();
+
+        if (config().generate_links) {
+            generate_link(ostr, f);
+        }
+
+        ostr << '\n';
+
+        m_generated_aliases.emplace(f.alias());
+    }
+}
+
+void generator::generate_without_packages(
+    const source_file &f, std::ostream &ostr) const
+{
+    LOG_DBG("Generating file {}", f.name());
+
+    if (f.type() == common::model::source_file_t::kDirectory) {
+        util::for_each(f, [this, &ostr](const auto &file) {
+            generate(dynamic_cast<const source_file &>(*file), ostr);
+        });
+
+        m_generated_aliases.emplace(f.alias());
+    }
+    else {
+        ostr << "file \"" << f.file_relative() << "\" as " << f.alias();
 
         if (config().generate_links) {
             generate_link(ostr, f);

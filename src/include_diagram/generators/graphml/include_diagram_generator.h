@@ -66,6 +66,13 @@ public:
     void generate(const source_file &e, graphml_node_t &parent) const;
 
     void generate_top_level_elements(graphml_node_t &parent) const override;
+
+private:
+    void generate_with_packages(
+        const source_file &f, graphml_node_t &parent) const;
+
+    void generate_without_packages(
+        const source_file &f, graphml_node_t &parent) const;
 };
 
 } // namespace clanguml::include_diagram::generators::graphml

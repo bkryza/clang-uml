@@ -80,6 +80,16 @@ void get_option(const Node &node, clanguml::config::option<T> &option)
         }
 }
 
+template <typename T>
+void get_option(
+    const Node &node, clanguml::config::option<T> &option, T default_override)
+{
+    get_option(node, option);
+
+    if (!option.is_declared)
+        option.set(default_override);
+}
+
 template <>
 void get_option<clanguml::common::model::namespace_>(const Node &node,
     clanguml::config::option<clanguml::common::model::namespace_> &option)
@@ -846,6 +856,7 @@ template <> struct convert<include_diagram> {
 
         get_option(node, rhs.layout);
         get_option(node, rhs.generate_system_headers);
+        get_option(node, rhs.generate_packages, true);
 
         get_option(node, rhs.get_relative_to());
 

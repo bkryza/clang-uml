@@ -3,6 +3,7 @@
 <!-- toc -->
 
 * [Tracking system headers directly included by project sources](#tracking-system-headers-directly-included-by-project-sources)
+* [Generating include diagrams without directory packages](#generating-include-diagrams-without-directory-packages)
 
 <!-- tocstop -->
 
@@ -58,3 +59,16 @@ source files (matched by `glob`) and not their dependencies, for example:
 Please note that generating include diagram, which contains third party and
 system library headers will result in a huge diagram that is unlikely to
 be useful.
+
+## Generating include diagrams without directory packages
+By default, `clang-uml` will generate include diagram with packages representing
+respective subdirectories in the project, and the source and header nodes are
+represented with only filenames without any path.
+
+It is however possible to generate the include diagram without the packages,
+where each node contains the entire path relative to the project root. To enable
+this simply set:
+
+```yaml
+generate_packages: false
+```

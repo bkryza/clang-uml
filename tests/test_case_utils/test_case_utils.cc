@@ -703,6 +703,10 @@ pugi::xml_node get_file_node(const graphml_t &d, const pugi::xml_node &parent,
 {
     assert(path_fs.is_relative());
 
+    if (!d.generate_packages) {
+        return get_element(d, parent, QualifiedName{path_fs.string()});
+    }
+
     std::filesystem::path path_parent_fs{path_fs.parent_path()};
 
     if (path_parent_fs.empty())

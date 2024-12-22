@@ -49,6 +49,17 @@ void generator::generate_relationships(
 
 void generator::generate(const source_file &f, nlohmann::json &parent) const
 {
+    if (config().generate_packages && !config().generate_packages()) {
+        generate_without_packages(f, parent);
+    }
+    else {
+        generate_with_packages(f, parent);
+    }
+}
+
+void generator::generate_with_packages(
+    const source_file &f, nlohmann::json &parent) const
+{
     nlohmann::json j;
     j["id"] = std::to_string(f.id().value());
     j["name"] = f.name();
@@ -71,6 +82,36 @@ void generator::generate(const source_file &f, nlohmann::json &parent) const
     }
     else {
         LOG_DBG("Generating file {}", f.name());
+
+        j["type"] = "file";
+        j["file_kind"] = to_string(f.type());
+        if (f.type() == common::model::source_file_t::kHeader) {
+            j["is_system"] = f.is_system_header();
+        }
+
+        parent["elements"].push_back(std::move(j));
+    }
+}
+
+void generator::generate_without_packages(
+    const source_file &f, nlohmann::json &parent) const
+{
+    nlohmann::json j;
+    j["id"] = std::to_string(f.id().value());
+    j["name"] = f.file_relative();
+    auto display_name = f.full_name(false);
+#if defined(_MSC_VER)
+    util::replace_all(display_name, "\\", "/");
+#endif
+    j["display_name"] = std::move(display_name);
+
+    if (f.type() == common::model::source_file_t::kDirectory) {
+        util::for_each(f, [this, &parent](const auto &file) {
+            generate(dynamic_cast<const source_file &>(*file), parent);
+        });
+    }
+    else {
+        LOG_DBG("Generating file {}", f.file_relative());
 
         j["type"] = "file";
         j["file_kind"] = to_string(f.type());
