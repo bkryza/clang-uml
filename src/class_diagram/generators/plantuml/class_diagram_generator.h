@@ -22,6 +22,7 @@
 #include "class_diagram/model/concept.h"
 #include "class_diagram/model/diagram.h"
 #include "class_diagram/model/enum.h"
+#include "class_diagram/model/jinja_context.h"
 #include "class_diagram/visitor/translation_unit_visitor.h"
 #include "common/generators/nested_element_stack.h"
 #include "common/generators/plantuml/generator.h"
@@ -247,9 +248,6 @@ public:
     void start_package(const package &p, std::ostream &ostr) const;
 
     void end_package(const package &p, std::ostream &ostr) const;
-
-private:
-    std::string render_name(std::string name) const;
 };
 
 } // namespace plantuml

@@ -43,10 +43,12 @@ TEST_CASE("t00050")
             REQUIRE(HasNote(src, "G", "right"));
         },
         [](const plantuml_t &src) {
+            REQUIRE(HasNote(src, "A", "top"));
             REQUIRE(!HasNote(src, "E", "bottom"));
             REQUIRE(!HasNote(src, "NoComment", "top"));
         },
         [](const mermaid_t &src) {
+            REQUIRE(HasNote(src, "A", "top"));
             REQUIRE(!HasNote(src, "E", "bottom"));
             REQUIRE(!HasNote(src, "NoComment", "top"));
         });

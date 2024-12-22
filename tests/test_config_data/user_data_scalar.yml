@@ -1,0 +1,9 @@
+compilation_database_dir: debug
+user_data: my first diagram
+diagrams:
+  class_main:
+    type: class
+    glob:
+      - src/**/*.cc
+      - src/**/*.h
+    using_namespace: clanguml

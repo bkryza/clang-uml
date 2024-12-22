@@ -158,13 +158,6 @@ public:
         const namespace_ &ns, const std::string &name) const;
 
     /**
-     * Return diagrams JSON context for inja templates.
-     *
-     * @return JSON context.
-     */
-    virtual inja::json context() const = 0;
-
-    /**
      * @brief Check whether the diagram is empty
      *
      * @return True, if diagram is empty

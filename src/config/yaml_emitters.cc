@@ -277,6 +277,47 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const glob_t &g)
     return out;
 }
 
+YAML::Emitter &operator<<(YAML::Emitter &out, const inja::json &j)
+{
+    if (j.empty() || j.is_null()) {
+        out << YAML::Null;
+    }
+    else if (j.is_boolean()) {
+        out << j.get<bool>();
+    }
+    else if (j.is_number_integer()) {
+        out << j.get<long long>();
+    }
+    else if (j.is_number_unsigned()) {
+        out << j.get<unsigned long long>();
+    }
+    else if (j.is_number_float()) {
+        out << j.get<double>();
+    }
+    else if (j.is_string()) {
+        out << j.get<std::string>();
+    }
+    else if (j.is_array()) {
+        out << YAML::BeginSeq;
+        for (const auto &element : j) {
+            out << element;
+        }
+        out << YAML::EndSeq;
+    }
+    else if (j.is_object()) {
+        out << YAML::BeginMap;
+        for (auto it = j.begin(); it != j.end(); ++it) {
+            out << YAML::Key << it.key() << YAML::Value;
+            out << it.value();
+        }
+        out << YAML::EndMap;
+    }
+    else {
+        out << YAML::Null;
+    }
+    return out;
+}
+
 YAML::Emitter &operator<<(YAML::Emitter &out, const config &c)
 {
     out << YAML::BeginMap;
@@ -330,6 +371,7 @@ YAML::Emitter &operator<<(
     out << c.using_namespace;
     out << c.using_module;
     out << c.generate_metadata;
+    out << c.user_data;
 
     if (const auto *cd = dynamic_cast<const class_diagram *>(&c);
         cd != nullptr) {

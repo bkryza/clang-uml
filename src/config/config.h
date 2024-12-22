@@ -19,6 +19,7 @@
 
 #include "common/model/enums.h"
 #include "common/types.h"
+#include "inja/inja.hpp"
 #include "option.h"
 #include "util/util.h"
 
@@ -664,6 +665,7 @@ struct inheritable_diagram_options {
     option<bool> debug_mode{"debug_mode", false};
     option<bool> generate_metadata{"generate_metadata", true};
     option<bool> allow_empty_diagrams{"allow_empty_diagrams", false};
+    option<inja::json> user_data{"user_data", {}, option_inherit_mode::kAppend};
 
 protected:
     // This is the relative path with respect to the `base_directory`,
@@ -896,6 +898,8 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const package_diagram &c);
 YAML::Emitter &operator<<(YAML::Emitter &out, const layout_hint &c);
 
 YAML::Emitter &operator<<(YAML::Emitter &out, const element_filter_t &ef);
+
+YAML::Emitter &operator<<(YAML::Emitter &out, const inja::json &ef);
 
 #ifdef _MSC_VER
 YAML::Emitter &operator<<(YAML::Emitter &out, const std::filesystem::path &p);

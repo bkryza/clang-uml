@@ -58,23 +58,6 @@ std::string diagram::to_alias(const eid_t id) const
     return {};
 }
 
-inja::json diagram::context() const
-{
-    inja::json ctx;
-    ctx["name"] = name();
-    ctx["type"] = "package";
-
-    inja::json::array_t elements{};
-
-    for (const auto &p : packages()) {
-        elements.emplace_back(p.get().context());
-    }
-
-    ctx["elements"] = elements;
-
-    return ctx;
-}
-
 void diagram::apply_filter()
 {
     // First find all element ids which should be removed

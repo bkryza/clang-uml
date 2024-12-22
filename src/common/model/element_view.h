@@ -89,6 +89,13 @@ public:
             elements_.end());
     }
 
+    template <typename F> void for_each(F &&f) const
+    {
+        for (const auto &e : elements_) {
+            f(e.get());
+        }
+    }
+
 private:
     reference_vector<T> elements_;
 };
@@ -102,6 +109,11 @@ template <typename... Ts> struct element_views : public element_view<Ts>... {
     template <typename F> void for_all_elements(F &&f) const
     {
         (f(element_view<Ts>::view()), ...);
+    }
+
+    template <typename T> const element_view<T> &view() const
+    {
+        return dynamic_cast<const element_view<T> &>(*this);
     }
 
     /**

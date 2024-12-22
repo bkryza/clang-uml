@@ -20,19 +20,14 @@
 
 namespace clanguml::sequence_diagram::generators::mermaid {
 
+using clanguml::common::generators::display_name_adapter;
 using clanguml::common::model::message_t;
 using clanguml::config::location_t;
 using clanguml::sequence_diagram::model::message;
+
 using namespace clanguml::util;
 
 using clanguml::common::generators::mermaid::indent;
-
-std::string render_participant_name(std::string name)
-{
-    util::replace_all(name, "##", "::");
-
-    return name;
-}
 
 std::string render_message_text(std::string text)
 {
@@ -414,11 +409,11 @@ void generator::generate_participant(
 
         auto participant_name =
             config().using_namespace().relative(config().simplify_template_type(
-                class_participant.full_name(false)));
+                display_name_adapter(class_participant).full_name(false)));
         common::ensure_lambda_type_is_relative(config(), participant_name);
 
         ostr << indent(1) << "participant " << class_participant.alias()
-             << " as " << render_participant_name(participant_name);
+             << " as " << participant_name;
 
         ostr << '\n';
 
@@ -441,12 +436,11 @@ void generator::generate_participant(
 
         auto participant_name =
             config().using_namespace().relative(config().simplify_template_type(
-                class_participant.full_name(false)));
+                display_name_adapter(class_participant).full_name(false)));
         common::ensure_lambda_type_is_relative(config(), participant_name);
 
         ostr << indent(1) << "participant " << class_participant.alias()
-             << " as " << "<< ObjC Interface >><br>"
-             << render_participant_name(participant_name);
+             << " as " << "<< ObjC Interface >><br>" << participant_name;
 
         ostr << '\n';
 
@@ -475,7 +469,7 @@ void generator::generate_participant(
 
         ostr << indent(1) << "participant "
              << fmt::format("C_{:022}", file_id.value()) << " as "
-             << render_participant_name(participant_name);
+             << participant_name;
         ostr << '\n';
 
         generated_participants_.emplace(file_id);
@@ -483,8 +477,9 @@ void generator::generate_participant(
     else {
         print_debug(participant, ostr);
 
-        auto participant_name = config().using_namespace().relative(
-            config().simplify_template_type(participant.full_name(false)));
+        auto participant_name =
+            config().using_namespace().relative(config().simplify_template_type(
+                display_name_adapter(participant).full_name(false)));
         common::ensure_lambda_type_is_relative(config(), participant_name);
 
         ostr << indent(1) << "participant " << participant.alias() << " as ";
@@ -502,7 +497,7 @@ void generator::generate_participant(
                 ostr << "<< CUDA Device >><br>";
         }
 
-        ostr << render_participant_name(participant_name);
+        ostr << participant_name;
         ostr << '\n';
 
         generated_participants_.emplace(participant_id);

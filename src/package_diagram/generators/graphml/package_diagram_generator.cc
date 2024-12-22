@@ -48,7 +48,7 @@ void generator::generate(const package &p, graphml_node_t &parent) const
         auto package_node = make_subgraph(
             parent, p.alias(), p.name(), to_string(config().package_type()));
 
-        add_url(package_node, p);
+        generate_link(package_node, p);
 
         if (p.is_deprecated())
             add_data(package_node, "stereotype", "deprecated");

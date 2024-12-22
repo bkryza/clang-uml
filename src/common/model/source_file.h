@@ -169,22 +169,6 @@ public:
         return res.lexically_normal();
     }
 
-    /**
-     * Return inja context for this element.
-     *
-     * @return Inja context.
-     */
-    inja::json context() const override
-    {
-        inja::json ctx = diagram_element::context();
-
-        std::filesystem::path fullNamePath{ctx["full_name"].get<std::string>()};
-        fullNamePath.make_preferred();
-        ctx["full_name"] = fullNamePath.string();
-
-        return ctx;
-    }
-
 protected:
     /**
      * Return the full path string, i.e. parent path and elements name.

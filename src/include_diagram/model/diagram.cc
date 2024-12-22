@@ -115,24 +115,6 @@ diagram::get_with_namespace(
     return element_opt;
 }
 
-inja::json diagram::context() const
-{
-    inja::json ctx;
-    ctx["name"] = name();
-    ctx["type"] = "include";
-
-    inja::json::array_t elements{};
-
-    // Add files and directories
-    for (const auto &f : files()) {
-        elements.emplace_back(f.get().context());
-    }
-
-    ctx["elements"] = elements;
-
-    return ctx;
-}
-
 void diagram::apply_filter()
 {
     // First find all element ids which should be removed

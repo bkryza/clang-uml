@@ -20,13 +20,6 @@
 
 namespace clanguml::common::generators::graphml {
 
-std::string render_name(std::string name)
-{
-    util::replace_all(name, "##", "::");
-
-    return name;
-}
-
 std::string to_string(const property_type t)
 {
     switch (t) {

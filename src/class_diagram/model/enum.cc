@@ -60,6 +60,7 @@ std::optional<std::string> enum_::doxygen_link() const
 {
     auto name = name_and_ns();
     util::replace_all(name, "_", "__");
+    util::replace_all(name, "##", "::");
     util::replace_all(name, "::", "_1_1");
     return fmt::format("enum{}.html", name);
 }

@@ -40,15 +40,6 @@ std::string class_element::type() const { return type_; }
 
 void class_element::set_type(const std::string &type) { type_ = type; }
 
-inja::json class_element::context() const
-{
-    inja::json ctx;
-    ctx["name"] = name();
-    ctx["type"] = type();
-    ctx["access"] = to_string(access());
-    return ctx;
-}
-
 void class_element::set_qualified_name(const std::string &qn)
 {
     qualified_name_ = qn;

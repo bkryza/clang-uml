@@ -187,6 +187,7 @@ types:
         # Common options
         #
         __parent_path: !optional string
+        user_data: !optional any
         comment_parser: !optional comment_parser_t
         debug_mode: !optional bool
         filter_mode: !optional filter_mode_t
@@ -233,6 +234,7 @@ types:
         # Common options
         #
         __parent_path: !optional string
+        user_data: !optional any
         comment_parser: !optional comment_parser_t
         debug_mode: !optional bool
         exclude: !optional filter_t
@@ -276,6 +278,7 @@ types:
         #
         # Common options
         #
+        user_data: !optional any
         __parent_path: !optional string
         comment_parser: !optional comment_parser_t
         debug_mode: !optional bool
@@ -313,6 +316,7 @@ types:
         # Common options
         #
         __parent_path: !optional string
+        user_data: !optional any
         comment_parser: !optional comment_parser_t
         debug_mode: !optional bool
         filter_mode: !optional filter_mode_t
@@ -363,6 +367,7 @@ root:
     allow_empty_diagrams: !optional bool
     diagram_templates: !optional diagram_templates_t
     diagrams: !required map_t<string;diagram_t>
+    user_data: !optional any
     #
     # Common options
     #

@@ -9,7 +9,7 @@ source:
   url: "{{PKG_SOURCE}}"
 
 build:
-  binary_relocation: false
+  binary_relocation: true
   script_env:
     - PKG_VERSION
     - GIT_VERSION={{PKG_VERSION}}

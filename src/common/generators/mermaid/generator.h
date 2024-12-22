@@ -33,7 +33,9 @@
 
 namespace clanguml::common::generators::mermaid {
 
+using clanguml::common::jinja::element_context;
 using clanguml::common::model::access_t;
+using clanguml::common::model::diagram_element;
 using clanguml::common::model::element;
 using clanguml::common::model::message_t;
 using clanguml::common::model::relationship_t;
@@ -44,7 +46,6 @@ std::string to_mermaid(message_t r);
 
 std::string indent(unsigned level);
 
-std::string render_name(std::string name);
 std::string escape_name(std::string name, bool round_brackets = true);
 
 /**
@@ -203,72 +204,33 @@ template <typename C, typename D>
 template <typename E>
 void generator<C, D>::generate_link(std::ostream &ostr, const E &e) const
 {
-    if (e.file().empty() && e.file_relative().empty())
+    const auto maybe_link = generator<C, D>::render_link(e);
+    const auto maybe_tooltip = generator<C, D>::render_tooltip(e);
+
+    if (!maybe_link && !maybe_tooltip)
         return;
 
-    auto maybe_link_pattern = generators::generator<C, D>::get_link_pattern(e);
+    if (maybe_link) {
+        ostr << indent(1) << "click " << e.alias() << " href \"";
 
-    if (!maybe_link_pattern)
-        return;
+        if (!maybe_link || maybe_link->empty())
+            ostr << " ";
+        else
+            ostr << *maybe_link;
 
-    const auto &[link_prefix, link_pattern] = *maybe_link_pattern;
-
-    ostr << indent(1) << "click " << e.alias() << " href \"";
-    try {
-        auto ec = generators::generator<C, D>::element_context(e);
-        common::generators::make_context_source_relative(ec, link_prefix);
-        std::string link{};
-        if (!link_pattern.empty()) {
-            link = generators::generator<C, D>::env().render(
-                std::string_view{link_pattern}, ec);
-        }
-        if (link.empty())
-            link = " ";
-        ostr << link;
+        ostr << "\"";
     }
-    catch (const inja::json::parse_error &e) {
-        LOG_ERROR("Failed to parse Jinja template: {}", link_pattern);
-        ostr << " ";
+
+    if (maybe_tooltip && !maybe_tooltip->empty()) {
+        auto tooltip = *maybe_tooltip;
+        ostr << " \"";
+
+        util::replace_all(tooltip, "\"", "&bdquo;");
+        ostr << tooltip;
+
+        ostr << "\"";
     }
-    catch (const inja::json::exception &e) {
-        LOG_ERROR("Failed to render comment directive: \n{}\n due to: {}",
-            link_pattern, e.what());
-        ostr << " ";
-    }
-    ostr << "\"";
 
-    auto maybe_tooltip_pattern =
-        generators::generator<C, D>::get_tooltip_pattern(e);
-
-    if (maybe_tooltip_pattern) {
-        const auto &[tooltip_prefix, tooltip_pattern] = *maybe_tooltip_pattern;
-
-        if (!tooltip_pattern.empty()) {
-            ostr << " \"";
-            try {
-                auto ec = generators::generator<C, D>::element_context(e);
-                common::generators::make_context_source_relative(
-                    ec, tooltip_prefix);
-                auto tooltip_text = generators::generator<C, D>::env().render(
-                    std::string_view{tooltip_pattern}, ec);
-                util::replace_all(tooltip_text, "\"", "&bdquo;");
-                ostr << tooltip_text;
-            }
-            catch (const inja::json::parse_error &e) {
-                LOG_ERROR(
-                    "Failed to parse Jinja template: {}", tooltip_pattern);
-                ostr << " ";
-            }
-            catch (const inja::json::exception &e) {
-                LOG_ERROR(
-                    "Failed to render PlantUML directive: \n{}\n due to: {}",
-                    tooltip_pattern, e.what());
-                ostr << " ";
-            }
-
-            ostr << "\"";
-        }
-    }
     ostr << "\n";
 }
 
@@ -279,8 +241,8 @@ void generator<C, D>::generate_mermaid_directives(
     using common::model::namespace_;
 
     for (const auto &d : directives) {
-        auto rendered_directive =
-            generators::generator<C, D>::render_template(d);
+        auto rendered_directive = common::jinja::render_template(
+            generator<C, D>::env(), generators::generator<C, D>::context(), d);
         if (rendered_directive)
             ostr << indent(1) << *rendered_directive << '\n';
     }

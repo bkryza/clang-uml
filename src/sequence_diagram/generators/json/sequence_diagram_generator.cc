@@ -18,18 +18,9 @@
 
 #include "sequence_diagram_generator.h"
 
-namespace clanguml::sequence_diagram::generators::json {
-
-std::string render_name(std::string name)
-{
-    util::replace_all(name, "##", "::");
-
-    return name;
-}
-
-} // namespace clanguml::sequence_diagram::generators::json
-
 namespace clanguml::sequence_diagram::model {
+
+using clanguml::common::generators::display_name_adapter;
 
 void to_json(nlohmann::json &j, const participant &c)
 {
@@ -43,7 +34,7 @@ void to_json(nlohmann::json &j, const participant &c)
         j["name"] = dynamic_cast<const objc_method &>(c).method_name();
     }
 
-    j["full_name"] = generators::json::render_name(c.full_name(false));
+    j["full_name"] = display_name_adapter(c).full_name(false);
 
     if (c.type_name() == "function" || c.type_name() == "function_template") {
         const auto &f = dynamic_cast<const function &>(c);
@@ -63,10 +54,12 @@ void to_json(nlohmann::json &j, const activity &c)
 
 namespace clanguml::sequence_diagram::generators::json {
 
+using clanguml::common::generators::display_name_adapter;
 using clanguml::common::model::message_t;
 using clanguml::config::location_t;
 using clanguml::sequence_diagram::model::activity;
 using clanguml::sequence_diagram::model::message;
+
 using namespace clanguml::util;
 
 //
@@ -621,7 +614,7 @@ std::optional<eid_t> generator::generate_participant(
 
             // Perform config dependent postprocessing on generated class
             const auto class_participant_full_name =
-                class_participant.full_name(false);
+                display_name_adapter(class_participant).full_name(false);
 
             json_["participants"].back().at("display_name") =
                 make_display_name(class_participant_full_name);
@@ -667,7 +660,7 @@ std::optional<eid_t> generator::generate_participant(
 
             // Perform config dependent postprocessing on generated class
             const auto class_participant_full_name =
-                class_participant.full_name(false);
+                display_name_adapter(class_participant).full_name(false);
 
             json_["participants"].back().at("display_name") =
                 make_display_name(class_participant_full_name);
@@ -929,7 +922,6 @@ std::string generator::make_display_name(const std::string &full_name) const
     auto result = config().simplify_template_type(full_name);
     result = config().using_namespace().relative(result);
     common::ensure_lambda_type_is_relative(config(), result);
-    result = render_name(result);
 
     return result;
 }

@@ -143,6 +143,28 @@ cli_flow_t cli_handler::parse(int argc, const char **argv)
     app.add_option("--mermaid-cmd", mermaid_cmd,
         "Command template to render MermaidJS diagram, `{}` will be replaced "
         "with diagram name.");
+    app.add_option(
+           "--user-data",
+           [this](CLI::results_t vals) {
+               for (const auto &val : vals) {
+                   auto res = util::split_at_first("=", val);
+
+                   if (!res) {
+                       throw CLI::ValidationError(
+                           fmt::format("Invalid option '--user-data {}'", val),
+                           "User data must be of the form '--user-data "
+                           "key=value'");
+                   }
+
+                   user_data.emplace_back(std::move(*res));
+               }
+
+               return true;
+           },
+           "Add custom data properties to Jinja context available in the "
+           "diagrams")
+        ->take_all()
+        ->expected(1, -1);
 
     try {
         app.parse(argc, argv);
@@ -312,6 +334,9 @@ cli_flow_t cli_handler::handle_post_config_options()
     if (allow_empty_diagrams) {
         config.allow_empty_diagrams.set(true);
     }
+
+    if (auto r = add_custom_user_data(); r != cli_flow_t::kContinue)
+        return r;
 
     //
     // Override selected config options from command line
@@ -699,4 +724,26 @@ cli_flow_t cli_handler::print_config()
 
     return cli_flow_t::kExit;
 }
+
+cli_flow_t cli_handler::add_custom_user_data()
+{
+    for (const auto &[key_path, value] : user_data) {
+        auto path = util::split(key_path, ".");
+        auto *user_data_it = &config.user_data();
+        for (const auto &key : path) {
+            if (!user_data_it->is_object() && !user_data_it->empty()) {
+                LOG_ERROR("Setting custom --user-data is only possible if "
+                          "`user_data` in config file is empty or an object");
+                return cli_flow_t::kError;
+            }
+
+            user_data_it = &((*user_data_it)[key]);
+        }
+
+        *user_data_it = value;
+    }
+
+    return cli_flow_t::kContinue;
+}
+
 } // namespace clanguml::cli

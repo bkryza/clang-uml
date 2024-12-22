@@ -128,6 +128,34 @@ TEST_CASE("Test cli handler print_diagrams_list")
 )");
 }
 
+TEST_CASE("Test cli handler add user-data")
+{
+    using clanguml::cli::cli_flow_t;
+    using clanguml::cli::cli_handler;
+
+    using clanguml::cli::cli_flow_t;
+    using clanguml::cli::cli_handler;
+
+    std::vector<const char *> argv = {"clang-uml", "--user-data",
+        "my.name.is=judge", "--user-data", "homepage=new.example.com",
+        "--config", "./test_config_data/user_data.yml"};
+
+    std::ostringstream ostr;
+    cli_handler cli{ostr, make_sstream_logger(ostr)};
+
+    auto res = cli.handle_options(argv.size(), argv.data());
+
+    REQUIRE_EQ(cli.user_data.size(), 2);
+    const auto &[key, value] = cli.user_data.at(0);
+    REQUIRE_EQ(key, "my.name.is");
+    REQUIRE_EQ(value, "judge");
+
+    REQUIRE(res == cli_flow_t::kContinue);
+
+    REQUIRE_EQ(cli.config.user_data().at("my").at("name").at("is"), "judge");
+    REQUIRE_EQ(cli.config.user_data().at("homepage"), "new.example.com");
+}
+
 TEST_CASE("Test cli handler print_diagram_templates")
 {
     using clanguml::cli::cli_flow_t;

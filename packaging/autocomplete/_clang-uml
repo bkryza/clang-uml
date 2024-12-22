@@ -60,6 +60,7 @@ _arguments \
   '--no-metadata[Skip metadata (e.g. clang-uml version) from diagrams]' \
   "--print-from[Print all possible 'from' values for a given diagram]" \
   "--print-to[Print all possible 'to' values for a given diagram]" \
+  "--user-data[Add custom data properties to Jinja context available in the diagrams]" \
   '--no-validate[Do not perform configuration file schema validation]' \
   '--validate-only[Perform configuration file schema validation and exit]' \
   {-r,--render_diagrams}'[Automatically render generated diagrams using appropriate command]' \

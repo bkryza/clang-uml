@@ -249,6 +249,24 @@ std::string trim_typename(const std::string &s)
 
 std::string trim(const std::string &s) { return rtrim(ltrim(s)); }
 
+std::optional<std::pair<std::string, std::string>> split_at_first(
+    const std::string &separator, const std::string &input)
+{
+    std::optional<std::pair<std::string, std::string>> res;
+
+    std::size_t pos = input.find(separator);
+
+    if (pos == std::string::npos) {
+        return res;
+    }
+
+    auto before = input.substr(0, pos);
+    auto after = input.substr(pos + separator.size());
+
+    return std::make_optional<std::pair<std::string, std::string>>(
+        std::move(before), std::move(after));
+}
+
 std::vector<std::string> split(
     std::string str, std::string_view delimiter, bool skip_empty)
 {

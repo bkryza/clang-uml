@@ -33,17 +33,6 @@ element::element(namespace_ using_namespace, path_type pt)
 
 const namespace_ &element::using_namespace() const { return using_namespace_; }
 
-inja::json element::context() const
-{
-    inja::json ctx = diagram_element::context();
-    ctx["namespace"] = get_namespace().to_string();
-    if (const auto maybe_comment = comment(); maybe_comment.has_value()) {
-        ctx["comment"] = maybe_comment.value();
-    }
-
-    return ctx;
-}
-
 bool operator==(const element &l, const element &r)
 {
     return (l.type_name() == l.type_name()) &&

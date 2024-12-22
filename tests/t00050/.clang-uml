@@ -8,6 +8,11 @@ diagrams:
       namespaces:
         - clanguml::t00050
     using_namespace: clanguml::t00050
+    user_data:
+      c_comment:
+        position: top
+        comment: >
+          Jinja templates can use properties from 'user_data' directly
     plantuml:
       after:
         - >
@@ -19,12 +24,16 @@ diagrams:
              {{ comment("clanguml::t00050::A").formatted }}
           end note
         - >
-          note right of {{ element("clanguml::t00050::A").alias }}
-             {% set e=element("clanguml::t00050::A") %} {{ e.comment.formatted }}          
+          note {{ user_data.c_comment.position }} of {{ alias("A") }}
+             {{ trim(user_data.c_comment.comment) }}
           end note
         - >
-          note left of {{ alias("C") }} #AABBCC                 
-             {{ trim(comment("clanguml::t00050::C").text) }}          
+          note right of {{ element("clanguml::t00050::A").alias }}
+             {% set e=element("clanguml::t00050::A") %} {{ e.comment.formatted }}
+          end note
+        - >
+          note left of {{ alias("C") }} #AABBCC
+             {{ trim(comment("clanguml::t00050::C").text) }}
           end note
         - >
           {% set cmt=comment("clanguml::t00050::G").paragraph %}
@@ -52,7 +61,7 @@ diagrams:
           {% if existsIn(e, "comment") and existsIn(e.comment, "todo") %}
           {% set c=e.comment %} 
           {% for t in c.todo %}
-          note top of {{ e.alias }} #882222           
+          note top of {{ e.alias }} #882222
              **TODO**
              {{ t }}
           end note
@@ -79,6 +88,8 @@ diagrams:
           note for {{ alias("NoSuchClass") }} "{{ comment("NoSuchClass").formatted }}"
         - |
           note for {{ alias("A") }} "{{ comment("clanguml::t00050::A").formatted }}"
+        - |
+          note for {{ alias("A") }} "{{ trim(user_data.c_comment.comment) }}"
         - |
           note for {{ element("clanguml::t00050::A").alias }} {% set e=element("clanguml::t00050::A") %} "{{ e.comment.formatted }}"
           note for {{ alias("C") }} "{{ trim(comment("clanguml::t00050::C").text) }}"

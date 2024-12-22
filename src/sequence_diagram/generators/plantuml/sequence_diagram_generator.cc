@@ -23,9 +23,11 @@
 namespace clanguml::sequence_diagram::generators::plantuml {
 
 using clanguml::common::eid_t;
+using clanguml::common::generators::display_name_adapter;
 using clanguml::common::model::message_t;
 using clanguml::config::location_t;
 using clanguml::sequence_diagram::model::message;
+
 using namespace clanguml::util;
 
 //
@@ -36,13 +38,6 @@ generator::generator(
     clanguml::config::sequence_diagram &config, diagram_model &model)
     : common_generator<diagram_config, diagram_model>{config, model}
 {
-}
-
-std::string generator::render_name(std::string name) const
-{
-    util::replace_all(name, "##", "::");
-
-    return name;
 }
 
 void generator::generate_call(const message &m, std::ostream &ostr) const
@@ -418,14 +413,14 @@ void generator::generate_participant(
 
         print_debug(class_participant, ostr);
 
-        auto participant_name =
-            config().simplify_template_type(class_participant.full_name(false));
+        auto participant_name = config().simplify_template_type(
+            display_name_adapter(class_participant).full_name(false));
         participant_name =
             config().using_namespace().relative(participant_name);
 
         common::ensure_lambda_type_is_relative(config(), participant_name);
 
-        ostr << "participant \"" << render_name(participant_name) << "\" as "
+        ostr << "participant \"" << participant_name << "\" as "
              << class_participant.alias();
 
         if (config().generate_links) {
@@ -452,14 +447,14 @@ void generator::generate_participant(
 
         print_debug(class_participant, ostr);
 
-        auto participant_name =
-            config().simplify_template_type(class_participant.full_name(false));
+        auto participant_name = config().simplify_template_type(
+            display_name_adapter(class_participant).full_name(false));
         participant_name =
             config().using_namespace().relative(participant_name);
 
         common::ensure_lambda_type_is_relative(config(), participant_name);
 
-        ostr << "participant \"" << render_name(participant_name) << "\" as "
+        ostr << "participant \"" << participant_name << "\" as "
              << class_participant.alias() << " <<ObjC Interface>>";
 
         if (config().generate_links) {
@@ -493,7 +488,7 @@ void generator::generate_participant(
             std::filesystem::path{file_path}, config().root_directory())
                                                       .string());
 
-        ostr << "participant \"" << render_name(participant_name) << "\" as "
+        ostr << "participant \"" << participant_name << "\" as "
              << fmt::format("C_{:022}", file_id.value());
 
         ostr << '\n';
@@ -503,11 +498,12 @@ void generator::generate_participant(
     else {
         print_debug(participant, ostr);
 
-        auto participant_name = config().using_namespace().relative(
-            config().simplify_template_type(participant.full_name(false)));
+        auto participant_name =
+            config().using_namespace().relative(config().simplify_template_type(
+                display_name_adapter(participant).full_name(false)));
         common::ensure_lambda_type_is_relative(config(), participant_name);
 
-        ostr << "participant \"" << render_name(participant_name) << "\" as "
+        ostr << "participant \"" << participant_name << "\" as "
              << participant.alias();
 
         if (const auto *function_ptr =

@@ -175,6 +175,7 @@ public:
     bool allow_empty_diagrams{false};
     std::optional<std::vector<std::string>> add_compile_flag;
     std::optional<std::vector<std::string>> remove_compile_flag;
+    std::vector<std::pair<std::string, std::string>> user_data;
 #if !defined(_WIN32)
     std::optional<std::string> query_driver;
 #endif
@@ -231,6 +232,13 @@ private:
      * @return Command line handler state
      */
     cli_flow_t handle_post_config_options();
+
+    /**
+     * Handle custom Jinja context user data provider through `--user-data`
+     *
+     * @return Command line handler state
+     */
+    cli_flow_t add_custom_user_data();
 
     /**
      * Setup spdlog library depending on provided command line options

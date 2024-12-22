@@ -36,15 +36,15 @@
 
 namespace clanguml::common::generators::graphml {
 
+using clanguml::common::jinja::element_context;
 using clanguml::common::model::access_t;
+using clanguml::common::model::diagram_element;
 using clanguml::common::model::element;
 using clanguml::common::model::message_t;
 using clanguml::common::model::relationship_t;
 
 using graphml_t = pugi::xml_document;
 using graphml_node_t = pugi::xml_node;
-
-std::string render_name(std::string name);
 
 /**
  * The types of graph nodes in the GraphML XML document
@@ -236,7 +236,8 @@ public:
     virtual void generate_relationships(
         const model::diagram_element &c, graphml_node_t &parent) const;
 
-    template <typename T> void add_url(pugi::xml_node &node, const T &c) const;
+    template <typename T>
+    void generate_link(pugi::xml_node &node, const T &c) const;
 
     const property_keymap_t &graph_properties() const
     {
@@ -429,8 +430,8 @@ void generator<C, D>::generate_notes(const T &p, graphml_node_t &parent) const
                     fmt::format("{}-N_{}", e->alias(), note_index));
                 auto maybe_element_node_id = node_ids_.get(e->alias());
                 if (maybe_element_node_id) {
-                    auto rendered_note =
-                        generators::generator<C, D>::render_template(note);
+                    auto rendered_note = common::jinja::render_template(
+                        generator<C, D>::env(), note);
                     if (rendered_note) {
                         auto note_node = make_node(parent, note_id);
                         add_data(note_node, "type", "note");
@@ -542,63 +543,17 @@ void generator<C, D>::add_cdata(pugi::xml_node &node,
 
 template <typename C, typename D>
 template <typename T>
-void generator<C, D>::add_url(pugi::xml_node &node, const T &c) const
+void generator<C, D>::generate_link(pugi::xml_node &node, const T &c) const
 {
-    auto maybe_link_pattern =
-        clanguml::common::generators::generator<C, D>::get_link_pattern(c);
+    const auto maybe_link = generator<C, D>::render_link(c);
+    const auto maybe_tooltip = generator<C, D>::render_tooltip(c);
 
-    if (maybe_link_pattern) {
-        const auto &[link_prefix, link_pattern] = *maybe_link_pattern;
-        try {
-            auto ec =
-                clanguml::common::generators::generator<C, D>::element_context(
-                    c);
-            common::generators::make_context_source_relative(ec, link_prefix);
-
-            auto url =
-                clanguml::common::generators::generator<C, D>::env().render(
-                    std::string_view{link_pattern}, ec);
-
-            add_data(node, "url", url);
-        }
-        catch (const inja::json::parse_error &e) {
-            LOG_ERROR("Failed to parse Jinja template: {}", link_pattern);
-        }
-        catch (const inja::RenderError &e) {
-            LOG_DBG("Failed to render GraphML URL: \n{}\n due to: {}",
-                link_pattern, e.what());
-        }
-        catch (const std::exception &e) {
-            LOG_ERROR("Failed to render GraphML URL: \n{}\n due to: {}",
-                link_pattern, e.what());
-        }
+    if (maybe_link) {
+        add_data(node, "url", *maybe_link);
     }
 
-    auto maybe_tooltip_pattern =
-        clanguml::common::generators::generator<C, D>::get_tooltip_pattern(c);
-
-    if (maybe_tooltip_pattern) {
-        const auto &[tooltip_prefix, tooltip_pattern] = *maybe_tooltip_pattern;
-        try {
-            auto ec =
-                clanguml::common::generators::generator<C, D>::element_context(
-                    c);
-            common::generators::make_context_source_relative(
-                ec, tooltip_prefix);
-
-            auto tooltip =
-                clanguml::common::generators::generator<C, D>::env().render(
-                    std::string_view{tooltip_pattern}, ec);
-
-            add_data(node, "tooltip", tooltip);
-        }
-        catch (const inja::json::parse_error &e) {
-            LOG_ERROR("Failed to parse Jinja template: {}", tooltip_pattern);
-        }
-        catch (const std::exception &e) {
-            LOG_ERROR("Failed to render PlantUML directive: \n{}\n due to: {}",
-                tooltip_pattern, e.what());
-        }
+    if (maybe_tooltip) {
+        add_data(node, "tooltip", *maybe_tooltip);
     }
 }
 
