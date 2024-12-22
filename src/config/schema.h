@@ -323,6 +323,7 @@ types:
         include_system_headers: !optional bool
         exclude: !optional filter_t
         generate_links: !optional generate_links_t
+        generate_packages: !optional bool
         git: !optional git_t
         glob: !optional glob_t
         include: !optional filter_t

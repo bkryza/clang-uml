@@ -315,9 +315,11 @@ template <typename DiagramType>
 DiagramType render_include_diagram(std::shared_ptr<clanguml::config::diagram> c,
     clanguml::include_diagram::model::diagram &model)
 {
-    return DiagramType{common::model::diagram_t::kInclude,
+    auto d = DiagramType{common::model::diagram_t::kInclude,
         detail::render_diagram<DiagramType, clanguml::config::include_diagram>(
             c, model)};
+    d.generate_packages = c->generate_packages();
+    return d;
 }
 
 auto CHECK_CLASS_MODEL(

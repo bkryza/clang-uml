@@ -18,3 +18,19 @@ diagrams:
     plantuml:
       before:
         - "' t40002 test include diagram"
+  t40002_include_no_packages:
+    type: include
+    generate_packages: false
+    glob:
+      - src/t40002.cc
+      - src/lib1/lib1.cc
+      - src/lib2/lib2.cc
+    include:
+      paths:
+        - .
+    exclude:
+      paths:
+        - include/lib2/lib2_detail.h
+    plantuml:
+      before:
+        - "' t40002 test include diagram"

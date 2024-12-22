@@ -39,6 +39,17 @@ generator::node_property_names() const
 
 void generator::generate(const source_file &f, graphml_node_t &parent) const
 {
+    if (config().generate_packages && !config().generate_packages()) {
+        generate_without_packages(f, parent);
+    }
+    else {
+        generate_with_packages(f, parent);
+    }
+}
+
+void generator::generate_with_packages(
+    const source_file &f, graphml_node_t &parent) const
+{
     auto display_name = f.full_name(false);
 #if defined(_MSC_VER)
     util::replace_all(display_name, "\\", "/");
@@ -64,6 +75,39 @@ void generator::generate(const source_file &f, graphml_node_t &parent) const
         auto file_node = make_node(parent, node_ids_.add(f.alias()));
         add_data(file_node, "type", "file");
         add_cdata(file_node, "name", f.name());
+
+        if (f.type() == common::model::source_file_t::kHeader) {
+            add_data(file_node, "stereotype", "header");
+            if (f.is_system_header())
+                add_data(file_node, "is_system", "true");
+        }
+        else {
+            add_data(file_node, "stereotype", "source");
+        }
+
+        generate_link(file_node, f);
+    }
+}
+
+void generator::generate_without_packages(
+    const source_file &f, graphml_node_t &parent) const
+{
+    auto display_name = f.full_name(false);
+#if defined(_MSC_VER)
+    util::replace_all(display_name, "\\", "/");
+#endif
+
+    if (f.type() == common::model::source_file_t::kDirectory) {
+        util::for_each(f, [&, this](const auto &file) {
+            generate(dynamic_cast<const source_file &>(*file), parent);
+        });
+    }
+    else {
+        LOG_DBG("Generating file {}", f.file_relative());
+
+        auto file_node = make_node(parent, node_ids_.add(f.alias()));
+        add_data(file_node, "type", "file");
+        add_cdata(file_node, "name", f.file_relative());
 
         if (f.type() == common::model::source_file_t::kHeader) {
             add_data(file_node, "stereotype", "header");

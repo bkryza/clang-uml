@@ -709,6 +709,9 @@ template <> bool IsFolder(const plantuml_t &d, std::string const &path)
 template <> bool IsFile(const plantuml_t &d, std::string const &path)
 {
     const std::filesystem::path p{path};
+    if (!d.generate_packages)
+        return d.contains("file \"" + p.string() + "\"");
+
     return d.contains("file \"" + p.filename().string() + "\"");
 }
 
@@ -723,9 +726,15 @@ bool IsHeaderDependency(const plantuml_t &d, std::string const &from,
 {
     assert(d.diagram_type == common::model::diagram_t::kInclude);
 
+    std::string from_name = util::split(from, "/").back();
+    std::string to_name = util::split(to, "/").back();
+    if (!d.generate_packages) {
+        from_name = from;
+        to_name = to;
+    }
+
     return d.contains(
-        fmt::format("{} --> {}", d.get_alias(util::split(from, "/").back()),
-            d.get_alias(util::split(to, "/").back())));
+        fmt::format("{} --> {}", d.get_alias(from_name), d.get_alias(to_name)));
 }
 
 template <>
@@ -734,9 +743,14 @@ bool IsSystemHeaderDependency(const plantuml_t &d, std::string const &from,
 {
     assert(d.diagram_type == common::model::diagram_t::kInclude);
 
+    std::string from_name = util::split(from, "/").back();
+    std::string to_name = util::split(to, "/").back();
+    if (!d.generate_packages) {
+        from_name = from;
+        to_name = to;
+    }
     return d.contains(
-        fmt::format("{} ..> {}", d.get_alias(util::split(from, "/").back()),
-            d.get_alias(util::split(to, "/").back())));
+        fmt::format("{} ..> {}", d.get_alias(from_name), d.get_alias(to_name)));
 }
 
 template <typename... Args> auto get_last(Args &&...args)
@@ -1125,9 +1139,15 @@ bool IsHeaderDependency(const mermaid_t &d, std::string const &from,
 {
     assert(d.diagram_type == common::model::diagram_t::kInclude);
 
+    std::string from_name = util::split(from, "/").back();
+    std::string to_name = util::split(to, "/").back();
+    if (!d.generate_packages) {
+        from_name = from;
+        to_name = to;
+    }
+
     return d.contains(
-        fmt::format("{} --> {}", d.get_alias(util::split(from, "/").back()),
-            d.get_alias(util::split(to, "/").back())));
+        fmt::format("{} --> {}", d.get_alias(from_name), d.get_alias(to_name)));
 }
 
 template <>
@@ -1291,7 +1311,10 @@ template <> bool IsFolder(const mermaid_t &d, std::string const &path)
 
 template <> bool IsFile(const mermaid_t &d, std::string const &path)
 {
-    return d.contains(d.get_alias(util::split(path, "/").back()) + "[");
+    if (d.generate_packages)
+        return d.contains(d.get_alias(util::split(path, "/").back()) + "[");
+
+    return d.contains(d.get_alias(path) + "[");
 }
 
 template <> bool IsSystemHeader(const mermaid_t &d, std::string const &path)

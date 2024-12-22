@@ -80,6 +80,13 @@ public:
      * @param parent Parent JSON node
      */
     void generate(const source_file &e, nlohmann::json &parent) const;
+
+private:
+    void generate_with_packages(
+        const source_file &f, nlohmann::json &parent) const;
+
+    void generate_without_packages(
+        const source_file &f, nlohmann::json &parent) const;
 };
 
 } // namespace clanguml::include_diagram::generators::json
