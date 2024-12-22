@@ -42,9 +42,15 @@ struct element_context_tag;
  */
 template <typename T, typename Tag> class jinja_context {
 public:
-    explicit jinja_context(const T &e, inja::json diagram_context = {}) noexcept
+    explicit jinja_context(
+        const T &e, const inja::json &diagram_context) noexcept
         : value_{e}
-        , diagram_context_{std::move(diagram_context)}
+        , diagram_context_{diagram_context}
+    {
+    }
+
+    explicit jinja_context(const T &e) noexcept
+        : jinja_context(e, {})
     {
     }
 
@@ -60,7 +66,7 @@ public:
 
 private:
     const T &value_;
-    inja::json diagram_context_;
+    const inja::json &diagram_context_;
 };
 
 template <typename T>
