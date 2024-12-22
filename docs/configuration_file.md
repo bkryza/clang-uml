@@ -19,6 +19,7 @@
 * `add_compile_flags` - add compile flags to all compilation database entries
 * `remove_compile_flags` - remove compile flags from all compilation database entries
 * `query_driver` - name or path to compiler driver, which should be queried for system include paths (e.g. arm-none-eabi-g++)
+* `user_data` - arbitrary data that can be used in Jinja templates
 
 ### Diagram options
 * `type` - type of diagram, one of [`class`, `sequence`, `package`, `include`]
@@ -85,6 +86,12 @@ generate_links:
   link: "https://github.com/bkryza/clang-uml/blob/{{ git.commit }}/{{ element.source.path }}#L{{ element.source.line }}"
   # Tooltip pattern
   tooltip: "{{ element.name }}"
+# Custom user data that can be used in Jinja templates
+user_data:
+  copyright:
+    name: Bartek Kryza
+    license:
+      type: CC-0
 # The map of diagrams - keys are also diagram file names
 diagrams:
   main_package:

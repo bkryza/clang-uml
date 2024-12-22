@@ -2,6 +2,7 @@
 
 <!-- toc -->
 
+* [Providing custom data](#providing-custom-data)
 * [Accessing comment content](#accessing-comment-content)
   * ['plain' comment parser](#plain-comment-parser)
   * ['clang' comment parser](#clang-comment-parser)
@@ -91,6 +92,32 @@ generate notes in the PlantUML diagram from code comments (see also test case [t
           {% endif %}
           {% endfor %}
 ```
+
+### Providing custom data
+It is possible to provide any data into the Jinja context using either `user_data`
+config property, or using `--user-data` command line option.
+
+For instance specifying:
+```yaml
+user_data:
+  license:
+    type: CC-0
+```
+
+or providing on command line the following option:
+
+```bash
+$ clang-uml --user-data license.type=CC-0 ...
+```
+
+will allow to access this variable in a Jinja template like this:
+
+```jinja
+{{ user_data.license.type }}
+```
+
+> For command line user data, the values are always typed as strings. `--user-data` option
+> can be specified multiple times so that arbitrary objects can be constructed.
 
 ### Accessing comment content
 Text available in the code comment blocks can be accessed in the templates depending on the selected comment
