@@ -375,7 +375,7 @@ public:
      * @param ns Path to make relative against *this.
      * @return Relative path.
      */
-    std::string relative(const std::string &ns) const
+    std::string relative(const std::string &ns, bool add_root_prefix) const
     {
         if (is_empty())
             return ns;
@@ -387,12 +387,20 @@ public:
         auto ns_prefix = to_string() + std::string{separator()};
 
         auto it = res.find(ns_prefix);
+
+        if(it == std::string::npos)
+            return std::string{separator()} + ns;
+
         while (it != std::string::npos) {
             res.erase(it, ns_prefix.size());
             it = res.find(ns_prefix);
         }
 
         return res;
+    }
+
+    std::string relative(const std::string &ns) const {
+        return relative(ns, false);
     }
 
     /**

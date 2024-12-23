@@ -666,6 +666,7 @@ struct inheritable_diagram_options {
     option<bool> generate_metadata{"generate_metadata", true};
     option<bool> allow_empty_diagrams{"allow_empty_diagrams", false};
     option<inja::json> user_data{"user_data", {}, option_inherit_mode::kAppend};
+    option<bool> force_global_namespace_prefix{"force_global_namespace_prefix", false};
 
 protected:
     // This is the relative path with respect to the `base_directory`,

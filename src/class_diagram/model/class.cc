@@ -81,7 +81,7 @@ std::string class_::full_name_impl(bool relative) const
     std::string res;
 
     if (relative)
-        res = using_namespace().relative(ostr.str());
+        res = using_namespace().relative(ostr.str(), true);
     else
         res = ostr.str();
 
