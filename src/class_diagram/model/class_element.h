@@ -85,6 +85,8 @@ public:
      */
     std::string qualified_name() const;
 
+    bool root_prefix() const { return false; }
+
 private:
     common::model::access_t access_;
     std::string name_;

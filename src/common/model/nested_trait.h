@@ -50,6 +50,10 @@ public:
 
     virtual ~nested_trait() = default;
 
+    bool is_root() const { return is_root_; }
+
+    void is_root(bool a) { is_root_ = a; }
+
     /**
      * Add element at the current nested level.
      *
@@ -87,8 +91,8 @@ public:
     {
         assert(p);
 
-        LOG_DBG("Adding nested element {} at path '{}'", p->name(),
-            path.to_string());
+        LOG_DBG("Adding nested element {} at path '{}{}'", p->name(),
+            path.is_root() ? "::" : "", path.to_string());
 
         if (path.is_empty()) {
             return add_element(std::move(p));
@@ -96,10 +100,14 @@ public:
 
         auto parent = get_element(path);
 
-        if (parent && dynamic_cast<nested_trait<T, Path> *>(&parent.value())) {
-            p->set_parent_element_id(parent.value().id());
-            return dynamic_cast<nested_trait<T, Path> &>(parent.value())
-                .template add_element<V>(std::move(p));
+        if (parent) {
+            auto *nested_trait_ptr =
+                dynamic_cast<nested_trait<T, Path> *>(&parent.value());
+            if (nested_trait_ptr != nullptr) {
+                p->set_parent_element_id(parent.value().id());
+                return (*nested_trait_ptr)
+                    .template add_element<V>(std::move(p));
+            }
         }
 
         LOG_INFO("No parent element found at: {}", path.to_string());
@@ -123,10 +131,10 @@ public:
         }
 
         if (path.size() == 1) {
-            return get_element<V>(path[0]);
+            return get_element<V>(path[0], path.is_root());
         }
 
-        auto p = get_element<T>(path[0]);
+        auto p = get_element<T>(path[0], path.is_root());
 
         if (!p)
             return optional_ref<V>{};
@@ -145,28 +153,39 @@ public:
      * @param name Name of the element (cannot contain namespace or path)
      * @return Optional reference to the element.
      */
-    template <typename V = T> auto get_element(const std::string &name) const
+    template <typename V = T>
+    auto get_element(const std::string &name, bool is_root = false) const
     {
         assert(!util::contains(name, "::"));
 
         // Try to find an element by name and assuming it is a specific type
         // For some reason it is legal to have a C/C++ struct with the same
-        // name as some ObjC protocol/interface, so the name is not necessarily
-        // unique
+        // name as some ObjC protocol/interface, so the name is not
+        // necessarily unique
 
-        auto matches = elements_by_name_.equal_range(name);
+        auto [it, matches_end] = elements_by_name_.equal_range(name);
 
-        auto it = matches.first;
         while (true) {
-            if (it == matches.second)
+            if (it == matches_end)
                 break;
 
             assert((*it).second < elements_.size());
 
+            auto [element_name, element_index] = *it;
+
             // Return the element if it has the expected type
-            if (dynamic_cast<V *>(elements_.at((*it).second).get()))
-                return optional_ref<V>{std::ref<V>(
-                    dynamic_cast<V &>(*elements_.at((*it).second).get()))};
+            if (auto element_ptr =
+                    dynamic_cast<V *>(elements_.at(element_index).get());
+                element_ptr != nullptr) {
+                if (auto nt_ptr = dynamic_cast<nested_trait<T, Path> *>(
+                        elements_.at(element_index).get());
+                    nt_ptr != nullptr) {
+                    if (nt_ptr->is_root_ == is_root)
+                        return optional_ref<V>{std::ref<V>(*element_ptr)};
+                }
+                else
+                    return optional_ref<V>{std::ref<V>(*element_ptr)};
+            }
 
             ++it;
         }
@@ -226,7 +245,7 @@ public:
      *
      * @param level Tree level
      */
-    void print_tree(const int level)
+    void print_tree(const int level) const
     {
         const auto &d = *this;
 
@@ -235,12 +254,12 @@ public:
         }
         for (const auto &e : d) {
             if (dynamic_cast<nested_trait<T, Path> *>(e.get())) {
-                std::cout << std::string(level, ' ') << "[" << *e << "]\n";
+                std::cout << std::string(level, '.') << "[" << *e << "]\n";
                 dynamic_cast<nested_trait<T, Path> *>(e.get())->print_tree(
                     level + 1);
             }
             else {
-                std::cout << std::string(level, ' ') << "- " << *e << "]\n";
+                std::cout << std::string(level, '.') << "- " << *e << "]\n";
             }
         }
     }
@@ -300,6 +319,8 @@ private:
     {
         return elements_by_name_.count(name) != 0U;
     }
+
+    bool is_root_{false};
 
     std::set<std::pair<eid_t, std::string>> added_elements_;
     std::vector<std::unique_ptr<T>> elements_;

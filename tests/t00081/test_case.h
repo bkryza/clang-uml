@@ -28,8 +28,8 @@ TEST_CASE("t00081")
         REQUIRE(IsClass(src, "A"));
         REQUIRE(!IsClass(src, "C"));
 
-        REQUIRE(IsClass(src, "std::string"));
-        REQUIRE(IsClass(src, "std::vector<std::string>"));
-        REQUIRE(IsClass(src, "std::map<std::string,std::string>"));
+        REQUIRE(IsClass(src, "::std::string"));
+        REQUIRE(IsClass(src, "::std::vector<std::string>"));
+        REQUIRE(IsClass(src, "::std::map<std::string,std::string>"));
     });
 }

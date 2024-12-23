@@ -1,0 +1,19 @@
+diagrams:
+  t00089_class:
+    type: class
+    generate_packages: false
+    glob:
+      - t00089.cc
+    include:
+      paths:
+        - .
+    using_namespace: clanguml::t00089
+  t00089_packages_class:
+    type: class
+    generate_packages: true
+    glob:
+      - t00089.cc
+    include:
+      paths:
+        - .
+    using_namespace: clanguml::t00089

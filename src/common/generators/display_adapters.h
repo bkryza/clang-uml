@@ -17,6 +17,7 @@
  */
 #pragma once
 
+#include "common/model/element.h"
 #include "util/util.h"
 
 #include <string>
@@ -73,11 +74,18 @@ public:
     {
     }
 
+    const display_name_adapter<T> &with_packages() const
+    {
+        with_packages_ = true;
+        return *this;
+    }
+
     template <typename U = T>
     std::enable_if_t<detail::has_name<U>::value, std::string> name() const
     {
         return adapt(element_.name());
     }
+
     template <typename U = T>
     std::enable_if_t<detail::has_type<U>::value, std::string> type() const
     {
@@ -109,10 +117,24 @@ protected:
     std::string adapt(std::string n) const
     {
         util::replace_all(n, "##", "::");
+
+        if constexpr (std::is_base_of<common::model::element, T>::value) {
+            if (!with_packages_) {
+                if (element_.root_prefix())
+                    return fmt::format("::{}", n);
+            }
+            else {
+                if (element_.get_namespace().is_empty() &&
+                    element_.root_prefix())
+                    return fmt::format("::{}", n);
+            }
+        }
+
         return n;
     }
 
 private:
+    mutable bool with_packages_{false};
     const T &element_;
 };
 

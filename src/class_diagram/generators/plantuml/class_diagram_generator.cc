@@ -76,7 +76,7 @@ void generator::generate_alias(const class_ &c, std::ostream &ostr) const
 
     std::string full_name;
     if (!config().generate_fully_qualified_name())
-        full_name = display_name_adapter(c).full_name_no_ns();
+        full_name = display_name_adapter(c).with_packages().full_name_no_ns();
     else
         full_name = display_name_adapter(c).full_name(true);
 
@@ -849,39 +849,29 @@ void generator::generate_relationships(
 
 void generator::start_package(const package &p, std::ostream &ostr) const
 {
-    const auto &uns = config().using_namespace();
-
     if (config().generate_packages()) {
-        LOG_DBG("Generating package {}", p.name());
+        LOG_DBG("Generating package {}",
+            display_name_adapter(p).with_packages().name());
 
-        // Don't generate packages from namespaces filtered out by
-        // using_namespace
-        if (!uns.starts_with({p.full_name(false)})) {
-            print_debug(p, ostr);
-            ostr << "package [" << p.name() << "] ";
-            ostr << "as " << p.alias();
+        print_debug(p, ostr);
+        ostr << "package [";
+        ostr << display_name_adapter(p).with_packages().name() << "] ";
+        ostr << "as " << p.alias();
 
-            if (p.is_deprecated())
-                ostr << " <<deprecated>>";
+        if (p.is_deprecated())
+            ostr << " <<deprecated>>";
 
-            generate_style(ostr, p.type_name(), p);
+        generate_style(ostr, p.type_name(), p);
 
-            ostr << " {" << '\n';
-        }
+        ostr << " {" << '\n';
     }
 }
 
 void generator::end_package(const package &p, std::ostream &ostr) const
 {
     if (config().generate_packages()) {
-        const auto &uns = config().using_namespace();
-
-        // Don't generate packages from namespaces filtered out by
-        // using_namespace
-        if (!uns.starts_with({p.full_name(false)})) {
-            ostr << "}" << '\n';
-            generate_notes(ostr, p);
-        }
+        ostr << "}" << '\n';
+        generate_notes(ostr, p);
     }
 }
 

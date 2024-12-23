@@ -57,7 +57,11 @@ bool translation_unit_visitor::VisitNamespaceDecl(clang::NamespaceDecl *ns)
         ns->getLocation().printToString(source_manager()));
 
     auto package_path = namespace_{common::get_qualified_name(*ns)};
+
     auto package_parent = package_path;
+    bool is_root =
+        (package_path.size() == 1) && !config().using_namespace().is_empty();
+    package_path.is_root(is_root);
 
     std::string name;
     if (!package_path.is_empty())
@@ -74,6 +78,7 @@ bool translation_unit_visitor::VisitNamespaceDecl(clang::NamespaceDecl *ns)
     p->set_name(name);
     p->set_namespace(package_parent);
     p->set_id(common::to_id(*ns));
+    p->is_root(is_root);
     id_mapper().add(ns->getID(), p->id());
 
     if (config().filter_mode() == config::filter_mode_t::advanced ||
@@ -1093,7 +1098,6 @@ translation_unit_visitor::create_objc_interface_declaration(
 void translation_unit_visitor::process_record_parent(
     clang::RecordDecl *cls, class_ &c, const namespace_ &ns)
 {
-
     std::optional<eid_t> id_opt;
     namespace_ parent_ns = ns;
 

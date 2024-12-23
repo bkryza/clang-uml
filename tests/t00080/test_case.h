@@ -27,8 +27,8 @@ TEST_CASE("t00080")
     CHECK_CLASS_DIAGRAM(*config, diagram, *model, [](const auto &src) {
         REQUIRE(IsClass(src, "Worker"));
         REQUIRE(IsClass(src, "R"));
-        REQUIRE(IsClass(src, "std::thread"));
-        REQUIRE(!IsClass(src, "std::jthread"));
+        REQUIRE(IsClass(src, "::std::thread"));
+        REQUIRE(!IsClass(src, "::std::jthread"));
 
         REQUIRE(IsAssociation<Public>(src, "R", "Worker", "w"));
     });

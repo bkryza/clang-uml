@@ -180,7 +180,8 @@ public:
 
     friend bool operator==(const path &left, const path &right)
     {
-        return left.path_ == right.path_;
+        return (left.is_root() == right.is_root()) &&
+            (left.path_ == right.path_);
     }
 
     friend bool operator<(const path &left, const path &right)
@@ -211,6 +212,15 @@ public:
      * @return
      */
     bool is_empty() const { return path_.empty(); }
+
+    bool is_root() const { return is_root_; }
+
+    void is_root(bool r)
+    {
+        if (type() != path_type::kNamespace)
+            return;
+        is_root_ = r;
+    }
 
     /**
      * Return the number of elements in the path.
@@ -362,9 +372,12 @@ public:
     path relative_to(const path &right) const
     {
         path res{*this};
+        res.is_root(true);
 
-        if (res.starts_with(right))
+        if (res.starts_with(right)) {
             util::remove_prefix(res.path_, right.path_);
+            res.is_root(false);
+        }
 
         return res;
     }
@@ -375,7 +388,7 @@ public:
      * @param ns Path to make relative against *this.
      * @return Relative path.
      */
-    std::string relative(const std::string &ns) const
+    std::string relative(const std::string &ns, bool add_root_prefix) const
     {
         if (is_empty())
             return ns;
@@ -387,12 +400,18 @@ public:
         auto ns_prefix = to_string() + std::string{separator()};
 
         auto it = res.find(ns_prefix);
+
         while (it != std::string::npos) {
             res.erase(it, ns_prefix.size());
             it = res.find(ns_prefix);
         }
 
         return res;
+    }
+
+    std::string relative(const std::string &ns) const
+    {
+        return relative(ns, !is_empty());
     }
 
     /**
@@ -431,6 +450,7 @@ public:
 private:
     path_type path_type_;
     container_type path_;
+    bool is_root_{false};
 };
 
 } // namespace clanguml::common::model

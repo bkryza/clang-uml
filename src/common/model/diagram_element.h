@@ -219,6 +219,8 @@ public:
     virtual void apply_filter(
         const diagram_filter &filter, const std::set<eid_t> &removed);
 
+    bool root_prefix() const { return false; }
+
 protected:
     virtual std::string full_name_impl(bool /*relative*/) const
     {
