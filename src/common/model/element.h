@@ -140,6 +140,7 @@ public:
 
     friend std::ostream &operator<<(std::ostream &out, const element &rhs);
 
+    // TODO:  Move to display adapters
     bool root_prefix() const
     {
         if (get_namespace().type() != path_type::kNamespace)

@@ -125,7 +125,7 @@ bool diagram::add_with_namespace_path<common::model::package>(
     LOG_DBG("Adding namespace package: {}, {}", p->name(), p->full_name(true));
 
     auto ns = p->get_relative_namespace();
-    if(p->root_prefix() && p->get_namespace().is_empty())
+    if (p->root_prefix() && p->get_namespace().is_empty())
         p->is_root(true);
 
     return add_element(ns, std::move(p));

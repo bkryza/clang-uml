@@ -66,10 +66,11 @@ void generator::generate(const package &p, graphml_node_t &parent) const
         // Don't generate packages from namespaces filtered out by
         // using_namespace
         if (!uns.starts_with({p.full_name(false)})) {
-            LOG_DBG("Generating package {}", p.name());
+            auto name = display_name_adapter(p).with_packages().name();
+            LOG_DBG("Generating package {}", name);
 
-            package_node = make_subgraph(parent, p.alias(), p.name(),
-                to_string(config().package_type()));
+            package_node = make_subgraph(
+                parent, p.alias(), name, to_string(config().package_type()));
             graph_node = make_graph(package_node, p.alias());
         }
     }
@@ -109,7 +110,7 @@ void generator::generate(const class_ &c, graphml_node_t &parent) const
 
     std::string full_name;
     if (!config().generate_fully_qualified_name())
-        full_name = display_name_adapter(c).full_name_no_ns();
+        full_name = display_name_adapter(c).with_packages().full_name_no_ns();
     else
         full_name = display_name_adapter(c).full_name(true);
 
@@ -133,7 +134,7 @@ void generator::generate(const enum_ &e, graphml_node_t &parent) const
 
     std::string full_name;
     if (!config().generate_fully_qualified_name())
-        full_name = display_name_adapter(e).name();
+        full_name = display_name_adapter(e).with_packages().name();
     else
         full_name = display_name_adapter(e).full_name(true);
 
@@ -149,7 +150,7 @@ void generator::generate(const concept_ &c, graphml_node_t &parent) const
 
     std::string full_name;
     if (!config().generate_fully_qualified_name())
-        full_name = display_name_adapter(c).full_name_no_ns();
+        full_name = display_name_adapter(c).with_packages().full_name_no_ns();
     else
         full_name = display_name_adapter(c).full_name(true);
 

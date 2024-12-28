@@ -227,7 +227,8 @@ void generator::generate(const package &p, nlohmann::json &parent) const
 
             package_object["type"] = to_string(config().package_type());
             package_object["name"] = p.name();
-            package_object["display_name"] = p.name();
+            package_object["display_name"] =
+                display_name_adapter(p).with_packages().name();
         }
     }
 
@@ -262,7 +263,8 @@ void generator::generate(const class_ &c, nlohmann::json &parent) const
 
     // Perform config dependent postprocessing on generated class
     if (!config().generate_fully_qualified_name())
-        object["display_name"] = display_name_adapter(c).full_name_no_ns();
+        object["display_name"] =
+            display_name_adapter(c).with_packages().full_name_no_ns();
 
     object["display_name"] =
         config().simplify_template_type(object["display_name"]);
