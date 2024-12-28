@@ -730,6 +730,11 @@ std::optional<eid_t> generator::generate_participant(
     }
     else {
         json_["participants"].push_back(participant);
+        const auto function_participant_full_name =
+            display_name_adapter(participant).full_name(false);
+
+        json_["participants"].back().at("display_name") =
+            make_display_name(function_participant_full_name);
     }
 
     generated_participants_.emplace(*participant_id);

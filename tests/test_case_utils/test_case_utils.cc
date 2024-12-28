@@ -343,9 +343,10 @@ std::optional<nlohmann::json> get_participant(
     }
 
     for (const nlohmann::json &e : j.at("participants")) {
-        if (e["display_name"] == name ||
-            e["full_name"].get<std::string>().substr(using_namespace.size()) ==
-                name)
+        if (e["display_name"] == name || e["full_name"] == name ||
+            (e["full_name"].size() > using_namespace.size() &&
+                e["full_name"].get<std::string>().substr(
+                    using_namespace.size()) == name))
             return {e};
     }
 
