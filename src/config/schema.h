@@ -213,7 +213,6 @@ types:
         using_module: !optional string
         generate_metadata: !optional bool
         title: !optional string
-        force_global_namespace_prefix: !optional bool
         #
         # Class diagram specific options
         #
@@ -258,7 +257,6 @@ types:
         using_namespace: !optional [string, [string]]
         generate_metadata: !optional bool
         title: !optional string
-        force_global_namespace_prefix: !optional bool
         #
         # Sequence diagram specific options
         #
@@ -306,7 +304,6 @@ types:
         using_module: !optional string
         generate_metadata: !optional bool
         title: !optional string
-        force_global_namespace_prefix: !optional bool
         #
         # Package diagram specific options
         #
@@ -418,7 +415,6 @@ root:
     type_aliases: !optional map_t<string;string>
     filter_mode: !optional filter_mode_t
     include_system_headers: !optional bool
-    force_global_namespace_prefix: !optional bool
 )";
 
 } // namespace clanguml::config

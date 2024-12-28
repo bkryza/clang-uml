@@ -21,6 +21,7 @@
 
 #include "class_diagram/model/class.h"
 #include "cli/cli_handler.h"
+#include "common/model/diagram.h"
 #include "common/model/element_view.h"
 #include "common/model/namespace.h"
 #include "common/model/package.h"
@@ -57,7 +58,10 @@ auto id()
     return eid_t{id_counter++};
 }
 
-auto root_prefix(const common::model::element *e) { return e->root_prefix(); }
+auto root_prefix(const common::model::element *e)
+{
+    return common::model::needs_root_prefix(*e);
+}
 
 void generate(nested_trait_ns &d, std::stringstream &out)
 {

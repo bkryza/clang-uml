@@ -140,19 +140,6 @@ public:
 
     friend std::ostream &operator<<(std::ostream &out, const element &rhs);
 
-    // TODO:  Move to display adapters
-    bool root_prefix() const
-    {
-        if (get_namespace().type() != path_type::kNamespace)
-            return false;
-
-        if (using_namespace().is_empty())
-            return false;
-
-        return !util::starts_with(
-            full_name(false), using_namespace().to_string());
-    }
-
 protected:
     /**
      * Return elements full name.

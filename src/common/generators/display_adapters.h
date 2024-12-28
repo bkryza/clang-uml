@@ -120,12 +120,12 @@ protected:
 
         if constexpr (std::is_base_of<common::model::element, T>::value) {
             if (!with_packages_) {
-                if (element_.root_prefix())
+                if (needs_root_prefix(element_))
                     return fmt::format("::{}", n);
             }
             else {
                 if (element_.get_namespace().is_empty() &&
-                    element_.root_prefix())
+                    needs_root_prefix(element_))
                     return fmt::format("::{}", n);
             }
         }

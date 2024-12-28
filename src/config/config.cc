@@ -324,8 +324,6 @@ void inheritable_diagram_options::inherit(
     allow_empty_diagrams.override(parent.allow_empty_diagrams);
     type_aliases.override(parent.type_aliases);
     user_data.override(parent.user_data);
-    force_global_namespace_prefix.override(
-        parent.force_global_namespace_prefix);
 }
 
 std::string inheritable_diagram_options::simplify_template_type(
