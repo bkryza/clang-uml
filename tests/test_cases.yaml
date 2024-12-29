@@ -261,6 +261,9 @@ test_cases:
     - name: t00088
       title: Typed element Objective-C class diagram filter test case
       description:
+    - name: t00089
+      title: Test case for '::' prefix in class diagrams for namespaces outside of using_namespace
+      description:
   Sequence diagrams:
     - name: t20001
       title: Basic sequence diagram test case
@@ -448,6 +451,9 @@ test_cases:
     - name: t20062
       title: Test case with vaargs function in sequence diagrams
       description:
+    - name: t20063
+      title: Test case for '::' prefix in sequence diagrams for namespaces outside of using_namespace
+      description:
   Package diagrams:
     - name: t30001
       title: Basic package diagram test case
@@ -496,6 +502,9 @@ test_cases:
       description:
     - name: t30016
       title: Objective-C directory package diagram test
+      description:
+    - name: t30017
+      title: Test case for '::' prefix in packages diagrams for namespaces outside of using_namespace
       description:
   Include diagrams:
     - name: t40001
