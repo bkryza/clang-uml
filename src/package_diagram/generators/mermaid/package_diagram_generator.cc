@@ -18,6 +18,7 @@
 
 #include "package_diagram_generator.h"
 
+#include "common/generators/display_adapters.h"
 #include "util/error.h"
 
 namespace clanguml::package_diagram::generators::mermaid {
@@ -74,6 +75,8 @@ void generator::generate_relationships(
 
 void generator::generate(const package &p, std::ostream &ostr) const
 {
+    using clanguml::common::generators::display_name_adapter;
+
     LOG_DBG("Generating package {}", p.name());
 
     together_group_stack_.enter();
@@ -83,8 +86,8 @@ void generator::generate(const package &p, std::ostream &ostr) const
     // Don't generate packages from namespaces filtered out by
     // using_namespace
     if (!uns.starts_with({p.full_name(false)})) {
-        ostr << indent(1) << "subgraph " << p.alias() << "[" << p.name()
-             << "]\n";
+        ostr << indent(1) << "subgraph " << p.alias() << "["
+             << display_name_adapter(p).with_packages().name() << "]\n";
 
         if (p.is_deprecated())
             ostr << indent(1) << "%% <<deprecated>>\n";

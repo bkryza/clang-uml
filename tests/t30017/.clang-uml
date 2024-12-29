@@ -1,0 +1,9 @@
+diagrams:
+  t30017_package:
+    type: package
+    glob:
+      - t30017.cc
+    include:
+      paths:
+        - .
+    using_namespace: clanguml::t30017

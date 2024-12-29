@@ -301,9 +301,10 @@ void translation_unit_visitor::add_relationships(
         parent_path.pop_back();
 
         auto pkg = std::make_unique<common::model::package>(
-            config().using_namespace());
+            config().using_namespace(), common::model::path_type::kFilesystem);
 
         pkg->set_name(pkg_name);
+        pkg->set_namespace(parent_path);
         pkg->set_id(get_package_id(cls));
         set_source_location(*cls, *pkg);
 

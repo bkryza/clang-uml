@@ -40,13 +40,16 @@ void generator::generate_top_level_elements(graphml_node_t &parent) const
 
 void generator::generate(const package &p, graphml_node_t &parent) const
 {
+    using clanguml::common::generators::display_name_adapter;
+
     LOG_DBG("Generating package {}", p.full_name(false));
 
     const auto &uns = config().using_namespace();
 
     if (!uns.starts_with({p.full_name(false)})) {
-        auto package_node = make_subgraph(
-            parent, p.alias(), p.name(), to_string(config().package_type()));
+        auto package_node = make_subgraph(parent, p.alias(),
+            display_name_adapter(p).with_packages().name(),
+            to_string(config().package_type()));
 
         generate_link(package_node, p);
 

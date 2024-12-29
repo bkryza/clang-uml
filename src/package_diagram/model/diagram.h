@@ -307,10 +307,11 @@ bool diagram::add_with_filesystem_path(
     // Make sure all parent directories are already packages in the
     // model
     for (auto it = parent_path.begin(); it != parent_path.end(); it++) {
-        auto pkg =
-            std::make_unique<common::model::package>(p->using_namespace());
+        auto pkg = std::make_unique<common::model::package>(
+            p->using_namespace(), common::model::path_type::kFilesystem);
         pkg->set_name(*it);
-        auto ns = common::model::path(parent_path.begin(), it);
+        auto ns = common::model::path(
+            parent_path.begin(), it, common::model::path_type::kFilesystem);
         pkg->set_namespace(ns);
         pkg->set_id(common::to_id(pkg->full_name(false)));
 
