@@ -115,37 +115,35 @@ TEST_CASE("Test nested trait with empty using namespace")
     auto p = std::make_unique<package>(using_namespace);
     p->set_name("ns1");
     p->set_id(id());
-
-    REQUIRE(
-        d.add_element(p->path().relative_to(using_namespace), std::move(p)));
+    auto prel = p->path().relative_to(using_namespace);
+    REQUIRE(d.add_element(prel, std::move(p)));
 
     p = std::make_unique<package>(using_namespace);
     p->set_name("ns2");
     p->set_namespace(namespace_{"ns1"});
     p->set_id(id());
-
-    REQUIRE(
-        d.add_element(p->path().relative_to(using_namespace), std::move(p)));
+    prel = p->path().relative_to(using_namespace);
+    REQUIRE(d.add_element(prel, std::move(p)));
 
     auto c = std::make_unique<class_>(using_namespace);
     c->set_name("A");
     c->set_id(id());
-    REQUIRE(
-        d.add_element(c->path().relative_to(using_namespace), std::move(c)));
+    prel = c->path().relative_to(using_namespace);
+    REQUIRE(d.add_element(prel, std::move(c)));
 
     c = std::make_unique<class_>(using_namespace);
     c->set_name("B");
     c->set_namespace(namespace_{"ns1"});
     c->set_id(id());
-    REQUIRE(
-        d.add_element(c->path().relative_to(using_namespace), std::move(c)));
+    prel = c->path().relative_to(using_namespace);
+    REQUIRE(d.add_element(prel, std::move(c)));
 
     c = std::make_unique<class_>(using_namespace);
     c->set_name("C");
     c->set_namespace(namespace_{"ns1::ns2"});
     c->set_id(id());
-    REQUIRE(
-        d.add_element(c->path().relative_to(using_namespace), std::move(c)));
+    prel = c->path().relative_to(using_namespace);
+    REQUIRE(d.add_element(prel, std::move(c)));
 
     REQUIRE_EQ(d.get_element(namespace_{"A"}).value().name(), "A");
     REQUIRE_EQ(d.get_element(namespace_{"ns1::B"}).value().name(), "B");
@@ -194,41 +192,41 @@ TEST_CASE("Test nested trait with using namespace")
     p->set_name("ns1");
     p->set_id(id());
     p->is_root(true);
+    auto prel = p->path().relative_to(using_namespace);
 
-    REQUIRE(
-        d.add_element(p->path().relative_to(using_namespace), std::move(p)));
+    REQUIRE(d.add_element(prel, std::move(p)));
 
     p = std::make_unique<package>(using_namespace);
     p->set_name("ns2");
     p->set_namespace(namespace_{"ns1"});
     p->set_id(id());
     p->is_root(false);
+    prel = p->path().relative_to(using_namespace);
 
-    REQUIRE(
-        d.add_element(p->path().relative_to(using_namespace), std::move(p)));
+    REQUIRE(d.add_element(prel, std::move(p)));
 
     auto c = std::make_unique<class_>(using_namespace);
     c->set_name("A");
     c->set_id(id());
     const auto A_id = c->id();
-    REQUIRE(
-        d.add_element(c->path().relative_to(using_namespace), std::move(c)));
+    prel = c->path().relative_to(using_namespace);
+    REQUIRE(d.add_element(prel, std::move(c)));
 
     c = std::make_unique<class_>(using_namespace);
     c->set_name("B");
     c->set_namespace(namespace_{"ns1"});
     c->set_id(id());
     const auto ns1_A_id = c->id();
-    REQUIRE(
-        d.add_element(c->path().relative_to(using_namespace), std::move(c)));
+    prel = c->path().relative_to(using_namespace);
+    REQUIRE(d.add_element(prel, std::move(c)));
 
     c = std::make_unique<class_>(using_namespace);
     c->set_name("C");
     c->set_namespace(namespace_{"ns1::ns2"});
     c->set_id(id());
     const auto ns1_ns2_A_id = c->id();
-    REQUIRE(
-        d.add_element(c->path().relative_to(using_namespace), std::move(c)));
+    prel = c->path().relative_to(using_namespace);
+    REQUIRE(d.add_element(prel, std::move(c)));
 
     auto A_ns = namespace_{"A"};
     A_ns.is_root(true);
@@ -282,41 +280,38 @@ TEST_CASE("Test nested trait with using namespace conflicting nested")
     p->set_name("ns1");
     p->set_id(id());
     p->is_root(true);
-
-    REQUIRE(
-        d.add_element(p->path().relative_to(using_namespace), std::move(p)));
+    auto prel = p->path().relative_to(using_namespace);
+    REQUIRE(d.add_element(prel, std::move(p)));
 
     p = std::make_unique<package>(using_namespace);
     p->set_name("ns2");
     p->set_namespace(namespace_{"ns1"});
     p->set_id(id());
-
-    REQUIRE(
-        d.add_element(p->path().relative_to(using_namespace), std::move(p)));
+    prel = p->path().relative_to(using_namespace);
+    REQUIRE(d.add_element(prel, std::move(p)));
 
     p = std::make_unique<package>(using_namespace);
     p->set_name("ns2");
     p->set_id(id());
     p->is_root(true);
-
-    REQUIRE(
-        d.add_element(p->path().relative_to(using_namespace), std::move(p)));
+    prel = p->path().relative_to(using_namespace);
+    REQUIRE(d.add_element(prel, std::move(p)));
 
     auto c = std::make_unique<class_>(using_namespace);
     c->set_name("A");
     c->set_id(id());
     c->set_namespace(namespace_{"ns1::ns2"});
     const auto A_id = c->id();
-    REQUIRE(
-        d.add_element(c->path().relative_to(using_namespace), std::move(c)));
+    prel = c->path().relative_to(using_namespace);
+    REQUIRE(d.add_element(prel, std::move(c)));
 
     c = std::make_unique<class_>(using_namespace);
     c->set_name("B");
     c->set_namespace(namespace_{"ns2"});
     c->set_id(id());
     const auto ns2_B_id = c->id();
-    REQUIRE(
-        d.add_element(c->path().relative_to(using_namespace), std::move(c)));
+    prel = c->path().relative_to(using_namespace);
+    REQUIRE(d.add_element(prel, std::move(c)));
 
     {
         std::stringstream out;
