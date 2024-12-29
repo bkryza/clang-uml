@@ -53,7 +53,7 @@ public:
 
 auto id()
 {
-    static auto id_counter = 1UL;
+    static uint64_t id_counter{1UL};
 
     return eid_t{id_counter++};
 }
