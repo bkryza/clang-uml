@@ -33,10 +33,9 @@ std::string package::full_name_impl(bool relative) const
             auto res = get_namespace() | name();
             return using_namespace().relative(res.to_string());
         }
-        else {
-            auto res = get_namespace().relative_to(using_namespace()) | name();
-            return res.to_string();
-        }
+
+        auto res = get_namespace().relative_to(using_namespace()) | name();
+        return res.to_string();
     }
 
     return (get_namespace() | name()).to_string();

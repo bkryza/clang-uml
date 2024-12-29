@@ -388,7 +388,7 @@ public:
      * @param ns Path to make relative against *this.
      * @return Relative path.
      */
-    std::string relative(const std::string &ns, bool add_root_prefix) const
+    std::string relative(const std::string &ns) const
     {
         if (is_empty())
             return ns;
@@ -407,11 +407,6 @@ public:
         }
 
         return res;
-    }
-
-    std::string relative(const std::string &ns) const
-    {
-        return relative(ns, !is_empty());
     }
 
     /**
