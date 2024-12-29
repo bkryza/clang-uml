@@ -93,6 +93,7 @@
  * [t00086](./test_cases/t00086.md) - Objective-C nested structs and enums test case
  * [t00087](./test_cases/t00087.md) - Typed element class diagram filter test case
  * [t00088](./test_cases/t00088.md) - Typed element Objective-C class diagram filter test case
+ * [t00089](./test_cases/t00089.md) - Test case for '::' prefix in class diagrams for namespaces outside of using_namespace
 ## Sequence diagrams
  * [t20001](./test_cases/t20001.md) - Basic sequence diagram test case
  * [t20002](./test_cases/t20002.md) - Free function sequence diagram test case
@@ -156,6 +157,7 @@
  * [t20060](./test_cases/t20060.md) - Test case for multiple lambda expressions in function calls arguments
  * [t20061](./test_cases/t20061.md) - Test case for paths filter in sequence diagrams
  * [t20062](./test_cases/t20062.md) - Test case with vaargs function in sequence diagrams
+ * [t20063](./test_cases/t20063.md) - Test case for '::' prefix in sequence diagrams for namespaces outside of using_namespace
 ## Package diagrams
  * [t30001](./test_cases/t30001.md) - Basic package diagram test case
  * [t30002](./test_cases/t30002.md) - Package dependency test case
@@ -173,6 +175,7 @@
  * [t30014](./test_cases/t30014.md) - C++20 modules package diagram test with partitions
  * [t30015](./test_cases/t30015.md) - C++20 modules package diagram test with partition dependencies
  * [t30016](./test_cases/t30016.md) - Objective-C directory package diagram test
+ * [t30017](./test_cases/t30017.md) - Test case for '::' prefix in packages diagrams for namespaces outside of using_namespace
 ## Include diagrams
  * [t40001](./test_cases/t40001.md) - Basic include graph diagram test case
  * [t40002](./test_cases/t40002.md) - Cyclic include graph diagram test case
