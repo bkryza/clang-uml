@@ -1,3 +1,4 @@
+
 /**
  * @file src/package_diagram/visitor/translation_unit_visitor.cc
  *
@@ -60,6 +61,8 @@ bool translation_unit_visitor::VisitNamespaceDecl(clang::NamespaceDecl *ns)
 
     auto package_path = namespace_{qualified_name};
     auto package_parent = package_path;
+    bool is_root =
+        (package_path.size() == 1) && !config().using_namespace().is_empty();
 
     std::string name;
     if (!package_path.is_empty())
@@ -75,6 +78,7 @@ bool translation_unit_visitor::VisitNamespaceDecl(clang::NamespaceDecl *ns)
 
     p->set_name(name);
     p->set_namespace(package_parent);
+    p->is_root(is_root);
     p->set_id(common::to_id(*ns));
     set_source_location(*ns, *p);
 
@@ -297,9 +301,10 @@ void translation_unit_visitor::add_relationships(
         parent_path.pop_back();
 
         auto pkg = std::make_unique<common::model::package>(
-            config().using_namespace());
+            config().using_namespace(), common::model::path_type::kFilesystem);
 
         pkg->set_name(pkg_name);
+        pkg->set_namespace(parent_path);
         pkg->set_id(get_package_id(cls));
         set_source_location(*cls, *pkg);
 

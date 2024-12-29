@@ -42,9 +42,9 @@ TEST_CASE("t00013")
         REQUIRE(IsInstantiation(src, "E<T>", "E<int>"));
         REQUIRE(IsInstantiation(src, "E<T>", "E<std::string>"));
         REQUIRE(IsAggregation<Private>(src, "R", "E<std::string>", "estring"));
-        REQUIRE(IsDependency(src, "R", "ABCD::F<T>"));
-        REQUIRE(IsInstantiation(src, "ABCD::F<T>", "ABCD::F<int>"));
-        REQUIRE(IsDependency(src, "R", "ABCD::F<int>"));
+        REQUIRE(IsDependency(src, "R", "::ABCD::F<T>"));
+        REQUIRE(IsInstantiation(src, "::ABCD::F<T>", "::ABCD::F<int>"));
+        REQUIRE(IsDependency(src, "R", "::ABCD::F<int>"));
         REQUIRE(
             IsInstantiation(src, "G<T,Args...>", "G<int,float,std::string>"));
     });

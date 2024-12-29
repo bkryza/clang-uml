@@ -173,5 +173,17 @@ private:
     bool filtered_{false};
 };
 
+template <typename T> bool needs_root_prefix(const T &e)
+{
+    if (e.get_namespace().type() != model::path_type::kNamespace)
+        return false;
+
+    if (e.using_namespace().is_empty())
+        return false;
+
+    return !util::starts_with(
+        e.full_name(false), e.using_namespace().to_string());
+}
+
 template <typename DiagramT> bool check_diagram_type(diagram_t t);
 } // namespace clanguml::common::model

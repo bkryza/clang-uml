@@ -18,6 +18,8 @@
 
 #include "package_diagram_generator.h"
 
+#include "common/generators/display_adapters.h"
+
 #include "util/error.h"
 
 namespace clanguml::package_diagram::generators::plantuml {
@@ -66,6 +68,8 @@ void generator::generate_relationships(
 
 void generator::generate(const package &p, std::ostream &ostr) const
 {
+    using clanguml::common::generators::display_name_adapter;
+
     LOG_DBG("Generating package {}", p.name());
 
     together_group_stack_.enter();
@@ -75,7 +79,8 @@ void generator::generate(const package &p, std::ostream &ostr) const
     // Don't generate packages from namespaces filtered out by
     // using_namespace
     if (!uns.starts_with({p.full_name(false)})) {
-        ostr << "package [" << p.name() << "] ";
+        ostr << "package [" << display_name_adapter(p).with_packages().name()
+             << "] ";
         ostr << "as " << p.alias();
 
         if (p.is_deprecated())

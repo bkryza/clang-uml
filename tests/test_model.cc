@@ -67,8 +67,13 @@ TEST_CASE("Test namespace_")
 
     namespace_ ns7a{"aaa::bbb"};
     namespace_ ns7b{"aaa::bbb::ccc::ddd"};
-    CHECK(ns7b.relative_to(ns7a) == namespace_{"ccc", "ddd"});
-    CHECK(ns7a.relative_to(ns7b) == namespace_{"aaa::bbb"});
+
+    CHECK(ns7b.relative_to(ns7a).to_string() ==
+        namespace_{"ccc", "ddd"}.to_string());
+    CHECK_FALSE(ns7b.relative_to(ns7a).is_root());
+
+    CHECK(ns7a.relative_to(ns7b).to_string() == "aaa::bbb");
+    CHECK(ns7a.relative_to(ns7b).is_root());
 
     namespace_ ns8{"aaa::bbb"};
     const std::string name{"aaa::bbb::ccc<std::unique_ptr<aaa::bbb::ddd>>"};

@@ -13,3 +13,13 @@ diagrams:
         elements:
           - std::thread
     using_namespace: clanguml::t00080
+    plantuml:
+      after:
+        - >
+          note right of {{ element("std::thread").alias }}
+             {% set e=element("std::thread") %} Name in root namespace
+          end note
+        - >
+          note bottom of {{ element("clanguml::t00080::Worker").alias }}
+             {% set e=element("clanguml::t00080::Worker") %} Name relative to '{{ e.using_namespace }}'
+          end note

@@ -29,6 +29,11 @@ package::package(const common::model::namespace_ &using_namespace, path_type pt)
 std::string package::full_name_impl(bool relative) const
 {
     if (relative) {
+        if (get_namespace().type() == path_type::kNamespace) {
+            auto res = get_namespace() | name();
+            return using_namespace().relative(res.to_string());
+        }
+
         auto res = get_namespace().relative_to(using_namespace()) | name();
         return res.to_string();
     }

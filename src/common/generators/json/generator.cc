@@ -33,8 +33,7 @@ void to_json(nlohmann::json &j, const source_location &sl)
 
 void to_json(nlohmann::json &j, const element &c)
 {
-    j = json{{"id", std::to_string(c.id().value())},
-        {"name", display_name_adapter(c).name()},
+    j = json{{"id", std::to_string(c.id().value())}, {"name", c.name()},
         {"namespace", c.get_namespace().to_string()}, {"type", c.type_name()},
         {"display_name", display_name_adapter(c).full_name(true)}};
 

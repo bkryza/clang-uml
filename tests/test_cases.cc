@@ -306,9 +306,11 @@ template <typename DiagramType>
 DiagramType render_package_diagram(std::shared_ptr<clanguml::config::diagram> c,
     clanguml::package_diagram::model::diagram &model)
 {
-    return DiagramType{common::model::diagram_t::kPackage,
+    auto d = DiagramType{common::model::diagram_t::kPackage,
         detail::render_diagram<DiagramType, clanguml::config::package_diagram>(
             c, model)};
+    d.generate_packages = true;
+    return d;
 }
 
 template <typename DiagramType>
@@ -602,6 +604,8 @@ void CHECK_INCLUDE_DIAGRAM(const clanguml::config::config &config,
 #include "t00088/test_case.h"
 #endif
 
+#include "t00089/test_case.h"
+
 ///
 /// Sequence diagram tests
 ///
@@ -675,6 +679,7 @@ void CHECK_INCLUDE_DIAGRAM(const clanguml::config::config &config,
 #include "t20060/test_case.h"
 #include "t20061/test_case.h"
 #include "t20062/test_case.h"
+#include "t20063/test_case.h"
 
 ///
 /// Package diagram tests
@@ -700,6 +705,8 @@ void CHECK_INCLUDE_DIAGRAM(const clanguml::config::config &config,
 #if defined(ENABLE_OBJECTIVE_C_TEST_CASES)
 #include "t30016/test_case.h"
 #endif
+
+#include "t30017/test_case.h"
 
 ///
 /// Include diagram tests

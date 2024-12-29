@@ -122,6 +122,7 @@ set(TEST_NAMES
     test_cli_handler
     test_filters
     test_filters_advanced
+    test_nested_trait
     test_thread_pool_executor
     test_query_driver_output_extractor
     test_progress_indicator)

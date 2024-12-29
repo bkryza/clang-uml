@@ -295,7 +295,6 @@ bool diagram::add_with_namespace_path(std::unique_ptr<ElementT> &&e)
 
     const auto ns = e->get_relative_namespace();
     auto name = base_name;
-    auto name_with_ns = e->name_and_ns();
     auto name_and_ns = ns | name;
     auto &e_ref = *e;
     auto id = e_ref.id();

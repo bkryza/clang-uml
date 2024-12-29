@@ -18,6 +18,7 @@
 
 #include "package_diagram_generator.h"
 
+#include "common/generators/display_adapters.h"
 #include "util/error.h"
 
 namespace clanguml::package_diagram::generators::json {
@@ -56,6 +57,8 @@ void generator::generate_relationships(
 
 void generator::generate(const package &p, nlohmann::json &parent) const
 {
+    using clanguml::common::generators::display_name_adapter;
+
     LOG_DBG("Generating package {}", p.full_name(false));
 
     const auto &uns = config().using_namespace();
@@ -64,7 +67,7 @@ void generator::generate(const package &p, nlohmann::json &parent) const
         j["id"] = std::to_string(p.id().value());
         j["name"] = p.name();
         j["type"] = to_string(config().package_type());
-        j["display_name"] = p.name();
+        j["display_name"] = display_name_adapter(p).with_packages().name();
         switch (config().package_type()) {
         case config::package_type_t::kNamespace:
             j["namespace"] = p.get_namespace().to_string();

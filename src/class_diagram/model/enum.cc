@@ -39,15 +39,12 @@ std::string enum_::full_name_impl(bool relative) const
     using namespace clanguml::util;
     using clanguml::common::model::namespace_;
 
-    std::ostringstream ostr;
-    if (relative)
-        ostr << namespace_{name_and_ns()}
-                    .relative_to(using_namespace())
-                    .to_string();
-    else
-        ostr << name_and_ns();
+    std::string res;
 
-    std::string res{ostr.str()};
+    if (relative)
+        res = using_namespace().relative(namespace_{name_and_ns()}.to_string());
+    else
+        res = name_and_ns();
 
     return res;
 }

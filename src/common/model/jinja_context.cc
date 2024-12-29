@@ -63,6 +63,7 @@ void to_json(inja::json &ctx, const element_context<element> &jc)
 {
     to_json(ctx, jc.as<diagram_element>());
 
+    ctx["element"]["using_namespace"] = jc.get().using_namespace().to_string();
     ctx["element"]["namespace"] = jc.get().get_namespace().to_string();
 }
 
@@ -172,6 +173,7 @@ void to_json(inja::json &ctx, const diagram_context<common::model::element> &jc)
 {
     to_json(ctx, jc.as<diagram_element>());
 
+    ctx["using_namespace"] = jc.get().using_namespace().to_string();
     ctx["namespace"] = jc.get().get_namespace().to_string();
     if (const auto maybe_comment = jc.get().comment();
         maybe_comment.has_value()) {

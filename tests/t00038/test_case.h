@@ -27,7 +27,7 @@ TEST_CASE("t00038")
         REQUIRE(IsClass(src, "A"));
         REQUIRE(IsClass(src, "B"));
         REQUIRE(IsClass(src, "C"));
-        REQUIRE(IsClass(src, "thirdparty::ns1::E"));
+        REQUIRE(IsClass(src, "::thirdparty::ns1::E"));
         REQUIRE(IsClass(src, "key_t"));
         REQUIRE(IsClassTemplate(src, "map<T>"));
         REQUIRE(IsClassTemplate(src,
@@ -69,9 +69,9 @@ TEST_CASE("t00038")
         REQUIRE(IsDependency(src,
             "map<std::integral_constant<thirdparty::ns1::color_t,"
             "thirdparty::ns1::color_t::red>>",
-            "thirdparty::ns1::color_t"));
+            "::thirdparty::ns1::color_t"));
 
-        REQUIRE(IsBaseClass(src, "thirdparty::ns1::E",
+        REQUIRE(IsBaseClass(src, "::thirdparty::ns1::E",
             "map<std::integral_constant<thirdparty::ns1::color_t,"
             "thirdparty::ns1::color_t::red>>"));
     });
