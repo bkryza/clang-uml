@@ -42,7 +42,28 @@ void cli_handler::setup_logging()
 
     spdlog::register_logger(logger_);
 
-    logger_->set_pattern("%^[%l]%$ [tid %t] %v");
+    if (logger_type == logging::logger_type_t::text) {
+        clanguml::logging::logger_type(logging::logger_type_t::text);
+        logger_->set_pattern("%^[%l]%$ [tid %t] %v");
+    }
+    else {
+        clanguml::logging::logger_type(logging::logger_type_t::json);
+        logger_->set_pattern("{\"time\": \"%Y-%m-%dT%H:%M:%S.%f%z\", \"name\": "
+                             "\"%n\", \"level\": \"%^%l%$\", "
+                             "\"thread\": %t, %v}");
+        if (progress) {
+            spdlog::drop("json-progress-logger");
+
+            auto json_progress_logger = spdlog::stdout_color_mt(
+                "json-progress-logger", spdlog::color_mode::automatic);
+
+            json_progress_logger->set_level(spdlog::level::info);
+            json_progress_logger->set_pattern(
+                "{\"time\": \"%Y-%m-%dT%H:%M:%S.%f%z\", \"name\": "
+                "\"%n\", \"level\": \"%^%l%$\", "
+                "\"thread\": %t, \"progress\": %v}");
+        }
+    }
 
     if (verbose == 0) { // --quiet
         logger_->set_level(spdlog::level::err);
@@ -67,6 +88,10 @@ cli_flow_t cli_handler::parse(int argc, const char **argv)
             {"mermaid", clanguml::common::generator_type_t::mermaid},
             {"graphml", clanguml::common::generator_type_t::graphml}};
 
+    static const std::map<std::string, clanguml::logging::logger_type_t>
+        logger_type_names{{"text", clanguml::logging::logger_type_t::text},
+            {"json", clanguml::logging::logger_type_t::json}};
+
     app.add_option("-c,--config", config_path,
         "Location of configuration file, when '-' read from stdin");
     app.add_option("-d,--compile-database", compilation_database_dir,
@@ -86,6 +111,10 @@ cli_flow_t cli_handler::parse(int argc, const char **argv)
     app.add_flag("-V,--version", show_version, "Print version and exit");
     app.add_flag("-v,--verbose", verbose,
         "Verbose logging ('-v' - debug, '-vv' - trace)");
+    app.add_option(
+           "--logger", logger_type, "Log format: text, json (default: text)")
+        ->transform(CLI::CheckedTransformer(logger_type_names))
+        ->option_text("TEXT ...");
     app.add_flag(
         "-p,--progress", progress, "Show progress bars for generated diagrams");
     app.add_flag("-q,--quiet", quiet, "Minimal logging");
@@ -184,7 +213,7 @@ cli_flow_t cli_handler::parse(int argc, const char **argv)
     else
         verbose++;
 
-    if (progress)
+    if (progress && (logger_type == logging::logger_type_t::text))
         verbose = 0;
 
     return cli_flow_t::kContinue;
@@ -213,7 +242,7 @@ cli_flow_t cli_handler::handle_options(int argc, const char **argv)
 
     config.inherit();
 
-    if (progress) {
+    if (progress && (logging::logger_type() == logging::logger_type_t::text)) {
         spdlog::drop("clanguml-logger");
 
         // Setup null logger for clean progress indicators
@@ -425,13 +454,25 @@ void cli_handler::set_config_path(const std::string &path)
 
 cli_flow_t cli_handler::print_version()
 {
-    ostr_ << "clang-uml " << clanguml::version::version() << '\n';
-    ostr_ << "Copyright (C) 2021-2024 Bartek Kryza <bkryza@gmail.com>" << '\n';
-    ostr_ << util::get_os_name() << '\n';
-    ostr_ << "Built against LLVM/Clang libraries version: "
-          << LLVM_VERSION_STRING << '\n';
-    ostr_ << "Using LLVM/Clang libraries version: "
-          << clang::getClangFullVersion() << '\n';
+    if (logger_type == clanguml::logging::logger_type_t::text) {
+        ostr_ << "clang-uml " << clanguml::version::version() << '\n';
+        ostr_ << "Copyright (C) 2021-2024 Bartek Kryza <bkryza@gmail.com>"
+              << '\n';
+        ostr_ << util::get_os_name() << '\n';
+        ostr_ << "Built against LLVM/Clang libraries version: "
+              << LLVM_VERSION_STRING << '\n';
+        ostr_ << "Using LLVM/Clang libraries version: "
+              << clang::getClangFullVersion() << '\n';
+    }
+    else {
+        nlohmann::json j;
+        j["version"] = clanguml::version::version();
+        j["copyright"] =
+            "Copyright (C) 2021-2024 Bartek Kryza <bkryza@gmail.com>";
+        j["llvm"]["built_with"] = LLVM_VERSION_STRING;
+        j["llvm"]["using"] = clang::getClangFullVersion();
+        ostr_ << j;
+    }
 
     return cli_flow_t::kExit;
 }
@@ -459,10 +500,24 @@ cli_flow_t cli_handler::print_diagrams_list()
 {
     using std::cout;
 
-    ostr_ << "The following diagrams are defined in the config file:\n";
-    for (const auto &[name, diagram] : config.diagrams) {
-        ostr_ << "  - " << name << " [" << to_string(diagram->type()) << "]";
-        ostr_ << '\n';
+    if (logger_type == logging::logger_type_t::text) {
+        ostr_ << "The following diagrams are defined in the config file:\n";
+        for (const auto &[name, diagram] : config.diagrams) {
+            ostr_ << "  - " << name << " [" << to_string(diagram->type())
+                  << "]";
+            ostr_ << '\n';
+        }
+    }
+    else {
+        inja::json j = inja::json::array();
+        for (const auto &[name, diagram] : config.diagrams) {
+            inja::json d;
+            d["name"] = name;
+            d["type"] = to_string(diagram->type());
+            j.emplace_back(std::move(d));
+        }
+
+        ostr_ << j.dump();
     }
 
     return cli_flow_t::kExit;
@@ -473,17 +528,36 @@ cli_flow_t cli_handler::print_diagram_templates()
     using std::cout;
 
     if (!config.diagram_templates) {
-        ostr_ << "No diagram templates are defined in the config file\n";
+        if (logger_type == logging::logger_type_t::text) {
+            ostr_ << "No diagram templates are defined in the config file\n";
+        }
+        else {
+            ostr_ << "[]";
+        }
         return cli_flow_t::kExit;
     }
-
-    ostr_ << "The following diagram templates are available:\n";
-    for (const auto &[name, diagram_template] : config.diagram_templates()) {
-        ostr_ << "  - " << name << " [" << to_string(diagram_template.type)
-              << "]";
-        if (!diagram_template.description.empty())
-            ostr_ << ": " << diagram_template.description;
-        ostr_ << '\n';
+    if (logger_type == logging::logger_type_t::text) {
+        ostr_ << "The following diagram templates are available:\n";
+        for (const auto &[name, diagram_template] :
+            config.diagram_templates()) {
+            ostr_ << "  - " << name << " [" << to_string(diagram_template.type)
+                  << "]";
+            if (!diagram_template.description.empty())
+                ostr_ << ": " << diagram_template.description;
+            ostr_ << '\n';
+        }
+    }
+    else {
+        inja::json j = inja::json::array();
+        for (const auto &[name, diagram_template] :
+            config.diagram_templates()) {
+            inja::json dt;
+            dt["name"] = name;
+            dt["type"] = to_string(diagram_template.type);
+            dt["description"] = diagram_template.description;
+            j.emplace_back(std::move(dt));
+        }
+        ostr_ << j.dump();
     }
 
     return cli_flow_t::kExit;

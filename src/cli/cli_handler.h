@@ -19,6 +19,7 @@
 
 #include "common/model/enums.h"
 #include "config/config.h"
+#include "util/logging.h"
 
 #include <cli11/CLI11.hpp>
 
@@ -168,6 +169,7 @@ public:
     unsigned int thread_count{};
     bool show_version{false};
     int verbose{};
+    logging::logger_type_t logger_type{logging::logger_type_t::text};
     bool progress{false};
     bool list_diagrams{false};
     bool quiet{false};

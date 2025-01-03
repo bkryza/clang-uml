@@ -612,7 +612,7 @@ void generator::generate_relationships(
                 relstr << c.alias() << " " << puml_relation << " "
                        << target_alias;
             else
-                relstr << target_alias << " <|-- " << c.alias() << '\n';
+                relstr << target_alias << " <|-- " << c.alias();
 
             if (!r.label().empty()) {
                 relstr << " : " << plantuml_common::to_plantuml(r.access())
@@ -623,11 +623,9 @@ void generator::generate_relationships(
             if (unique_relations.count(relstr.str()) == 0) {
                 unique_relations.emplace(relstr.str());
 
-                relstr << '\n';
+                LOG_TRACE("=== Adding relation {}", relstr.str());
 
-                LOG_DBG("=== Adding relation {}", relstr.str());
-
-                all_relations_str << relstr.str();
+                all_relations_str << relstr.str() << '\n';
             }
         }
         catch (error::uml_alias_missing &e) {
@@ -697,11 +695,9 @@ void generator::generate_relationships(
             if (unique_relations.count(relstr.str()) == 0) {
                 unique_relations.emplace(relstr.str());
 
-                relstr << '\n';
+                LOG_TRACE("=== Adding relation {}", relstr.str());
 
-                LOG_DBG("=== Adding relation {}", relstr.str());
-
-                all_relations_str << relstr.str();
+                all_relations_str << relstr.str() << '\n';
             }
         }
         catch (error::uml_alias_missing &e) {
@@ -830,11 +826,9 @@ void generator::generate_relationships(
             if (unique_relations.count(relstr.str()) == 0) {
                 unique_relations.emplace(relstr.str());
 
-                relstr << '\n';
+                LOG_TRACE("=== Adding relation {}", relstr.str());
 
-                LOG_DBG("=== Adding relation {}", relstr.str());
-
-                all_relations_str << relstr.str();
+                all_relations_str << relstr.str() << '\n';
             }
         }
         catch (error::uml_alias_missing &e) {

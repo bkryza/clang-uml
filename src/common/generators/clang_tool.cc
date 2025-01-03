@@ -58,6 +58,17 @@ std::string to_string(const clanguml::generators::diagnostic &d)
         "[{}] {}:{}: {}", d.level, filepath, line, d.description);
 }
 
+void to_json(nlohmann::json &j, const diagnostic &a)
+{
+    j["level"] = a.level;
+    j["description"] = logging::escape_json(a.description);
+    if (a.location) {
+        j["location"]["file"] = a.location.value().file();
+        j["location"]["line"] = a.location.value().line();
+        j["location"]["column"] = a.location.value().column();
+    }
+}
+
 clang_tool_exception::clang_tool_exception(common::model::diagram_t dt,
     std::string dn, std::vector<diagnostic> d, std::string description)
     : error::diagram_generation_error{dt, dn, description}

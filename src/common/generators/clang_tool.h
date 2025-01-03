@@ -37,8 +37,10 @@ struct diagnostic {
 
 std::string to_string(const diagnostic &d);
 
-struct clang_tool_exception : public error::diagram_generation_error {
+void to_json(nlohmann::json &j, const diagnostic &a);
 
+class clang_tool_exception : public error::diagram_generation_error {
+public:
     clang_tool_exception(common::model::diagram_t dt, std::string dn,
         std::vector<diagnostic> d,
         std::string description = "Clang failed to parse sources.");

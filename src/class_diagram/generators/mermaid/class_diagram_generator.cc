@@ -459,11 +459,9 @@ void generator::generate_relationships(
             if (unique_relations.count(relstr.str()) == 0) {
                 unique_relations.emplace(relstr.str());
 
-                relstr << '\n';
-
                 LOG_DBG("=== Adding relation {}", relstr.str());
 
-                all_relations_str << relstr.str();
+                all_relations_str << relstr.str() << '\n';
             }
         }
         catch (error::uml_alias_missing &e) {
@@ -541,11 +539,9 @@ void generator::generate_relationships(
             if (unique_relations.count(relstr.str()) == 0) {
                 unique_relations.emplace(relstr.str());
 
-                relstr << '\n';
+                LOG_TRACE("=== Adding relation {}", relstr.str());
 
-                LOG_DBG("=== Adding relation {}", relstr.str());
-
-                all_relations_str << relstr.str();
+                all_relations_str << relstr.str() << '\n';
             }
         }
         catch (error::uml_alias_missing &e) {
@@ -762,11 +758,9 @@ void generator::generate_relationships(
             if (unique_relations.count(relstr.str()) == 0) {
                 unique_relations.emplace(relstr.str());
 
-                relstr << '\n';
+                LOG_TRACE("=== Adding relation {}", relstr.str());
 
-                LOG_DBG("=== Adding relation {}", relstr.str());
-
-                all_relations_str << relstr.str();
+                all_relations_str << relstr.str() << '\n';
             }
         }
         catch (error::uml_alias_missing &e) {

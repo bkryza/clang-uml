@@ -17,8 +17,7 @@
  */
 #pragma once
 
-#include <spdlog/sinks/stdout_color_sinks.h>
-#include <spdlog/spdlog.h>
+#include "logging.h"
 
 #include <algorithm>
 #include <cstring>
@@ -29,44 +28,7 @@
 #include <type_traits>
 #include <vector>
 
-#include "fmt_formatters.h"
-
-#define LOG_ERROR(fmt__, ...)                                                  \
-    spdlog::get("clanguml-logger")                                             \
-        ->error(fmt::runtime(std::string("[{}:{}] ") + fmt__), FILENAME_,      \
-            __LINE__, ##__VA_ARGS__)
-
-#define LOG_WARN(fmt__, ...)                                                   \
-    spdlog::get("clanguml-logger")                                             \
-        ->warn(fmt::runtime(std::string("[{}:{}] ") + fmt__), FILENAME_,       \
-            __LINE__, ##__VA_ARGS__)
-
-#define LOG_INFO(fmt__, ...)                                                   \
-    spdlog::get("clanguml-logger")                                             \
-        ->info(fmt::runtime(std::string("[{}:{}] ") + fmt__), FILENAME_,       \
-            __LINE__, ##__VA_ARGS__)
-
-#define LOG_DBG(fmt__, ...)                                                    \
-    spdlog::get("clanguml-logger")                                             \
-        ->debug(fmt::runtime(std::string("[{}:{}] ") + fmt__), FILENAME_,      \
-            __LINE__, ##__VA_ARGS__)
-
-#define LOG_TRACE(fmt__, ...)                                                  \
-    spdlog::get("clanguml-logger")                                             \
-        ->trace(fmt::runtime(std::string("[{}:{}] ") + fmt__), FILENAME_,      \
-            __LINE__, ##__VA_ARGS__)
-
 namespace clanguml::util {
-
-// For release builds, use only file names in the log paths, for debug use
-// full paths to make it easier to navigate to specific file:line in the code
-// from logs
-#if defined(NDEBUG)
-#define FILENAME_                                                              \
-    (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
-#else
-#define FILENAME_ __FILE__
-#endif
 
 constexpr unsigned kDefaultMessageCommentWidth{25U};
 

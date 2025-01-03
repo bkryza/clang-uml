@@ -89,25 +89,47 @@ int main(int argc, const char *argv[])
             cli.config, db, cli.get_runtime_config(), translation_units_map);
     }
     catch (error::compilation_database_error &e) {
-        fmt::println(
-            "ERROR: Failed to load compilation database from {} due to: {}",
-            cli.config.compilation_database_dir(), e.what());
+        if (clanguml::logging::logger_type() == logging::logger_type_t::text) {
+            fmt::println(
+                "ERROR: Failed to load compilation database from {} due to: {}",
+                cli.config.compilation_database_dir(), e.what());
+        }
+        else {
+            LOG_ERROR("Failed to load compilation database from {} due to: {}",
+                cli.config.compilation_database_dir(), e.what());
+        }
         return 1;
     }
     catch (error::query_driver_no_paths &e) {
-        fmt::println(
-            "ERROR: Querying provided compiler driver {} did not provide any "
-            "paths, please make sure the path is correct and that your "
-            "compiler is GCC-compatible: {}",
-            cli.config.query_driver(), e.what());
+        if (clanguml::logging::logger_type() == logging::logger_type_t::text) {
+            fmt::println(
+                "ERROR: Querying provided compiler driver {} did not provide "
+                "any "
+                "paths, please make sure the path is correct and that your "
+                "compiler is GCC-compatible: {}",
+                cli.config.query_driver(), e.what());
+        }
+        else {
+            LOG_ERROR(
+                "Querying provided compiler driver {} did not provide any "
+                "paths, please make sure the path is correct and that your "
+                "compiler is GCC-compatible: {}",
+                cli.config.query_driver(), e.what());
+        }
         return 1;
     }
     catch (error::diagram_generation_error &e) {
-        fmt::println("ERROR: {}", e.what());
+        if (clanguml::logging::logger_type() == logging::logger_type_t::text)
+            fmt::println("ERROR: {}", e.what());
+        else
+            LOG_ERROR("{}", e.what());
         return 1;
     }
     catch (std::exception &e) {
-        fmt::println("ERROR: {}", e.what());
+        if (clanguml::logging::logger_type() == logging::logger_type_t::text)
+            fmt::println("ERROR: {}", e.what());
+        else
+            LOG_ERROR("{}", e.what());
         return 1;
     }
 

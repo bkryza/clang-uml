@@ -17,6 +17,7 @@
  */
 
 #include "progress_indicator.h"
+#include "inja/inja.hpp"
 
 #include <util/util.h>
 
@@ -31,6 +32,25 @@ progress_indicator::progress_indicator(std::ostream &ostream)
     : ostream_(ostream)
 {
     progress_bars_.set_option(indicators::option::HideBarWhenComplete{false});
+}
+
+void json_logger_progress_indicator::add_progress_bar(
+    const std::string &name, size_t max, indicators::Color /*color*/)
+{
+    inja::json j;
+    j["diagram_name"] = name;
+    j["max"] = max;
+    j["progress"] = 0;
+    j["status"] = "started";
+
+    progress_bars_mutex_.lock();
+
+    progress_bar_index_.emplace(name, progress_state{0, 0, max});
+
+    progress_bars_mutex_.unlock();
+
+    spdlog::get("json-progress-logger")
+        ->log(spdlog::level::info, "{}", j.dump());
 }
 
 void progress_indicator::add_progress_bar(
@@ -64,6 +84,32 @@ void progress_indicator::add_progress_bar(
     progress_bar_index_.emplace(name, progress_state{bar_index, 0, max});
 
     progress_bars_mutex_.unlock();
+}
+
+void json_logger_progress_indicator::increment(const std::string &name)
+{
+    inja::json j;
+    j["diagram_name"] = name;
+
+    progress_bars_mutex_.lock();
+
+    if (progress_bar_index_.count(name) == 0) {
+        progress_bars_mutex_.unlock();
+        return;
+    }
+
+    auto &p = progress_bar_index_.at(name);
+
+    j["progress"] = p.progress;
+    j["max"] = p.max;
+    j["status"] = "ongoing";
+
+    p.progress++;
+
+    progress_bars_mutex_.unlock();
+
+    spdlog::get("json-progress-logger")
+        ->log(spdlog::level::info, "{}", j.dump());
 }
 
 void progress_indicator::increment(const std::string &name)
@@ -100,6 +146,32 @@ void progress_indicator::stop()
     progress_bars_mutex_.unlock();
 }
 
+void json_logger_progress_indicator::complete(const std::string &name)
+{
+    inja::json j;
+    j["diagram_name"] = name;
+
+    progress_bars_mutex_.lock();
+
+    if (progress_bar_index_.count(name) == 0) {
+        progress_bars_mutex_.unlock();
+        return;
+    }
+
+    auto &p = progress_bar_index_.at(name);
+
+    p.progress = p.max;
+
+    j["progress"] = p.progress;
+    j["max"] = p.max;
+    j["status"] = "completed";
+
+    progress_bars_mutex_.unlock();
+
+    spdlog::get("json-progress-logger")
+        ->log(spdlog::level::info, "{}", j.dump());
+}
+
 void progress_indicator::complete(const std::string &name)
 {
     const auto kCompleteProgressPercent = 100U;
@@ -129,6 +201,29 @@ void progress_indicator::complete(const std::string &name)
     bar.mark_as_completed();
 
     progress_bars_mutex_.unlock();
+}
+
+void json_logger_progress_indicator::fail(const std::string &name)
+{
+    inja::json j;
+    j["diagram_name"] = name;
+
+    progress_bars_mutex_.lock();
+
+    if (progress_bar_index_.count(name) == 0) {
+        progress_bars_mutex_.unlock();
+        return;
+    }
+    auto &p = progress_bar_index_.at(name);
+
+    j["progress"] = p.progress;
+    j["max"] = p.max;
+    j["status"] = "failed";
+
+    progress_bars_mutex_.unlock();
+
+    spdlog::get("json-progress-logger")
+        ->log(spdlog::level::err, "{}", j.dump());
 }
 
 void progress_indicator::fail(const std::string &name)

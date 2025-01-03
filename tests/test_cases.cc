@@ -756,6 +756,10 @@ int main(int argc, char *argv[])
             argvv.push_back("-q");
             default_to_quiet = false;
         }
+        else if (strcmp(argv[i], "-json") == 0) {
+            argvv.push_back("--logger");
+            argvv.push_back("json");
+        }
     }
 
     if (default_to_quiet)

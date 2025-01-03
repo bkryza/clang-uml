@@ -145,19 +145,35 @@ void generate_diagram_impl(const std::string &name,
         if (runtime_config.print_from) {
             auto from_values = model->list_from_values();
 
-            for (const auto &from : from_values) {
-                std::cout << from << '\n';
+            if (logging::logger_type() == logging::logger_type_t::text) {
+                for (const auto &from : from_values) {
+                    std::cout << from << '\n';
+                }
+            }
+            else {
+                inja::json j = inja::json::array();
+                for (const auto &from : from_values) {
+                    j.emplace_back(logging::escape_json(from));
+                }
+                std::cout << j.dump();
             }
 
             return;
         }
         if (runtime_config.print_to) {
             auto to_values = model->list_to_values();
-
-            for (const auto &to : to_values) {
-                std::cout << "|" << to << "|" << '\n';
+            if (logging::logger_type() == logging::logger_type_t::text) {
+                for (const auto &to : to_values) {
+                    std::cout << to << '\n';
+                }
             }
-
+            else {
+                inja::json j = inja::json::array();
+                for (const auto &to : to_values) {
+                    j.emplace_back(logging::escape_json(to));
+                }
+                std::cout << j.dump();
+            }
             return;
         }
     }
@@ -234,12 +250,18 @@ int generate_diagrams(const std::vector<std::string> &diagram_names,
     util::thread_pool_executor generator_executor{runtime_config.thread_count};
     std::vector<std::future<void>> futs;
 
-    std::unique_ptr<progress_indicator> indicator;
+    std::unique_ptr<progress_indicator_base> indicator;
 
     if (runtime_config.progress) {
-        std::cout << termcolor::white
-                  << "Processing translation units and generating diagrams:\n";
-        indicator = std::make_unique<progress_indicator>();
+        if (clanguml::logging::logger_type() == logging::logger_type_t::text) {
+            std::cout
+                << termcolor::white
+                << "Processing translation units and generating diagrams:\n";
+            indicator = std::make_unique<progress_indicator>();
+        }
+        else {
+            indicator = std::make_unique<json_logger_progress_indicator>();
+        }
     }
 
     std::vector<std::exception_ptr> errors;
@@ -344,7 +366,6 @@ int generate_diagrams(const std::vector<std::string> &diagram_names,
             catch (clanguml::generators::clang_tool_exception &e) {
                 if (indicator)
                     indicator->fail(name);
-
                 throw std::move(e);
             }
             catch (std::exception &e) {
@@ -371,7 +392,8 @@ int generate_diagrams(const std::vector<std::string> &diagram_names,
         }
     }
 
-    if (runtime_config.progress) {
+    if (runtime_config.progress &&
+        clanguml::logging::logger_type() == logging::logger_type_t::text) {
         indicator->stop();
         if (errors.empty()) {
             std::cout << termcolor::white << "Done\n";
@@ -390,16 +412,40 @@ int generate_diagrams(const std::vector<std::string> &diagram_names,
             std::rethrow_exception(e);
         }
         catch (const clanguml::generators::clang_tool_exception &e) {
-            fmt::println("ERROR: Failed to generate {} diagram '{}' due to "
-                         "following issues:",
-                e.diagram_type(), e.diagram_name());
-            for (const auto &d : e.diagnostics) {
-                fmt::println(" - {}", d);
+            if (clanguml::logging::logger_type() ==
+                logging::logger_type_t::text) {
+
+                fmt::println("ERROR: Failed to generate {} diagram '{}' due to "
+                             "following issues:",
+                    e.diagram_type(), e.diagram_name());
+                for (const auto &d : e.diagnostics) {
+                    fmt::println(" - {}", d);
+                }
+                fmt::println("");
             }
-            fmt::println("");
+            else {
+                inja::json j;
+                j["diagram_name"] = e.diagram_name();
+                j["clang_errors"] = inja::json::array();
+                for (const auto &d : e.diagnostics) {
+                    j["clang_errors"].emplace_back(d);
+                }
+
+                spdlog::get("clanguml-logger")
+                    ->log(spdlog::level::err,
+                        fmt::runtime(
+                            R"("file": "{}", "line": {}, "message": {})"),
+                        FILENAME_, __LINE__, j.dump());
+            }
         }
         catch (const std::exception &e) {
-            fmt::println("ERROR: {}", e.what());
+            if (clanguml::logging::logger_type() ==
+                logging::logger_type_t::text) {
+                fmt::println("ERROR: {}", e.what());
+            }
+            else {
+                LOG_ERROR("{}", e.what());
+            }
         }
     }
 
