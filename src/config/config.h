@@ -875,6 +875,10 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const filter &f);
 
 YAML::Emitter &operator<<(YAML::Emitter &out, const plantuml &p);
 
+YAML::Emitter &operator<<(YAML::Emitter &out, const mermaid &p);
+
+YAML::Emitter &operator<<(YAML::Emitter &out, const graphml &p);
+
 YAML::Emitter &operator<<(YAML::Emitter &out, const method_arguments &ma);
 
 YAML::Emitter &operator<<(YAML::Emitter &out, const generate_links_config &glc);
@@ -910,10 +914,24 @@ YAML::Emitter &operator<<(
 
 YAML::Emitter &operator<<(YAML::Emitter &out, const source_location &sc);
 
+template <typename T> bool is_null(const T &v) { return false; }
+
+template <> bool is_null(const std::string &v);
+
+template <> bool is_null(const glob_t &v);
+
+template <> bool is_null(const plantuml &v);
+
+template <> bool is_null(const mermaid &v);
+
+template <> bool is_null(const graphml &v);
+
+template <> bool is_null(const inja::json &v);
+
 template <typename T>
 YAML::Emitter &operator<<(YAML::Emitter &out, const option<T> &o)
 {
-    if (o.has_value) {
+    if (o.has_value && !is_null(o.value)) {
         out << YAML::Key << o.name;
         if constexpr (std::is_same_v<T, std::filesystem::path>)
             out << YAML::Value << o.value.string();
