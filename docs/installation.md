@@ -238,7 +238,7 @@ bin\clang-uml.exe --version
 It should produce something like:
 ```bash
 clang-uml 0.5.6
-Copyright (C) 2021-2024 Bartek Kryza <bkryza@gmail.com>
+Copyright (C) 2021-2025 Bartek Kryza <bkryza@gmail.com>
 Linux x86_64 6.5.0-21-generic
 Built against LLVM/Clang libraries version: 18.1.8
 Using LLVM/Clang libraries version: Ubuntu clang version 18.1.8

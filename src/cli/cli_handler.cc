@@ -1,7 +1,7 @@
 /**
  * @file src/options/cli_handler.cc
  *
- * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2025 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -460,7 +460,7 @@ cli_flow_t cli_handler::print_version()
 {
     if (logger_type == clanguml::logging::logger_type_t::text) {
         ostr_ << "clang-uml " << clanguml::version::version() << '\n';
-        ostr_ << "Copyright (C) 2021-2024 Bartek Kryza <bkryza@gmail.com>"
+        ostr_ << "Copyright (C) 2021-2025 Bartek Kryza <bkryza@gmail.com>"
               << '\n';
         ostr_ << util::get_os_name() << '\n';
         ostr_ << "Built against LLVM/Clang libraries version: "
@@ -472,7 +472,7 @@ cli_flow_t cli_handler::print_version()
         nlohmann::json j;
         j["version"] = clanguml::version::version();
         j["copyright"] =
-            "Copyright (C) 2021-2024 Bartek Kryza <bkryza@gmail.com>";
+            "Copyright (C) 2021-2025 Bartek Kryza <bkryza@gmail.com>";
         j["llvm"]["built_with"] = LLVM_VERSION_STRING;
         j["llvm"]["using"] = clang::getClangFullVersion();
         ostr_ << j;
