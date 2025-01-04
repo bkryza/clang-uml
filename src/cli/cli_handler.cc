@@ -17,15 +17,10 @@
  */
 #include "cli_handler.h"
 
-#include "class_diagram/generators/plantuml/class_diagram_generator.h"
-#include "include_diagram/generators/plantuml/include_diagram_generator.h"
-#include "package_diagram/generators/plantuml/package_diagram_generator.h"
-#include "sequence_diagram/generators/plantuml/sequence_diagram_generator.h"
 #include "util/util.h"
 #include "version/version.h"
 
 #include <clang/Basic/Version.h>
-#include <clang/Config/config.h>
 #include <indicators/indicators.hpp>
 
 namespace clanguml::cli {
@@ -321,12 +316,21 @@ cli_flow_t cli_handler::load_config()
         config = clanguml::config::load(config_path, false,
             paths_relative_to_pwd, no_metadata, !no_validate);
         if (validate_only) {
-            std::cout << "Configuration file " << config_path << " is valid.\n";
-
+            if (logger_type == logging::logger_type_t::text) {
+                ostr_ << "Configuration file " << config_path << " is valid.\n";
+            }
+            else {
+                inja::json j;
+                j["valid"] = true;
+                ostr_ << j.dump();
+            }
             return cli_flow_t::kExit;
         }
 
         return cli_flow_t::kContinue;
+    }
+    catch (clanguml::error::config_schema_error &e) {
+        clanguml::error::print(ostr_, e, logger_type);
     }
     catch (std::runtime_error &e) {
         LOG_ERROR(e.what());

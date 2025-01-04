@@ -24,10 +24,11 @@
 namespace clanguml::error {
 
 class query_driver_no_paths : public std::runtime_error {
+public:
     using std::runtime_error::runtime_error;
 };
 
-struct uml_alias_missing : public virtual std::runtime_error {
+struct uml_alias_missing : public std::runtime_error {
     uml_alias_missing(const std::string &message)
         : std::runtime_error(message)
     {
@@ -35,6 +36,7 @@ struct uml_alias_missing : public virtual std::runtime_error {
 };
 
 class compilation_database_error : public std::runtime_error {
+public:
     using std::runtime_error::runtime_error;
 };
 

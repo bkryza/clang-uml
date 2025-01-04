@@ -518,12 +518,13 @@ template <> bool is_null(const glob_t &v)
 
 template <> bool is_null(const plantuml &v)
 {
-    return v.before.empty() && v.after.empty();
+    return v.before.empty() && v.after.empty() && v.cmd.empty() &&
+        v.style.empty();
 }
 
 template <> bool is_null(const mermaid &v)
 {
-    return v.before.empty() && v.after.empty();
+    return v.before.empty() && v.after.empty() && v.cmd.empty();
 }
 
 template <> bool is_null(const graphml &v) { return v.notes.empty(); }

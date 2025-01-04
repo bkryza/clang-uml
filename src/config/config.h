@@ -23,6 +23,7 @@
 #include "option.h"
 #include "util/util.h"
 
+#include <miroir/miroir.hpp>
 #include <spdlog/spdlog.h>
 #include <yaml-cpp/yaml.h>
 
@@ -39,6 +40,22 @@ namespace clanguml {
 namespace cli {
 struct runtime_config;
 } // namespace cli
+
+namespace error {
+class config_schema_error : public std::runtime_error {
+public:
+    config_schema_error(std::vector<miroir::Error<YAML::Node>> e)
+        : std::runtime_error("Invalid config schema")
+        , errors{std::move(e)}
+    {
+    }
+
+    std::vector<miroir::Error<YAML::Node>> errors;
+};
+
+void print(std::ostream &ostr, const config_schema_error &e,
+    logging::logger_type_t logger_type);
+} // namespace error
 
 /**
  * @brief Configuration file related classes
@@ -914,7 +931,7 @@ YAML::Emitter &operator<<(
 
 YAML::Emitter &operator<<(YAML::Emitter &out, const source_location &sc);
 
-template <typename T> bool is_null(const T &v) { return false; }
+template <typename T> bool is_null(const T & /*v*/) { return false; }
 
 template <> bool is_null(const std::string &v);
 
