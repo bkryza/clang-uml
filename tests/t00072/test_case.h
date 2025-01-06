@@ -42,5 +42,7 @@ TEST_CASE("t00072")
 
         REQUIRE(IsClass(src, "D"));
         REQUIRE(IsClass(src, "E"));
+
+        REQUIRE(IsAggregation<Public>(src, "App", "B", "b"));
     });
 }

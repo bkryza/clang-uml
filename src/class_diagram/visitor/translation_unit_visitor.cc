@@ -2298,8 +2298,7 @@ void translation_unit_visitor::process_field(
             // this instantiation should not be part of the diagram, e.g.
             // it's a std::vector<>, it's nested types might be added
             bool add_template_instantiation_to_diagram{false};
-            if (diagram().should_include(
-                    template_specialization.get_namespace())) {
+            if (diagram().should_include(template_specialization)) {
 
                 found_relationships_t::value_type r{
                     template_specialization.id(), relationship_hint};

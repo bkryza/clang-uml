@@ -77,8 +77,7 @@ bool diagram::should_include(const element &e) const
     // In the basic mode, apply the paths filter as soon as possible
     // to limit processing unnecessary files
     if (filter_->mode() == filter_mode_t::basic) {
-        return filter_->should_include(
-            dynamic_cast<const source_location &>(e));
+        return filter_->should_include(e);
     }
 
     // In advanced mode, we have to wait until the diagram model is complete
