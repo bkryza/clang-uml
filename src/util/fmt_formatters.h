@@ -29,4 +29,4 @@
             return ::fmt::format_to(ctx.out(), "{}", to_string(level));        \
         }                                                                      \
     };                                                                         \
-    }
+    } // namespace fmt

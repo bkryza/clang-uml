@@ -54,7 +54,7 @@
         spdlog::level::trace, fmt__, FILENAME_, __LINE__, ##__VA_ARGS__)
 
 namespace fmt {
-template <> struct fmt::formatter<inja::json> : fmt::formatter<std::string> {
+template <> struct formatter<inja::json> : formatter<std::string> {
     auto format(const inja::json &json,
         format_context &ctx) const -> decltype(ctx.out())
     {

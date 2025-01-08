@@ -42,9 +42,13 @@ TEST_CASE("t00004")
         REQUIRE(IsEnum(src, "B::BB"));
         REQUIRE(IsEnum(src, "B::CC"));
 
+#if LLVM_VERSION_MAJOR > 15
         REQUIRE(IsField<Public>(src, "B", "cc", "CC"));
         REQUIRE(IsField<Public>(src, "B", "bb", "BB"));
-
+#else
+        REQUIRE(IsField<Public>(src, "B", "cc", "B::CC"));
+        REQUIRE(IsField<Public>(src, "B", "bb", "B::BB"));
+#endif
         if constexpr (!std::is_same_v<graphml_t, std::decay_t<decltype(src)>>) {
             REQUIRE(!IsField<Public>(src, "B", "BB_1", "enum"));
             REQUIRE(!IsField<Public>(src, "B", "BB_2", "enum"));
