@@ -37,6 +37,12 @@ generators=(
 "graphml"
 )
 
+declare -a loggers
+loggers=(
+"text"
+"json"
+)
+
 _clanguml() {
   local cur
   local prev
@@ -80,6 +86,11 @@ _clanguml() {
     -g|--generator)
       local generators_list=`echo "${generators[@]}"`
       COMPREPLY=($(compgen -o nospace -W "${generators_list[@]}" -- "$cur"))
+      return
+      ;;
+    --logger)
+      local logger_list=`echo "${loggers[@]}"`
+      COMPREPLY=($(compgen -o nospace -W "${logger_list[@]}" -- "$cur"))
       return
       ;;
   esac

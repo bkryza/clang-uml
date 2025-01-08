@@ -30,6 +30,8 @@ fi
 
 local -a generators=(plantuml json mermaid graphml)
 
+local -a loggers=(text json)
+
 _arguments \
   {-h,--help}'[Print this help message and exit]' \
   {-V,--version}'[Print version and exit]' \
@@ -42,6 +44,7 @@ _arguments \
   {-p,--progress}'[Show progress bars for generated diagrams]' \
   {-q,--quiet}'[Minimal logging]' \
   {-l,--list-diagrams}'[Print list of diagrams defined in the config file]' \
+  '--logger[Log format]: :{_values "Log format" $loggers}' \
   '--init[Initialize example config file]' \
   '--add-compile-flag[Add a compilation flag to each entry in the compilation database]' \
   '--remove-compile-flag[Remove a compilation flag from each entry in the compilation database]' \
