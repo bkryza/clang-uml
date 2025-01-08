@@ -39,7 +39,8 @@ enum class template_parameter_kind_t {
     template_template_type, /*!< Template template type, e.g. <typename <> T> */
     non_type_template,      /*!< Non type template parameter, e.g. <int N> */
     argument,               /*!< Template argument, e.g. <int> */
-    concept_constraint      /*!< Concept constraint, e.g. <std::integral T> */
+    concept_constraint,     /*!< Concept constraint, e.g. <std::integral T> */
+    empty                   /*!< Represent empty template specialization */
 };
 
 std::string to_string(template_parameter_kind_t k);
@@ -81,6 +82,16 @@ struct context {
  */
 class template_parameter {
 public:
+    /**
+     * @brief Build template type parameter
+     *
+     * @param name Name of template parameter (e.g. T)
+     * @param default_value Default value of the parameter if any
+     * @param is_variadic Whether the template parameter is variadic
+     * @return template_parameter instance
+     */
+    static template_parameter make_empty();
+
     /**
      * @brief Build template type parameter
      *

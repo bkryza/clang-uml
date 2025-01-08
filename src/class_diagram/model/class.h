@@ -161,7 +161,6 @@ private:
     bool is_union_{false};
     std::vector<class_member> members_;
     std::vector<class_method> methods_;
-    std::string base_template_full_name_;
     std::string full_name_;
 };
 

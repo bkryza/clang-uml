@@ -32,8 +32,8 @@ TEST_CASE("t20041")
                 {"A<int,double,std::string>", "A<double,std::string>",
                     "print(double,std::string)"}, //
                 {"A<double,std::string>", "A<std::string>",
-                    "print(std::string)"},          //
-                {"A<std::string>", "A", "print()"}, //
+                    "print(std::string)"},            //
+                {"A<std::string>", "A<>", "print()"}, //
             }));
     });
 }

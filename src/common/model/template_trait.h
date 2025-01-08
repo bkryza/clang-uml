@@ -70,7 +70,6 @@ public:
 
 private:
     std::vector<template_parameter> templates_;
-    std::string base_template_full_name_;
 };
 
 } // namespace clanguml::common::model

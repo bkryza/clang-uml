@@ -961,6 +961,13 @@ void template_builder<VisitorT>::process_template_arguments(
         // arguments
         std::vector<template_parameter> arguments;
 
+        // Handle empty pack expansion
+        if (arg.getKind() == clang::TemplateArgument::ArgKind::Pack &&
+            arg.getPackAsArray().empty()) {
+            template_instantiation.add_template(
+                template_parameter::make_empty());
+        }
+
         // For now ignore the default template arguments of templates which
         // do not match the inclusion filters, to make the system
         // templates 'nicer' - i.e. skipping the allocators and comparators

@@ -24,7 +24,7 @@
 namespace clanguml::class_diagram::model {
 
 concept_::concept_(const common::model::namespace_ &using_namespace)
-    : element{using_namespace}
+    : template_element{using_namespace}
 {
 }
 

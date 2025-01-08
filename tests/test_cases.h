@@ -370,8 +370,12 @@ template <> bool IsObjCCategory(const plantuml_t &d, QualifiedName cls)
 
 template <> bool IsClassTemplate(const plantuml_t &d, QualifiedName cls)
 {
-    return d.contains(
-        fmt::format("class \"{}\"", cls.str(d.generate_packages)));
+    auto fn = cls.str(d.generate_packages);
+    if (util::ends_with(fn, std::string{"<>"})) {
+        fn = fn.substr(0, fn.size() - 2) + "< >";
+    }
+
+    return d.contains(fmt::format("class \"{}\"", fn));
 }
 
 template <> bool IsAbstractClassTemplate(const plantuml_t &d, QualifiedName cls)

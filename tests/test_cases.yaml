@@ -264,6 +264,9 @@ test_cases:
     - name: t00089
       title: Test case for '::' prefix in class diagrams for namespaces outside of using_namespace
       description:
+    - name: t00090
+      title: Metaprogramming test case with recursive type list
+      description:
   Sequence diagrams:
     - name: t20001
       title: Basic sequence diagram test case
@@ -453,6 +456,9 @@ test_cases:
       description:
     - name: t20063
       title: Test case for '::' prefix in sequence diagrams for namespaces outside of using_namespace
+      description:
+    - name: t20064
+      title: Metaprogramming test case with recursive type list sequence diagram
       description:
   Package diagrams:
     - name: t30001

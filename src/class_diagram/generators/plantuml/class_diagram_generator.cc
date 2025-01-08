@@ -84,7 +84,15 @@ void generator::generate_alias(const class_ &c, std::ostream &ostr) const
 
     print_debug(c, ostr);
 
-    ostr << class_type << " \"" << config().simplify_template_type(full_name);
+    auto fn = config().simplify_template_type(full_name);
+
+    // PlantUML doesn't render empty template properly unless there's at least
+    // one character inside
+    if (util::ends_with(fn, std::string{"<>"})) {
+        fn = fn.substr(0, fn.size() - 2) + "< >";
+    }
+
+    ostr << class_type << " \"" << fn;
 
     ostr << "\" as " << c.alias() << '\n';
 

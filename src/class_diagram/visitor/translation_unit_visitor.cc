@@ -1732,17 +1732,17 @@ void translation_unit_visitor::process_template_method(
         !mf.getTemplatedDecl()->isExplicitlyDefaulted())
         return;
 
-    class_method method{common::access_specifier_to_access_t(mf.getAccess()),
-        util::trim(mf.getNameAsString()),
-        mf.getTemplatedDecl()->getReturnType().getAsString()};
-
     auto method_name = mf.getNameAsString();
     if (mf.isTemplated()) {
         // Sometimes in template specializations method names contain the
         // template parameters for some reason - drop them
         // Is there a better way to do this?
-        method_name = method_name.substr(0, method_name.find('<'));
+        method_name = util::trim(method_name.substr(0, method_name.find('<')));
     }
+
+    class_method method{common::access_specifier_to_access_t(mf.getAccess()),
+        method_name, mf.getTemplatedDecl()->getReturnType().getAsString()};
+
     util::if_not_null(
         clang::dyn_cast<clang::CXXMethodDecl>(mf.getTemplatedDecl()),
         [&](const auto *decl) {
