@@ -94,6 +94,7 @@
  * [t00087](./test_cases/t00087.md) - Typed element class diagram filter test case
  * [t00088](./test_cases/t00088.md) - Typed element Objective-C class diagram filter test case
  * [t00089](./test_cases/t00089.md) - Test case for '::' prefix in class diagrams for namespaces outside of using_namespace
+ * [t00090](./test_cases/t00090.md) - Metaprogramming test case with recursive type list
 ## Sequence diagrams
  * [t20001](./test_cases/t20001.md) - Basic sequence diagram test case
  * [t20002](./test_cases/t20002.md) - Free function sequence diagram test case
@@ -158,6 +159,7 @@
  * [t20061](./test_cases/t20061.md) - Test case for paths filter in sequence diagrams
  * [t20062](./test_cases/t20062.md) - Test case with vaargs function in sequence diagrams
  * [t20063](./test_cases/t20063.md) - Test case for '::' prefix in sequence diagrams for namespaces outside of using_namespace
+ * [t20064](./test_cases/t20064.md) - Metaprogramming test case with recursive type list sequence diagram
 ## Package diagrams
  * [t30001](./test_cases/t30001.md) - Basic package diagram test case
  * [t30002](./test_cases/t30002.md) - Package dependency test case
