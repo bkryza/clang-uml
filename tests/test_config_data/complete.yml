@@ -1,23 +1,12 @@
-# Directory containing the compile_commands.json file
-compilation_database_dir: debug
-# The directory where *.puml files will be generated
-output_directory: docs/diagrams
-# Query compiler frontend for compilation flags
-query_driver: .
-# Set this as default for all diagrams
-generate_method_arguments: none
-# Enable generation of hyperlinks to diagram elements
-generate_links:
-  # Link pattern
-  link: "https://github.com/bkryza/clang-uml/blob/{{ git.commit }}/{{ element.source.path }}#L{{ element.source.line }}"
-  # Tooltip pattern
-  tooltip: "{{ element.name }}"
+compilation_database_dir: /home/bartek/devel/clang-uml/debug
+output_directory: /home/bartek/devel/clang-uml/docs/diagrams
 add_compile_flags:
   - -fparse-all-comments
+  - -Wno-deprecated-declarations
+  - -Wno-ignored-optimization-argument
 remove_compile_flags:
-  - -Werror
-  - r: "-m.*"
-# Custom user data
+  - -Wno-class-memaccess
+  - -Wno-dangling-reference
 user_data:
   name: John Doe
   homepage: jd.example.com
@@ -27,68 +16,1269 @@ user_data:
   skip_tests: true
   skip_install: false
   favorite_numbers: [1,3.1415,5,7]
-# The map of diagrams - keys are also diagram file names
-diagrams:
-  config_class:
+diagram_templates:
+  class_context_tmpl:
     type: class
-    # Do not include rendered relations in the class box
-    include_relations_also_as_members: false
-    # Limiting the number of files to include can significantly
-    # improve the generation time
+    description: Generate class context diagram
+    template: |
+      "{{ diagram_name }}":
+        type: class
+        {% if exists("glob") %}
+        glob: [{{ glob }}]
+        {% endif %}
+        {% if exists("using_namespace") %}
+        using_namespace: {{ using_namespace }}
+        {% endif %}
+        include:
+          context: [{{ class_name }}]
+          namespaces: [{{ namespace_name }}]
+
+  parents_hierarchy_tmpl:
+    type: class
+    description: Generate class parents inheritance diagram
+    template: |
+      {{ diagram_name }}:
+        type: class
+        {% if exists("glob") %}
+        glob: [{{ glob }}]
+        {% endif %}
+        {% if exists("using_namespace") %}
+        using_namespace: {{ using_namespace }}
+        {% endif %}
+        include:
+          parents: [{{ class_name }}]
+          namespaces: [{{ namespace_name }}]
+        relationships:
+          - inheritance
+        exclude:
+          access: [public, protected, private]
+        plantuml:
+          before:
+            - left to right direction
+
+  subclass_hierarchy_tmpl:
+    type: class
+    description: Generate class children inheritance diagram
+    template: |
+      {{ diagram_name }}:
+        type: class
+        {% if exists("glob") %}
+        glob: [{{ glob }}]
+        {% endif %}
+        {% if exists("using_namespace") %}
+        using_namespace: {{ using_namespace }}
+        {% endif %}
+        include:
+          parents: [{{ class_name }}]
+          namespaces: [{{ namespace_name }}]
+        relationships:
+          - inheritance
+        exclude:
+          access: [public, protected, private]
+        plantuml:
+          before:
+            - left to right direction
+
+__parent_path: /home/bartek/devel/clang-uml
+comment_parser: clang
+debug_mode: false
+generate_links:
+  link:
+    .: "{% if existsIn(element, \"doxygen_link\") %}{{ element.doxygen_link }}{% endif %}"
+  tooltip:
+    .: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
+git:
+  branch: fix-schema-validation-for-templates
+  revision: 0.5.6-82-gd3f91017
+  commit: d3f910179050ba65223de5159813a1f6004e73e3
+  toplevel: /home/bartek/devel/clang-uml
+plantuml:
+  cmd: plantuml -tsvg "docs/diagrams/{}.puml"
+mermaid:
+  cmd: mmdc -i "docs/diagrams/{}.mmd" -o "docs/diagrams/{}.svg"
+relative_to: /home/bartek/devel/clang-uml
+generate_metadata: true
+diagrams:
+  architecture_package:
+    type: package
+    comment_parser: plain
+    debug_mode: false
     glob:
-      - src/common/model/*.h
-      - src/common/model/*.cc
-      - src/class_diagram/model/*.h
-      - src/class_diagram/model/*.cc
+      include:
+        - src/config/config.cc
+        - src/common/model/diagram.cc
+        - src/**/model/diagram.cc
+        - src/**/visitor/translation_unit_visitor.cc
+        - src/**/generators/**/*generator.cc
+      exclude:
+        []
     include:
-      # Only include entities from the following namespaces
+      namespaces:
+        - clanguml
+      elements:
+        - type: any
+          name: clanguml
+        - type: any
+          name: clanguml::common
+        - type: any
+          name: clanguml::config
+        - type: any
+          name:
+            r: clanguml::.+_diagram
+        - type: any
+          name:
+            r: clanguml::.+::model
+        - type: any
+          name:
+            r: clanguml::.+::visitor
+        - type: any
+          name:
+            r: clanguml::.+::generators
+    generate_metadata: true
+    title: High-level namespace dependencies in clang-uml
+    generate_packages: false
+    package_type: namespace
+  architecture_visitors_class:
+    type: class
+    comment_parser: plain
+    debug_mode: false
+    exclude:
+      access:
+        - public
+        - protected
+        - private
+      relationships:
+        - dependency
+    glob:
+      include:
+        - src/docs/architecture.cc
+      exclude:
+        []
+    include:
+      namespaces:
+        - clanguml
+      elements:
+        - type: any
+          name:
+            r: clanguml::.+::translation_unit_visitor.*
+        - type: any
+          name:
+            r: clanguml::.+::model::diagram
+    plantuml:
+      before:
+        - left to right direction
+      style:
+        inheritance: up
+    generate_metadata: true
+    title: Translation unit AST visitors
+    generate_method_arguments: full
+    generate_concept_requirements: true
+    generate_packages: true
+    include_relations_also_as_members: true
+    member_order: lexical
+    package_type: namespace
+    generate_template_argument_dependencies: true
+    skip_redundant_dependencies: true
+  class_diagram_generator_sequence:
+    type: sequence
+    from:
+      - function: "clanguml::common::generators::plantuml::generator<clanguml::config::class_diagram,clanguml::class_diagram::model::diagram>::generate(std::ostream &) const"
+    comment_parser: plain
+    debug_mode: false
+    exclude:
+      namespaces:
+        - clanguml::util
+      elements:
+        - type: any
+          name:
+            r: clanguml::config::option.*
+        - type: any
+          name:
+            r: clanguml::common::optional_ref.*
+    glob:
+      include:
+        - src/class_diagram/generators/plantuml/*.cc
+      exclude:
+        []
+    include:
+      namespaces:
+        - clanguml
+    using_namespace: clanguml::class_diagram::generators::plantuml
+    generate_metadata: true
+    title: PlantUML diagram generator sequence diagram
+    combine_free_functions_into_file_participants: false
+    inline_lambda_messages: false
+    generate_condition_statements: true
+    generate_method_arguments: full
+    generate_return_types: false
+    generate_message_comments: true
+    fold_repeated_activities: false
+    message_comment_width: 25
+  class_model_class:
+    type: class
+    comment_parser: plain
+    debug_mode: false
+    exclude:
+      access:
+        - public
+        - protected
+        - private
+      relationships:
+        - dependency
+    glob:
+      include:
+        - src/common/model/*.cc
+        - src/class_diagram/model/*.cc
+      exclude:
+        []
+    include:
       namespaces:
         - clanguml::common::model
         - clanguml::class_diagram::model
-      # Only include elements in direct relationship with ClassA
-      context:
-        - ClassA
+    using_namespace: clanguml
+    generate_metadata: true
+    title: Class diagram model
+    generate_method_arguments: none
+    generate_concept_requirements: true
+    generate_packages: true
+    include_relations_also_as_members: false
+    member_order: lexical
+    package_type: namespace
+    generate_template_argument_dependencies: true
+    skip_redundant_dependencies: true
+  class_translation_unit_visitor:
+    type: class
+    comment_parser: plain
+    debug_mode: false
     exclude:
-      # Do not include private members and methods in the diagram
+      access:
+        - public
+        - protected
+        - private
+      element_types:
+        - enum
+      elements:
+        - std::string
+      relationships:
+        - dependency
+    glob:
+      include:
+        - src/common/visitor/*.cc
+        - src/class_diagram/visitor/*.cc
+      exclude:
+        []
+    include:
+      namespaces:
+        - clanguml
+        - clang
+      context:
+        - match:
+            radius: 1
+            pattern: clanguml::class_diagram::visitor::translation_unit_visitor
+        - match:
+            radius: 2
+            pattern: clang::RecursiveASTVisitor<clanguml::class_diagram::visitor::translation_unit_visitor>
+    generate_metadata: true
+    title: Class diagram TU visitor
+    generate_method_arguments: none
+    generate_concept_requirements: true
+    generate_packages: true
+    include_relations_also_as_members: false
+    member_order: lexical
+    package_type: namespace
+    generate_template_argument_dependencies: true
+    skip_redundant_dependencies: true
+  cli_handle_options_sequence:
+    type: sequence
+    from:
+      - function: clanguml::cli::cli_handler::handle_options(int,const char **)
+    comment_parser: plain
+    debug_mode: false
+    exclude:
+      elements:
+        - type: any
+          name:
+            r: clanguml::config::option.*
+        - type: any
+          name: clanguml::config::config
+      paths:
+        - src/util/util.h
+    glob:
+      include:
+        - src/cli/cli_handler.cc
+        - src/config/config.cc
+        - src/config/yaml_decoders.cc
+      exclude:
+        []
+    include:
+      namespaces:
+        - clanguml
+        - YAML
+    using_namespace: clanguml
+    generate_metadata: true
+    title: CLI options handling sequence diagram
+    combine_free_functions_into_file_participants: true
+    inline_lambda_messages: false
+    generate_condition_statements: true
+    generate_method_arguments: none
+    generate_return_types: false
+    generate_message_comments: true
+    fold_repeated_activities: false
+    message_comment_width: 25
+  comment_visitor_hierarchy_class:
+    type: class
+    comment_parser: plain
+    debug_mode: false
+    exclude:
       access:
         - private
-    layout:
-      # Add layout hints for PlantUML
-      ClassA:
-        - up: ClassB
-        - left: ClassC
-    # Specify customized relationship hints for types which are
-    # arguments in template instantiations
-    relationship_hints:
-      # All tuple arguments should be treated as aggregation
-      std::tuple: aggregation
-      # All some_template arguments should be treated as associations
-      # except for arguments with indexes 2 and 10
-      ns1::n2::some_template:
-        default: association
-        2: composition
-        10: aggregation
-    # Entities from this namespace will be shortened
-    # (can only contain one element at the moment)
-    using_namespace:
-      - clanguml::class_diagram::model
+        - protected
+        - public
+    glob:
+      include:
+        - src/common/visitor/comment/*.cc
+      exclude:
+        []
+    include:
+      namespaces:
+        - clanguml::common::visitor::comment
+      subclasses:
+        - clanguml::common::visitor::comment::comment_visitor
+    using_namespace: clanguml
+    generate_metadata: true
+    title: Comment visitor class hierarchy
+    generate_method_arguments: full
+    generate_concept_requirements: true
+    generate_packages: false
+    include_relations_also_as_members: true
+    member_order: lexical
+    package_type: namespace
+    generate_template_argument_dependencies: true
+    skip_redundant_dependencies: true
+  common_model_class:
+    type: class
+    comment_parser: plain
+    debug_mode: false
+    exclude:
+      access:
+        - public
+        - protected
+        - private
+      element_types:
+        - enum
+      relationships:
+        - dependency
+      subclasses:
+        - clanguml::common::model::filter_visitor
+    glob:
+      include:
+        - src/common/model/*.cc
+      exclude:
+        []
+    include:
+      namespaces:
+        - clanguml::common::model
     plantuml:
-      # Add this line to the beginning of the resulting puml file
+      after:
+        - "note top of {{ alias(\"diagram\") }}: Common class for specific diagram types"
+    using_namespace: clanguml::common::model
+    generate_metadata: true
+    title: Common diagram model
+    generate_method_arguments: full
+    generate_concept_requirements: true
+    generate_packages: false
+    include_relations_also_as_members: false
+    member_order: lexical
+    package_type: namespace
+    generate_template_argument_dependencies: true
+    skip_redundant_dependencies: true
+  compilation_database_context_class:
+    type: class
+    comment_parser: plain
+    debug_mode: false
+    glob:
+      include:
+        - src/common/compilation_database.cc
+      exclude:
+        []
+    include:
+      namespaces:
+        - clanguml
+        - clang::tooling
+      context:
+        - match:
+            radius: 1
+            pattern: clanguml::common::compilation_database
+    generate_metadata: true
+    title: Compilation database context diagram
+    generate_method_arguments: full
+    generate_concept_requirements: true
+    generate_packages: false
+    include_relations_also_as_members: true
+    member_order: lexical
+    package_type: namespace
+    generate_template_argument_dependencies: true
+    skip_redundant_dependencies: true
+  config_class:
+    type: class
+    comment_parser: plain
+    debug_mode: false
+    exclude:
+      elements:
+        - type: any
+          name:
+            r: clanguml::config::option<.*>
+    glob:
+      include:
+        - src/config/config.cc
+      exclude:
+        []
+    include:
+      namespaces:
+        - clanguml::config
+      context:
+        - match:
+            radius: 1
+            pattern: clanguml::config::inheritable_diagram_options
+        - match:
+            radius: 1
+            pattern: clanguml::config::config
+        - match:
+            radius: 1
+            pattern: clanguml::config::diagram
+    plantuml:
+      after:
+        - "note left of {{ alias(\"inheritable_diagram_options\") }}: Options common to all diagram types."
+        - "note right of {{ alias(\"config\") }}: General options not used by diagrams."
+        - "note bottom of {{ alias(\"class_diagram\") }}: Options for specific class diagrams"
+        - "note bottom of {{ alias(\"sequence_diagram\") }}: Options for specific sequence diagrams"
+        - "note bottom of {{ alias(\"package_diagram\") }}: Options for specific package diagrams"
+        - "note bottom of {{ alias(\"include_diagram\") }}: Options for specific include diagrams"
+    using_namespace: clanguml::config
+    generate_metadata: true
+    title: Configuration model
+    generate_method_arguments: full
+    generate_concept_requirements: true
+    generate_packages: false
+    include_relations_also_as_members: true
+    member_order: lexical
+    package_type: namespace
+    generate_template_argument_dependencies: true
+    skip_redundant_dependencies: true
+  config_context_class:
+    type: class
+    comment_parser: plain
+    debug_mode: false
+    glob:
+      include:
+        - src/config/config.cc
+      exclude:
+        []
+    include:
+      namespaces:
+        - clanguml::config
+      context:
+        - match:
+            radius: 1
+            pattern: clanguml::config::config
+    using_namespace: clanguml::config
+    generate_metadata: true
+    title: clanguml::config::config context diagram
+    generate_method_arguments: full
+    generate_concept_requirements: true
+    generate_packages: false
+    include_relations_also_as_members: true
+    member_order: lexical
+    package_type: namespace
+    generate_template_argument_dependencies: true
+    skip_redundant_dependencies: true
+  decorated_element_hierarchy_class:
+    type: class
+    comment_parser: plain
+    debug_mode: false
+    exclude:
+      access:
+        - public
+        - protected
+        - private
+    glob:
+      include:
+        - src/common/model/*.cc
+        - src/class_diagram/model/*.cc
+        - src/sequence_diagram/model/*.cc
+        - src/include_diagram/model/*.cc
+        - src/package_diagram/model/*.cc
+      exclude:
+        []
+    include:
+      namespaces:
+        - clanguml
+      relationships:
+        - extension
+      subclasses:
+        - clanguml::common::model::decorated_element
+    using_namespace: clanguml
+    generate_metadata: true
+    title: Decorated diagram element class hierarchy
+    generate_method_arguments: full
+    generate_concept_requirements: true
+    generate_packages: true
+    include_relations_also_as_members: true
+    member_order: lexical
+    package_type: namespace
+    generate_template_argument_dependencies: true
+    skip_redundant_dependencies: true
+  decorators_class:
+    type: class
+    comment_parser: plain
+    debug_mode: false
+    glob:
+      include:
+        - src/decorators/decorators.cc
+      exclude:
+        []
+    include:
+      namespaces:
+        - clanguml::decorators
+    using_namespace: clanguml::decorators
+    generate_metadata: true
+    title: Diagram element decorators model
+    generate_method_arguments: full
+    generate_concept_requirements: true
+    generate_packages: false
+    include_relations_also_as_members: false
+    member_order: lexical
+    package_type: namespace
+    generate_template_argument_dependencies: true
+    skip_redundant_dependencies: true
+  diagram_config_hierarchy_class:
+    type: class
+    comment_parser: plain
+    debug_mode: false
+    exclude:
+      access:
+        - public
+        - protected
+        - private
+    glob:
+      include:
+        - src/config/config.cc
+      exclude:
+        []
+    include:
+      namespaces:
+        - clanguml
+      subclasses:
+        - clanguml::config::diagram
+      parents:
+        - clanguml::config::diagram
+    using_namespace: clanguml
+    generate_metadata: true
+    title: Configuration model class hierarchy
+    generate_method_arguments: full
+    generate_concept_requirements: true
+    generate_packages: true
+    include_relations_also_as_members: true
+    member_order: lexical
+    package_type: namespace
+    generate_template_argument_dependencies: true
+    skip_redundant_dependencies: true
+  diagram_element_hierarchy_class:
+    type: class
+    comment_parser: plain
+    debug_mode: false
+    exclude:
+      access:
+        - public
+        - private
+        - protected
+      relationships:
+        - dependency
+    glob:
+      include:
+        - src/common/model/*.cc
+        - src/class_diagram/model/*.cc
+        - src/sequence_diagram/model/*.cc
+        - src/include_diagram/model/*.cc
+        - src/package_diagram/model/*.cc
+      exclude:
+        []
+    include:
+      namespaces:
+        - clanguml
+      relationships:
+        - extension
+      subclasses:
+        - clanguml::common::model::decorated_element
+        - clanguml::common::model::source_location
+    plantuml:
       before:
-        - 'title clang-uml class diagram model'
-  config_sequence:
+        - left to right direction
+    using_namespace: clanguml
+    generate_metadata: true
+    title: Diagram element class hierarchy
+    generate_method_arguments: full
+    generate_concept_requirements: true
+    generate_packages: true
+    include_relations_also_as_members: true
+    member_order: lexical
+    package_type: namespace
+    generate_template_argument_dependencies: true
+    skip_redundant_dependencies: true
+  diagram_filter_context_class:
+    type: class
+    comment_parser: plain
+    debug_mode: false
+    exclude:
+      elements:
+        - type: any
+          name: clanguml::common::model::path
+      method_types:
+        - constructor
+        - destructor
+        - operator
+      callee_types:
+        []
+    glob:
+      include:
+        - src/common/model/diagram_filter.cc
+        - src/common/model/diagram.cc
+      exclude:
+        []
+    include:
+      namespaces:
+        - clanguml
+      context:
+        - match:
+            radius: 1
+            pattern: clanguml::common::model::diagram_filter
+    using_namespace: clanguml
+    generate_metadata: true
+    title: Diagram filter context model
+    generate_method_arguments: full
+    generate_concept_requirements: true
+    generate_packages: false
+    include_relations_also_as_members: true
+    member_order: lexical
+    package_type: namespace
+    generate_template_argument_dependencies: true
+    skip_redundant_dependencies: true
+  diagram_generate_generic_sequence:
     type: sequence
-    start_from:
-      - function: main(int,const char**)
-  config_include:
+    from:
+      - function: "clanguml::common::generators::generate_diagram(const std::string &,std::shared_ptr<clanguml::config::diagram>,const common::compilation_database &,const std::vector<std::string> &,const cli::runtime_config &,std::function<void ()> &&)"
+    comment_parser: plain
+    debug_mode: false
+    exclude:
+      elements:
+        - type: any
+          name:
+            r: .*json.*
+        - type: any
+          name:
+            r: .*mermaid.*
+        - type: any
+          name:
+            r: .*class_diagram.*
+        - type: any
+          name:
+            r: .*package_diagram.*
+        - type: any
+          name:
+            r: .*include_diagram.*
+      paths:
+        - src/common/model/source_location.h
+    glob:
+      include:
+        - src/common/generators/generators.cc
+      exclude:
+        []
+    include:
+      namespaces:
+        - clanguml::common::generators
+    using_namespace: clanguml
+    generate_metadata: true
+    title: PlantUML sequence diagram generator sequence diagram
+    combine_free_functions_into_file_participants: true
+    inline_lambda_messages: false
+    generate_condition_statements: true
+    generate_method_arguments: none
+    generate_return_types: false
+    generate_message_comments: true
+    fold_repeated_activities: false
+    message_comment_width: 25
+  diagram_hierarchy_class:
+    type: class
+    comment_parser: plain
+    debug_mode: false
+    exclude:
+      access:
+        - public
+        - protected
+        - private
+    glob:
+      include:
+        - src/common/model/diagram.cc
+        - src/class_diagram/model/diagram.cc
+        - src/sequence_diagram/model/diagram.cc
+        - src/include_diagram/model/diagram.cc
+        - src/package_diagram/model/diagram.cc
+      exclude:
+        []
+    include:
+      namespaces:
+        - clanguml
+      relationships:
+        - extension
+      subclasses:
+        - clanguml::common::model::diagram
+    using_namespace: clanguml
+    generate_metadata: true
+    title: Diagram type class hierarchy
+    generate_method_arguments: none
+    generate_concept_requirements: true
+    generate_packages: true
+    include_relations_also_as_members: true
+    member_order: lexical
+    package_type: namespace
+    generate_template_argument_dependencies: true
+    skip_redundant_dependencies: true
+  filter_visitor_hierarchy_class:
+    type: class
+    comment_parser: plain
+    debug_mode: false
+    exclude:
+      access:
+        - public
+        - protected
+        - private
+    glob:
+      include:
+        - src/common/model/filters/*.cc
+      exclude:
+        []
+    include:
+      namespaces:
+        - clanguml
+      subclasses:
+        - clanguml::common::model::filter_visitor
+    plantuml:
+      before:
+        - left to right direction
+    using_namespace: clanguml
+    generate_metadata: true
+    title: Diagram filter visitor class hierarchy
+    generate_method_arguments: full
+    generate_concept_requirements: true
+    generate_packages: true
+    include_relations_also_as_members: true
+    member_order: lexical
+    package_type: namespace
+    generate_template_argument_dependencies: true
+    skip_redundant_dependencies: true
+  include_graph:
     type: include
+    comment_parser: plain
+    debug_mode: false
+    glob:
+      include:
+        - src/config/*.cc
+      exclude:
+        []
     include:
       paths:
         - src
-  config_package:
-    type: package
-    using_namespace:
-      - ns1
+    relative_to: .
+    generate_metadata: true
+    title: Include graph
+    generate_system_headers: false
+  inheritable_diagram_options_context_class:
+    type: class
+    comment_parser: plain
+    debug_mode: false
+    glob:
+      include:
+        - src/config/config.cc
+      exclude:
+        []
     include:
       namespaces:
-        - ns1::ns2
+        - clanguml::config
+      context:
+        - match:
+            radius: 1
+            pattern: clanguml::config::inheritable_diagram_options
+    plantuml:
+      before:
+        - left to right direction
+    using_namespace: clanguml::config
+    generate_metadata: true
+    title: Configuration model inheritable options context
+    generate_method_arguments: full
+    generate_concept_requirements: true
+    generate_packages: false
+    include_relations_also_as_members: true
+    member_order: lexical
+    package_type: namespace
+    generate_template_argument_dependencies: true
+    skip_redundant_dependencies: true
+  load_config_sequence:
+    type: sequence
+    from:
+      - function: "clanguml::config::load(const std::string &,bool,std::optional<bool>,std::optional<bool>,bool)"
+    comment_parser: plain
+    debug_mode: false
+    exclude:
+      elements:
+        - type: any
+          name:
+            r: clanguml::config::option.*
+      paths:
+        - src/util/util.h
+    glob:
+      include:
+        - src/config/config.cc
+        - src/config/yaml_decoders.cc
+      exclude:
+        []
+    include:
+      namespaces:
+        - clanguml
+        - YAML
+    using_namespace: clanguml
+    generate_metadata: true
+    title: Configuration file loading sequence diagram
+    combine_free_functions_into_file_participants: true
+    inline_lambda_messages: false
+    generate_condition_statements: true
+    generate_method_arguments: none
+    generate_return_types: false
+    generate_message_comments: true
+    fold_repeated_activities: false
+    message_comment_width: 25
+  main_sequence:
+    type: sequence
+    from:
+      - function: main(int,const char **)
+    comment_parser: plain
+    debug_mode: false
+    exclude:
+      elements:
+        - type: any
+          name: clanguml::config::option<std::string>
+      paths:
+        - src/util/util.h
+    glob:
+      include:
+        - src/main.cc
+      exclude:
+        []
+    include:
+      paths:
+        - src
+    using_namespace: clanguml
+    generate_metadata: true
+    title: main() function sequence diagram
+    combine_free_functions_into_file_participants: true
+    inline_lambda_messages: false
+    generate_condition_statements: true
+    generate_method_arguments: none
+    generate_return_types: false
+    generate_message_comments: true
+    fold_repeated_activities: false
+    message_comment_width: 25
+  nested_trait_hierarchy_class:
+    type: class
+    comment_parser: plain
+    debug_mode: false
+    exclude:
+      access:
+        - private
+        - protected
+        - public
+    glob:
+      include:
+        - src/common/model/package.cc
+      exclude:
+        []
+    include:
+      namespaces:
+        - clanguml
+      subclasses:
+        - r: .*nested_trait.*
+    using_namespace: clanguml
+    generate_metadata: true
+    title: Nested trait model class hierarchy
+    generate_method_arguments: full
+    generate_concept_requirements: true
+    generate_packages: true
+    include_relations_also_as_members: true
+    member_order: lexical
+    package_type: namespace
+    generate_template_argument_dependencies: true
+    skip_redundant_dependencies: true
+  package_hierarchy_class:
+    type: class
+    comment_parser: plain
+    debug_mode: false
+    exclude:
+      access:
+        - private
+        - protected
+        - public
+    glob:
+      include:
+        - src/common/model/package.cc
+      exclude:
+        []
+    include:
+      namespaces:
+        - clanguml
+      parents:
+        - clanguml::common::model::package
+    using_namespace: clanguml
+    generate_metadata: true
+    title: Package diagram class hierarchy
+    generate_method_arguments: full
+    generate_concept_requirements: true
+    generate_packages: false
+    include_relations_also_as_members: true
+    member_order: lexical
+    package_type: namespace
+    generate_template_argument_dependencies: true
+    skip_redundant_dependencies: true
+  package_model_class:
+    type: class
+    comment_parser: plain
+    debug_mode: false
+    exclude:
+      relationships:
+        - dependency
+    glob:
+      include:
+        - src/common/model/*.cc
+        - src/package_diagram/model/*.cc
+      exclude:
+        []
+    include:
+      namespaces:
+        - clanguml::common::model
+        - clanguml::package_diagram::model
+    using_namespace: clanguml::package_diagram::model
+    generate_metadata: true
+    title: Package diagram model
+    generate_method_arguments: none
+    generate_concept_requirements: true
+    generate_packages: false
+    include_relations_also_as_members: false
+    member_order: lexical
+    package_type: namespace
+    generate_template_argument_dependencies: true
+    skip_redundant_dependencies: true
+  plantuml_sequence_diagram_generator_sequence:
+    type: sequence
+    from:
+      - function: "clanguml::sequence_diagram::generators::plantuml::generator::generate_diagram(std::ostream &) const"
+    comment_parser: plain
+    debug_mode: false
+    exclude:
+      elements:
+        - type: any
+          name:
+            r: .*json.*
+        - type: any
+          name:
+            r: .*mermaid.*
+        - type: any
+          name:
+            r: .*class_diagram.*
+        - type: any
+          name:
+            r: .*package_diagram.*
+        - type: any
+          name:
+            r: .*include_diagram.*
+        - type: any
+          name:
+            r: clanguml::config::option.*
+        - type: any
+          name:
+            r: clanguml::common::optional_ref.*
+      paths:
+        - src/common/model/source_location.h
+    glob:
+      include:
+        - src/sequence_diagram/generators/plantuml/sequence_diagram_generator.cc
+      exclude:
+        []
+    include:
+      namespaces:
+        - clanguml
+      elements:
+        - type: any
+          name:
+            r: .*generators.*
+    using_namespace: clanguml
+    generate_metadata: true
+    title: PlantUML sequence diagram generator sequence diagram
+    combine_free_functions_into_file_participants: true
+    inline_lambda_messages: false
+    generate_condition_statements: true
+    generate_method_arguments: none
+    generate_return_types: false
+    generate_message_comments: true
+    fold_repeated_activities: false
+    message_comment_width: 25
+  relationship_context_class:
+    type: class
+    comment_parser: plain
+    debug_mode: false
+    exclude:
+      elements:
+        - type: any
+          name: clanguml::common::model::path
+      relationships:
+        - dependency
+    glob:
+      include:
+        - src/common/model/relationship.cc
+        - src/common/model/diagram_element.cc
+      exclude:
+        []
+    include:
+      namespaces:
+        - clanguml
+      context:
+        - match:
+            radius: 1
+            pattern: clanguml::common::model::relationship
+    using_namespace: clanguml
+    generate_metadata: true
+    title: Relationship model context
+    generate_method_arguments: full
+    generate_concept_requirements: true
+    generate_packages: true
+    include_relations_also_as_members: true
+    member_order: lexical
+    package_type: namespace
+    generate_template_argument_dependencies: true
+    skip_redundant_dependencies: true
+  sequence_model_class:
+    type: class
+    comment_parser: plain
+    debug_mode: false
+    exclude:
+      method_types:
+        - constructor
+        - destructor
+        - operator
+      relationships:
+        - dependency
+      callee_types:
+        []
+    glob:
+      include:
+        - src/common/model/*.cc
+        - src/sequence_diagram/model/*.cc
+      exclude:
+        []
+    include:
+      namespaces:
+        - clanguml::common::model
+        - clanguml::sequence_diagram::model
+      context:
+        - match:
+            radius: 1
+            pattern: clanguml::sequence_diagram::model::diagram
+        - match:
+            radius: 1
+            pattern: clanguml::sequence_diagram::model::message
+        - match:
+            radius: 1
+            pattern: clanguml::sequence_diagram::model::activity
+      subclasses:
+        - clanguml::sequence_diagram::model::participant
+    using_namespace: clanguml
+    generate_metadata: true
+    title: Sequence diagram model
+    generate_method_arguments: none
+    generate_concept_requirements: true
+    generate_packages: true
+    include_relations_also_as_members: true
+    member_order: lexical
+    package_type: namespace
+    generate_template_argument_dependencies: true
+    skip_redundant_dependencies: true
+  source_file_hierarchy_class:
+    type: class
+    comment_parser: plain
+    debug_mode: false
+    exclude:
+      access:
+        - private
+        - protected
+        - public
+    glob:
+      include:
+        - src/common/model/source_file.cc
+      exclude:
+        []
+    include:
+      namespaces:
+        - clanguml
+      parents:
+        - clanguml::common::model::source_file
+    using_namespace: clanguml
+    generate_metadata: true
+    title: Source file model class hierarchy
+    generate_method_arguments: full
+    generate_concept_requirements: true
+    generate_packages: false
+    include_relations_also_as_members: true
+    member_order: lexical
+    package_type: namespace
+    generate_template_argument_dependencies: true
+    skip_redundant_dependencies: true
+  source_location_hierarchy_class:
+    type: class
+    comment_parser: plain
+    debug_mode: false
+    exclude:
+      access:
+        - public
+        - protected
+        - private
+    glob:
+      include:
+        - src/common/model/*.cc
+        - src/class_diagram/model/*.cc
+        - src/sequence_diagram/model/*.cc
+        - src/include_diagram/model/*.cc
+        - src/package_diagram/model/*.cc
+      exclude:
+        []
+    include:
+      namespaces:
+        - clanguml
+      relationships:
+        - extension
+      subclasses:
+        - clanguml::common::model::source_location
+    using_namespace: clanguml
+    generate_metadata: true
+    title: Source location model class hierarchy
+    generate_method_arguments: full
+    generate_concept_requirements: true
+    generate_packages: true
+    include_relations_also_as_members: true
+    member_order: lexical
+    package_type: namespace
+    generate_template_argument_dependencies: true
+    skip_redundant_dependencies: true
+  stylable_element_hierarchy_class:
+    type: class
+    comment_parser: plain
+    debug_mode: false
+    exclude:
+      access:
+        - public
+        - protected
+        - private
+    glob:
+      include:
+        - src/common/model/*.cc
+        - src/class_diagram/model/*.cc
+        - src/sequence_diagram/model/*.cc
+        - src/include_diagram/model/*.cc
+        - src/package_diagram/model/*.cc
+      exclude:
+        []
+    include:
+      namespaces:
+        - clanguml
+      relationships:
+        - extension
+      subclasses:
+        - clanguml::common::model::stylable_element
+    using_namespace: clanguml
+    generate_metadata: true
+    title: Stylable diagram element class hierarchy
+    generate_method_arguments: full
+    generate_concept_requirements: true
+    generate_packages: true
+    include_relations_also_as_members: true
+    member_order: lexical
+    package_type: namespace
+    generate_template_argument_dependencies: true
+    skip_redundant_dependencies: true
+  template_builder_sequence:
+    type: sequence
+    from:
+      - function: "clanguml::common::visitor::template_builder<VisitorT>::build(common::model::template_element &,const clang::NamedDecl *,const clang::TemplateDecl *,const clang::ArrayRef<clang::TemplateArgument>,std::string,std::optional<common::model::template_element *>)"
+    comment_parser: plain
+    debug_mode: false
+    exclude:
+      paths:
+        - src/common/model/source_location.h
+    glob:
+      include:
+        - src/common/visitor/template_builder.cc
+      exclude:
+        []
+    include:
+      namespaces:
+        - clanguml
+      paths:
+        - src/common/visitor/template_builder.h
+        - src/common/visitor/template_builder.cc
+    using_namespace: clanguml
+    generate_metadata: true
+    title: Diagram element template builder sequence diagram
+    combine_free_functions_into_file_participants: true
+    inline_lambda_messages: false
+    generate_condition_statements: true
+    generate_method_arguments: none
+    generate_return_types: false
+    generate_message_comments: true
+    fold_repeated_activities: false
+    message_comment_width: 25
+  template_trait_hierarchy_class:
+    type: class
+    comment_parser: plain
+    debug_mode: false
+    exclude:
+      access:
+        - public
+        - protected
+        - private
+      relationships:
+        - dependency
+    glob:
+      include:
+        - src/common/model/*.cc
+        - src/class_diagram/model/*.cc
+        - src/sequence_diagram/model/*.cc
+        - src/include_diagram/model/*.cc
+        - src/package_diagram/model/*.cc
+      exclude:
+        []
+    include:
+      namespaces:
+        - clanguml
+      context:
+        - match:
+            radius: 1
+            pattern: clanguml::common::model::template_trait
+      subclasses:
+        - clanguml::common::model::template_trait
+    using_namespace: clanguml
+    generate_metadata: true
+    title: Template trait diagram element model class hierarchy
+    generate_method_arguments: full
+    generate_concept_requirements: true
+    generate_packages: true
+    include_relations_also_as_members: true
+    member_order: lexical
+    package_type: namespace
+    generate_template_argument_dependencies: true
+    skip_redundant_dependencies: true

@@ -1328,8 +1328,9 @@ config load(const std::string &config_file, bool inherit,
             "Could not open config file {}: {}", config_file, e.what()));
     }
     catch (YAML::Exception &e) {
-        throw std::runtime_error(fmt::format(
-            "Cannot parse YAML file {}: {}", config_file, e.what()));
+        throw std::runtime_error(
+            fmt::format("Cannot parse YAML file {} at line {}: {}", config_file,
+                e.mark.line, e.msg));
     }
 }
 } // namespace clanguml::config

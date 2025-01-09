@@ -136,7 +136,7 @@ test_release: release
 	CTEST_OUTPUT_ON_FAILURE=1 ctest --test-dir release
 
 test_dump_config:
-	debug/src/clang-uml --dump-config | debug/src/clang-uml -l --config -
+	debug/src/clang-uml --dump-config | debug/src/clang-uml --validate-only --config -
 
 coverage_report: test
 	lcov -c -d debug -o coverage.info --no-external --gcov-tool util/clang_gcov.sh

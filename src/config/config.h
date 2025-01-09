@@ -920,6 +920,8 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const layout_hint &c);
 
 YAML::Emitter &operator<<(YAML::Emitter &out, const element_filter_t &ef);
 
+YAML::Emitter &operator<<(YAML::Emitter &out, const diagram_template &dt);
+
 YAML::Emitter &operator<<(YAML::Emitter &out, const inja::json &ef);
 
 #ifdef _MSC_VER

@@ -165,7 +165,7 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const filter &f)
 
 YAML::Emitter &operator<<(YAML::Emitter &out, const plantuml &p)
 {
-    if (p.before.empty() && p.after.empty()) {
+    if (is_null(p)) {
         out << YAML::Null;
         return out;
     }
@@ -175,6 +175,10 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const plantuml &p)
         out << YAML::Key << "before" << YAML::Value << p.before;
     if (!p.after.empty())
         out << YAML::Key << "after" << YAML::Value << p.after;
+    if (!p.cmd.empty())
+        out << YAML::Key << "cmd" << YAML::Value << p.cmd;
+    if (!p.style.empty())
+        out << YAML::Key << "style" << YAML::Value << p.style;
     out << YAML::EndMap;
 
     return out;
@@ -182,7 +186,7 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const plantuml &p)
 
 YAML::Emitter &operator<<(YAML::Emitter &out, const mermaid &p)
 {
-    if (p.before.empty() && p.after.empty()) {
+    if (is_null(p)) {
         out << YAML::Null;
         return out;
     }
@@ -192,6 +196,8 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const mermaid &p)
         out << YAML::Key << "before" << YAML::Value << p.before;
     if (!p.after.empty())
         out << YAML::Key << "after" << YAML::Value << p.after;
+    if (!p.cmd.empty())
+        out << YAML::Key << "cmd" << YAML::Value << p.cmd;
     out << YAML::EndMap;
 
     return out;
@@ -199,7 +205,7 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const mermaid &p)
 
 YAML::Emitter &operator<<(YAML::Emitter &out, const graphml &p)
 {
-    if (p.notes.empty()) {
+    if (is_null(p)) {
         out << YAML::Null;
         return out;
     }
@@ -310,6 +316,17 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const glob_t &g)
     return out;
 }
 
+YAML::Emitter &operator<<(YAML::Emitter &out, const diagram_template &dt)
+{
+    out << YAML::BeginMap;
+    out << YAML::Key << "type" << YAML::Value << dt.type;
+    out << YAML::Key << "description" << YAML::Value << dt.description;
+    out << YAML::Key << "template" << YAML::Literal << dt.jinja_template;
+    out << YAML::EndMap;
+
+    return out;
+}
+
 YAML::Emitter &operator<<(YAML::Emitter &out, const inja::json &j)
 {
     if (j.empty() || j.is_null()) {
@@ -360,6 +377,7 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const config &c)
     out << c.query_driver;
     out << c.add_compile_flags;
     out << c.remove_compile_flags;
+    out << c.diagram_templates;
 
     out << dynamic_cast<const inheritable_diagram_options &>(c);
 

@@ -355,7 +355,6 @@ types:
         type: diagram_type_t
         template: string
     diagram_templates_t: map_t<string;diagram_template_t>
-
 root:
     #
     # Root options
