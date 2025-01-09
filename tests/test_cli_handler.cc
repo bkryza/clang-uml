@@ -262,6 +262,58 @@ TEST_CASE("Test cli handler properly adds new diagram configs from template")
     // Now add a template to the diagram
     std::vector<const char *> argv_add{
         "clang-uml",
+        "--generate-from-template",
+        "class_context_tmpl",
+        "--template-var",
+        "diagram_name=A_context_diagram",
+        "--template-var",
+        "glob=test.cc",
+        "--template-var",
+        "using_namespace=ns1::ns2",
+        "--template-var",
+        "class_name=ns1::ns2::A",
+        "--template-var",
+        "namespace_name=ns1::ns2",
+    };
+
+    std::ostringstream ostr_gen;
+
+    cli_handler cli_gen{ostr_gen, make_sstream_logger(ostr_gen)};
+    cli_gen.set_config_path(config_file);
+
+    auto res_gen = cli_gen.handle_options(argv_add.size(), argv_add.data());
+
+    REQUIRE(res_gen == cli_flow_t::kContinue);
+    REQUIRE(clanguml::util::contains(
+        cli_gen.diagram_names, std::string{"A_context_diagram"}));
+}
+
+TEST_CASE("Test cli handler properly adds new diagram configs from template")
+{
+    using clanguml::cli::cli_flow_t;
+    using clanguml::cli::cli_handler;
+    using clanguml::util::contains;
+
+    std::string option_name;
+    std::string diagram_name;
+
+    // First create initial config file
+    std::vector<const char *> argv{"clang-uml", "--init"};
+
+    // Generate temporary file path
+    const std::string config_file{create_temp_file()};
+
+    std::ostringstream ostr;
+    cli_handler cli{ostr, make_sstream_logger(ostr)};
+    cli.set_config_path(config_file);
+
+    auto res = cli.handle_options(argv.size(), argv.data());
+
+    REQUIRE(res == cli_flow_t::kExit);
+
+    // Now add a template to the diagram
+    std::vector<const char *> argv_add{
+        "clang-uml",
         "--add-diagram-from-template",
         "class_context_tmpl",
         "--template-var",

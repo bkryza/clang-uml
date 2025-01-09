@@ -4,6 +4,7 @@
 
 * [Diagram template syntax](#diagram-template-syntax)
 * [Adding templates to the configuration file](#adding-templates-to-the-configuration-file)
+* [Generating diagram from a diagram template](#generating-diagram-from-a-diagram-template)
 * [Adding diagram to configuration from a template](#adding-diagram-to-configuration-from-a-template)
 * [Builtin templates](#builtin-templates)
 
@@ -62,6 +63,15 @@ it in the configuration file using `include!` directive, e.g.:
 diagram_templates:
   include!: .clang-uml-templates
 ```
+
+## Generating diagram from a diagram template
+To generate a diagram from a template use the following command:
+
+```bash
+clang-uml --generate-from-template parents_hierarchy_tmpl --template-var ...
+```
+
+This command does not modify the `.clang-uml` configuration file.
 
 ## Adding diagram to configuration from a template
 To add a new diagram definition to the configuration file based on the template,

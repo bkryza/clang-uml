@@ -55,6 +55,7 @@ _arguments \
   '--add-package-diagram[Add package diagram config]' \
   '--add-include-diagram[Add include diagram config]' \
   '--add-diagram-from-template[Add diagram config based on diagram template]: :{_values "Template name" $templates}' \
+  '--generate-from-template[Generate diagram based on a diagram template]: :{_values "Template name" $templates}' \
   '--template-var[Specify a value for a template variable]' \
   '--list-templates[List all available diagram templates]' \
   '--show-template[Show specific diagram template definition]: :{_values "Template name" $templates}' \

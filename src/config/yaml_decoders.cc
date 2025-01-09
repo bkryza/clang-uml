@@ -1284,24 +1284,25 @@ config load(const std::string &config_file, bool inherit,
             doc["git"] = git_config;
         }
 
-        // Resolve diagram includes
-        auto diagrams = doc["diagrams"];
+        if (has_key(doc, "diagrams")) {
+            auto diagrams = doc["diagrams"];
 
-        assert(diagrams.Type() == YAML::NodeType::Map);
+            assert(diagrams.Type() == YAML::NodeType::Map);
 
-        for (auto d : diagrams) {
-            auto name = d.first.as<std::string>();
-            std::shared_ptr<clanguml::config::diagram> diagram_config{};
-            auto parent_path = doc["__parent_path"].as<std::string>();
+            for (auto d : diagrams) {
+                auto name = d.first.as<std::string>();
+                std::shared_ptr<clanguml::config::diagram> diagram_config{};
+                auto parent_path = doc["__parent_path"].as<std::string>();
 
-            if (has_key(d.second, "include!")) {
-                auto include_path = std::filesystem::path{parent_path};
-                include_path /= d.second["include!"].as<std::string>();
+                if (has_key(d.second, "include!")) {
+                    auto include_path = std::filesystem::path{parent_path};
+                    include_path /= d.second["include!"].as<std::string>();
 
-                YAML::Node included_node =
-                    YAML::LoadFile(include_path.string());
+                    YAML::Node included_node =
+                        YAML::LoadFile(include_path.string());
 
-                diagrams[name] = included_node;
+                    diagrams[name] = included_node;
+                }
             }
         }
 
@@ -1328,8 +1329,9 @@ config load(const std::string &config_file, bool inherit,
             "Could not open config file {}: {}", config_file, e.what()));
     }
     catch (YAML::Exception &e) {
-        throw std::runtime_error(fmt::format(
-            "Cannot parse YAML file {}: {}", config_file, e.what()));
+        throw std::runtime_error(
+            fmt::format("Cannot parse YAML file {} at line {}: {}", config_file,
+                e.mark.line, e.msg));
     }
 }
 } // namespace clanguml::config

@@ -355,7 +355,6 @@ types:
         type: diagram_type_t
         template: string
     diagram_templates_t: map_t<string;diagram_template_t>
-
 root:
     #
     # Root options
@@ -367,7 +366,7 @@ root:
     remove_compile_flags: !optional [regex_or_string_t]
     allow_empty_diagrams: !optional bool
     diagram_templates: !optional diagram_templates_t
-    diagrams: !required map_t<string;diagram_t>
+    diagrams: !optional map_t<string;diagram_t>
     user_data: !optional any
     #
     # Common options

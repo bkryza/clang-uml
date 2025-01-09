@@ -116,6 +116,7 @@ _clanguml() {
                                --add-package-diagram \
                                --add-include-diagram \
                                --add-diagram-from-template \
+                               --generate-from-template \
                                --template-var \
                                --list-templates \
                                --show-template \

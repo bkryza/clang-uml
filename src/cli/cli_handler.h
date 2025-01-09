@@ -140,6 +140,24 @@ public:
         const std::string &config_file_path, const std::string &template_name);
 
     /**
+     * Render diagram template
+     *
+     * @param template_name Template name
+     * @param diagram_node Reference to YAML output node
+     * @return Command line handler state
+     */
+    cli_flow_t render_diagram_template(
+        const std::string &template_name, YAML::Node &diagram_node);
+
+    /**
+     * Generate diagram based on template
+     *
+     * @param template_name Name of the diagram template
+     * @return Command line handler state
+     */
+    cli_flow_t generate_diagram_from_template(const std::string &template_name);
+
+    /**
      * Check if diagram output directory exists, if not create it
      *
      * @param dir Path to the output directory
@@ -188,6 +206,7 @@ public:
     std::optional<std::string> add_package_diagram;
     std::optional<std::string> add_include_diagram;
     std::optional<std::string> add_diagram_from_template;
+    std::optional<std::string> generate_from_template;
     bool dump_config{false};
     bool print_from{false};
     bool print_to{false};

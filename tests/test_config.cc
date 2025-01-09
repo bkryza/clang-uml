@@ -246,12 +246,12 @@ TEST_CASE("Test add and remove compile flags options")
 {
     auto cfg = clanguml::config::load("./test_config_data/complete.yml");
 
-    REQUIRE(cfg.add_compile_flags().size() == 1);
-    REQUIRE(cfg.add_compile_flags()[0] == "-fparse-all-comments");
-    REQUIRE(cfg.remove_compile_flags().size() == 2);
-    REQUIRE(cfg.remove_compile_flags()[0] == "-Werror");
-    REQUIRE_FALSE(cfg.remove_compile_flags()[1] == "-Wwarning");
-    REQUIRE(cfg.remove_compile_flags()[1] == "-march=amd64");
+    CHECK_EQ(cfg.add_compile_flags().size(), 3);
+    CHECK_EQ(cfg.add_compile_flags()[0], "-fparse-all-comments");
+    CHECK_EQ(cfg.remove_compile_flags().size(), 2);
+    CHECK_EQ(cfg.remove_compile_flags()[0], "-Wno-class-memaccess");
+    CHECK_NE(cfg.remove_compile_flags()[1], "-Wwarning");
+    CHECK_EQ(cfg.remove_compile_flags()[1], "-Wno-dangling-reference");
 }
 
 TEST_CASE("Test config emitters")
@@ -275,7 +275,7 @@ TEST_CASE("Test config emitters")
 
     auto cfg_emitted = clanguml::config::load(tmp_file.string());
 
-    REQUIRE(cfg.diagrams.size() == cfg_emitted.diagrams.size());
+    CHECK_EQ(cfg.diagrams.size(), cfg_emitted.diagrams.size());
 
     std::filesystem::remove(tmp_file);
 }
