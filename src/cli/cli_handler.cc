@@ -47,16 +47,7 @@ void cli_handler::setup_logging()
                              "\"%n\", \"level\": \"%^%l%$\", "
                              "\"thread\": %t, %v}");
         if (progress) {
-            spdlog::drop("json-progress-logger");
-
-            auto json_progress_logger = spdlog::stdout_color_mt(
-                "json-progress-logger", spdlog::color_mode::automatic);
-
-            json_progress_logger->set_level(spdlog::level::info);
-            json_progress_logger->set_pattern(
-                "{\"time\": \"%Y-%m-%dT%H:%M:%S.%f%z\", \"name\": "
-                "\"%n\", \"level\": \"%^%l%$\", "
-                "\"thread\": %t, \"progress\": %v}");
+            create_json_progress_logger();
         }
     }
 
@@ -72,6 +63,24 @@ void cli_handler::setup_logging()
     else { // -vv
         logger_->set_level(spdlog::level::trace);
     }
+}
+void cli_handler::create_json_progress_logger(spdlog::sink_ptr sink)
+{
+    spdlog::drop("json-progress-logger");
+
+    auto json_progress_logger = spdlog::stdout_color_mt(
+        "json-progress-logger", spdlog::color_mode::automatic);
+
+    if (sink) {
+        json_progress_logger->sinks().clear();
+        json_progress_logger->sinks().emplace_back(std::move(sink));
+    }
+
+    json_progress_logger->set_level(spdlog::level::info);
+    json_progress_logger->set_pattern(
+        "{\"time\": \"%Y-%m-%dT%H:%M:%S.%f%z\", \"name\": "
+        "\"%n\", \"level\": \"%^%l%$\", "
+        "\"thread\": %t, \"progress\": %v}");
 }
 
 cli_flow_t cli_handler::parse(int argc, const char **argv)

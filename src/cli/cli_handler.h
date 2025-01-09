@@ -161,6 +161,8 @@ public:
      */
     void set_config_path(const std::string &path);
 
+    static void create_json_progress_logger(spdlog::sink_ptr sink = {});
+
     std::string config_path{".clang-uml"};
     std::optional<std::string> compilation_database_dir{};
     std::vector<std::string> diagram_names{};
