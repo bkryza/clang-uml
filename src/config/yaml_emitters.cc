@@ -381,22 +381,24 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const config &c)
 
     out << dynamic_cast<const inheritable_diagram_options &>(c);
 
-    out << YAML::Key << "diagrams";
-    out << YAML::BeginMap;
+    if (!c.diagrams.empty()) {
+        out << YAML::Key << "diagrams";
+        out << YAML::BeginMap;
 
-    for (const auto &[k, v] : c.diagrams) {
-        out << YAML::Key << k;
-        if (v->type() == common::model::diagram_t::kClass) {
-            out << YAML::Value << dynamic_cast<class_diagram &>(*v);
-        }
-        else if (v->type() == common::model::diagram_t::kSequence) {
-            out << YAML::Value << dynamic_cast<sequence_diagram &>(*v);
-        }
-        else if (v->type() == common::model::diagram_t::kInclude) {
-            out << YAML::Value << dynamic_cast<include_diagram &>(*v);
-        }
-        else if (v->type() == common::model::diagram_t::kPackage) {
-            out << YAML::Value << dynamic_cast<package_diagram &>(*v);
+        for (const auto &[k, v] : c.diagrams) {
+            out << YAML::Key << k;
+            if (v->type() == common::model::diagram_t::kClass) {
+                out << YAML::Value << dynamic_cast<class_diagram &>(*v);
+            }
+            else if (v->type() == common::model::diagram_t::kSequence) {
+                out << YAML::Value << dynamic_cast<sequence_diagram &>(*v);
+            }
+            else if (v->type() == common::model::diagram_t::kInclude) {
+                out << YAML::Value << dynamic_cast<include_diagram &>(*v);
+            }
+            else if (v->type() == common::model::diagram_t::kPackage) {
+                out << YAML::Value << dynamic_cast<package_diagram &>(*v);
+            }
         }
     }
 

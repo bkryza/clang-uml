@@ -147,6 +147,8 @@ cli_flow_t cli_handler::parse(int argc, const char **argv)
         "Add example include diagram to config");
     app.add_option("--add-diagram-from-template", add_diagram_from_template,
         "Add diagram config based on diagram template");
+    app.add_option("--generate-from-template", generate_from_template,
+        "Generate diagram from template without adding it to config");
     app.add_option("--template-var", template_variables,
         "Specify a value for a template variable");
     app.add_flag("--list-templates", list_templates,
@@ -369,6 +371,10 @@ cli_flow_t cli_handler::handle_post_config_options()
     if (config_path != "-" && add_diagram_from_template) {
         return add_config_diagram_from_template(
             config_path, add_diagram_from_template.value());
+    }
+
+    if (generate_from_template) {
+        generate_diagram_from_template(*generate_from_template);
     }
 
     LOG_INFO("Loaded clang-uml config from {}", config_path);
@@ -728,8 +734,8 @@ cli_flow_t cli_handler::add_config_diagram(
     return cli_flow_t::kExit;
 }
 
-cli_flow_t cli_handler::add_config_diagram_from_template(
-    const std::string &config_file_path, const std::string &template_name)
+cli_flow_t cli_handler::render_diagram_template(
+    const std::string &template_name, YAML::Node &diagram_node)
 {
     if (!config.diagram_templates ||
         !(config.diagram_templates().find(template_name) !=
@@ -754,9 +760,6 @@ cli_flow_t cli_handler::add_config_diagram_from_template(
 
     auto diagram_template_str =
         config.diagram_templates().at(template_name).jinja_template;
-
-    YAML::Node diagram_node;
-
     try {
         auto diagram_str = inja::render(diagram_template_str, ctx);
         diagram_node = YAML::Load(diagram_str);
@@ -771,6 +774,18 @@ cli_flow_t cli_handler::add_config_diagram_from_template(
                   << "' resulted in invalid YAML: " << e.what() << "\n";
         return cli_flow_t::kError;
     }
+
+    return cli_flow_t::kContinue;
+}
+
+cli_flow_t cli_handler::add_config_diagram_from_template(
+    const std::string &config_file_path, const std::string &template_name)
+{
+    YAML::Node diagram_node;
+    const auto res = render_diagram_template(template_name, diagram_node);
+
+    if (res == cli_flow_t::kError)
+        return res;
 
     namespace fs = std::filesystem;
 
@@ -797,6 +812,31 @@ cli_flow_t cli_handler::add_config_diagram_from_template(
     ofs.close();
 
     return cli_flow_t::kExit;
+}
+
+cli_flow_t cli_handler::generate_diagram_from_template(
+    const std::string &template_name)
+{
+    YAML::Node diagram_node;
+    const auto res = render_diagram_template(template_name, diagram_node);
+
+    if (res == cli_flow_t::kError)
+        return res;
+
+    const auto diagram_name = diagram_node.begin()->first.as<std::string>();
+
+    auto diagram_config =
+        YAML::parse_diagram_config(diagram_node.begin()->second);
+    if (diagram_config) {
+        diagram_config->name = diagram_name;
+        config.diagrams[diagram_name] = std::move(diagram_config);
+        diagram_names.push_back(diagram_name);
+    }
+    else {
+        return cli_flow_t::kError;
+    }
+
+    return cli_flow_t::kContinue;
 }
 
 cli_flow_t cli_handler::print_config()

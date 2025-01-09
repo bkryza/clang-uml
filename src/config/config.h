@@ -875,7 +875,6 @@ using config_ptr = std::unique_ptr<config>;
 config load(const std::string &config_file, bool inherit = true,
     std::optional<bool> paths_relative_to_pwd = {},
     std::optional<bool> no_metadata = {}, bool validate = true);
-
 } // namespace config
 
 namespace config {
@@ -975,3 +974,8 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const diagram_t &d);
 /** @} */ // end of yaml_emitters
 } // namespace common::model
 } // namespace clanguml
+
+namespace YAML {
+std::shared_ptr<clanguml::config::diagram> parse_diagram_config(
+    const YAML::Node &d);
+} // namespace YAML
