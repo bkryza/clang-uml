@@ -1,216 +1,216 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="284px" preserveAspectRatio="none" style="width:808px;height:284px;background:#FFFFFF;" version="1.1" viewBox="0 0 808 284" width="808px" zoomAndPan="magnify">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" data-diagram-type="CLASS" height="284px" preserveAspectRatio="none" style="width:808px;height:284px;background:#FFFFFF;" version="1.1" viewBox="0 0 808 284" width="808px" zoomAndPan="magnify">
   <defs>
     <style type="text/css">a:hover { text-decoration: underline; }</style>
   </defs>
   <g>
-    <a href="https://github.com/bkryza/clang-uml/blob/375fb0bfc3a0e0b702776c4e39f79ee848c5c67c/tests/t00017/t00017.cc#L5" target="_top" title="A" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/375fb0bfc3a0e0b702776c4e39f79ee848c5c67c/tests/t00017/t00017.cc#L5" xlink:show="new" xlink:title="A" xlink:type="simple">
+    <a href="https://github.com/bkryza/clang-uml/blob/669b30ea491fc93aa680d5303b8c092431ff11ce/tests/t00017/t00017.cc#L5" target="_top" title="A" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/669b30ea491fc93aa680d5303b8c092431ff11ce/tests/t00017/t00017.cc#L5" xlink:show="new" xlink:title="A" xlink:type="simple">
       <g id="elem_C_0000970656747477527100">
         <rect codeLine="2" fill="#F1F1F1" height="48" id="C_0000970656747477527100" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="40.946" x="7" y="229"/>
-        <ellipse cx="22" cy="245" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/>
+        <ellipse cx="22" cy="245" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
         <path d="M24.9688,250.6406 Q24.3906,250.9375 23.75,251.0781 Q23.1094,251.2344 22.4063,251.2344 Q19.9063,251.2344 18.5781,249.5938 Q17.2656,247.9375 17.2656,244.8125 Q17.2656,241.6875 18.5781,240.0313 Q19.9063,238.375 22.4063,238.375 Q23.1094,238.375 23.75,238.5313 Q24.4063,238.6875 24.9688,238.9844 L24.9688,241.7031 Q24.3438,241.125 23.75,240.8594 Q23.1563,240.5781 22.5313,240.5781 Q21.1875,240.5781 20.5,241.6563 Q19.8125,242.7188 19.8125,244.8125 Q19.8125,246.9063 20.5,247.9844 Q21.1875,249.0469 22.5313,249.0469 Q23.1563,249.0469 23.75,248.7813 Q24.3438,248.5 24.9688,247.9219 L24.9688,250.6406 Z " fill="#000000"/>
         <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="8.946" x="36" y="250.432">A</text>
         <line style="stroke:#181818;stroke-width:0.5;" x1="8" x2="46.946" y1="261" y2="261"/>
         <line style="stroke:#181818;stroke-width:0.5;" x1="8" x2="46.946" y1="269" y2="269"/>
       </g>
     </a>
-    <a href="https://github.com/bkryza/clang-uml/blob/375fb0bfc3a0e0b702776c4e39f79ee848c5c67c/tests/t00017/t00017.cc#L7" target="_top" title="B" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/375fb0bfc3a0e0b702776c4e39f79ee848c5c67c/tests/t00017/t00017.cc#L7" xlink:show="new" xlink:title="B" xlink:type="simple">
+    <a href="https://github.com/bkryza/clang-uml/blob/669b30ea491fc93aa680d5303b8c092431ff11ce/tests/t00017/t00017.cc#L7" target="_top" title="B" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/669b30ea491fc93aa680d5303b8c092431ff11ce/tests/t00017/t00017.cc#L7" xlink:show="new" xlink:title="B" xlink:type="simple">
       <g id="elem_C_0011398918699649603899">
         <rect codeLine="6" fill="#F1F1F1" height="48" id="C_0011398918699649603899" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="41.1" x="83" y="229"/>
-        <ellipse cx="98" cy="245" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/>
+        <ellipse cx="98" cy="245" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
         <path d="M100.9688,250.6406 Q100.3906,250.9375 99.75,251.0781 Q99.1094,251.2344 98.4063,251.2344 Q95.9063,251.2344 94.5781,249.5938 Q93.2656,247.9375 93.2656,244.8125 Q93.2656,241.6875 94.5781,240.0313 Q95.9063,238.375 98.4063,238.375 Q99.1094,238.375 99.75,238.5313 Q100.4063,238.6875 100.9688,238.9844 L100.9688,241.7031 Q100.3438,241.125 99.75,240.8594 Q99.1563,240.5781 98.5313,240.5781 Q97.1875,240.5781 96.5,241.6563 Q95.8125,242.7188 95.8125,244.8125 Q95.8125,246.9063 96.5,247.9844 Q97.1875,249.0469 98.5313,249.0469 Q99.1563,249.0469 99.75,248.7813 Q100.3438,248.5 100.9688,247.9219 L100.9688,250.6406 Z " fill="#000000"/>
         <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="9.1" x="112" y="250.432">B</text>
         <line style="stroke:#181818;stroke-width:0.5;" x1="84" x2="123.1" y1="261" y2="261"/>
         <line style="stroke:#181818;stroke-width:0.5;" x1="84" x2="123.1" y1="269" y2="269"/>
       </g>
     </a>
-    <a href="https://github.com/bkryza/clang-uml/blob/375fb0bfc3a0e0b702776c4e39f79ee848c5c67c/tests/t00017/t00017.cc#L9" target="_top" title="C" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/375fb0bfc3a0e0b702776c4e39f79ee848c5c67c/tests/t00017/t00017.cc#L9" xlink:show="new" xlink:title="C" xlink:type="simple">
+    <a href="https://github.com/bkryza/clang-uml/blob/669b30ea491fc93aa680d5303b8c092431ff11ce/tests/t00017/t00017.cc#L9" target="_top" title="C" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/669b30ea491fc93aa680d5303b8c092431ff11ce/tests/t00017/t00017.cc#L9" xlink:show="new" xlink:title="C" xlink:type="simple">
       <g id="elem_C_0017209363134757947829">
         <rect codeLine="10" fill="#F1F1F1" height="48" id="C_0017209363134757947829" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="40.848" x="159" y="229"/>
-        <ellipse cx="174" cy="245" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/>
+        <ellipse cx="174" cy="245" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
         <path d="M176.9688,250.6406 Q176.3906,250.9375 175.75,251.0781 Q175.1094,251.2344 174.4063,251.2344 Q171.9063,251.2344 170.5781,249.5938 Q169.2656,247.9375 169.2656,244.8125 Q169.2656,241.6875 170.5781,240.0313 Q171.9063,238.375 174.4063,238.375 Q175.1094,238.375 175.75,238.5313 Q176.4063,238.6875 176.9688,238.9844 L176.9688,241.7031 Q176.3438,241.125 175.75,240.8594 Q175.1563,240.5781 174.5313,240.5781 Q173.1875,240.5781 172.5,241.6563 Q171.8125,242.7188 171.8125,244.8125 Q171.8125,246.9063 172.5,247.9844 Q173.1875,249.0469 174.5313,249.0469 Q175.1563,249.0469 175.75,248.7813 Q176.3438,248.5 176.9688,247.9219 L176.9688,250.6406 Z " fill="#000000"/>
         <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="8.848" x="188" y="250.432">C</text>
         <line style="stroke:#181818;stroke-width:0.5;" x1="160" x2="198.848" y1="261" y2="261"/>
         <line style="stroke:#181818;stroke-width:0.5;" x1="160" x2="198.848" y1="269" y2="269"/>
       </g>
     </a>
-    <a href="https://github.com/bkryza/clang-uml/blob/375fb0bfc3a0e0b702776c4e39f79ee848c5c67c/tests/t00017/t00017.cc#L11" target="_top" title="D" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/375fb0bfc3a0e0b702776c4e39f79ee848c5c67c/tests/t00017/t00017.cc#L11" xlink:show="new" xlink:title="D" xlink:type="simple">
+    <a href="https://github.com/bkryza/clang-uml/blob/669b30ea491fc93aa680d5303b8c092431ff11ce/tests/t00017/t00017.cc#L11" target="_top" title="D" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/669b30ea491fc93aa680d5303b8c092431ff11ce/tests/t00017/t00017.cc#L11" xlink:show="new" xlink:title="D" xlink:type="simple">
       <g id="elem_C_0011024897017054135776">
         <rect codeLine="14" fill="#F1F1F1" height="48" id="C_0011024897017054135776" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="42.22" x="235.5" y="229"/>
-        <ellipse cx="250.5" cy="245" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/>
+        <ellipse cx="250.5" cy="245" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
         <path d="M253.4688,250.6406 Q252.8906,250.9375 252.25,251.0781 Q251.6094,251.2344 250.9063,251.2344 Q248.4063,251.2344 247.0781,249.5938 Q245.7656,247.9375 245.7656,244.8125 Q245.7656,241.6875 247.0781,240.0313 Q248.4063,238.375 250.9063,238.375 Q251.6094,238.375 252.25,238.5313 Q252.9063,238.6875 253.4688,238.9844 L253.4688,241.7031 Q252.8438,241.125 252.25,240.8594 Q251.6563,240.5781 251.0313,240.5781 Q249.6875,240.5781 249,241.6563 Q248.3125,242.7188 248.3125,244.8125 Q248.3125,246.9063 249,247.9844 Q249.6875,249.0469 251.0313,249.0469 Q251.6563,249.0469 252.25,248.7813 Q252.8438,248.5 253.4688,247.9219 L253.4688,250.6406 Z " fill="#000000"/>
         <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="10.22" x="264.5" y="250.432">D</text>
         <line style="stroke:#181818;stroke-width:0.5;" x1="236.5" x2="276.72" y1="261" y2="261"/>
         <line style="stroke:#181818;stroke-width:0.5;" x1="236.5" x2="276.72" y1="269" y2="269"/>
       </g>
     </a>
-    <a href="https://github.com/bkryza/clang-uml/blob/375fb0bfc3a0e0b702776c4e39f79ee848c5c67c/tests/t00017/t00017.cc#L13" target="_top" title="E" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/375fb0bfc3a0e0b702776c4e39f79ee848c5c67c/tests/t00017/t00017.cc#L13" xlink:show="new" xlink:title="E" xlink:type="simple">
+    <a href="https://github.com/bkryza/clang-uml/blob/669b30ea491fc93aa680d5303b8c092431ff11ce/tests/t00017/t00017.cc#L13" target="_top" title="E" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/669b30ea491fc93aa680d5303b8c092431ff11ce/tests/t00017/t00017.cc#L13" xlink:show="new" xlink:title="E" xlink:type="simple">
       <g id="elem_C_0012282407486654419914">
         <rect codeLine="18" fill="#F1F1F1" height="48" id="C_0012282407486654419914" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="39.784" x="312.5" y="229"/>
-        <ellipse cx="327.5" cy="245" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/>
+        <ellipse cx="327.5" cy="245" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
         <path d="M330.4688,250.6406 Q329.8906,250.9375 329.25,251.0781 Q328.6094,251.2344 327.9063,251.2344 Q325.4063,251.2344 324.0781,249.5938 Q322.7656,247.9375 322.7656,244.8125 Q322.7656,241.6875 324.0781,240.0313 Q325.4063,238.375 327.9063,238.375 Q328.6094,238.375 329.25,238.5313 Q329.9063,238.6875 330.4688,238.9844 L330.4688,241.7031 Q329.8438,241.125 329.25,240.8594 Q328.6563,240.5781 328.0313,240.5781 Q326.6875,240.5781 326,241.6563 Q325.3125,242.7188 325.3125,244.8125 Q325.3125,246.9063 326,247.9844 Q326.6875,249.0469 328.0313,249.0469 Q328.6563,249.0469 329.25,248.7813 Q329.8438,248.5 330.4688,247.9219 L330.4688,250.6406 Z " fill="#000000"/>
         <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="7.784" x="341.5" y="250.432">E</text>
         <line style="stroke:#181818;stroke-width:0.5;" x1="313.5" x2="351.284" y1="261" y2="261"/>
         <line style="stroke:#181818;stroke-width:0.5;" x1="313.5" x2="351.284" y1="269" y2="269"/>
       </g>
     </a>
-    <a href="https://github.com/bkryza/clang-uml/blob/375fb0bfc3a0e0b702776c4e39f79ee848c5c67c/tests/t00017/t00017.cc#L15" target="_top" title="F" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/375fb0bfc3a0e0b702776c4e39f79ee848c5c67c/tests/t00017/t00017.cc#L15" xlink:show="new" xlink:title="F" xlink:type="simple">
+    <a href="https://github.com/bkryza/clang-uml/blob/669b30ea491fc93aa680d5303b8c092431ff11ce/tests/t00017/t00017.cc#L15" target="_top" title="F" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/669b30ea491fc93aa680d5303b8c092431ff11ce/tests/t00017/t00017.cc#L15" xlink:show="new" xlink:title="F" xlink:type="simple">
       <g id="elem_C_0014430403722237681072">
         <rect codeLine="22" fill="#F1F1F1" height="48" id="C_0014430403722237681072" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="39.266" x="388" y="229"/>
-        <ellipse cx="403" cy="245" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/>
+        <ellipse cx="403" cy="245" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
         <path d="M405.9688,250.6406 Q405.3906,250.9375 404.75,251.0781 Q404.1094,251.2344 403.4063,251.2344 Q400.9063,251.2344 399.5781,249.5938 Q398.2656,247.9375 398.2656,244.8125 Q398.2656,241.6875 399.5781,240.0313 Q400.9063,238.375 403.4063,238.375 Q404.1094,238.375 404.75,238.5313 Q405.4063,238.6875 405.9688,238.9844 L405.9688,241.7031 Q405.3438,241.125 404.75,240.8594 Q404.1563,240.5781 403.5313,240.5781 Q402.1875,240.5781 401.5,241.6563 Q400.8125,242.7188 400.8125,244.8125 Q400.8125,246.9063 401.5,247.9844 Q402.1875,249.0469 403.5313,249.0469 Q404.1563,249.0469 404.75,248.7813 Q405.3438,248.5 405.9688,247.9219 L405.9688,250.6406 Z " fill="#000000"/>
         <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="7.266" x="417" y="250.432">F</text>
         <line style="stroke:#181818;stroke-width:0.5;" x1="389" x2="426.266" y1="261" y2="261"/>
         <line style="stroke:#181818;stroke-width:0.5;" x1="389" x2="426.266" y1="269" y2="269"/>
       </g>
     </a>
-    <a href="https://github.com/bkryza/clang-uml/blob/375fb0bfc3a0e0b702776c4e39f79ee848c5c67c/tests/t00017/t00017.cc#L17" target="_top" title="G" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/375fb0bfc3a0e0b702776c4e39f79ee848c5c67c/tests/t00017/t00017.cc#L17" xlink:show="new" xlink:title="G" xlink:type="simple">
+    <a href="https://github.com/bkryza/clang-uml/blob/669b30ea491fc93aa680d5303b8c092431ff11ce/tests/t00017/t00017.cc#L17" target="_top" title="G" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/669b30ea491fc93aa680d5303b8c092431ff11ce/tests/t00017/t00017.cc#L17" xlink:show="new" xlink:title="G" xlink:type="simple">
       <g id="elem_C_0009086382335141361974">
         <rect codeLine="26" fill="#F1F1F1" height="48" id="C_0009086382335141361974" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="42.192" x="462.5" y="229"/>
-        <ellipse cx="477.5" cy="245" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/>
+        <ellipse cx="477.5" cy="245" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
         <path d="M480.4688,250.6406 Q479.8906,250.9375 479.25,251.0781 Q478.6094,251.2344 477.9063,251.2344 Q475.4063,251.2344 474.0781,249.5938 Q472.7656,247.9375 472.7656,244.8125 Q472.7656,241.6875 474.0781,240.0313 Q475.4063,238.375 477.9063,238.375 Q478.6094,238.375 479.25,238.5313 Q479.9063,238.6875 480.4688,238.9844 L480.4688,241.7031 Q479.8438,241.125 479.25,240.8594 Q478.6563,240.5781 478.0313,240.5781 Q476.6875,240.5781 476,241.6563 Q475.3125,242.7188 475.3125,244.8125 Q475.3125,246.9063 476,247.9844 Q476.6875,249.0469 478.0313,249.0469 Q478.6563,249.0469 479.25,248.7813 Q479.8438,248.5 480.4688,247.9219 L480.4688,250.6406 Z " fill="#000000"/>
         <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="10.192" x="491.5" y="250.432">G</text>
         <line style="stroke:#181818;stroke-width:0.5;" x1="463.5" x2="503.692" y1="261" y2="261"/>
         <line style="stroke:#181818;stroke-width:0.5;" x1="463.5" x2="503.692" y1="269" y2="269"/>
       </g>
     </a>
-    <a href="https://github.com/bkryza/clang-uml/blob/375fb0bfc3a0e0b702776c4e39f79ee848c5c67c/tests/t00017/t00017.cc#L19" target="_top" title="H" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/375fb0bfc3a0e0b702776c4e39f79ee848c5c67c/tests/t00017/t00017.cc#L19" xlink:show="new" xlink:title="H" xlink:type="simple">
+    <a href="https://github.com/bkryza/clang-uml/blob/669b30ea491fc93aa680d5303b8c092431ff11ce/tests/t00017/t00017.cc#L19" target="_top" title="H" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/669b30ea491fc93aa680d5303b8c092431ff11ce/tests/t00017/t00017.cc#L19" xlink:show="new" xlink:title="H" xlink:type="simple">
       <g id="elem_C_0009948382692573698543">
         <rect codeLine="30" fill="#F1F1F1" height="48" id="C_0009948382692573698543" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="42.374" x="539.5" y="229"/>
-        <ellipse cx="554.5" cy="245" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/>
+        <ellipse cx="554.5" cy="245" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
         <path d="M557.4688,250.6406 Q556.8906,250.9375 556.25,251.0781 Q555.6094,251.2344 554.9063,251.2344 Q552.4063,251.2344 551.0781,249.5938 Q549.7656,247.9375 549.7656,244.8125 Q549.7656,241.6875 551.0781,240.0313 Q552.4063,238.375 554.9063,238.375 Q555.6094,238.375 556.25,238.5313 Q556.9063,238.6875 557.4688,238.9844 L557.4688,241.7031 Q556.8438,241.125 556.25,240.8594 Q555.6563,240.5781 555.0313,240.5781 Q553.6875,240.5781 553,241.6563 Q552.3125,242.7188 552.3125,244.8125 Q552.3125,246.9063 553,247.9844 Q553.6875,249.0469 555.0313,249.0469 Q555.6563,249.0469 556.25,248.7813 Q556.8438,248.5 557.4688,247.9219 L557.4688,250.6406 Z " fill="#000000"/>
         <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="10.374" x="568.5" y="250.432">H</text>
         <line style="stroke:#181818;stroke-width:0.5;" x1="540.5" x2="580.874" y1="261" y2="261"/>
         <line style="stroke:#181818;stroke-width:0.5;" x1="540.5" x2="580.874" y1="269" y2="269"/>
       </g>
     </a>
-    <a href="https://github.com/bkryza/clang-uml/blob/375fb0bfc3a0e0b702776c4e39f79ee848c5c67c/tests/t00017/t00017.cc#L21" target="_top" title="I" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/375fb0bfc3a0e0b702776c4e39f79ee848c5c67c/tests/t00017/t00017.cc#L21" xlink:show="new" xlink:title="I" xlink:type="simple">
+    <a href="https://github.com/bkryza/clang-uml/blob/669b30ea491fc93aa680d5303b8c092431ff11ce/tests/t00017/t00017.cc#L21" target="_top" title="I" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/669b30ea491fc93aa680d5303b8c092431ff11ce/tests/t00017/t00017.cc#L21" xlink:show="new" xlink:title="I" xlink:type="simple">
       <g id="elem_C_0003101865597645029270">
         <rect codeLine="34" fill="#F1F1F1" height="48" id="C_0003101865597645029270" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="36.746" x="617" y="229"/>
-        <ellipse cx="632" cy="245" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/>
+        <ellipse cx="632" cy="245" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
         <path d="M634.9688,250.6406 Q634.3906,250.9375 633.75,251.0781 Q633.1094,251.2344 632.4063,251.2344 Q629.9063,251.2344 628.5781,249.5938 Q627.2656,247.9375 627.2656,244.8125 Q627.2656,241.6875 628.5781,240.0313 Q629.9063,238.375 632.4063,238.375 Q633.1094,238.375 633.75,238.5313 Q634.4063,238.6875 634.9688,238.9844 L634.9688,241.7031 Q634.3438,241.125 633.75,240.8594 Q633.1563,240.5781 632.5313,240.5781 Q631.1875,240.5781 630.5,241.6563 Q629.8125,242.7188 629.8125,244.8125 Q629.8125,246.9063 630.5,247.9844 Q631.1875,249.0469 632.5313,249.0469 Q633.1563,249.0469 633.75,248.7813 Q634.3438,248.5 634.9688,247.9219 L634.9688,250.6406 Z " fill="#000000"/>
         <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="4.746" x="646" y="250.432">I</text>
         <line style="stroke:#181818;stroke-width:0.5;" x1="618" x2="652.746" y1="261" y2="261"/>
         <line style="stroke:#181818;stroke-width:0.5;" x1="618" x2="652.746" y1="269" y2="269"/>
       </g>
     </a>
-    <a href="https://github.com/bkryza/clang-uml/blob/375fb0bfc3a0e0b702776c4e39f79ee848c5c67c/tests/t00017/t00017.cc#L23" target="_top" title="J" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/375fb0bfc3a0e0b702776c4e39f79ee848c5c67c/tests/t00017/t00017.cc#L23" xlink:show="new" xlink:title="J" xlink:type="simple">
+    <a href="https://github.com/bkryza/clang-uml/blob/669b30ea491fc93aa680d5303b8c092431ff11ce/tests/t00017/t00017.cc#L23" target="_top" title="J" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/669b30ea491fc93aa680d5303b8c092431ff11ce/tests/t00017/t00017.cc#L23" xlink:show="new" xlink:title="J" xlink:type="simple">
       <g id="elem_C_0005983934629379468301">
         <rect codeLine="38" fill="#F1F1F1" height="48" id="C_0005983934629379468301" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="35.822" x="689.5" y="229"/>
-        <ellipse cx="704.5" cy="245" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/>
+        <ellipse cx="704.5" cy="245" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
         <path d="M707.4688,250.6406 Q706.8906,250.9375 706.25,251.0781 Q705.6094,251.2344 704.9063,251.2344 Q702.4063,251.2344 701.0781,249.5938 Q699.7656,247.9375 699.7656,244.8125 Q699.7656,241.6875 701.0781,240.0313 Q702.4063,238.375 704.9063,238.375 Q705.6094,238.375 706.25,238.5313 Q706.9063,238.6875 707.4688,238.9844 L707.4688,241.7031 Q706.8438,241.125 706.25,240.8594 Q705.6563,240.5781 705.0313,240.5781 Q703.6875,240.5781 703,241.6563 Q702.3125,242.7188 702.3125,244.8125 Q702.3125,246.9063 703,247.9844 Q703.6875,249.0469 705.0313,249.0469 Q705.6563,249.0469 706.25,248.7813 Q706.8438,248.5 707.4688,247.9219 L707.4688,250.6406 Z " fill="#000000"/>
         <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="3.822" x="718.5" y="250.432">J</text>
         <line style="stroke:#181818;stroke-width:0.5;" x1="690.5" x2="724.322" y1="261" y2="261"/>
         <line style="stroke:#181818;stroke-width:0.5;" x1="690.5" x2="724.322" y1="269" y2="269"/>
       </g>
     </a>
-    <a href="https://github.com/bkryza/clang-uml/blob/375fb0bfc3a0e0b702776c4e39f79ee848c5c67c/tests/t00017/t00017.cc#L25" target="_top" title="K" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/375fb0bfc3a0e0b702776c4e39f79ee848c5c67c/tests/t00017/t00017.cc#L25" xlink:show="new" xlink:title="K" xlink:type="simple">
+    <a href="https://github.com/bkryza/clang-uml/blob/669b30ea491fc93aa680d5303b8c092431ff11ce/tests/t00017/t00017.cc#L25" target="_top" title="K" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/669b30ea491fc93aa680d5303b8c092431ff11ce/tests/t00017/t00017.cc#L25" xlink:show="new" xlink:title="K" xlink:type="simple">
       <g id="elem_C_0014268570743958667740">
         <rect codeLine="42" fill="#F1F1F1" height="48" id="C_0014268570743958667740" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="40.666" x="761" y="229"/>
-        <ellipse cx="776" cy="245" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/>
+        <ellipse cx="776" cy="245" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
         <path d="M778.9688,250.6406 Q778.3906,250.9375 777.75,251.0781 Q777.1094,251.2344 776.4063,251.2344 Q773.9063,251.2344 772.5781,249.5938 Q771.2656,247.9375 771.2656,244.8125 Q771.2656,241.6875 772.5781,240.0313 Q773.9063,238.375 776.4063,238.375 Q777.1094,238.375 777.75,238.5313 Q778.4063,238.6875 778.9688,238.9844 L778.9688,241.7031 Q778.3438,241.125 777.75,240.8594 Q777.1563,240.5781 776.5313,240.5781 Q775.1875,240.5781 774.5,241.6563 Q773.8125,242.7188 773.8125,244.8125 Q773.8125,246.9063 774.5,247.9844 Q775.1875,249.0469 776.5313,249.0469 Q777.1563,249.0469 777.75,248.7813 Q778.3438,248.5 778.9688,247.9219 L778.9688,250.6406 Z " fill="#000000"/>
         <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="8.666" x="790" y="250.432">K</text>
         <line style="stroke:#181818;stroke-width:0.5;" x1="762" x2="800.666" y1="261" y2="261"/>
         <line style="stroke:#181818;stroke-width:0.5;" x1="762" x2="800.666" y1="269" y2="269"/>
       </g>
     </a>
-    <a href="https://github.com/bkryza/clang-uml/blob/375fb0bfc3a0e0b702776c4e39f79ee848c5c67c/tests/t00017/t00017.cc#L27" target="_top" title="R" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/375fb0bfc3a0e0b702776c4e39f79ee848c5c67c/tests/t00017/t00017.cc#L27" xlink:show="new" xlink:title="R" xlink:type="simple">
+    <a href="https://github.com/bkryza/clang-uml/blob/669b30ea491fc93aa680d5303b8c092431ff11ce/tests/t00017/t00017.cc#L27" target="_top" title="R" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/669b30ea491fc93aa680d5303b8c092431ff11ce/tests/t00017/t00017.cc#L27" xlink:show="new" xlink:title="R" xlink:type="simple">
       <g id="elem_C_0002299967332512906736">
         <rect codeLine="46" fill="#F1F1F1" height="143.3396" id="C_0002299967332512906736" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="408.1005" x="203.5" y="7"/>
-        <ellipse cx="398.9463" cy="23" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/>
+        <ellipse cx="398.9463" cy="23" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
         <path d="M401.915,28.6406 Q401.3369,28.9375 400.6963,29.0781 Q400.0556,29.2344 399.3525,29.2344 Q396.8525,29.2344 395.5244,27.5938 Q394.2119,25.9375 394.2119,22.8125 Q394.2119,19.6875 395.5244,18.0313 Q396.8525,16.375 399.3525,16.375 Q400.0556,16.375 400.6963,16.5313 Q401.3525,16.6875 401.915,16.9844 L401.915,19.7031 Q401.29,19.125 400.6963,18.8594 Q400.1025,18.5781 399.4775,18.5781 Q398.1338,18.5781 397.4463,19.6563 Q396.7588,20.7188 396.7588,22.8125 Q396.7588,24.9063 397.4463,25.9844 Q398.1338,27.0469 399.4775,27.0469 Q400.1025,27.0469 400.6963,26.7813 Q401.29,26.5 401.915,25.9219 L401.915,28.6406 Z " fill="#000000"/>
         <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="8.708" x="419.4463" y="28.432">R</text>
         <line style="stroke:#181818;stroke-width:0.5;" x1="204.5" x2="610.6005" y1="39" y2="39"/>
-        <a href="https://github.com/bkryza/clang-uml/blob/375fb0bfc3a0e0b702776c4e39f79ee848c5c67c/tests/t00017/t00017.cc#L28" target="_top" title="R" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/375fb0bfc3a0e0b702776c4e39f79ee848c5c67c/tests/t00017/t00017.cc#L28" xlink:show="new" xlink:title="R" xlink:type="simple">
-          <rect fill="#F1F1F1" height="10" style="stroke:none;stroke-width:1.0;" width="20" x="209.5" y="49.034"/>
-          <rect fill="#F24D5C" height="6" style="stroke:#C82930;stroke-width:1.0;" width="6" x="211.5" y="51.034"/>
-        </a>
-        <a href="https://github.com/bkryza/clang-uml/blob/375fb0bfc3a0e0b702776c4e39f79ee848c5c67c/tests/t00017/t00017.cc#L28" target="_top" title="R" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/375fb0bfc3a0e0b702776c4e39f79ee848c5c67c/tests/t00017/t00017.cc#L28" xlink:show="new" xlink:title="R" xlink:type="simple">
-          <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="382.1005" x="223.5" y="57.9659">R(int &amp; some_int, C &amp; cc, const E &amp; ee, F &amp;&amp; ff, I *&amp; ii) : void</text>
-        </a>
-        <line style="stroke:#181818;stroke-width:0.5;" x1="204.5" x2="610.6005" y1="66.0679" y2="66.0679"/>
-        <a href="https://github.com/bkryza/clang-uml/blob/375fb0bfc3a0e0b702776c4e39f79ee848c5c67c/tests/t00017/t00017.cc#L38" target="_top" title="some_int" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/375fb0bfc3a0e0b702776c4e39f79ee848c5c67c/tests/t00017/t00017.cc#L38" xlink:show="new" xlink:title="some_int" xlink:type="simple">
-          <rect fill="#F1F1F1" height="10" style="stroke:none;stroke-width:1.0;" width="20" x="209.5" y="76.1019"/>
-          <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1.0;" width="6" x="211.5" y="78.1019"/>
-        </a>
-        <a href="https://github.com/bkryza/clang-uml/blob/375fb0bfc3a0e0b702776c4e39f79ee848c5c67c/tests/t00017/t00017.cc#L38" target="_top" title="some_int" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/375fb0bfc3a0e0b702776c4e39f79ee848c5c67c/tests/t00017/t00017.cc#L38" xlink:show="new" xlink:title="some_int" xlink:type="simple">
-          <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="88.0457" x="223.5" y="85.0339">some_int : int</text>
-        </a>
-        <a href="https://github.com/bkryza/clang-uml/blob/375fb0bfc3a0e0b702776c4e39f79ee848c5c67c/tests/t00017/t00017.cc#L39" target="_top" title="some_int_pointer" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/375fb0bfc3a0e0b702776c4e39f79ee848c5c67c/tests/t00017/t00017.cc#L39" xlink:show="new" xlink:title="some_int_pointer" xlink:type="simple">
-          <rect fill="#F1F1F1" height="10" style="stroke:none;stroke-width:1.0;" width="20" x="209.5" y="95.1698"/>
-          <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1.0;" width="6" x="211.5" y="97.1698"/>
-        </a>
-        <a href="https://github.com/bkryza/clang-uml/blob/375fb0bfc3a0e0b702776c4e39f79ee848c5c67c/tests/t00017/t00017.cc#L39" target="_top" title="some_int_pointer" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/375fb0bfc3a0e0b702776c4e39f79ee848c5c67c/tests/t00017/t00017.cc#L39" xlink:show="new" xlink:title="some_int_pointer" xlink:type="simple">
-          <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="153.6914" x="223.5" y="104.1018">some_int_pointer : int *</text>
-        </a>
-        <a href="https://github.com/bkryza/clang-uml/blob/375fb0bfc3a0e0b702776c4e39f79ee848c5c67c/tests/t00017/t00017.cc#L40" target="_top" title="some_int_pointer_pointer" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/375fb0bfc3a0e0b702776c4e39f79ee848c5c67c/tests/t00017/t00017.cc#L40" xlink:show="new" xlink:title="some_int_pointer_pointer" xlink:type="simple">
-          <rect fill="#F1F1F1" height="10" style="stroke:none;stroke-width:1.0;" width="20" x="209.5" y="114.2377"/>
-          <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1.0;" width="6" x="211.5" y="116.2377"/>
-        </a>
-        <a href="https://github.com/bkryza/clang-uml/blob/375fb0bfc3a0e0b702776c4e39f79ee848c5c67c/tests/t00017/t00017.cc#L40" target="_top" title="some_int_pointer_pointer" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/375fb0bfc3a0e0b702776c4e39f79ee848c5c67c/tests/t00017/t00017.cc#L40" xlink:show="new" xlink:title="some_int_pointer_pointer" xlink:type="simple">
-          <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="215.6972" x="223.5" y="123.1697">some_int_pointer_pointer : int **</text>
-        </a>
-        <a href="https://github.com/bkryza/clang-uml/blob/375fb0bfc3a0e0b702776c4e39f79ee848c5c67c/tests/t00017/t00017.cc#L41" target="_top" title="some_int_reference" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/375fb0bfc3a0e0b702776c4e39f79ee848c5c67c/tests/t00017/t00017.cc#L41" xlink:show="new" xlink:title="some_int_reference" xlink:type="simple">
-          <rect fill="#F1F1F1" height="10" style="stroke:none;stroke-width:1.0;" width="20" x="209.5" y="133.3056"/>
-          <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1.0;" width="6" x="211.5" y="135.3056"/>
-        </a>
-        <a href="https://github.com/bkryza/clang-uml/blob/375fb0bfc3a0e0b702776c4e39f79ee848c5c67c/tests/t00017/t00017.cc#L41" target="_top" title="some_int_reference" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/375fb0bfc3a0e0b702776c4e39f79ee848c5c67c/tests/t00017/t00017.cc#L41" xlink:show="new" xlink:title="some_int_reference" xlink:type="simple">
-          <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="171.4853" x="223.5" y="142.2376">some_int_reference : int &amp;</text>
-        </a>
       </g>
+      <a href="https://github.com/bkryza/clang-uml/blob/669b30ea491fc93aa680d5303b8c092431ff11ce/tests/t00017/t00017.cc#L28" target="_top" title="R" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/669b30ea491fc93aa680d5303b8c092431ff11ce/tests/t00017/t00017.cc#L28" xlink:show="new" xlink:title="R" xlink:type="simple">
+        <rect fill="#F1F1F1" height="10" style="stroke:transparent;stroke-width:1;" width="20" x="209.5" y="49.034"/>
+        <rect fill="#F24D5C" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="211.5" y="51.034"/>
+      </a>
+    </a>
+    <a href="https://github.com/bkryza/clang-uml/blob/669b30ea491fc93aa680d5303b8c092431ff11ce/tests/t00017/t00017.cc#L28" target="_top" title="R" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/669b30ea491fc93aa680d5303b8c092431ff11ce/tests/t00017/t00017.cc#L28" xlink:show="new" xlink:title="R" xlink:type="simple">
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="382.1005" x="223.5" y="57.9659">R(int &amp; some_int, C &amp; cc, const E &amp; ee, F &amp;&amp; ff, I *&amp; ii) : void</text>
+    </a>
+    <line style="stroke:#181818;stroke-width:0.5;" x1="204.5" x2="610.6005" y1="66.0679" y2="66.0679"/>
+    <a href="https://github.com/bkryza/clang-uml/blob/669b30ea491fc93aa680d5303b8c092431ff11ce/tests/t00017/t00017.cc#L38" target="_top" title="some_int" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/669b30ea491fc93aa680d5303b8c092431ff11ce/tests/t00017/t00017.cc#L38" xlink:show="new" xlink:title="some_int" xlink:type="simple">
+      <rect fill="#F1F1F1" height="10" style="stroke:transparent;stroke-width:1;" width="20" x="209.5" y="76.1019"/>
+      <rect fill="transparent" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="211.5" y="78.1019"/>
+    </a>
+    <a href="https://github.com/bkryza/clang-uml/blob/669b30ea491fc93aa680d5303b8c092431ff11ce/tests/t00017/t00017.cc#L38" target="_top" title="some_int" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/669b30ea491fc93aa680d5303b8c092431ff11ce/tests/t00017/t00017.cc#L38" xlink:show="new" xlink:title="some_int" xlink:type="simple">
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="88.0457" x="223.5" y="85.0339">some_int : int</text>
+    </a>
+    <a href="https://github.com/bkryza/clang-uml/blob/669b30ea491fc93aa680d5303b8c092431ff11ce/tests/t00017/t00017.cc#L39" target="_top" title="some_int_pointer" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/669b30ea491fc93aa680d5303b8c092431ff11ce/tests/t00017/t00017.cc#L39" xlink:show="new" xlink:title="some_int_pointer" xlink:type="simple">
+      <rect fill="#F1F1F1" height="10" style="stroke:transparent;stroke-width:1;" width="20" x="209.5" y="95.1698"/>
+      <rect fill="transparent" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="211.5" y="97.1698"/>
+    </a>
+    <a href="https://github.com/bkryza/clang-uml/blob/669b30ea491fc93aa680d5303b8c092431ff11ce/tests/t00017/t00017.cc#L39" target="_top" title="some_int_pointer" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/669b30ea491fc93aa680d5303b8c092431ff11ce/tests/t00017/t00017.cc#L39" xlink:show="new" xlink:title="some_int_pointer" xlink:type="simple">
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="153.6914" x="223.5" y="104.1018">some_int_pointer : int *</text>
+    </a>
+    <a href="https://github.com/bkryza/clang-uml/blob/669b30ea491fc93aa680d5303b8c092431ff11ce/tests/t00017/t00017.cc#L40" target="_top" title="some_int_pointer_pointer" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/669b30ea491fc93aa680d5303b8c092431ff11ce/tests/t00017/t00017.cc#L40" xlink:show="new" xlink:title="some_int_pointer_pointer" xlink:type="simple">
+      <rect fill="#F1F1F1" height="10" style="stroke:transparent;stroke-width:1;" width="20" x="209.5" y="114.2377"/>
+      <rect fill="transparent" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="211.5" y="116.2377"/>
+    </a>
+    <a href="https://github.com/bkryza/clang-uml/blob/669b30ea491fc93aa680d5303b8c092431ff11ce/tests/t00017/t00017.cc#L40" target="_top" title="some_int_pointer_pointer" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/669b30ea491fc93aa680d5303b8c092431ff11ce/tests/t00017/t00017.cc#L40" xlink:show="new" xlink:title="some_int_pointer_pointer" xlink:type="simple">
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="215.6972" x="223.5" y="123.1697">some_int_pointer_pointer : int **</text>
+    </a>
+    <a href="https://github.com/bkryza/clang-uml/blob/669b30ea491fc93aa680d5303b8c092431ff11ce/tests/t00017/t00017.cc#L41" target="_top" title="some_int_reference" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/669b30ea491fc93aa680d5303b8c092431ff11ce/tests/t00017/t00017.cc#L41" xlink:show="new" xlink:title="some_int_reference" xlink:type="simple">
+      <rect fill="#F1F1F1" height="10" style="stroke:transparent;stroke-width:1;" width="20" x="209.5" y="133.3056"/>
+      <rect fill="transparent" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="211.5" y="135.3056"/>
+    </a>
+    <a href="https://github.com/bkryza/clang-uml/blob/669b30ea491fc93aa680d5303b8c092431ff11ce/tests/t00017/t00017.cc#L41" target="_top" title="some_int_reference" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/669b30ea491fc93aa680d5303b8c092431ff11ce/tests/t00017/t00017.cc#L41" xlink:show="new" xlink:title="some_int_reference" xlink:type="simple">
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="171.4853" x="223.5" y="142.2376">some_int_reference : int &amp;</text>
     </a>
     <g id="link_C_0002299967332512906736_C_0000970656747477527100">
-      <path codeLine="54" d="M223.0448,154.8008 C168.3948,178.4208 119.29,201.12 65.5,229 C59.75,231.98 53.68,235.48 48.12,238.84 " fill="none" id="C_0002299967332512906736-backto-C_0000970656747477527100" style="stroke:#181818;stroke-width:1.0;"/>
-      <polygon fill="none" points="234.06,150.04,226.9655,148.7487,223.0448,154.8008,230.1393,156.0921,234.06,150.04" style="stroke:#181818;stroke-width:1.0;"/>
+      <path codeLine="54" d="M223.0448,154.8008 C168.3948,178.4208 119.29,201.12 65.5,229 C59.75,231.98 53.68,235.48 48.12,238.84 " fill="transparent" id="C_0002299967332512906736-backto-C_0000970656747477527100" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="transparent" points="234.06,150.04,226.9655,148.7487,223.0448,154.8008,230.1393,156.0921,234.06,150.04" style="stroke:#181818;stroke-width:1;"/>
       <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="11.479" x="159.5" y="194.897">-a</text>
     </g>
     <g id="link_C_0002299967332512906736_C_0011398918699649603899">
-      <path codeLine="55" d="M279.84,150.15 C235.83,174.8 186.34,202.84 141.5,229 C135.9,232.26 135.0252,232.7567 129.4652,236.1167 " fill="none" id="C_0002299967332512906736-to-C_0011398918699649603899" style="stroke:#181818;stroke-width:1.0;"/>
-      <polygon fill="#181818" points="124.33,239.22,134.1016,237.9885,128.6093,236.634,129.9639,231.1417,124.33,239.22" style="stroke:#181818;stroke-width:1.0;"/>
+      <path codeLine="55" d="M279.84,150.15 C235.83,174.8 186.34,202.84 141.5,229 C135.9,232.26 135.0252,232.7567 129.4652,236.1167 " fill="transparent" id="C_0002299967332512906736-to-C_0011398918699649603899" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="#181818" points="124.33,239.22,134.1016,237.9885,128.6093,236.634,129.9639,231.1417,124.33,239.22" style="stroke:#181818;stroke-width:1;"/>
       <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="12.181" x="222.5" y="194.897">-b</text>
     </g>
     <g id="link_C_0002299967332512906736_C_0017209363134757947829">
-      <path codeLine="56" d="M314.11,150.16 C272.05,181.98 230.9051,213.1102 205.0351,232.6802 " fill="none" id="C_0002299967332512906736-to-C_0017209363134757947829" style="stroke:#181818;stroke-width:1.0;"/>
-      <polygon fill="#181818" points="200.25,236.3,209.8408,234.0604,204.2376,233.2835,205.0144,227.6802,200.25,236.3" style="stroke:#181818;stroke-width:1.0;"/>
+      <path codeLine="56" d="M314.11,150.16 C272.05,181.98 230.9051,213.1102 205.0351,232.6802 " fill="transparent" id="C_0002299967332512906736-to-C_0017209363134757947829" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="#181818" points="200.25,236.3,209.8408,234.0604,204.2376,233.2835,205.0144,227.6802,200.25,236.3" style="stroke:#181818;stroke-width:1;"/>
       <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="10.426" x="274.5" y="194.897">-c</text>
     </g>
     <g id="link_C_0002299967332512906736_C_0011024897017054135776">
-      <path codeLine="57" d="M345.65,150.16 C321.05,178.26 298.4004,204.124 280.7304,224.324 " fill="none" id="C_0002299967332512906736-to-C_0011024897017054135776" style="stroke:#181818;stroke-width:1.0;"/>
-      <polygon fill="#181818" points="276.78,228.84,285.7163,224.6996,280.072,225.0767,279.6949,219.4324,276.78,228.84" style="stroke:#181818;stroke-width:1.0;"/>
+      <path codeLine="57" d="M345.65,150.16 C321.05,178.26 298.4004,204.124 280.7304,224.324 " fill="transparent" id="C_0002299967332512906736-to-C_0011024897017054135776" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="#181818" points="276.78,228.84,285.7163,224.6996,280.072,225.0767,279.6949,219.4324,276.78,228.84" style="stroke:#181818;stroke-width:1;"/>
       <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="12.181" x="319.5" y="194.897">-d</text>
     </g>
     <g id="link_C_0002299967332512906736_C_0012282407486654419914">
-      <path codeLine="58" d="M376.78,150.16 C364.56,178.26 353.7418,203.1373 344.9618,223.3373 " fill="none" id="C_0002299967332512906736-to-C_0012282407486654419914" style="stroke:#181818;stroke-width:1.0;"/>
-      <polygon fill="#181818" points="342.57,228.84,349.8261,222.1805,344.5631,224.2544,342.4892,218.9915,342.57,228.84" style="stroke:#181818;stroke-width:1.0;"/>
+      <path codeLine="58" d="M376.78,150.16 C364.56,178.26 353.7418,203.1373 344.9618,223.3373 " fill="transparent" id="C_0002299967332512906736-to-C_0012282407486654419914" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="#181818" points="342.57,228.84,349.8261,222.1805,344.5631,224.2544,342.4892,218.9915,342.57,228.84" style="stroke:#181818;stroke-width:1;"/>
       <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="11.518" x="364.5" y="194.897">-e</text>
     </g>
     <g id="link_C_0002299967332512906736_C_0014430403722237681072">
-      <path codeLine="59" d="M407.5,162.16 C407.5,190.26 407.5,208.64 407.5,228.84 " fill="none" id="C_0002299967332512906736-backto-C_0014430403722237681072" style="stroke:#181818;stroke-width:1.0;"/>
-      <polygon fill="none" points="407.5,150.16,403.5,156.16,407.5,162.16,411.5,156.16,407.5,150.16" style="stroke:#181818;stroke-width:1.0;"/>
+      <path codeLine="59" d="M407.5,162.16 C407.5,190.26 407.5,208.64 407.5,228.84 " fill="transparent" id="C_0002299967332512906736-backto-C_0014430403722237681072" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="transparent" points="407.5,150.16,403.5,156.16,407.5,162.16,411.5,156.16,407.5,150.16" style="stroke:#181818;stroke-width:1;"/>
       <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="8.658" x="408.5" y="194.897">-f</text>
     </g>
     <g id="link_C_0002299967332512906736_C_0009086382335141361974">
-      <path codeLine="60" d="M438.63,150.16 C451.01,178.26 461.9808,203.1493 470.8808,223.3493 " fill="none" id="C_0002299967332512906736-to-C_0009086382335141361974" style="stroke:#181818;stroke-width:1.0;"/>
-      <polygon fill="#181818" points="473.3,228.84,473.3317,218.9912,471.284,224.2644,466.0108,222.2167,473.3,228.84" style="stroke:#181818;stroke-width:1.0;"/>
+      <path codeLine="60" d="M438.63,150.16 C451.01,178.26 461.9808,203.1493 470.8808,223.3493 " fill="transparent" id="C_0002299967332512906736-to-C_0009086382335141361974" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="#181818" points="473.3,228.84,473.3317,218.9912,471.284,224.2644,466.0108,222.2167,473.3,228.84" style="stroke:#181818;stroke-width:1;"/>
       <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="12.181" x="460.5" y="194.897">-g</text>
     </g>
     <g id="link_C_0002299967332512906736_C_0009948382692573698543">
-      <path codeLine="61" d="M470.17,150.16 C495.1,178.26 518.0582,204.1516 535.9782,224.3516 " fill="none" id="C_0002299967332512906736-to-C_0009948382692573698543" style="stroke:#181818;stroke-width:1.0;"/>
-      <polygon fill="#181818" points="539.96,228.84,536.9796,219.4529,536.6419,225.0997,530.9951,224.7619,539.96,228.84" style="stroke:#181818;stroke-width:1.0;"/>
+      <path codeLine="61" d="M470.17,150.16 C495.1,178.26 518.0582,204.1516 535.9782,224.3516 " fill="transparent" id="C_0002299967332512906736-to-C_0009948382692573698543" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="#181818" points="539.96,228.84,536.9796,219.4529,536.6419,225.0997,530.9951,224.7619,539.96,228.84" style="stroke:#181818;stroke-width:1;"/>
       <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="12.22" x="512.5" y="194.897">-h</text>
     </g>
     <g id="link_C_0002299967332512906736_C_0003101865597645029270">
-      <path codeLine="62" d="M500.89,150.16 C544.18,182.91 586.7861,215.1386 612.1761,234.3586 " fill="none" id="C_0002299967332512906736-to-C_0003101865597645029270" style="stroke:#181818;stroke-width:1.0;"/>
-      <polygon fill="#181818" points="616.96,237.98,612.1984,229.3587,612.9734,234.9622,607.3699,235.7372,616.96,237.98" style="stroke:#181818;stroke-width:1.0;"/>
+      <path codeLine="62" d="M500.89,150.16 C544.18,182.91 586.7861,215.1386 612.1761,234.3586 " fill="transparent" id="C_0002299967332512906736-to-C_0003101865597645029270" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="#181818" points="616.96,237.98,612.1984,229.3587,612.9734,234.9622,607.3699,235.7372,616.96,237.98" style="stroke:#181818;stroke-width:1;"/>
       <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="7.54" x="563.5" y="194.897">-i</text>
     </g>
     <g id="link_C_0002299967332512906736_C_0005983934629379468301">
-      <path codeLine="63" d="M535.19,150 C578.72,174.52 627.5,202.51 671.5,229 C677.35,232.52 678.5895,233.2409 684.2495,236.8709 " fill="none" id="C_0002299967332512906736-to-C_0005983934629379468301" style="stroke:#181818;stroke-width:1.0;"/>
-      <polygon fill="#181818" points="689.3,240.11,683.8836,231.8843,685.0912,237.4107,679.5648,238.6183,689.3,240.11" style="stroke:#181818;stroke-width:1.0;"/>
+      <path codeLine="63" d="M535.19,150 C578.72,174.52 627.5,202.51 671.5,229 C677.35,232.52 678.5895,233.2409 684.2495,236.8709 " fill="transparent" id="C_0002299967332512906736-to-C_0005983934629379468301" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="#181818" points="689.3,240.11,683.8836,231.8843,685.0912,237.4107,679.5648,238.6183,689.3,240.11" style="stroke:#181818;stroke-width:1;"/>
       <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="7.54" x="615.5" y="194.897">-j</text>
     </g>
     <g id="link_C_0002299967332512906736_C_0014268570743958667740">
-      <path codeLine="64" d="M577.39,150.13 C631.19,173.82 690.45,201.28 743.5,229 C749.24,232 750.1773,232.4026 755.7273,235.7626 " fill="none" id="C_0002299967332512906736-to-C_0014268570743958667740" style="stroke:#181818;stroke-width:1.0;"/>
-      <polygon fill="#181818" points="760.86,238.87,755.2326,230.7872,756.5828,236.2805,751.0894,237.6308,760.86,238.87" style="stroke:#181818;stroke-width:1.0;"/>
+      <path codeLine="64" d="M577.39,150.13 C631.19,173.82 690.45,201.28 743.5,229 C749.24,232 750.1773,232.4026 755.7273,235.7626 " fill="transparent" id="C_0002299967332512906736-to-C_0014268570743958667740" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="#181818" points="760.86,238.87,755.2326,230.7872,756.5828,236.2805,751.0894,237.6308,760.86,238.87" style="stroke:#181818;stroke-width:1;"/>
       <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="11.128" x="682.5" y="194.897">-k</text>
     </g>
   </g>

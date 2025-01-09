@@ -1,7 +1,7 @@
 /**
  * @file src/common/generators/clang_tool.h
  *
- * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2025 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,8 +37,10 @@ struct diagnostic {
 
 std::string to_string(const diagnostic &d);
 
-struct clang_tool_exception : public error::diagram_generation_error {
+void to_json(nlohmann::json &j, const diagnostic &a);
 
+class clang_tool_exception : public error::diagram_generation_error {
+public:
     clang_tool_exception(common::model::diagram_t dt, std::string dn,
         std::vector<diagnostic> d,
         std::string description = "Clang failed to parse sources.");

@@ -1,7 +1,7 @@
 /**
  * @file src/class_diagram/visitor/translation_unit_visitor.cc
  *
- * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2025 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -1732,17 +1732,17 @@ void translation_unit_visitor::process_template_method(
         !mf.getTemplatedDecl()->isExplicitlyDefaulted())
         return;
 
-    class_method method{common::access_specifier_to_access_t(mf.getAccess()),
-        util::trim(mf.getNameAsString()),
-        mf.getTemplatedDecl()->getReturnType().getAsString()};
-
     auto method_name = mf.getNameAsString();
     if (mf.isTemplated()) {
         // Sometimes in template specializations method names contain the
         // template parameters for some reason - drop them
         // Is there a better way to do this?
-        method_name = method_name.substr(0, method_name.find('<'));
+        method_name = util::trim(method_name.substr(0, method_name.find('<')));
     }
+
+    class_method method{common::access_specifier_to_access_t(mf.getAccess()),
+        method_name, mf.getTemplatedDecl()->getReturnType().getAsString()};
+
     util::if_not_null(
         clang::dyn_cast<clang::CXXMethodDecl>(mf.getTemplatedDecl()),
         [&](const auto *decl) {
@@ -2298,8 +2298,7 @@ void translation_unit_visitor::process_field(
             // this instantiation should not be part of the diagram, e.g.
             // it's a std::vector<>, it's nested types might be added
             bool add_template_instantiation_to_diagram{false};
-            if (diagram().should_include(
-                    template_specialization.get_namespace())) {
+            if (diagram().should_include(template_specialization)) {
 
                 found_relationships_t::value_type r{
                     template_specialization.id(), relationship_hint};

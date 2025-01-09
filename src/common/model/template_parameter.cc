@@ -1,7 +1,7 @@
 /**
  * @file src/common/model/template_parameter.cc
  *
- * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2025 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,10 +71,19 @@ std::string to_string(template_parameter_kind_t k)
         return "argument";
     case template_parameter_kind_t::concept_constraint:
         return "concept_constraint";
+    case template_parameter_kind_t::empty:
+        return "empty";
     default:
         assert(false);
         return "";
     }
+}
+
+template_parameter template_parameter::make_empty()
+{
+    template_parameter p;
+    p.set_kind(template_parameter_kind_t::empty);
+    return p;
 }
 
 template_parameter template_parameter::make_template_type(
@@ -347,6 +356,10 @@ std::string template_parameter::to_string(
     const clanguml::common::model::namespace_ &using_namespace, bool relative,
     bool skip_qualifiers) const
 {
+    if (kind() == template_parameter_kind_t::empty) {
+        return "";
+    }
+
     if (is_ellipsis())
         return "...";
 

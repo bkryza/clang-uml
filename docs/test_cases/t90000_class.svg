@@ -1,21 +1,21 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="402px" preserveAspectRatio="none" style="width:441px;height:402px;background:#FFFFFF;" version="1.1" viewBox="0 0 441 402" width="441px" zoomAndPan="magnify">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" data-diagram-type="CLASS" height="402px" preserveAspectRatio="none" style="width:441px;height:402px;background:#FFFFFF;" version="1.1" viewBox="0 0 441 402" width="441px" zoomAndPan="magnify">
   <defs>
     <style type="text/css">a:hover { text-decoration: underline; }</style>
   </defs>
   <g>
     <g id="elem_C_001">
       <rect codeLine="2" fill="#F1F1F1" height="67.0679" id="C_001" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="82.0838" x="65" y="115"/>
-      <ellipse cx="91.645" cy="131" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/>
+      <ellipse cx="91.645" cy="131" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
       <path d="M94.6138,136.6406 Q94.0357,136.9375 93.395,137.0781 Q92.7544,137.2344 92.0513,137.2344 Q89.5513,137.2344 88.2232,135.5938 Q86.9107,133.9375 86.9107,130.8125 Q86.9107,127.6875 88.2232,126.0313 Q89.5513,124.375 92.0513,124.375 Q92.7544,124.375 93.395,124.5313 Q94.0513,124.6875 94.6138,124.9844 L94.6138,127.7031 Q93.9888,127.125 93.395,126.8594 Q92.8013,126.5781 92.1763,126.5781 Q90.8325,126.5781 90.145,127.6563 Q89.4575,128.7188 89.4575,130.8125 Q89.4575,132.9063 90.145,133.9844 Q90.8325,135.0469 92.1763,135.0469 Q92.8013,135.0469 93.395,134.7813 Q93.9888,134.5 94.6138,133.9219 L94.6138,136.6406 Z " fill="#000000"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="24.2059" x="108.2328" y="136.432">Foo</text>
       <line style="stroke:#181818;stroke-width:0.5;" x1="66" x2="146.0838" y1="147" y2="147"/>
-      <ellipse cx="76" cy="162.034" fill="none" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/>
+      <ellipse cx="76" cy="162.034" fill="transparent" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="56.0838" x="85" y="165.9659">int value</text>
       <line style="stroke:#181818;stroke-width:0.5;" x1="66" x2="146.0838" y1="174.0679" y2="174.0679"/>
     </g>
     <g id="elem_ArrayList">
       <rect fill="#F1F1F1" height="48" id="ArrayList" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="90.2118" x="61" y="347"/>
-      <ellipse cx="76" cy="363" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/>
+      <ellipse cx="76" cy="363" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
       <path d="M78.9688,368.6406 Q78.3906,368.9375 77.75,369.0781 Q77.1094,369.2344 76.4063,369.2344 Q73.9063,369.2344 72.5781,367.5938 Q71.2656,365.9375 71.2656,362.8125 Q71.2656,359.6875 72.5781,358.0313 Q73.9063,356.375 76.4063,356.375 Q77.1094,356.375 77.75,356.5313 Q78.4063,356.6875 78.9688,356.9844 L78.9688,359.7031 Q78.3438,359.125 77.75,358.8594 Q77.1563,358.5781 76.5313,358.5781 Q75.1875,358.5781 74.5,359.6563 Q73.8125,360.7188 73.8125,362.8125 Q73.8125,364.9063 74.5,365.9844 Q75.1875,367.0469 76.5313,367.0469 Q77.1563,367.0469 77.75,366.7813 Q78.3438,366.5 78.9688,365.9219 L78.9688,368.6406 Z " fill="#000000"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="58.2118" x="90" y="368.432">ArrayList</text>
       <line style="stroke:#181818;stroke-width:0.5;" x1="62" x2="150.2118" y1="379" y2="379"/>
@@ -28,33 +28,33 @@
     </g>
     <g id="elem_N1">
       <path d="M241.5,8.5 L241.5,53.912 L340.8641,53.912 L340.8641,18.5 L330.8641,8.5 L241.5,8.5 " fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;"/>
-      <path d="M330.8641,8.5 L330.8641,18.5 L340.8641,18.5 L330.8641,8.5 " fill="#FEFFDD" style="stroke:#181818;stroke-width:1.0;"/>
+      <path d="M330.8641,8.5 L330.8641,18.5 L340.8641,18.5 L330.8641,8.5 " fill="#FEFFDD" style="stroke:#181818;stroke-width:1;"/>
       <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="48.4771" x="247.5" y="27.397">This is a</text>
       <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78.3641" x="247.5" y="45.103">floating note</text>
     </g>
     <g id="elem_N2">
       <path d="M93.5,242 L93.5,287.412 L250.7531,287.412 L250.7531,252 L240.7531,242 L93.5,242 " fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;"/>
-      <path d="M240.7531,242 L240.7531,252 L250.7531,252 L240.7531,242 " fill="#FEFFDD" style="stroke:#181818;stroke-width:1.0;"/>
+      <path d="M240.7531,242 L240.7531,252 L250.7531,252 L240.7531,242 " fill="#FEFFDD" style="stroke:#181818;stroke-width:1;"/>
       <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="136.2531" x="99.5" y="260.897">This note is connected</text>
       <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="110.0191" x="99.5" y="278.603">to several objects.</text>
     </g>
     <g id="elem_C_002">
       <rect codeLine="12" fill="#F1F1F1" height="48" id="C_002" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="58.0399" x="376" y="7"/>
-      <ellipse cx="391" cy="23" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/>
+      <ellipse cx="391" cy="23" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
       <path d="M393.9688,28.6406 Q393.3906,28.9375 392.75,29.0781 Q392.1094,29.2344 391.4063,29.2344 Q388.9063,29.2344 387.5781,27.5938 Q386.2656,25.9375 386.2656,22.8125 Q386.2656,19.6875 387.5781,18.0313 Q388.9063,16.375 391.4063,16.375 Q392.1094,16.375 392.75,16.5313 Q393.4063,16.6875 393.9688,16.9844 L393.9688,19.7031 Q393.3438,19.125 392.75,18.8594 Q392.1563,18.5781 391.5313,18.5781 Q390.1875,18.5781 389.5,19.6563 Q388.8125,20.7188 388.8125,22.8125 Q388.8125,24.9063 389.5,25.9844 Q390.1875,27.0469 391.5313,27.0469 Q392.1563,27.0469 392.75,26.7813 Q393.3438,26.5 393.9688,25.9219 L393.9688,28.6406 Z " fill="#000000"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="26.0399" x="405" y="28.432">Boo</text>
       <line style="stroke:#181818;stroke-width:0.5;" x1="377" x2="433.0399" y1="39" y2="39"/>
       <line style="stroke:#181818;stroke-width:0.5;" x1="377" x2="433.0399" y1="47" y2="47"/>
     </g>
     <g id="link_C_001_ArrayList">
-      <path codeLine="5" d="M85.2034,198.9627 C74.6834,226.7327 69.68,250.9 76,287 C79.67,307.98 88.2,330.65 95.23,346.98 " fill="none" id="C_001-backto-ArrayList" style="stroke:#181818;stroke-width:1.0;"/>
-      <polygon fill="none" points="91.58,182.13,79.5925,196.8371,90.8142,201.0882,91.58,182.13" style="stroke:#181818;stroke-width:1.0;"/>
+      <path codeLine="5" d="M85.2034,198.9627 C74.6834,226.7327 69.68,250.9 76,287 C79.67,307.98 88.2,330.65 95.23,346.98 " fill="transparent" id="C_001-backto-ArrayList" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="transparent" points="91.58,182.13,79.5925,196.8371,90.8142,201.0882,91.58,182.13" style="stroke:#181818;stroke-width:1;"/>
     </g>
     <g id="link_C_001_N2">
-      <path codeLine="9" d="M124.91,182.17 C136.04,201.38 149.79,225.13 159.55,242 " fill="none" id="C_001-N2" style="stroke:#181818;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/>
+      <path codeLine="9" d="M124.91,182.17 C136.04,201.38 149.79,225.13 159.55,242 " fill="transparent" id="C_001-N2" style="stroke:#181818;stroke-width:1;stroke-dasharray:7.0,7.0;"/>
     </g>
     <g id="link_N2_ArrayList">
-      <path codeLine="10" d="M158.32,287.15 C147.3,304.61 131.83,329.1 120.57,346.93 " fill="none" id="N2-ArrayList" style="stroke:#181818;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/>
+      <path codeLine="10" d="M158.32,287.15 C147.3,304.61 131.83,329.1 120.57,346.93 " fill="transparent" id="N2-ArrayList" style="stroke:#181818;stroke-width:1;stroke-dasharray:7.0,7.0;"/>
     </g>
   </g>
 </svg>

@@ -1,6 +1,11 @@
 import t00072.app;
 
-namespace clanguml {
-namespace t00072 {
-}
+#include <memory>
+
+namespace clanguml::t00072 {
+
+class App {
+public:
+    std::unique_ptr<B> b;
+};
 }

@@ -1,7 +1,7 @@
 /**
  * @file src/common/generators/clang_tool.cc
  *
- * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2025 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,6 +56,17 @@ std::string to_string(const clanguml::generators::diagnostic &d)
 
     return fmt::format(
         "[{}] {}:{}: {}", d.level, filepath, line, d.description);
+}
+
+void to_json(nlohmann::json &j, const diagnostic &a)
+{
+    j["level"] = a.level;
+    j["description"] = logging::escape_json(a.description);
+    if (a.location) {
+        j["location"]["file"] = a.location.value().file();
+        j["location"]["line"] = a.location.value().line();
+        j["location"]["column"] = a.location.value().column();
+    }
 }
 
 clang_tool_exception::clang_tool_exception(common::model::diagram_t dt,

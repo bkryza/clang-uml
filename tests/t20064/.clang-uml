@@ -1,0 +1,11 @@
+diagrams:
+  t20064_sequence:
+    type: sequence
+    glob:
+      - t20064.cc
+    include:
+      namespaces:
+        - clanguml::t20064
+    using_namespace: clanguml::t20064
+    from:
+      - function: clanguml::t20064::tmain()

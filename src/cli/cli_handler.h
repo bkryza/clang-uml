@@ -1,7 +1,7 @@
 /**
  * @file src/options/cli_handler.h
  *
- * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2025 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@
 
 #include "common/model/enums.h"
 #include "config/config.h"
+#include "util/logging.h"
 
 #include <cli11/CLI11.hpp>
 
@@ -160,6 +161,8 @@ public:
      */
     void set_config_path(const std::string &path);
 
+    static void create_json_progress_logger(spdlog::sink_ptr sink = {});
+
     std::string config_path{".clang-uml"};
     std::optional<std::string> compilation_database_dir{};
     std::vector<std::string> diagram_names{};
@@ -168,6 +171,7 @@ public:
     unsigned int thread_count{};
     bool show_version{false};
     int verbose{};
+    logging::logger_type_t logger_type{logging::logger_type_t::text};
     bool progress{false};
     bool list_diagrams{false};
     bool quiet{false};

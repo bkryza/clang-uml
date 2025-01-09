@@ -1,7 +1,7 @@
 /**
  * @file src/config/config.h
  *
- * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2025 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@
 #include "option.h"
 #include "util/util.h"
 
+#include <miroir/miroir.hpp>
 #include <spdlog/spdlog.h>
 #include <yaml-cpp/yaml.h>
 
@@ -39,6 +40,22 @@ namespace clanguml {
 namespace cli {
 struct runtime_config;
 } // namespace cli
+
+namespace error {
+class config_schema_error : public std::runtime_error {
+public:
+    config_schema_error(std::vector<miroir::Error<YAML::Node>> e)
+        : std::runtime_error("Invalid config schema")
+        , errors{std::move(e)}
+    {
+    }
+
+    std::vector<miroir::Error<YAML::Node>> errors;
+};
+
+void print(std::ostream &ostr, const config_schema_error &e,
+    logging::logger_type_t logger_type);
+} // namespace error
 
 /**
  * @brief Configuration file related classes
@@ -875,6 +892,10 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const filter &f);
 
 YAML::Emitter &operator<<(YAML::Emitter &out, const plantuml &p);
 
+YAML::Emitter &operator<<(YAML::Emitter &out, const mermaid &p);
+
+YAML::Emitter &operator<<(YAML::Emitter &out, const graphml &p);
+
 YAML::Emitter &operator<<(YAML::Emitter &out, const method_arguments &ma);
 
 YAML::Emitter &operator<<(YAML::Emitter &out, const generate_links_config &glc);
@@ -910,10 +931,24 @@ YAML::Emitter &operator<<(
 
 YAML::Emitter &operator<<(YAML::Emitter &out, const source_location &sc);
 
+template <typename T> bool is_null(const T & /*v*/) { return false; }
+
+template <> bool is_null(const std::string &v);
+
+template <> bool is_null(const glob_t &v);
+
+template <> bool is_null(const plantuml &v);
+
+template <> bool is_null(const mermaid &v);
+
+template <> bool is_null(const graphml &v);
+
+template <> bool is_null(const inja::json &v);
+
 template <typename T>
 YAML::Emitter &operator<<(YAML::Emitter &out, const option<T> &o)
 {
-    if (o.has_value) {
+    if (o.has_value && !is_null(o.value)) {
         out << YAML::Key << o.name;
         if constexpr (std::is_same_v<T, std::filesystem::path>)
             out << YAML::Value << o.value.string();

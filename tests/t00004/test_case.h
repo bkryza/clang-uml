@@ -1,7 +1,7 @@
 /**
  * tests/t00004/test_case.h
  *
- * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2025 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,9 +42,13 @@ TEST_CASE("t00004")
         REQUIRE(IsEnum(src, "B::BB"));
         REQUIRE(IsEnum(src, "B::CC"));
 
+#if LLVM_VERSION_MAJOR > 15
         REQUIRE(IsField<Public>(src, "B", "cc", "CC"));
         REQUIRE(IsField<Public>(src, "B", "bb", "BB"));
-
+#else
+        REQUIRE(IsField<Public>(src, "B", "cc", "B::CC"));
+        REQUIRE(IsField<Public>(src, "B", "bb", "B::BB"));
+#endif
         if constexpr (!std::is_same_v<graphml_t, std::decay_t<decltype(src)>>) {
             REQUIRE(!IsField<Public>(src, "B", "BB_1", "enum"));
             REQUIRE(!IsField<Public>(src, "B", "BB_2", "enum"));

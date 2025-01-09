@@ -1,7 +1,7 @@
 /**
  * @file src/class_diagram/model/concept.h
  *
- * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2025 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@
 #include "class_diagram/model/method_parameter.h"
 #include "common/model/element.h"
 #include "common/model/stylable_element.h"
+#include "common/model/template_element.h"
 #include "common/model/template_parameter.h"
-#include "common/model/template_trait.h"
 #include "common/types.h"
 
 #include <string>
@@ -32,9 +32,8 @@ namespace clanguml::class_diagram::model {
 /**
  * @brief Model of C++ concept.
  */
-class concept_ : public common::model::element,
-                 public common::model::stylable_element,
-                 public common::model::template_trait {
+class concept_ : public common::model::stylable_element,
+                 public common::model::template_element {
 public:
     concept_(const common::model::namespace_ &using_namespace);
 

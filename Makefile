@@ -1,6 +1,6 @@
 # Makefile
 #
-# Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
+# Copyright (c) 2021-2025 Bartek Kryza <bkryza@gmail.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -134,6 +134,9 @@ test: debug
 
 test_release: release
 	CTEST_OUTPUT_ON_FAILURE=1 ctest --test-dir release
+
+test_dump_config:
+	debug/src/clang-uml --dump-config | debug/src/clang-uml -l --config -
 
 coverage_report: test
 	lcov -c -d debug -o coverage.info --no-external --gcov-tool util/clang_gcov.sh

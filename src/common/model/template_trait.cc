@@ -1,7 +1,7 @@
 /**
  * @file src/common/model/template_trait.cc
  *
- * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2025 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,15 +25,21 @@ std::ostream &template_trait::render_template_params(std::ostream &ostr,
 {
     using clanguml::common::model::namespace_;
 
-    if (!templates_.empty()) {
+    if (!template_params().empty()) {
         std::vector<std::string> tnames;
 
-        std::transform(templates_.cbegin(), templates_.cend(),
+        std::transform(template_params().cbegin(), template_params().cend(),
             std::back_inserter(tnames),
             [ns = using_namespace, relative](
                 const auto &tmplt) { return tmplt.to_string(ns, relative); });
 
-        ostr << fmt::format("<{}>", fmt::join(tnames, ","));
+        if (template_params().size() > 1 &&
+            template_params().back().kind() == template_parameter_kind_t::empty)
+            ostr << fmt::format(
+                "<{}>", fmt::join(tnames.begin(), tnames.end() - 1, ","));
+
+        else
+            ostr << fmt::format("<{}>", fmt::join(tnames, ","));
     }
 
     return ostr;

@@ -1,7 +1,7 @@
 /**
  * @file src/common/model/diagram.cc
  *
- * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2025 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,8 +77,7 @@ bool diagram::should_include(const element &e) const
     // In the basic mode, apply the paths filter as soon as possible
     // to limit processing unnecessary files
     if (filter_->mode() == filter_mode_t::basic) {
-        return filter_->should_include(
-            dynamic_cast<const source_location &>(e));
+        return filter_->should_include(e);
     }
 
     // In advanced mode, we have to wait until the diagram model is complete

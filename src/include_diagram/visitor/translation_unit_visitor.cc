@@ -1,7 +1,7 @@
 /**
  * @file src/include_diagram/visitor/translation_unit_visitor.cc
  *
- * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2025 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -95,12 +95,11 @@ void translation_unit_visitor::include_visitor::InclusionDirective(
     assert(diagram().get(current_file_id.value()));
 
     // Now try to figure out the full path to the included header
-    std::filesystem::path real_include_path
-    {
+    std::filesystem::path real_include_path{
 #if LLVM_VERSION_MAJOR > 14
         file->getFileEntry().tryGetRealPathName().str()
 #else
-        std::filesystem::path real_include_path{file->tryGetRealPathName().str()
+        file->tryGetRealPathName().str()
 #endif
     };
 
@@ -113,11 +112,11 @@ void translation_unit_visitor::include_visitor::InclusionDirective(
             std::filesystem::path(file->getDir().getName().str());
         const std::string include_file_dir{file->getDir().getName()};
 #else
-            if (file == nullptr)
-                return;
-            auto include_path_parent =
-                std::filesystem::path(file->getDir()->getName().str());
-            const std::string include_file_dir{file->getDir()->getName()};
+        if (file == nullptr)
+            return;
+        auto include_path_parent =
+            std::filesystem::path(file->getDir()->getName().str());
+        const std::string include_file_dir{file->getDir()->getName()};
 #endif
 
         const std::string include_name{file->getName().str()};

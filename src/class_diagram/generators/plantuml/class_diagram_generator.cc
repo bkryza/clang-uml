@@ -1,7 +1,7 @@
 /**
  * @file src/class_diagram/generators/plantuml/class_diagram_generator.cc
  *
- * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2025 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,7 +84,15 @@ void generator::generate_alias(const class_ &c, std::ostream &ostr) const
 
     print_debug(c, ostr);
 
-    ostr << class_type << " \"" << config().simplify_template_type(full_name);
+    auto fn = config().simplify_template_type(full_name);
+
+    // PlantUML doesn't render empty template properly unless there's at least
+    // one character inside
+    if (util::ends_with(fn, std::string{"<>"})) {
+        fn = fn.substr(0, fn.size() - 2) + "< >";
+    }
+
+    ostr << class_type << " \"" << fn;
 
     ostr << "\" as " << c.alias() << '\n';
 
@@ -612,7 +620,7 @@ void generator::generate_relationships(
                 relstr << c.alias() << " " << puml_relation << " "
                        << target_alias;
             else
-                relstr << target_alias << " <|-- " << c.alias() << '\n';
+                relstr << target_alias << " <|-- " << c.alias();
 
             if (!r.label().empty()) {
                 relstr << " : " << plantuml_common::to_plantuml(r.access())
@@ -623,11 +631,9 @@ void generator::generate_relationships(
             if (unique_relations.count(relstr.str()) == 0) {
                 unique_relations.emplace(relstr.str());
 
-                relstr << '\n';
+                LOG_TRACE("=== Adding relation {}", relstr.str());
 
-                LOG_DBG("=== Adding relation {}", relstr.str());
-
-                all_relations_str << relstr.str();
+                all_relations_str << relstr.str() << '\n';
             }
         }
         catch (error::uml_alias_missing &e) {
@@ -697,11 +703,9 @@ void generator::generate_relationships(
             if (unique_relations.count(relstr.str()) == 0) {
                 unique_relations.emplace(relstr.str());
 
-                relstr << '\n';
+                LOG_TRACE("=== Adding relation {}", relstr.str());
 
-                LOG_DBG("=== Adding relation {}", relstr.str());
-
-                all_relations_str << relstr.str();
+                all_relations_str << relstr.str() << '\n';
             }
         }
         catch (error::uml_alias_missing &e) {
@@ -830,11 +834,9 @@ void generator::generate_relationships(
             if (unique_relations.count(relstr.str()) == 0) {
                 unique_relations.emplace(relstr.str());
 
-                relstr << '\n';
+                LOG_TRACE("=== Adding relation {}", relstr.str());
 
-                LOG_DBG("=== Adding relation {}", relstr.str());
-
-                all_relations_str << relstr.str();
+                all_relations_str << relstr.str() << '\n';
             }
         }
         catch (error::uml_alias_missing &e) {

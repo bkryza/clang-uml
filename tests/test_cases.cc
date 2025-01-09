@@ -1,7 +1,7 @@
 /**
  * @file tests/test_cases.cc
  *
- * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2025 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -606,6 +606,9 @@ void CHECK_INCLUDE_DIAGRAM(const clanguml::config::config &config,
 
 #include "t00089/test_case.h"
 
+#if defined(ENABLE_CXX_STD_20_TEST_CASES)
+#include "t00090/test_case.h"
+#endif
 ///
 /// Sequence diagram tests
 ///
@@ -681,6 +684,10 @@ void CHECK_INCLUDE_DIAGRAM(const clanguml::config::config &config,
 #include "t20062/test_case.h"
 #include "t20063/test_case.h"
 
+#if defined(ENABLE_CXX_STD_20_TEST_CASES)
+#include "t20064/test_case.h"
+#endif
+
 ///
 /// Package diagram tests
 ///
@@ -755,6 +762,10 @@ int main(int argc, char *argv[])
         else if (strcmp(argv[i], "-q") == 0) {
             argvv.push_back("-q");
             default_to_quiet = false;
+        }
+        else if (strcmp(argv[i], "-json") == 0) {
+            argvv.push_back("--logger");
+            argvv.push_back("json");
         }
     }
 

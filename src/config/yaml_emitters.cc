@@ -1,7 +1,7 @@
 /**
  * @file src/config/yaml_emitters.cc
  *
- * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2025 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -165,14 +165,47 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const filter &f)
 
 YAML::Emitter &operator<<(YAML::Emitter &out, const plantuml &p)
 {
-    if (p.before.empty() && p.after.empty())
+    if (p.before.empty() && p.after.empty()) {
+        out << YAML::Null;
         return out;
+    }
 
     out << YAML::BeginMap;
     if (!p.before.empty())
         out << YAML::Key << "before" << YAML::Value << p.before;
     if (!p.after.empty())
         out << YAML::Key << "after" << YAML::Value << p.after;
+    out << YAML::EndMap;
+
+    return out;
+}
+
+YAML::Emitter &operator<<(YAML::Emitter &out, const mermaid &p)
+{
+    if (p.before.empty() && p.after.empty()) {
+        out << YAML::Null;
+        return out;
+    }
+
+    out << YAML::BeginMap;
+    if (!p.before.empty())
+        out << YAML::Key << "before" << YAML::Value << p.before;
+    if (!p.after.empty())
+        out << YAML::Key << "after" << YAML::Value << p.after;
+    out << YAML::EndMap;
+
+    return out;
+}
+
+YAML::Emitter &operator<<(YAML::Emitter &out, const graphml &p)
+{
+    if (p.notes.empty()) {
+        out << YAML::Null;
+        return out;
+    }
+
+    out << YAML::BeginMap;
+    out << YAML::Key << "notes" << YAML::Value << p.notes;
     out << YAML::EndMap;
 
     return out;
@@ -367,6 +400,8 @@ YAML::Emitter &operator<<(
     out << c.glob;
     out << c.include;
     out << c.puml;
+    out << c.mermaid;
+    out << c.graphml;
     out << c.relative_to;
     out << c.using_namespace;
     out << c.using_module;
@@ -473,4 +508,27 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const element_filter_t &ef)
 
     return out;
 }
+
+template <> bool is_null(const std::string &v) { return v.empty(); }
+
+template <> bool is_null(const glob_t &v)
+{
+    return v.include.empty() && v.exclude.empty();
+}
+
+template <> bool is_null(const plantuml &v)
+{
+    return v.before.empty() && v.after.empty() && v.cmd.empty() &&
+        v.style.empty();
+}
+
+template <> bool is_null(const mermaid &v)
+{
+    return v.before.empty() && v.after.empty() && v.cmd.empty();
+}
+
+template <> bool is_null(const graphml &v) { return v.notes.empty(); }
+
+template <> bool is_null(const inja::json &v) { return v.is_null(); }
+
 } // namespace clanguml::config

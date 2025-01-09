@@ -1,7 +1,7 @@
 /**
  * @file src/class_diagram/visitor/template_builder.h
  *
- * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2025 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -960,6 +960,13 @@ void template_builder<VisitorT>::process_template_arguments(
         // Argument can be a parameter pack in which case it gives multiple
         // arguments
         std::vector<template_parameter> arguments;
+
+        // Handle empty pack expansion
+        if (arg.getKind() == clang::TemplateArgument::ArgKind::Pack &&
+            arg.getPackAsArray().empty()) {
+            template_instantiation.add_template(
+                template_parameter::make_empty());
+        }
 
         // For now ignore the default template arguments of templates which
         // do not match the inclusion filters, to make the system

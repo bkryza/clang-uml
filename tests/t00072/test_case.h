@@ -1,7 +1,7 @@
 /**
  * tests/t00072/test_case.h
  *
- * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2025 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,5 +42,7 @@ TEST_CASE("t00072")
 
         REQUIRE(IsClass(src, "D"));
         REQUIRE(IsClass(src, "E"));
+
+        REQUIRE(IsAggregation<Public>(src, "App", "B", "b"));
     });
 }

@@ -1,7 +1,7 @@
 /**
  * @file src/config/yaml_decoders.cc
  *
- * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2025 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,59 @@
  * limitations under the License.
  */
 
-#include "cli/cli_handler.h"
 #include "config.h"
 #include "diagram_templates.h"
 #include "schema.h"
+#include "util/error.h"
 
 #define MIROIR_IMPLEMENTATION
 #define MIROIR_YAMLCPP_SPECIALIZATION
 #include <miroir/miroir.hpp>
+
+namespace clanguml::error {
+
+std::string to_string(miroir::ErrorType et)
+{
+    switch (et) {
+    case miroir::ErrorType::NodeNotFound:
+        return "NodeNotFound";
+    case miroir::ErrorType::InvalidValueType:
+        return "InvalidValueType";
+    case miroir::ErrorType::InvalidValue:
+        return "InvalidValue";
+    case miroir::ErrorType::MissingKeyWithType:
+        return "MissingKeyWithType";
+    case miroir::ErrorType::UndefinedNode:
+        return "UndefinedNode";
+    default:
+        return "";
+    }
+}
+
+void print(std::ostream &ostr, const config_schema_error &e,
+    logging::logger_type_t logger_type)
+{
+    if (logger_type == logging::logger_type_t::text) {
+        ostr << "ERROR: Invalid schema:\n";
+        for (const auto &schema_error : e.errors) {
+            std::cout << " - " << schema_error.description() << '\n';
+        }
+    }
+    else {
+        inja::json j;
+        j["valid"] = false;
+        j["errors"] = inja::json::array();
+        for (const auto &schema_error : e.errors) {
+            inja::json je;
+            je["path"] = schema_error.path;
+            je["error_type"] = to_string(schema_error.type);
+            je["description"] = schema_error.description();
+            j["errors"].emplace_back(std::move(je));
+        }
+        ostr << j.dump();
+    }
+}
+} // namespace clanguml::error
 
 namespace YAML {
 using clanguml::common::namespace_or_regex;
@@ -1264,12 +1309,8 @@ config load(const std::string &config_file, bool inherit,
             auto schema_errors = schema_validator.validate(doc);
 
             if (!schema_errors.empty()) {
-                // print validation errors
-                for (const auto &err : schema_errors) {
-                    LOG_ERROR("Schema error: {}", err.description());
-                }
-
-                throw YAML::Exception({}, "Invalid configuration schema");
+                throw clanguml::error::config_schema_error(
+                    std::move(schema_errors));
             }
         }
 

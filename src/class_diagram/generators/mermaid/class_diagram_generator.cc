@@ -1,7 +1,7 @@
 /**
  * @file src/class_diagram/generators/mermaid/class_diagram_generator.cc
  *
- * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2025 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -459,11 +459,9 @@ void generator::generate_relationships(
             if (unique_relations.count(relstr.str()) == 0) {
                 unique_relations.emplace(relstr.str());
 
-                relstr << '\n';
-
                 LOG_DBG("=== Adding relation {}", relstr.str());
 
-                all_relations_str << relstr.str();
+                all_relations_str << relstr.str() << '\n';
             }
         }
         catch (error::uml_alias_missing &e) {
@@ -541,11 +539,9 @@ void generator::generate_relationships(
             if (unique_relations.count(relstr.str()) == 0) {
                 unique_relations.emplace(relstr.str());
 
-                relstr << '\n';
+                LOG_TRACE("=== Adding relation {}", relstr.str());
 
-                LOG_DBG("=== Adding relation {}", relstr.str());
-
-                all_relations_str << relstr.str();
+                all_relations_str << relstr.str() << '\n';
             }
         }
         catch (error::uml_alias_missing &e) {
@@ -762,11 +758,9 @@ void generator::generate_relationships(
             if (unique_relations.count(relstr.str()) == 0) {
                 unique_relations.emplace(relstr.str());
 
-                relstr << '\n';
+                LOG_TRACE("=== Adding relation {}", relstr.str());
 
-                LOG_DBG("=== Adding relation {}", relstr.str());
-
-                all_relations_str << relstr.str();
+                all_relations_str << relstr.str() << '\n';
             }
         }
         catch (error::uml_alias_missing &e) {

@@ -1,7 +1,7 @@
 /**
  * tests/t20041/test_case.h
  *
- * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2025 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,8 +32,8 @@ TEST_CASE("t20041")
                 {"A<int,double,std::string>", "A<double,std::string>",
                     "print(double,std::string)"}, //
                 {"A<double,std::string>", "A<std::string>",
-                    "print(std::string)"},          //
-                {"A<std::string>", "A", "print()"}, //
+                    "print(std::string)"},            //
+                {"A<std::string>", "A<>", "print()"}, //
             }));
     });
 }
