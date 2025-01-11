@@ -36,6 +36,8 @@ TEST_CASE("t20064")
                     "sumImpl(const Arithmetic<int,float,double> &)",
                     Static{}}, //
                 {"Arithmetic<int,float,double>", "HList<int,float,double>",
+                    "size()", Static{}}, //
+                {"Arithmetic<int,float,double>", "HList<int,float,double>",
                     "head() const"}, //
                 {"Arithmetic<int,float,double>", "HList<int,float,double>",
                     "tail() const"}, //
@@ -43,19 +45,25 @@ TEST_CASE("t20064")
                 {"Arithmetic<int,float,double>", "Arithmetic<int,float,double>",
                     "sumImpl(const HList<float,double> &)", Static{}}, //
                 {"Arithmetic<int,float,double>", "HList<float,double>",
+                    "size()", Static{}}, //
+                {"Arithmetic<int,float,double>", "HList<float,double>",
                     "head() const"}, //
                 {"Arithmetic<int,float,double>", "HList<float,double>",
                     "tail() const"}, //
 
                 {"Arithmetic<int,float,double>", "Arithmetic<int,float,double>",
                     "sumImpl(const HList<double> &)", Static{}}, //
+                {"Arithmetic<int,float,double>", "HList<double>", "size()",
+                    Static{}}, //
                 {"Arithmetic<int,float,double>", "HList<double>",
                     "head() const"}, //
                 {"Arithmetic<int,float,double>", "HList<double>",
                     "tail() const"}, //
 
                 {"Arithmetic<int,float,double>", "Arithmetic<int,float,double>",
-                    "sumImpl(const HList<> &)", Static{}} //
+                    "sumImpl(const HList<> &)", Static{}}, //
+                {"Arithmetic<int,float,double>", "HList<>", "size()",
+                    Static{}} //
             }));
     });
 }

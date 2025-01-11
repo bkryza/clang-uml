@@ -1465,6 +1465,13 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
                 if (!process_lambda_call_expression(m, expr))
                     return true;
             }
+            else if (clang::dyn_cast_or_null<clang::DependentScopeDeclRefExpr>(
+                         expr->getCallee()) != nullptr) {
+                LOG_DBG("Processing dependent scope declaration expression "
+                        "callee - not able to infer the template parameter "
+                        "type at this point: {}",
+                    expr->getBeginLoc().printToString(source_manager()));
+            }
             else {
                 LOG_DBG("Found unsupported callee decl type for: {} at {}",
                     common::to_string(expr),

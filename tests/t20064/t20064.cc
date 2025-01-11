@@ -5,11 +5,10 @@
 /// https://www.scs.stanford.edu/~dm/blog/param-pack.html
 
 namespace clanguml::t20064 {
-
 template <typename... T> struct HList;
 
 template <> struct HList<> {
-    static constexpr std::size_t len = 0;
+    static constexpr std::size_t size() noexcept { return 0; }
 };
 
 template <typename T0, typename... TRest>
@@ -17,7 +16,11 @@ struct HList<T0, TRest...> : HList<TRest...> {
     using head_type = T0;
     using tail_type = HList<TRest...>;
 
-    static constexpr std::size_t len = 1 + sizeof...(TRest);
+    static constexpr std::size_t size() noexcept
+    {
+        return 1 + sizeof...(TRest);
+    }
+
     [[no_unique_address]] head_type value_{};
 
     constexpr HList() = default;
@@ -42,16 +45,17 @@ template <typename... T> HList(T...) -> HList<T...>;
 template <typename T>
 concept IsArithmetic = std::is_arithmetic_v<T>;
 
-template <IsArithmetic... T> class Arithmetic : HList<T...> {
-public:
+template <IsArithmetic... T> struct Arithmetic : HList<T...> {
+
     using HList<T...>::HList;
 
+public:
     constexpr double sum() const { return sumImpl(*this); }
 
 private:
     template <typename L> static constexpr double sumImpl(const L &list)
     {
-        if constexpr (L::len == 0) {
+        if constexpr (L::size() == 0) {
             return 0.0;
         }
         else {
@@ -62,7 +66,7 @@ private:
 
 int tmain()
 {
-    constexpr Arithmetic<int, float, double> a{11, 12.0, 13.0};
+    constexpr Arithmetic<int, float, double> a{11, 12, 13};
 
     return a.sum();
 }
