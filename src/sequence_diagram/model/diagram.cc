@@ -247,39 +247,41 @@ std::vector<std::string> diagram::list_to_values() const
     return result;
 }
 
-std::optional<eid_t> diagram::get_to_activity_id(
+std::vector<eid_t> diagram::get_to_activity_ids(
     const config::source_location &to_location) const
 {
-    std::optional<eid_t> to_activity{};
+    std::vector<eid_t> to_activities{};
 
     for (const auto &[k, v] : sequences()) {
         for (const auto &m : v.messages()) {
             if (m.type() != common::model::message_t::kCall)
                 continue;
+
             const auto &callee = *participants().at(m.to());
             std::string vto = callee.full_name(false);
-            if (vto == to_location.location) {
+            if (to_location.location == vto) {
                 LOG_DBG(
                     "Found sequence diagram end point '{}': {}", vto, m.to());
-                to_activity = m.to();
-                break;
+                to_activities.push_back(m.to());
             }
         }
     }
 
-    if (!to_activity.has_value()) {
+    if (to_activities.empty()) {
         LOG_WARN("Failed to find 'to' participant {} for to "
-                 "condition",
-            to_location.location);
+                 "condition: ",
+            to_location.location.to_string());
     }
 
-    return to_activity;
+    util::remove_duplicates(to_activities);
+
+    return to_activities;
 }
 
-std::optional<eid_t> diagram::get_from_activity_id(
+std::vector<eid_t> diagram::get_from_activity_ids(
     const config::source_location &from_location) const
 {
-    std::optional<eid_t> from_activity{};
+    std::vector<eid_t> from_activities{};
 
     for (const auto &[k, v] : sequences()) {
         if (participants().count(v.from()) == 0)
@@ -287,20 +289,21 @@ std::optional<eid_t> diagram::get_from_activity_id(
 
         const auto &caller = *participants().at(v.from());
         std::string vfrom = caller.full_name(false);
-        if (vfrom == from_location.location) {
+        if (from_location.location == vfrom) {
             LOG_DBG("Found sequence diagram start point '{}': {}", vfrom, k);
-            from_activity = k;
-            break;
+            from_activities.push_back(k);
         }
     }
 
-    if (!from_activity.has_value()) {
+    if (from_activities.empty()) {
         LOG_WARN("Failed to find 'from' participant {} for from "
-                 "condition",
-            from_location.location);
+                 "condition: ",
+            from_location.location.to_string());
     }
 
-    return from_activity;
+    util::remove_duplicates(from_activities);
+
+    return from_activities;
 }
 
 void diagram::build_reverse_call_graph(reverse_call_graph_activity_node &node,

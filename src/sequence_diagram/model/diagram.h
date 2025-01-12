@@ -285,21 +285,21 @@ public:
         std::set<eid_t> visited_callers = {}) const;
 
     /**
-     * @brief Get id of a 'to' activity
+     * @brief Get ids of activities matching 'to'
      *
      * @param to_location Target activity
      * @return Activity id
      */
-    std::optional<eid_t> get_to_activity_id(
+    std::vector<eid_t> get_to_activity_ids(
         const config::source_location &to_location) const;
 
     /**
-     * @brief Get id of a 'from' activity
+     * @brief Get ids of activities matching 'from'
      *
      * @param from_location Source activity
      * @return Activity id
      */
-    std::optional<eid_t> get_from_activity_id(
+    std::vector<eid_t> get_from_activity_ids(
         const config::source_location &from_location) const;
 
     /**

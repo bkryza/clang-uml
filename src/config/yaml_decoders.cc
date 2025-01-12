@@ -484,7 +484,7 @@ template <> struct convert<std::vector<source_location>> {
             else if (n["function"]) {
                 source_location loc;
                 loc.location_type = location_t::function;
-                loc.location = n["function"].as<std::string>();
+                loc.location = n["function"].as<decltype(loc.location)>();
                 rhs.emplace_back(std::move(loc));
             }
             else {

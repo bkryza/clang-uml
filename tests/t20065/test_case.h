@@ -1,5 +1,5 @@
 /**
- * src/version/version-const.h
+ * tests/t20065/test_case.h
  *
  * Copyright (c) 2021-2025 Bartek Kryza <bkryza@gmail.com>
  *
@@ -15,9 +15,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#pragma once
 
-namespace clanguml::version {
-static constexpr auto CLANG_UML_JSON_GENERATOR_SCHEMA_VERSION = 3U;
-static constexpr auto CLANG_UML_VERSION = "@GIT_VERSION@";
-} // namespace clanguml::version
+TEST_CASE("t20065")
+{
+    using namespace clanguml::test;
+    using namespace std::string_literals;
+
+    auto [config, db, diagram, model] =
+        CHECK_SEQUENCE_MODEL("t20065", "t20065_sequence");
+
+    CHECK_SEQUENCE_DIAGRAM(*config, diagram, *model, [](const auto &src) {
+        REQUIRE(MessageOrder(src,
+            {
+                //
+                {Entrypoint{}, "t20065.cc", "ca()"}, //
+                {"t20065.cc", "t20065.cc", "c()"},   //
+                {Entrypoint{}, "t20065.cc", "ba()"}, //
+                {"t20065.cc", "t20065.cc", "b()"}    //
+            }));
+    });
+}

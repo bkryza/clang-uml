@@ -239,6 +239,16 @@ private:
      */
     void process_end_while_message() const;
 
+    void generate_from_to_sequences(nlohmann::json &parent) const;
+
+    void generate_to_sequences(nlohmann::json &parent) const;
+
+    void generate_from_sequences(nlohmann::json &parent) const;
+
+    std::vector<eid_t> find_from_activities() const;
+
+    std::vector<model::message_chain_t> find_to_message_chains() const;
+
     mutable std::set<eid_t> generated_participants_;
 
     // Needed to add "participants" array in a temporary object accessible from

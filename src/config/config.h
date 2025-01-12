@@ -581,7 +581,7 @@ std::string to_string(location_t cp);
 
 struct source_location {
     location_t location_type{location_t::function};
-    std::string location;
+    common::string_or_regex location;
 };
 
 /**

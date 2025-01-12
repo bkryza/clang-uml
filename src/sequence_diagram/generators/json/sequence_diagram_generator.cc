@@ -763,157 +763,11 @@ void generator::generate_diagram(nlohmann::json &parent) const
         }
     }
 
-    for (const auto &ft : config().from_to()) {
-        // First, find the sequence of activities from 'from' location
-        // to 'to' location
-        assert(ft.size() == 2);
+    generate_from_to_sequences(parent);
 
-        const auto &from_location = ft.front();
-        const auto &to_location = ft.back();
+    generate_to_sequences(parent);
 
-        auto from_activity_id = model().get_from_activity_id(from_location);
-        auto to_activity_id = model().get_to_activity_id(to_location);
-
-        if (!from_activity_id || !to_activity_id)
-            continue;
-
-        auto message_chains_unique = model().get_all_from_to_message_chains(
-            *from_activity_id, *to_activity_id);
-
-        nlohmann::json sequence;
-        sequence["from_to"]["from"]["location"] = from_location.location;
-        sequence["from_to"]["from"]["id"] =
-            std::to_string(from_activity_id.value().value());
-        sequence["from_to"]["to"]["location"] = to_location.location;
-        sequence["from_to"]["to"]["id"] =
-            std::to_string(to_activity_id.value().value());
-
-        block_statements_stack_.push_back(std::ref(sequence));
-
-        sequence["message_chains"] = nlohmann::json::array();
-
-        for (const auto &mc : message_chains_unique) {
-            nlohmann::json message_chain;
-
-            block_statements_stack_.push_back(std::ref(message_chain));
-
-            for (const auto &m : mc) {
-                generate_call(m, current_block_statement());
-            }
-
-            block_statements_stack_.pop_back();
-
-            sequence["message_chains"].push_back(std::move(message_chain));
-        }
-
-        block_statements_stack_.pop_back();
-
-        parent["sequences"].push_back(std::move(sequence));
-    }
-
-    for (const auto &to_location : config().to()) {
-        auto to_activity_id = model().get_to_activity_id(to_location);
-
-        if (!to_activity_id.has_value())
-            continue;
-
-        auto message_chains_unique = model().get_all_from_to_message_chains(
-            eid_t{}, to_activity_id.value());
-
-        nlohmann::json sequence;
-        sequence["to"]["location"] = to_location.location;
-        sequence["to"]["id"] = std::to_string(to_activity_id.value().value());
-
-        block_statements_stack_.push_back(std::ref(sequence));
-
-        sequence["message_chains"] = nlohmann::json::array();
-
-        for (const auto &mc : message_chains_unique) {
-            nlohmann::json message_chain;
-
-            block_statements_stack_.push_back(std::ref(message_chain));
-
-            for (const auto &m : mc) {
-                generate_call(m, current_block_statement());
-            }
-
-            block_statements_stack_.pop_back();
-
-            sequence["message_chains"].push_back(std::move(message_chain));
-        }
-
-        block_statements_stack_.pop_back();
-
-        parent["sequences"].push_back(std::move(sequence));
-    }
-
-    for (const auto &sf : config().from()) {
-        if (sf.location_type == location_t::function) {
-            eid_t start_from{};
-            std::string start_from_str;
-            for (const auto &[k, v] : model().sequences()) {
-                if (model().participants().count(v.from()) == 0)
-                    continue;
-
-                const auto &caller = *model().participants().at(v.from());
-                std::string vfrom = caller.full_name(false);
-                if (vfrom == sf.location) {
-                    LOG_DBG("Found sequence diagram start point: {}", k);
-                    start_from = k;
-                    break;
-                }
-            }
-
-            if (start_from == 0) {
-                LOG_WARN("Failed to find participant with {} for start_from "
-                         "condition",
-                    sf.location);
-                continue;
-            }
-
-            // Use this to break out of recurrent loops
-            std::vector<eid_t> visited_participants;
-
-            const auto &from =
-                model().get_participant<model::function>(start_from);
-
-            if (!from.has_value()) {
-                LOG_WARN("Failed to find participant {} for start_from "
-                         "condition",
-                    sf.location);
-                continue;
-            }
-
-            generate_participant(json_, start_from);
-
-            [[maybe_unused]] model::function::message_render_mode render_mode =
-                model::function::message_render_mode::full;
-
-            nlohmann::json sequence;
-            sequence["start_from"]["location"] = sf.location;
-            sequence["start_from"]["id"] = std::to_string(start_from.value());
-
-            block_statements_stack_.push_back(std::ref(sequence));
-
-            generate_activity(
-                model().get_activity(start_from), visited_participants);
-
-            block_statements_stack_.pop_back();
-
-            if (from.value().type_name() == "method" ||
-                config().combine_free_functions_into_file_participants()) {
-
-                sequence["return_type"] =
-                    make_display_name(from.value().return_type());
-            }
-
-            parent["sequences"].push_back(std::move(sequence));
-        }
-        else {
-            // TODO: Add support for other sequence start location types
-            continue;
-        }
-    }
+    generate_from_sequences(parent);
 
     // Perform config dependent postprocessing on generated participants
     for (auto &p : json_["participants"]) {
@@ -923,6 +777,228 @@ void generator::generate_diagram(nlohmann::json &parent) const
     }
 
     parent["participants"] = json_["participants"];
+}
+
+void generator::generate_from_sequences(nlohmann::json &parent) const
+{
+    std::vector<eid_t> start_from = find_from_activities();
+
+    // Use this to break out of recurrent loops
+    std::vector<eid_t> visited_participants;
+    for (const auto from_id : start_from) {
+
+        const auto &from = model().get_participant<model::function>(from_id);
+
+        if (!from.has_value()) {
+            LOG_WARN("Failed to find participant {} for 'from' "
+                     "condition");
+            continue;
+        }
+
+        generate_participant(json_, from_id);
+
+        [[maybe_unused]] model::function::message_render_mode render_mode =
+            model::function::message_render_mode::full;
+
+        nlohmann::json sequence;
+        sequence["from"]["location"] = from.value().full_name(false);
+        sequence["from"]["id"] = std::to_string(from_id.value());
+
+        block_statements_stack_.push_back(std::ref(sequence));
+
+        generate_activity(model().get_activity(from_id), visited_participants);
+
+        block_statements_stack_.pop_back();
+
+        if (from.value().type_name() == "method" ||
+            config().combine_free_functions_into_file_participants()) {
+
+            sequence["return_type"] =
+                make_display_name(from.value().return_type());
+        }
+
+        parent["sequences"].push_back(std::move(sequence));
+    }
+}
+
+std::vector<model::message_chain_t> generator::find_to_message_chains() const
+{
+    std::vector<model::message_chain_t> result;
+
+    for (const auto &to_location : config().to()) {
+        auto to_activity_ids = model().get_to_activity_ids(to_location);
+
+        if (to_activity_ids.empty()) {
+            LOG_WARN("Failed to find participant matching '{}' for "
+                     "'to' condition: ",
+                to_location.location.to_string());
+        }
+
+        for (const auto &to_activity_id : to_activity_ids) {
+            std::vector<model::message_chain_t> message_chains_unique =
+                model().get_all_from_to_message_chains(eid_t{}, to_activity_id);
+
+            result.insert(result.end(), message_chains_unique.begin(),
+                message_chains_unique.end());
+        }
+    }
+
+    return result;
+}
+
+void generator::generate_to_sequences(nlohmann::json &parent) const
+{
+    std::vector<model::message_chain_t> message_chains =
+        find_to_message_chains();
+
+    for (const auto &mc : message_chains) {
+        const auto from_activity_id = mc.front().from();
+        const auto to_activity_id = mc.back().to();
+
+        if (model().participants().count(from_activity_id) == 0)
+            continue;
+
+        const auto &to =
+            model().get_participant<model::function>(to_activity_id);
+
+        nlohmann::json sequence;
+        sequence["to"]["location"] = to.value().full_name(false);
+        sequence["to"]["id"] = std::to_string(to_activity_id.value());
+        sequence["message_chains"] = nlohmann::json::array();
+
+        block_statements_stack_.push_back(std::ref(sequence));
+
+        nlohmann::json message_chain;
+
+        block_statements_stack_.push_back(std::ref(message_chain));
+
+        for (const auto &m : mc) {
+            generate_call(m, current_block_statement());
+        }
+
+        block_statements_stack_.pop_back();
+
+        sequence["message_chains"].push_back(std::move(message_chain));
+
+        block_statements_stack_.pop_back();
+
+        parent["sequences"].push_back(std::move(sequence));
+    }
+}
+
+void generator::generate_from_to_sequences(nlohmann::json &parent) const
+{
+    for (const auto &ft : config().from_to()) {
+        // First, find the sequence of activities from 'from' location
+        // to 'to' location
+        assert(ft.size() == 2);
+
+        const auto &from_location = ft.front();
+        const auto &to_location = ft.back();
+
+        auto from_activity_ids = model().get_from_activity_ids(from_location);
+        auto to_activity_ids = model().get_to_activity_ids(to_location);
+
+        if (from_activity_ids.empty()) {
+            throw error::invalid_sequence_from_condition(model().type(),
+                model().name(),
+                fmt::format("Failed to find participant matching '{}' for "
+                            "'from' condition: ",
+                    from_location.location.to_string()));
+        }
+
+        if (from_activity_ids.empty() || to_activity_ids.empty()) {
+            throw error::invalid_sequence_to_condition(model().type(),
+                model().name(),
+                fmt::format("Failed to find participant matching '{}' for "
+                            "'to' condition: ",
+                    to_location.location.to_string()));
+        }
+
+        for (const auto from_activity_id : from_activity_ids) {
+            if (model().participants().count(from_activity_id) == 0)
+                continue;
+
+            const auto &from =
+                model().get_participant<model::function>(from_activity_id);
+
+            for (const auto to_activity_id : to_activity_ids) {
+                if (model().participants().count(to_activity_id) == 0)
+                    continue;
+
+                const auto &to =
+                    model().get_participant<model::function>(to_activity_id);
+
+                auto message_chains_unique =
+                    model().get_all_from_to_message_chains(
+                        from_activity_id, to_activity_id);
+
+                nlohmann::json sequence;
+                sequence["from_to"]["from"]["location"] =
+                    from.value().full_name(false);
+                sequence["from_to"]["from"]["id"] =
+                    std::to_string(from_activity_id.value());
+                sequence["from_to"]["to"]["location"] =
+                    to.value().full_name(false);
+                sequence["from_to"]["to"]["id"] =
+                    std::to_string(to_activity_id.value());
+
+                block_statements_stack_.push_back(std::ref(sequence));
+
+                sequence["message_chains"] = nlohmann::json::array();
+
+                for (const auto &mc : message_chains_unique) {
+                    nlohmann::json message_chain;
+
+                    block_statements_stack_.push_back(std::ref(message_chain));
+
+                    for (const auto &m : mc) {
+                        generate_call(m, current_block_statement());
+                    }
+
+                    block_statements_stack_.pop_back();
+
+                    sequence["message_chains"].push_back(
+                        std::move(message_chain));
+                }
+
+                block_statements_stack_.pop_back();
+
+                parent["sequences"].push_back(std::move(sequence));
+            }
+        }
+    }
+}
+
+std::vector<eid_t> generator::find_from_activities() const
+{
+    std::vector<eid_t> start_from;
+    for (const auto &sf : config().from()) {
+        if (sf.location_type == location_t::function) {
+            bool found{false};
+            for (const auto &[k, v] : model().sequences()) {
+                if (model().participants().count(v.from()) == 0)
+                    continue;
+
+                const auto &caller = *model().participants().at(v.from());
+                std::string vfrom = caller.full_name(false);
+                if (sf.location == vfrom) {
+                    LOG_DBG("Found sequence diagram start point: {}", k);
+                    start_from.push_back(k);
+                    found = true;
+                }
+            }
+
+            if (!found)
+                throw error::invalid_sequence_from_condition(model().type(),
+                    model().name(),
+                    fmt::format("Failed to find participant matching '{}' for "
+                                "'from' condition: ",
+                        sf.location.to_string()));
+        }
+    }
+
+    return start_from;
 }
 
 std::string generator::make_display_name(const std::string &full_name) const

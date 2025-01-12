@@ -171,7 +171,7 @@ types:
         anyof: !optional filter_t
         allof: !optional filter_t
     function_location_t:
-        function: string
+        function: regex_or_string_t
     marker_location_t:
         marker: string
     source_location_t:

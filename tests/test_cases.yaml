@@ -460,6 +460,13 @@ test_cases:
     - name: t20064
       title: Metaprogramming test case with recursive type list sequence diagram
       description:
+    - name: t20065
+      title: Test case for 'from' condition with regular expression
+      description:
+    - name: t20066
+      title: Test case for 'to' condition with regular expression
+    - name: t20067
+      title: Test case for 'from_to' condition with regular expression
   Package diagrams:
     - name: t30001
       title: Basic package diagram test case
