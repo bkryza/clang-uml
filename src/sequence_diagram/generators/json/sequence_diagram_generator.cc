@@ -852,6 +852,9 @@ void generator::generate_diagram(nlohmann::json &parent) const
             eid_t start_from{};
             std::string start_from_str;
             for (const auto &[k, v] : model().sequences()) {
+                if (model().participants().count(v.from()) == 0)
+                    continue;
+
                 const auto &caller = *model().participants().at(v.from());
                 std::string vfrom = caller.full_name(false);
                 if (vfrom == sf.location) {

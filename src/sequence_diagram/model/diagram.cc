@@ -25,6 +25,39 @@
 
 namespace clanguml::sequence_diagram::model {
 
+std::vector<std::vector<eid_t>> find_reverse_message_chains(
+    const reverse_call_graph_activity_node &root)
+{
+    std::vector<std::vector<eid_t>> all_message_chains;
+    std::vector<eid_t> current_chain;
+
+    // Depth first search lambda function to traverse reverse call graph
+    std::function<void(const reverse_call_graph_activity_node &)> dfs =
+        [&](const reverse_call_graph_activity_node &node) {
+            // Add the current node’s activity ID to the path
+            current_chain.push_back(node.activity_id);
+
+            if (node.callers.empty()) {
+                auto reversed = current_chain;
+                std::reverse(reversed.begin(), reversed.end());
+                all_message_chains.emplace_back(std::move(reversed));
+            }
+            else {
+                for (const auto &child : node.callers) {
+                    dfs(child);
+                }
+            }
+
+            // Backtrack
+            current_chain.pop_back();
+        };
+
+    // Start depth first search
+    dfs(root);
+
+    return all_message_chains;
+}
+
 common::model::diagram_t diagram::type() const
 {
     return common::model::diagram_t::kSequence;
@@ -91,11 +124,19 @@ activity &diagram::get_activity(eid_t id) { return activities_.at(id); }
 void diagram::add_message(model::message &&message)
 {
     const auto caller_id = message.from();
+    const auto callee_id = message.to();
+
     if (activities_.find(caller_id) == activities_.end()) {
         activity a{caller_id};
         activities_.insert({caller_id, std::move(a)});
     }
 
+    if (activities_.find(callee_id) == activities_.end()) {
+        activity a{callee_id};
+        activities_.insert({callee_id, std::move(a)});
+    }
+
+    get_activity(callee_id).add_caller(caller_id);
     get_activity(caller_id).add_message(std::move(message));
 }
 
@@ -241,6 +282,9 @@ std::optional<eid_t> diagram::get_from_activity_id(
     std::optional<eid_t> from_activity{};
 
     for (const auto &[k, v] : sequences()) {
+        if (participants().count(v.from()) == 0)
+            continue;
+
         const auto &caller = *participants().at(v.from());
         std::string vfrom = caller.full_name(false);
         if (vfrom == from_location.location) {
@@ -259,122 +303,116 @@ std::optional<eid_t> diagram::get_from_activity_id(
     return from_activity;
 }
 
+void diagram::build_reverse_call_graph(reverse_call_graph_activity_node &node,
+    std::set<eid_t> visited_callers) const
+{
+    LOG_INFO("Building reverse call graph for activity: {}", node.activity_id);
+
+    if (sequences().count(node.activity_id) == 0)
+        return;
+
+    visited_callers.insert(node.activity_id);
+
+    const auto &callers = sequences().at(node.activity_id).callers();
+
+    for (const auto &caller : callers) {
+        if (visited_callers.count(caller) > 0) {
+            // break recursive calls
+            continue;
+        }
+
+        reverse_call_graph_activity_node caller_node;
+        caller_node.activity_id = caller;
+
+        build_reverse_call_graph(caller_node, visited_callers);
+
+        node.callers.emplace_back(std::move(caller_node));
+    }
+}
+
 std::vector<message_chain_t> diagram::get_all_from_to_message_chains(
     const eid_t from_activity, const eid_t to_activity) const
 {
-    std::vector<message_chain_t> message_chains_unique{};
-
     // Message (call) chains matching the specified from_to condition
     std::vector<message_chain_t> message_chains;
 
-    // First find all 'to_activity' call targets in the sequences, i.e.
-    // all messages pointing to the final 'to_activity' activity
+    // First, build reverse call graph starting from target `to_activity`
+    // `target_roots` should contain all activities which call `to_activity`
+    reverse_call_graph_activity_node target_roots;
+    target_roots.activity_id = to_activity;
+
     for (const auto &[k, v] : sequences()) {
         for (const auto &m : v.messages()) {
             if (m.type() != common::model::message_t::kCall)
                 continue;
 
             if (m.to() == to_activity) {
-                message_chains.emplace_back();
-                message_chains.back().push_back(m);
+                reverse_call_graph_activity_node node;
+                node.activity_id = m.from();
+                target_roots.callers.emplace_back(std::move(node));
             }
         }
     }
 
-    std::map<unsigned int, std::vector<model::message>> calls_to_current_chain;
-    std::map<unsigned int, message_chain_t> current_chain;
+    // Now recurse from the initial target activities based on reverse
+    // callers list stored in each activity
+    for (auto &caller : target_roots.callers)
+        build_reverse_call_graph(caller);
 
-    int iter = 0;
-    while (true) {
-        bool added_message_to_some_chain{false};
-        // If target of current message matches any of the
-        // 'from' constraints in the last messages in
-        // current chains found on previous iteration - append
-        if (!calls_to_current_chain.empty()) {
-            for (auto &[message_chain_index, messages] :
-                calls_to_current_chain) {
-                for (auto &m : messages) {
-                    message_chains.push_back(
-                        current_chain[message_chain_index]);
+    // Convert the reverse call graph into a list of call chains using
+    // depth first search
+    auto activity_id_chains = find_reverse_message_chains(target_roots);
 
-                    message_chains.back().push_back(std::move(m));
+    // Make sure the activity call chains list is unique
+    sort(begin(activity_id_chains), end(activity_id_chains));
+    activity_id_chains.erase(
+        unique(begin(activity_id_chains), end(activity_id_chains)),
+        end(activity_id_chains));
+
+    // Convert the call chains with activity ids to lists of actual messages
+    for (const auto &chain : activity_id_chains) {
+        message_chain_t message_chain;
+        for (auto it = begin(chain); it != end(chain); it++) {
+            const auto next_it = it + 1;
+            if (next_it == end(chain))
+                break;
+
+            auto from_id = *it;
+            if (activities_.count(from_id) == 0)
+                continue;
+
+            auto to_id = *(next_it);
+
+            const auto &act = activities_.at(from_id);
+
+            for (const auto &m : act.messages()) {
+                if (m.to() == to_id) {
+                    message_chain.push_back(m);
+                    break;
                 }
             }
-            calls_to_current_chain.clear();
         }
-
-        LOG_TRACE("Message chains after iteration {}", iter++);
-        int message_chain_index{};
-        for (const auto &mc : message_chains) {
-            LOG_TRACE("\t{}: {}", message_chain_index++,
-                fmt::join(util::map<std::string>(mc,
-                              [](const model::message &m) -> std::string {
-                                  return m.message_name();
-                              }),
-                    "<-"));
-        }
-
-        for (auto i = 0U; i < message_chains.size(); i++) {
-            auto &mc = message_chains[i];
-            current_chain[i] = mc;
-            for (const auto &[k, v] : sequences()) {
-                for (const auto &m : v.messages()) {
-                    if (m.type() != common::model::message_t::kCall)
-                        continue;
-
-                    // Ignore recursive calls and call loops
-                    if (m.to() == m.from() ||
-                        std::any_of(
-                            cbegin(mc), cend(mc), [&m](const auto &msg) {
-                                return msg.to() == m.from();
-                            })) {
-                        continue;
-                    }
-
-                    if (m.to() == mc.back().from()) {
-                        calls_to_current_chain[i].push_back(m);
-                        added_message_to_some_chain = true;
-                    }
-                }
-            }
-
-            // If there are more than one call to the current chain,
-            // duplicate it as many times as there are calls - 1
-            if (calls_to_current_chain.count(i) > 0 &&
-                !calls_to_current_chain[i].empty()) {
-                mc.push_back(calls_to_current_chain[i][0]);
-                calls_to_current_chain[i].erase(
-                    calls_to_current_chain[i].begin());
-            }
-        }
-
-        // There is nothing more to find
-        if (!added_message_to_some_chain)
-            break;
+        message_chains.emplace_back(std::move(message_chain));
     }
 
-    // Reverse the message chains order (they were added starting from
-    // the destination activity)
+    // Perform final filtering of the message chains
+    std::vector<message_chain_t> message_chains_filtered{};
+
     for (auto &mc : message_chains) {
-        std::reverse(mc.begin(), mc.end());
-
+        // Skip empty chains
         if (mc.empty())
             continue;
 
-        if (std::find(message_chains_unique.begin(),
-                message_chains_unique.end(), mc) != message_chains_unique.end())
-            continue;
-
+        // Make sure the chain has valid starting point
         if (from_activity.value() == 0 ||
             (mc.front().from() == from_activity)) {
-            message_chains_unique.push_back(mc);
+            message_chains_filtered.push_back(mc);
         }
     }
 
-    LOG_TRACE("Message chains unique", iter++);
     int message_chain_index{};
-    for (const auto &mc : message_chains_unique) {
-        LOG_TRACE("\t{}: {}", message_chain_index++,
+    for (const auto &mc : message_chains_filtered) {
+        LOG_INFO("\t{}: {}", message_chain_index++,
             fmt::join(util::map<std::string>(mc,
                           [](const model::message &m) -> std::string {
                               return m.message_name();
@@ -382,7 +420,7 @@ std::vector<message_chain_t> diagram::get_all_from_to_message_chains(
                 "->"));
     }
 
-    return message_chains_unique;
+    return message_chains_filtered;
 }
 
 bool diagram::is_empty() const

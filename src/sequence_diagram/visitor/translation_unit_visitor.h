@@ -540,6 +540,8 @@ private:
 
     void ensure_lambda_messages_have_operator_as_target();
 
+    void add_callers_to_activities();
+
     call_expression_context call_expression_context_;
 
     /**
@@ -560,6 +562,8 @@ private:
         std::tuple<std::string /* field name */, common::model::relationship_t,
             common::model::access_t>>
         anonymous_struct_relationships_;
+
+    std::map<eid_t, std::set<eid_t>> activity_callers_;
 
     mutable unsigned within_static_variable_declaration_{0};
     mutable std::set<const clang::Expr *>

@@ -1509,12 +1509,16 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
 
     return true;
 }
+
 void translation_unit_visitor::ensure_activity_exists(const model::message &m)
 {
-    if (diagram().sequences().find(m.from()) == diagram().sequences().end()) {
+    if (diagram().sequences().count(m.from()) == 0) {
         model::activity a{m.from()};
         diagram().sequences().insert({m.from(), std::move(a)});
     }
+
+    // Maintain reverse graph of activity callers
+    activity_callers_[m.to()].emplace(m.from());
 }
 
 bool translation_unit_visitor::generate_message_from_comment(
@@ -2145,6 +2149,9 @@ void translation_unit_visitor::set_unique_id(int64_t local_id, eid_t global_id)
 std::optional<eid_t> translation_unit_visitor::get_unique_id(
     eid_t local_id) const
 {
+    if (local_id.is_global())
+        return local_id;
+
     return id_mapper().get_global_id(local_id);
 }
 
@@ -2427,6 +2434,8 @@ void translation_unit_visitor::finalize()
     // are visited...
     ensure_lambda_messages_have_operator_as_target();
 
+    add_callers_to_activities();
+
     if (config().inline_lambda_messages())
         diagram().inline_lambda_operator_calls();
 }
@@ -2444,6 +2453,8 @@ void translation_unit_visitor::ensure_lambda_messages_have_operator_as_target()
 
                 m.set_to(participant.value().lambda_operator_id());
                 m.set_message_name("operator()");
+
+                ensure_activity_exists(m);
             }
         }
     }
@@ -2474,6 +2485,33 @@ void translation_unit_visitor::resolve_ids_to_global()
                 m.set_to(unique_id.value());
                 assert(m.to().is_global());
             }
+        }
+    }
+}
+
+void translation_unit_visitor::add_callers_to_activities()
+{
+    // Translate reverse activity call graph local ids to global ids
+    std::map<eid_t, std::set<eid_t>> acs;
+    for (const auto &[id, caller_ids] : activity_callers_) {
+        auto unique_id = get_unique_id(id);
+        if (!unique_id)
+            continue;
+        std::set<eid_t> unique_caller_ids;
+        for (const auto &caller_id : caller_ids) {
+            auto unique_caller_id = get_unique_id(caller_id);
+            if (unique_caller_id)
+                unique_caller_ids.emplace(*unique_caller_id);
+        }
+        acs.emplace(*unique_id, std::move(unique_caller_ids));
+    }
+
+    // Change all message callees AST local ids to diagram global ids
+    for (auto &[id, activity] : diagram().sequences()) {
+        assert(id.is_global());
+
+        if (acs.count(id) > 0) {
+            activity.set_callers(acs.at(id));
         }
     }
 }
