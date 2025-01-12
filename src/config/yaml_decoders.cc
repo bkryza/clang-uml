@@ -921,8 +921,12 @@ template <> struct convert<glob_t> {
         }
 
         if (node.Type() == NodeType::Map) {
-            rhs.include = node["include"].as<std::vector<string_or_regex>>();
-            rhs.exclude = node["exclude"].as<std::vector<string_or_regex>>();
+            if (has_key(node, "include"))
+                rhs.include =
+                    node["include"].as<std::vector<string_or_regex>>();
+            if (has_key(node, "exclude"))
+                rhs.exclude =
+                    node["exclude"].as<std::vector<string_or_regex>>();
             return true;
         }
 

@@ -67,8 +67,8 @@ types:
         r: string
     regex_or_string_t: [string, regex_t]
     glob_explicit_t:
-        include: [regex_or_string_t]
-        exclude: [regex_or_string_t]
+        include: !optional [regex_or_string_t]
+        exclude: !optional [regex_or_string_t]
     regex_or_string_list_t: [regex_or_string_t]
     glob_t: !optional [glob_explicit_t,[regex_or_string_t]]
     element_types_filter_t: !variant
