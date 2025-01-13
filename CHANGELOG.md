@@ -1,5 +1,6 @@
 # CHANGELOG
 
+### 0.6.0
   * Added support for regular expressions in sequence diagram boundary conditions (#366)
   * Improved generation performance of to and from_to sequence diagrams (#365)
   * Fixed handling of empty pack expansion types rendering (#362)
