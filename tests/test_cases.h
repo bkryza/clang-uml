@@ -275,7 +275,8 @@ bool MessageChainsOrder(
     const DiagramType &d, std::vector<std::vector<Message>> message_chains)
 {
     // Try to match each chain to each sequence - sequence order depends
-    // on platform and LLVM version
+    // on order in which translation units are visited, so can vary between
+    // build systems and platforms
     for (const auto &message_chain : message_chains) {
         if (!MessageOrder(d, message_chain))
             return false;

@@ -30,6 +30,9 @@ TEST_CASE("t20065")
                 //
                 {Entrypoint{}, "t20065.cc", "ca()"}, //
                 {"t20065.cc", "t20065.cc", "c()"},   //
+            }));
+        REQUIRE(MessageOrder(src,
+            {
                 {Entrypoint{}, "t20065.cc", "ba()"}, //
                 {"t20065.cc", "t20065.cc", "b()"}    //
             }));
