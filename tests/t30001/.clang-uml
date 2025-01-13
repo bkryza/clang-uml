@@ -1,6 +1,9 @@
 diagrams:
   t30001_package:
     type: package
+    generate_links:
+      link: 'https://github.com/bkryza/clang-uml/blob/{{ git.commit }}/{{ element.source.path }}#L{{ element.source.line }}'
+      tooltip: '{% if existsIn(element, "comment") and existsIn(element.comment, "brief")  %}{{ abbrv(trim(replace(element.comment.brief.0, "\n+", " ")), 256) }}{% else %}{{ element.name }}{% endif %}'
     title: Basic package diagram example
     glob:
       - t30001.cc

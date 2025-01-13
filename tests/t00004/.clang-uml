@@ -1,6 +1,9 @@
 diagrams:
   t00004_class:
     type: class
+    generate_links:
+      link: 'https://github.com/bkryza/clang-uml/blob/{{ git.commit }}/{{ element.source.path }}#L{{ element.source.line }}'
+      tooltip: '{% if existsIn(element, "comment") and existsIn(element.comment, "brief")  %}{{ abbrv(trim(replace(element.comment.brief.0, "\n+", " ")), 256) }}{% else %}{{ element.name }}{% endif %}'
     glob:
       - t00004.cc
     using_namespace: clanguml::t00004
