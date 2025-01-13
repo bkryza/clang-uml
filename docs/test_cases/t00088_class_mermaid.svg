@@ -57,40 +57,38 @@
       <g class="edgePaths"/>
       <g class="edgeLabels"/>
       <g class="nodes">
-        <a transform="translate(80.421875, 80.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/1fa698c8f418c67d7d8c4f8e23c3e56636a93f97/tests/t00088/t00088.h#L9">
-          <g title="It00088_Foo" id="classId-C_0013875468327584959141-0" class="node default clickable">
-            <rect height="145" width="144.84375" y="-72.5" x="-72.421875" class="outer title-state" style=""/>
-            <line y2="-20.5" y1="-20.5" x2="72.421875" x1="-72.421875" class="divider"/>
-            <line y2="39.5" y1="39.5" x2="72.421875" x1="-72.421875" class="divider"/>
-            <g class="label">
-              <foreignObject transform="translate( -64.921875, -65)" height="18" width="129.84375">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">« ObjC Interface »</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -46.2421875, -43)" height="18" width="92.484375" class="classTitle">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">It00088_Foo</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -64.921875, -9)" height="18" width="129.84375">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">#_barMember : int</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -64.921875, 13)" height="18" width="128.953125">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">#_fooMember : int</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -64.921875, 47)" height="18" width="93.828125">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="text-decoration: underline; display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel" style="text-decoration:underline;">+foo() : : void</span>
-                </div>
-              </foreignObject>
-            </g>
+        <g transform="translate(80.421875, 80.5)" id="classId-C_0013875468327584959141-0" class="node default">
+          <rect height="145" width="144.84375" y="-72.5" x="-72.421875" class="outer title-state" style=""/>
+          <line y2="-20.5" y1="-20.5" x2="72.421875" x1="-72.421875" class="divider"/>
+          <line y2="39.5" y1="39.5" x2="72.421875" x1="-72.421875" class="divider"/>
+          <g class="label">
+            <foreignObject transform="translate( -64.921875, -65)" height="18" width="129.84375">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">« ObjC Interface »</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -46.2421875, -43)" height="18" width="92.484375" class="classTitle">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">It00088_Foo</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -64.921875, -9)" height="18" width="129.84375">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">#_barMember : int</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -64.921875, 13)" height="18" width="128.953125">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">#_fooMember : int</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -64.921875, 47)" height="18" width="93.828125">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="text-decoration: underline; display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel" style="text-decoration:underline;">+foo() : : void</span>
+              </div>
+            </foreignObject>
           </g>
-        </a>
+        </g>
       </g>
     </g>
   </g>

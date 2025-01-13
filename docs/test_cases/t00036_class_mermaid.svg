@@ -83,121 +83,111 @@
         </g>
       </g>
       <g class="nodes">
-        <a transform="translate(68.875, 69.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/1fa698c8f418c67d7d8c4f8e23c3e56636a93f97/tests/t00036/t00036.cc#L6">
-          <g title="E" id="classId-C_0017158095624393267824-0" class="node default clickable">
-            <rect height="123" width="121.75" y="-61.5" x="-60.875" class="outer title-state" style=""/>
-            <line y2="-9.5" y1="-9.5" x2="60.875" x1="-60.875" class="divider"/>
-            <line y2="50.5" y1="50.5" x2="60.875" x1="-60.875" class="divider"/>
-            <g class="label">
-              <foreignObject transform="translate( -53.375, -54)" height="18" width="106.75">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">«enumeration»</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -24.453125, -32)" height="18" width="48.90625" class="classTitle">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">ns1::E</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -53.375, 2)" height="18" width="30.25">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">blue</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -53.375, 24)" height="18" width="44.46875">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">yellow</span>
-                </div>
-              </foreignObject>
-            </g>
+        <g transform="translate(68.875, 69.5)" id="classId-C_0017158095624393267824-0" class="node default">
+          <rect height="123" width="121.75" y="-61.5" x="-60.875" class="outer title-state" style=""/>
+          <line y2="-9.5" y1="-9.5" x2="60.875" x1="-60.875" class="divider"/>
+          <line y2="50.5" y1="50.5" x2="60.875" x1="-60.875" class="divider"/>
+          <g class="label">
+            <foreignObject transform="translate( -53.375, -54)" height="18" width="106.75">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">«enumeration»</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -24.453125, -32)" height="18" width="48.90625" class="classTitle">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">ns1::E</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -53.375, 2)" height="18" width="30.25">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">blue</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -53.375, 24)" height="18" width="44.46875">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">yellow</span>
+              </div>
+            </foreignObject>
           </g>
-        </a>
-        <a transform="translate(262.390625, 345.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/1fa698c8f418c67d7d8c4f8e23c3e56636a93f97/tests/t00036/t00036.cc#L10">
-          <g title="A" id="classId-C_0004572586445217559573-1" class="node default clickable">
-            <rect height="79" width="139.484375" y="-39.5" x="-69.7421875" class="outer title-state" style=""/>
-            <line y2="-9.5" y1="-9.5" x2="69.7421875" x1="-69.7421875" class="divider"/>
-            <line y2="28.5" y1="28.5" x2="69.7421875" x1="-69.7421875" class="divider"/>
-            <g class="label">
-              <foreignObject height="0" width="0">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel"/>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -62.2421875, -32)" height="18" width="124.484375" class="classTitle">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">ns1::ns11::A&lt;T&gt;</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -62.2421875, 2)" height="18" width="41.0625">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">+a : T</span>
-                </div>
-              </foreignObject>
-            </g>
+        </g>
+        <g transform="translate(262.390625, 345.5)" id="classId-C_0004572586445217559573-1" class="node default">
+          <rect height="79" width="139.484375" y="-39.5" x="-69.7421875" class="outer title-state" style=""/>
+          <line y2="-9.5" y1="-9.5" x2="69.7421875" x1="-69.7421875" class="divider"/>
+          <line y2="28.5" y1="28.5" x2="69.7421875" x1="-69.7421875" class="divider"/>
+          <g class="label">
+            <foreignObject height="0" width="0">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel"/>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -62.2421875, -32)" height="18" width="124.484375" class="classTitle">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">ns1::ns11::A&lt;T&gt;</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -62.2421875, 2)" height="18" width="41.0625">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">+a : T</span>
+              </div>
+            </foreignObject>
           </g>
-        </a>
-        <a transform="translate(262.390625, 69.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/1fa698c8f418c67d7d8c4f8e23c3e56636a93f97/tests/t00036/t00036.cc#L16">
-          <g title="B" id="classId-C_0015712255468508859011-2" class="node default clickable">
-            <rect height="79" width="165.28125" y="-39.5" x="-82.640625" class="outer title-state" style=""/>
-            <line y2="-9.5" y1="-9.5" x2="82.640625" x1="-82.640625" class="divider"/>
-            <line y2="28.5" y1="28.5" x2="82.640625" x1="-82.640625" class="divider"/>
-            <g class="label">
-              <foreignObject height="0" width="0">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel"/>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -75.140625, -32)" height="18" width="150.28125" class="classTitle">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">ns1::ns11::ns111::B</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -75.140625, 2)" height="18" width="102.75">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">+a_int : A&lt;int&gt;</span>
-                </div>
-              </foreignObject>
-            </g>
+        </g>
+        <g transform="translate(262.390625, 69.5)" id="classId-C_0015712255468508859011-2" class="node default">
+          <rect height="79" width="165.28125" y="-39.5" x="-82.640625" class="outer title-state" style=""/>
+          <line y2="-9.5" y1="-9.5" x2="82.640625" x1="-82.640625" class="divider"/>
+          <line y2="28.5" y1="28.5" x2="82.640625" x1="-82.640625" class="divider"/>
+          <g class="label">
+            <foreignObject height="0" width="0">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel"/>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -75.140625, -32)" height="18" width="150.28125" class="classTitle">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">ns1::ns11::ns111::B</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -75.140625, 2)" height="18" width="102.75">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">+a_int : A&lt;int&gt;</span>
+              </div>
+            </foreignObject>
           </g>
-        </a>
-        <a transform="translate(262.390625, 227.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/1fa698c8f418c67d7d8c4f8e23c3e56636a93f97/tests/t00036/t00036.cc#L10">
-          <g title="A" id="classId-C_0014661683419698558378-3" class="node default clickable">
-            <rect height="57" width="149.265625" y="-28.5" x="-74.6328125" class="outer title-state" style=""/>
-            <line y2="1.5" y1="1.5" x2="74.6328125" x1="-74.6328125" class="divider"/>
-            <line y2="17.5" y1="17.5" x2="74.6328125" x1="-74.6328125" class="divider"/>
-            <g class="label">
-              <foreignObject height="0" width="0">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel"/>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -67.1328125, -21)" height="18" width="134.265625" class="classTitle">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">ns1::ns11::A&lt;int&gt;</span>
-                </div>
-              </foreignObject>
-            </g>
+        </g>
+        <g transform="translate(262.390625, 227.5)" id="classId-C_0014661683419698558378-3" class="node default">
+          <rect height="57" width="149.265625" y="-28.5" x="-74.6328125" class="outer title-state" style=""/>
+          <line y2="1.5" y1="1.5" x2="74.6328125" x1="-74.6328125" class="divider"/>
+          <line y2="17.5" y1="17.5" x2="74.6328125" x1="-74.6328125" class="divider"/>
+          <g class="label">
+            <foreignObject height="0" width="0">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel"/>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -67.1328125, -21)" height="18" width="134.265625" class="classTitle">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">ns1::ns11::A&lt;int&gt;</span>
+              </div>
+            </foreignObject>
           </g>
-        </a>
-        <a transform="translate(450.984375, 69.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/1fa698c8f418c67d7d8c4f8e23c3e56636a93f97/tests/t00036/t00036.cc#L28">
-          <g title="C" id="classId-C_0016311655056529324727-4" class="node default clickable">
-            <rect height="57" width="111.90625" y="-28.5" x="-55.953125" class="outer title-state" style=""/>
-            <line y2="1.5" y1="1.5" x2="55.953125" x1="-55.953125" class="divider"/>
-            <line y2="17.5" y1="17.5" x2="55.953125" x1="-55.953125" class="divider"/>
-            <g class="label">
-              <foreignObject height="0" width="0">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel"/>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -48.453125, -21)" height="18" width="96.90625" class="classTitle">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">ns2::ns22::C</span>
-                </div>
-              </foreignObject>
-            </g>
+        </g>
+        <g transform="translate(450.984375, 69.5)" id="classId-C_0016311655056529324727-4" class="node default">
+          <rect height="57" width="111.90625" y="-28.5" x="-55.953125" class="outer title-state" style=""/>
+          <line y2="1.5" y1="1.5" x2="55.953125" x1="-55.953125" class="divider"/>
+          <line y2="17.5" y1="17.5" x2="55.953125" x1="-55.953125" class="divider"/>
+          <g class="label">
+            <foreignObject height="0" width="0">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel"/>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -48.453125, -21)" height="18" width="96.90625" class="classTitle">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">ns2::ns22::C</span>
+              </div>
+            </foreignObject>
           </g>
-        </a>
+        </g>
       </g>
     </g>
   </g>

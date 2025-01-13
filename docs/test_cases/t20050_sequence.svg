@@ -56,49 +56,41 @@
     <polygon fill="#181818" points="50.3291,68.7739,60.3291,72.7739,50.3291,76.7739,54.3291,72.7739" style="stroke:#181818;stroke-width:1;"/>
     <line style="stroke:#181818;stroke-width:1;" x1="0" x2="56.3291" y1="72.7739" y2="72.7739"/>
     <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="43.3291" x="7" y="66.9649">tmain()</text>
-    <a href="https://github.com/bkryza/clang-uml/blob/1fa698c8f418c67d7d8c4f8e23c3e56636a93f97/tests/t20050/t20050.cu#L32" target="_top" title="" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/1fa698c8f418c67d7d8c4f8e23c3e56636a93f97/tests/t20050/t20050.cu#L32" xlink:show="new" xlink:title="" xlink:type="simple">
-      <line style="stroke:#181818;stroke-width:1;" x1="72.3291" x2="119.3291" y1="117.186" y2="117.186"/>
-      <line style="stroke:#181818;stroke-width:1;" x1="119.3291" x2="119.3291" y1="117.186" y2="130.186"/>
-      <line style="stroke:#181818;stroke-width:1;" x1="78.3291" x2="119.3291" y1="130.186" y2="130.186"/>
-      <polygon fill="#181818" points="88.3291,126.186,78.3291,130.186,88.3291,134.186,84.3291,130.186" style="stroke:#181818;stroke-width:1;"/>
-      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="91.5981" x="84.3291" y="93.6709">«CUDA Kernel»</text>
-      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="264.1733" x="84.3291" y="111.377">vector_square_add(float *,float *,float *,int)</text>
-    </a>
+    <line style="stroke:#181818;stroke-width:1;" x1="72.3291" x2="119.3291" y1="117.186" y2="117.186"/>
+    <line style="stroke:#181818;stroke-width:1;" x1="119.3291" x2="119.3291" y1="117.186" y2="130.186"/>
+    <line style="stroke:#181818;stroke-width:1;" x1="78.3291" x2="119.3291" y1="130.186" y2="130.186"/>
+    <polygon fill="#181818" points="88.3291,126.186,78.3291,130.186,88.3291,134.186,84.3291,130.186" style="stroke:#181818;stroke-width:1;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="91.5981" x="84.3291" y="93.6709">«CUDA Kernel»</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="264.1733" x="84.3291" y="111.377">vector_square_add(float *,float *,float *,int)</text>
     <path d="M18.2202,150.186 L91.5082,150.186 L91.5082,159.892 L81.5082,169.892 L18.2202,169.892 L18.2202,150.186 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/>
     <rect fill="transparent" height="287.9421" style="stroke:#000000;stroke-width:1.5;" width="230.579" x="18.2202" y="150.186"/>
     <text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="28.288" x="33.2202" y="165.083">loop</text>
-    <a href="https://github.com/bkryza/clang-uml/blob/1fa698c8f418c67d7d8c4f8e23c3e56636a93f97/tests/t20050/t20050.cu#L15" target="_top" title="" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/1fa698c8f418c67d7d8c4f8e23c3e56636a93f97/tests/t20050/t20050.cu#L15" xlink:show="new" xlink:title="" xlink:type="simple">
-      <line style="stroke:#181818;stroke-width:1;" x1="77.3291" x2="124.3291" y1="206.304" y2="206.304"/>
-      <line style="stroke:#181818;stroke-width:1;" x1="124.3291" x2="124.3291" y1="206.304" y2="219.304"/>
-      <line style="stroke:#181818;stroke-width:1;" x1="83.3291" x2="124.3291" y1="219.304" y2="219.304"/>
-      <polygon fill="#181818" points="93.3291,215.304,83.3291,219.304,93.3291,223.304,89.3291,219.304" style="stroke:#181818;stroke-width:1;"/>
-      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="92.4821" x="89.3291" y="182.789">«CUDA Device»</text>
-      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="77.7271" x="89.3291" y="200.495">square(float)</text>
-    </a>
+    <line style="stroke:#181818;stroke-width:1;" x1="77.3291" x2="124.3291" y1="206.304" y2="206.304"/>
+    <line style="stroke:#181818;stroke-width:1;" x1="124.3291" x2="124.3291" y1="206.304" y2="219.304"/>
+    <line style="stroke:#181818;stroke-width:1;" x1="83.3291" x2="124.3291" y1="219.304" y2="219.304"/>
+    <polygon fill="#181818" points="93.3291,215.304,83.3291,219.304,93.3291,223.304,89.3291,219.304" style="stroke:#181818;stroke-width:1;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="92.4821" x="89.3291" y="182.789">«CUDA Device»</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="77.7271" x="89.3291" y="200.495">square(float)</text>
     <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="82.3291" x2="124.3291" y1="243.304" y2="243.304"/>
     <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="124.3291" x2="124.3291" y1="243.304" y2="256.304"/>
     <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="77.3291" x2="124.3291" y1="256.304" y2="256.304"/>
     <polygon fill="#181818" points="87.3291,252.304,77.3291,256.304,87.3291,260.304,83.3291,256.304" style="stroke:#181818;stroke-width:1;"/>
-    <a href="https://github.com/bkryza/clang-uml/blob/1fa698c8f418c67d7d8c4f8e23c3e56636a93f97/tests/t20050/t20050.cu#L15" target="_top" title="" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/1fa698c8f418c67d7d8c4f8e23c3e56636a93f97/tests/t20050/t20050.cu#L15" xlink:show="new" xlink:title="" xlink:type="simple">
-      <line style="stroke:#181818;stroke-width:1;" x1="77.3291" x2="124.3291" y1="295.716" y2="295.716"/>
-      <line style="stroke:#181818;stroke-width:1;" x1="124.3291" x2="124.3291" y1="295.716" y2="308.716"/>
-      <line style="stroke:#181818;stroke-width:1;" x1="83.3291" x2="124.3291" y1="308.716" y2="308.716"/>
-      <polygon fill="#181818" points="93.3291,304.716,83.3291,308.716,93.3291,312.716,89.3291,308.716" style="stroke:#181818;stroke-width:1;"/>
-      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="92.4821" x="89.3291" y="272.201">«CUDA Device»</text>
-      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="77.7271" x="89.3291" y="289.907">square(float)</text>
-    </a>
+    <line style="stroke:#181818;stroke-width:1;" x1="77.3291" x2="124.3291" y1="295.716" y2="295.716"/>
+    <line style="stroke:#181818;stroke-width:1;" x1="124.3291" x2="124.3291" y1="295.716" y2="308.716"/>
+    <line style="stroke:#181818;stroke-width:1;" x1="83.3291" x2="124.3291" y1="308.716" y2="308.716"/>
+    <polygon fill="#181818" points="93.3291,304.716,83.3291,308.716,93.3291,312.716,89.3291,308.716" style="stroke:#181818;stroke-width:1;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="92.4821" x="89.3291" y="272.201">«CUDA Device»</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="77.7271" x="89.3291" y="289.907">square(float)</text>
     <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="82.3291" x2="124.3291" y1="332.716" y2="332.716"/>
     <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="124.3291" x2="124.3291" y1="332.716" y2="345.716"/>
     <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="77.3291" x2="124.3291" y1="345.716" y2="345.716"/>
     <polygon fill="#181818" points="87.3291,341.716,77.3291,345.716,87.3291,349.716,83.3291,345.716" style="stroke:#181818;stroke-width:1;"/>
-    <a href="https://github.com/bkryza/clang-uml/blob/1fa698c8f418c67d7d8c4f8e23c3e56636a93f97/tests/t20050/t20050.cu#L15" target="_top" title="" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/1fa698c8f418c67d7d8c4f8e23c3e56636a93f97/tests/t20050/t20050.cu#L15" xlink:show="new" xlink:title="" xlink:type="simple">
-      <line style="stroke:#181818;stroke-width:1;" x1="77.3291" x2="124.3291" y1="385.1281" y2="385.1281"/>
-      <line style="stroke:#181818;stroke-width:1;" x1="124.3291" x2="124.3291" y1="385.1281" y2="398.1281"/>
-      <line style="stroke:#181818;stroke-width:1;" x1="83.3291" x2="124.3291" y1="398.1281" y2="398.1281"/>
-      <polygon fill="#181818" points="93.3291,394.1281,83.3291,398.1281,93.3291,402.1281,89.3291,398.1281" style="stroke:#181818;stroke-width:1;"/>
-      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="92.4821" x="89.3291" y="361.6131">«CUDA Device»</text>
-      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="132.4701" x="89.3291" y="379.3191">add&lt;float&gt;(float,float)</text>
-    </a>
+    <line style="stroke:#181818;stroke-width:1;" x1="77.3291" x2="124.3291" y1="385.1281" y2="385.1281"/>
+    <line style="stroke:#181818;stroke-width:1;" x1="124.3291" x2="124.3291" y1="385.1281" y2="398.1281"/>
+    <line style="stroke:#181818;stroke-width:1;" x1="83.3291" x2="124.3291" y1="398.1281" y2="398.1281"/>
+    <polygon fill="#181818" points="93.3291,394.1281,83.3291,398.1281,93.3291,402.1281,89.3291,398.1281" style="stroke:#181818;stroke-width:1;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="92.4821" x="89.3291" y="361.6131">«CUDA Device»</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="132.4701" x="89.3291" y="379.3191">add&lt;float&gt;(float,float)</text>
     <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="82.3291" x2="124.3291" y1="422.1281" y2="422.1281"/>
     <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="124.3291" x2="124.3291" y1="422.1281" y2="435.1281"/>
     <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="77.3291" x2="124.3291" y1="435.1281" y2="435.1281"/>

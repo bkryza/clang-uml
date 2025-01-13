@@ -3,6 +3,9 @@ add_compile_flags:
 diagrams:
   t20029_sequence:
     type: sequence
+    generate_links:
+      link: 'https://github.com/bkryza/clang-uml/blob/{{ git.commit }}/{{ element.source.path }}#L{{ element.source.line }}'
+      tooltip: '{% if existsIn(element, "comment") and existsIn(element.comment, "brief")  %}{{ abbrv(trim(replace(element.comment.brief.0, "\n+", " ")), 256) }}{% else %}{{ element.name }}{% endif %}'
     glob:
       - t20029.cc
     include:

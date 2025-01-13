@@ -95,82 +95,74 @@
         </g>
       </g>
       <g class="nodes">
-        <a transform="translate(91.078125, 36.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/1fa698c8f418c67d7d8c4f8e23c3e56636a93f97/tests/t00047/t00047.cc#L8">
-          <g title="conditional_t" id="classId-C_0000379154246597001066-0" class="node default clickable">
-            <rect height="57" width="166.15625" y="-28.5" x="-83.078125" class="outer title-state" style=""/>
-            <line y2="1.5" y1="1.5" x2="83.078125" x1="-83.078125" class="divider"/>
-            <line y2="17.5" y1="17.5" x2="83.078125" x1="-83.078125" class="divider"/>
-            <g class="label">
-              <foreignObject height="0" width="0">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel"/>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -75.578125, -21)" height="18" width="151.15625" class="classTitle">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">conditional_t&lt;Else&gt;</span>
-                </div>
-              </foreignObject>
-            </g>
+        <g transform="translate(91.078125, 36.5)" id="classId-C_0000379154246597001066-0" class="node default">
+          <rect height="57" width="166.15625" y="-28.5" x="-83.078125" class="outer title-state" style=""/>
+          <line y2="1.5" y1="1.5" x2="83.078125" x1="-83.078125" class="divider"/>
+          <line y2="17.5" y1="17.5" x2="83.078125" x1="-83.078125" class="divider"/>
+          <g class="label">
+            <foreignObject height="0" width="0">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel"/>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -75.578125, -21)" height="18" width="151.15625" class="classTitle">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">conditional_t&lt;Else&gt;</span>
+              </div>
+            </foreignObject>
           </g>
-        </a>
-        <a transform="translate(392.8671875, 36.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/1fa698c8f418c67d7d8c4f8e23c3e56636a93f97/tests/t00047/t00047.cc#L13">
-          <g title="conditional_t" id="classId-C_0004798257275118206478-1" class="node default clickable">
-            <rect height="57" width="337.421875" y="-28.5" x="-168.7109375" class="outer title-state" style=""/>
-            <line y2="1.5" y1="1.5" x2="168.7109375" x1="-168.7109375" class="divider"/>
-            <line y2="17.5" y1="17.5" x2="168.7109375" x1="-168.7109375" class="divider"/>
-            <g class="label">
-              <foreignObject height="0" width="0">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel"/>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -161.2109375, -21)" height="18" width="322.421875" class="classTitle">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">conditional_t&lt;std::true_type,Result,Tail...&gt;</span>
-                </div>
-              </foreignObject>
-            </g>
+        </g>
+        <g transform="translate(392.8671875, 36.5)" id="classId-C_0004798257275118206478-1" class="node default">
+          <rect height="57" width="337.421875" y="-28.5" x="-168.7109375" class="outer title-state" style=""/>
+          <line y2="1.5" y1="1.5" x2="168.7109375" x1="-168.7109375" class="divider"/>
+          <line y2="17.5" y1="17.5" x2="168.7109375" x1="-168.7109375" class="divider"/>
+          <g class="label">
+            <foreignObject height="0" width="0">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel"/>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -161.2109375, -21)" height="18" width="322.421875" class="classTitle">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">conditional_t&lt;std::true_type,Result,Tail...&gt;</span>
+              </div>
+            </foreignObject>
           </g>
-        </a>
-        <a transform="translate(783.4140625, 36.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/1fa698c8f418c67d7d8c4f8e23c3e56636a93f97/tests/t00047/t00047.cc#L18">
-          <g title="conditional_t" id="classId-C_0006599505553474916091-2" class="node default clickable">
-            <rect height="57" width="343.671875" y="-28.5" x="-171.8359375" class="outer title-state" style=""/>
-            <line y2="1.5" y1="1.5" x2="171.8359375" x1="-171.8359375" class="divider"/>
-            <line y2="17.5" y1="17.5" x2="171.8359375" x1="-171.8359375" class="divider"/>
-            <g class="label">
-              <foreignObject height="0" width="0">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel"/>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -164.3359375, -21)" height="18" width="328.671875" class="classTitle">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">conditional_t&lt;std::false_type,Result,Tail...&gt;</span>
-                </div>
-              </foreignObject>
-            </g>
+        </g>
+        <g transform="translate(783.4140625, 36.5)" id="classId-C_0006599505553474916091-2" class="node default">
+          <rect height="57" width="343.671875" y="-28.5" x="-171.8359375" class="outer title-state" style=""/>
+          <line y2="1.5" y1="1.5" x2="171.8359375" x1="-171.8359375" class="divider"/>
+          <line y2="17.5" y1="17.5" x2="171.8359375" x1="-171.8359375" class="divider"/>
+          <g class="label">
+            <foreignObject height="0" width="0">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel"/>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -164.3359375, -21)" height="18" width="328.671875" class="classTitle">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">conditional_t&lt;std::false_type,Result,Tail...&gt;</span>
+              </div>
+            </foreignObject>
           </g>
-        </a>
-        <a transform="translate(392.8671875, 143.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/1fa698c8f418c67d7d8c4f8e23c3e56636a93f97/tests/t00047/t00047.cc#L6">
-          <g title="conditional_t" id="classId-C_0013389543941136699317-3" class="node default clickable">
-            <rect height="57" width="164.0625" y="-28.5" x="-82.03125" class="outer title-state" style=""/>
-            <line y2="1.5" y1="1.5" x2="82.03125" x1="-82.03125" class="divider"/>
-            <line y2="17.5" y1="17.5" x2="82.03125" x1="-82.03125" class="divider"/>
-            <g class="label">
-              <foreignObject height="0" width="0">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel"/>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -74.53125, -21)" height="18" width="149.0625" class="classTitle">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">conditional_t&lt;Ts...&gt;</span>
-                </div>
-              </foreignObject>
-            </g>
+        </g>
+        <g transform="translate(392.8671875, 143.5)" id="classId-C_0013389543941136699317-3" class="node default">
+          <rect height="57" width="164.0625" y="-28.5" x="-82.03125" class="outer title-state" style=""/>
+          <line y2="1.5" y1="1.5" x2="82.03125" x1="-82.03125" class="divider"/>
+          <line y2="17.5" y1="17.5" x2="82.03125" x1="-82.03125" class="divider"/>
+          <g class="label">
+            <foreignObject height="0" width="0">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel"/>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -74.53125, -21)" height="18" width="149.0625" class="classTitle">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">conditional_t&lt;Ts...&gt;</span>
+              </div>
+            </foreignObject>
           </g>
-        </a>
+        </g>
       </g>
     </g>
   </g>

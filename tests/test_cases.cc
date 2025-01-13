@@ -27,19 +27,6 @@
 
 #include <vector>
 
-void inject_diagram_options(std::shared_ptr<clanguml::config::diagram> diagram)
-{
-    // Inject links config to all test cases
-    clanguml::config::generate_links_config links_config;
-
-    links_config.link.emplace(".",
-        R"(https://github.com/bkryza/clang-uml/blob/{{ git.commit }}/{{ element.source.path }}#L{{ element.source.line }})");
-    links_config.tooltip.emplace(".",
-        R"({% if existsIn(element, "comment") and existsIn(element.comment, "brief")  %}{{ abbrv(trim(replace(element.comment.brief.0, "\n+", " ")), 256) }}{% else %}{{ element.name }}{% endif %})");
-
-    diagram->generate_links.set(std::move(links_config));
-}
-
 std::pair<clanguml::config::config_ptr,
     clanguml::common::compilation_database_ptr>
 load_config(const std::string &test_name)
@@ -101,8 +88,6 @@ auto generate_diagram_impl(clanguml::common::compilation_database &db,
     using diagram_visitor =
         typename clanguml::common::generators::diagram_visitor_t<
             diagram_config>::type;
-
-    inject_diagram_options(diagram);
 
     auto tus = diagram->glob_translation_units(db.getAllFiles());
 

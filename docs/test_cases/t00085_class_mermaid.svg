@@ -217,120 +217,118 @@
             </foreignObject>
           </g>
         </g>
-        <a transform="translate(953.296875, 407.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/1fa698c8f418c67d7d8c4f8e23c3e56636a93f97/tests/t00085/t00085.h#L3">
-          <g title="It00085" id="classId-C_0012380559137179420140-2" class="node default clickable">
-            <rect height="497" width="587" y="-248.5" x="-293.5" class="outer title-state" style=""/>
-            <line y2="-196.5" y1="-196.5" x2="293.5" x1="-293.5" class="divider"/>
-            <line y2="-92.5" y1="-92.5" x2="293.5" x1="-293.5" class="divider"/>
-            <g class="label">
-              <foreignObject transform="translate( -64.921875, -241)" height="18" width="129.84375">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">« ObjC Interface »</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -27.1328125, -219)" height="18" width="54.265625" class="classTitle">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">It00085</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -286, -185)" height="18" width="154.75">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">#_defaultMember : int</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -286, -163)" height="18" width="198.296875">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="font-style: italic; display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel" style="font-style:italic;">-_privateMember : NSString</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -286, -141)" height="18" width="220.546875">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="font-style: italic; display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel" style="font-style:italic;">#_protectedMember : NSString</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -286, -119)" height="18" width="196.09375">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="font-style: italic; display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel" style="font-style:italic;">+_publicMember : NSString</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -286, -85)" height="18" width="337.828125">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">+addValue:(NSInteger otherValue) : : NSInteger</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -286, -63)" height="18" width="272.578125">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="text-decoration: underline; display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel" style="text-decoration:underline;">+currentSharedCounter() : : NSInteger</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -286, -41)" height="18" width="170.296875">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">+displayDetails() : : void</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -286, -19)" height="18" width="250.34375">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="text-decoration: underline; display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel" style="text-decoration:underline;">+incrementSharedCounter() : : void</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -286, 3)" height="18" width="517.125">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">+initWithName:value:(NSString * name, NSInteger value) : : instancetype</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -286, 25)" height="18" width="572">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">+multiplyValueBy:andAdd:(NSInteger multiplier, NSInteger addition) : : NSInteger</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -286, 47)" height="18" width="146.28125">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="font-style: italic; display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel" style="font-style:italic;">+name() : : NSString</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -286, 69)" height="18" width="449">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">+performOperationWithBlock:(void (^)(NSInteger) block) : : void</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -286, 91)" height="18" width="146.890625">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">+resetValue() : : void</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -286, 113)" height="18" width="259.21875">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">+setName:(NSString * name) : : void</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -286, 135)" height="18" width="388.21875">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="text-decoration: underline; display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel" style="text-decoration:underline;">+setSharedCounter:(NSInteger sharedCounter) : : void</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -286, 157)" height="18" width="251.84375">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">+setValue:(NSInteger value) : : void</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -286, 179)" height="18" width="220.109375">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="text-decoration: underline; display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel" style="text-decoration:underline;">+sharedCounter() : : NSInteger</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -286, 201)" height="18" width="241.46875">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="text-decoration: underline; display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel" style="text-decoration:underline;">+sharedInstance() : : instancetype</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -286, 223)" height="18" width="152.515625">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">+value() : : NSInteger</span>
-                </div>
-              </foreignObject>
-            </g>
+        <g transform="translate(953.296875, 407.5)" id="classId-C_0012380559137179420140-2" class="node default">
+          <rect height="497" width="587" y="-248.5" x="-293.5" class="outer title-state" style=""/>
+          <line y2="-196.5" y1="-196.5" x2="293.5" x1="-293.5" class="divider"/>
+          <line y2="-92.5" y1="-92.5" x2="293.5" x1="-293.5" class="divider"/>
+          <g class="label">
+            <foreignObject transform="translate( -64.921875, -241)" height="18" width="129.84375">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">« ObjC Interface »</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -27.1328125, -219)" height="18" width="54.265625" class="classTitle">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">It00085</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -286, -185)" height="18" width="154.75">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">#_defaultMember : int</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -286, -163)" height="18" width="198.296875">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="font-style: italic; display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel" style="font-style:italic;">-_privateMember : NSString</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -286, -141)" height="18" width="220.546875">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="font-style: italic; display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel" style="font-style:italic;">#_protectedMember : NSString</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -286, -119)" height="18" width="196.09375">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="font-style: italic; display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel" style="font-style:italic;">+_publicMember : NSString</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -286, -85)" height="18" width="337.828125">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">+addValue:(NSInteger otherValue) : : NSInteger</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -286, -63)" height="18" width="272.578125">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="text-decoration: underline; display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel" style="text-decoration:underline;">+currentSharedCounter() : : NSInteger</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -286, -41)" height="18" width="170.296875">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">+displayDetails() : : void</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -286, -19)" height="18" width="250.34375">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="text-decoration: underline; display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel" style="text-decoration:underline;">+incrementSharedCounter() : : void</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -286, 3)" height="18" width="517.125">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">+initWithName:value:(NSString * name, NSInteger value) : : instancetype</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -286, 25)" height="18" width="572">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">+multiplyValueBy:andAdd:(NSInteger multiplier, NSInteger addition) : : NSInteger</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -286, 47)" height="18" width="146.28125">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="font-style: italic; display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel" style="font-style:italic;">+name() : : NSString</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -286, 69)" height="18" width="449">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">+performOperationWithBlock:(void (^)(NSInteger) block) : : void</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -286, 91)" height="18" width="146.890625">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">+resetValue() : : void</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -286, 113)" height="18" width="259.21875">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">+setName:(NSString * name) : : void</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -286, 135)" height="18" width="388.21875">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="text-decoration: underline; display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel" style="text-decoration:underline;">+setSharedCounter:(NSInteger sharedCounter) : : void</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -286, 157)" height="18" width="251.84375">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">+setValue:(NSInteger value) : : void</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -286, 179)" height="18" width="220.109375">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="text-decoration: underline; display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel" style="text-decoration:underline;">+sharedCounter() : : NSInteger</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -286, 201)" height="18" width="241.46875">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="text-decoration: underline; display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel" style="text-decoration:underline;">+sharedInstance() : : instancetype</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -286, 223)" height="18" width="152.515625">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">+value() : : NSInteger</span>
+              </div>
+            </foreignObject>
           </g>
-        </a>
+        </g>
       </g>
     </g>
   </g>

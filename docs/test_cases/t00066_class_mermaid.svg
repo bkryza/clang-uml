@@ -57,175 +57,173 @@
       <g class="edgePaths"/>
       <g class="edgeLabels"/>
       <g class="nodes">
-        <a transform="translate(204.8203125, 366.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/1fa698c8f418c67d7d8c4f8e23c3e56636a93f97/tests/t00066/t00066.cc#L7">
-          <g title="A" id="classId-C_0015199658254065871481-0" class="node default clickable">
-            <rect height="717" width="393.640625" y="-358.5" x="-196.8203125" class="outer title-state" style=""/>
-            <line y2="-328.5" y1="-328.5" x2="196.8203125" x1="-196.8203125" class="divider"/>
-            <line y2="-92.5" y1="-92.5" x2="196.8203125" x1="-196.8203125" class="divider"/>
-            <g class="label">
-              <foreignObject height="0" width="0">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel"/>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -5.78125, -351)" height="18" width="11.5625" class="classTitle">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">A</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -189.3203125, -317)" height="18" width="148.96875">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">+public_member : int</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -189.3203125, -295)" height="18" width="173.421875">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">#protected_member : int</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -189.3203125, -273)" height="18" width="294.390625">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">#compare : std::function&lt;bool (const int)&gt;</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -189.3203125, -251)" height="18" width="151.171875">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">-private_member : int</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -189.3203125, -229)" height="18" width="53.359375">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">-a_ : int</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -189.3203125, -207)" height="18" width="53.359375">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">-b_ : int</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -189.3203125, -185)" height="18" width="52.46875">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">-c_ : int</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -189.3203125, -163)" height="18" width="102.71875">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">+static_int : int</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -189.3203125, -141)" height="18" width="192.546875">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">+static_const_int : const int</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -189.3203125, -119)" height="18" width="263.734375">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">+auto_member : const unsigned long</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -189.3203125, -85)" height="18" width="143.625">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">+A() : : [default] void</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -189.3203125, -63)" height="18" width="107.15625">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">+A(int i) : : void</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -189.3203125, -41)" height="18" width="179.203125">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">+A(A &amp;&amp;) : : [default] void</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -189.3203125, -19)" height="18" width="148.96875">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">+A(const A &amp;) : : void</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -189.3203125, 3)" height="18" width="152.96875">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">+~A() : : [default] void</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -189.3203125, 25)" height="18" width="171.203125">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">+basic_method() : : void</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -189.3203125, 47)" height="18" width="158.734375">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="text-decoration: underline; display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel" style="text-decoration:underline;">+static_method() : : int</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -189.3203125, 69)" height="18" width="223.671875">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">+const_method() : : [const] void</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -189.3203125, 91)" height="18" width="152.53125">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">+auto_method() : : int</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -189.3203125, 113)" height="18" width="144.53125">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">+operator++() : : A &amp;</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -189.3203125, 135)" height="18" width="211.6875">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">+operator=(A &amp;&amp; other) : : A &amp;</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -189.3203125, 157)" height="18" width="201.015625">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">+operator=(A &amp; other) : : A &amp;</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -189.3203125, 179)" height="18" width="194.296875">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">+size() : : [const] std::size_t</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -189.3203125, 201)" height="18" width="200.5625">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">+double_int(const int i) : : int</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -189.3203125, 223)" height="18" width="306.40625">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">+sum(const double a, const double b) : : int</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -189.3203125, 245)" height="18" width="193.890625">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">+default_int(int i = 12) : : int</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -189.3203125, 267)" height="18" width="378.640625">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">+default_string(int i, std::string s = "abc") : : std::string</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -189.3203125, 289)" height="18" width="188.078125">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="text-decoration: underline; display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel" style="text-decoration:underline;">+create_from_int(int i) : : A</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -189.3203125, 311)" height="18" width="200.109375">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">#protected_method() : : void</span>
-                </div>
-              </foreignObject>
-              <foreignObject transform="translate( -189.3203125, 333)" height="18" width="177.859375">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">-private_method() : : void</span>
-                </div>
-              </foreignObject>
-            </g>
+        <g transform="translate(204.8203125, 366.5)" id="classId-C_0015199658254065871481-0" class="node default">
+          <rect height="717" width="393.640625" y="-358.5" x="-196.8203125" class="outer title-state" style=""/>
+          <line y2="-328.5" y1="-328.5" x2="196.8203125" x1="-196.8203125" class="divider"/>
+          <line y2="-92.5" y1="-92.5" x2="196.8203125" x1="-196.8203125" class="divider"/>
+          <g class="label">
+            <foreignObject height="0" width="0">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel"/>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -5.78125, -351)" height="18" width="11.5625" class="classTitle">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">A</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -189.3203125, -317)" height="18" width="148.96875">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">+public_member : int</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -189.3203125, -295)" height="18" width="173.421875">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">#protected_member : int</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -189.3203125, -273)" height="18" width="294.390625">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">#compare : std::function&lt;bool (const int)&gt;</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -189.3203125, -251)" height="18" width="151.171875">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">-private_member : int</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -189.3203125, -229)" height="18" width="53.359375">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">-a_ : int</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -189.3203125, -207)" height="18" width="53.359375">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">-b_ : int</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -189.3203125, -185)" height="18" width="52.46875">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">-c_ : int</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -189.3203125, -163)" height="18" width="102.71875">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">+static_int : int</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -189.3203125, -141)" height="18" width="192.546875">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">+static_const_int : const int</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -189.3203125, -119)" height="18" width="263.734375">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">+auto_member : const unsigned long</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -189.3203125, -85)" height="18" width="143.625">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">+A() : : [default] void</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -189.3203125, -63)" height="18" width="107.15625">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">+A(int i) : : void</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -189.3203125, -41)" height="18" width="179.203125">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">+A(A &amp;&amp;) : : [default] void</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -189.3203125, -19)" height="18" width="148.96875">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">+A(const A &amp;) : : void</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -189.3203125, 3)" height="18" width="152.96875">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">+~A() : : [default] void</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -189.3203125, 25)" height="18" width="171.203125">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">+basic_method() : : void</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -189.3203125, 47)" height="18" width="158.734375">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="text-decoration: underline; display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel" style="text-decoration:underline;">+static_method() : : int</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -189.3203125, 69)" height="18" width="223.671875">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">+const_method() : : [const] void</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -189.3203125, 91)" height="18" width="152.53125">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">+auto_method() : : int</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -189.3203125, 113)" height="18" width="144.53125">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">+operator++() : : A &amp;</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -189.3203125, 135)" height="18" width="211.6875">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">+operator=(A &amp;&amp; other) : : A &amp;</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -189.3203125, 157)" height="18" width="201.015625">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">+operator=(A &amp; other) : : A &amp;</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -189.3203125, 179)" height="18" width="194.296875">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">+size() : : [const] std::size_t</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -189.3203125, 201)" height="18" width="200.5625">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">+double_int(const int i) : : int</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -189.3203125, 223)" height="18" width="306.40625">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">+sum(const double a, const double b) : : int</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -189.3203125, 245)" height="18" width="193.890625">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">+default_int(int i = 12) : : int</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -189.3203125, 267)" height="18" width="378.640625">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">+default_string(int i, std::string s = "abc") : : std::string</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -189.3203125, 289)" height="18" width="188.078125">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="text-decoration: underline; display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel" style="text-decoration:underline;">+create_from_int(int i) : : A</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -189.3203125, 311)" height="18" width="200.109375">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">#protected_method() : : void</span>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -189.3203125, 333)" height="18" width="177.859375">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">-private_method() : : void</span>
+              </div>
+            </foreignObject>
           </g>
-        </a>
+        </g>
       </g>
     </g>
   </g>
