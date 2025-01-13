@@ -38,7 +38,7 @@ diagrams:
     exclude:
       namespaces:
         - std
-    start_from:
+    from:
       - function: "main(int,const char**)"
 ```
 
@@ -63,6 +63,7 @@ C++ code, the following assumptions were made:
    location
 
 ## Specifying diagram location constraints
+
 Sequence diagrams require specification of location constraints in order to
 determine, which call chains should be included in the diagram. Currently,
 there are 3 types of constraints:
@@ -75,20 +76,37 @@ there are 3 types of constraints:
               locations
 
 Currently, the constraints can be a method or a free function, both specified
-using the full signature of the function, e.g.:
+using either the full signature of the function or a regular expression, e.g.:
 
 ```yaml
     from:
       - function: "main(int,const char**)"
 ```
+
 or
+
+```yaml
+    from:
+      - function:
+          r: "main.*"
+```
+However note that the latter will match all functions starting with 'main', so
+make sure the regular expression only matches the intended functions.
+
+In case of methods the signature must include fully qualified name, e.g.:
+
 ```yaml
     to:
       - function: "clanguml::sequence_diagram::visitor::translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *)"
 ```
 
-The locations must be fully qualified, and they must match exactly the string
-representation of a given function or method in the `clang-uml` model.
+or regular expression matching against the fully qualified name, e.g.:
+
+```yaml
+    to:
+      - function:
+          r: ".*sequence_diagram.*VisitCXXRecordDecl.*"
+```
 
 In case of the `from_to` constraint, it is necessary to provide both `from`
 and `to` locations as follows:
