@@ -1,0 +1,17 @@
+diagrams:
+  t20068_sequence:
+    type: sequence
+    glob:
+      - t20068.cc
+    include:
+      namespaces:
+        - clanguml::t20068
+    using_namespace: clanguml::t20068
+    combine_free_functions_into_file_participants: true
+    from:
+      - function: "clanguml::t20068::tmain()"
+    to:
+      - function: "clanguml::t20068::baz()"
+    from_to:
+      - [ function: "clanguml::t20068::aaa()", function: "clanguml::t20068::a()" ]
+

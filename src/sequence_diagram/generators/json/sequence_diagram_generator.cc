@@ -821,10 +821,8 @@ void generator::generate_from_sequences(nlohmann::json &parent) const
     }
 }
 
-std::vector<model::message_chain_t> generator::find_to_message_chains() const
+void generator::generate_to_sequences(nlohmann::json &parent) const
 {
-    std::vector<model::message_chain_t> result;
-
     for (const auto &to_location : config().to()) {
         auto to_activity_ids = model().get_to_activity_ids(to_location);
 
@@ -834,55 +832,43 @@ std::vector<model::message_chain_t> generator::find_to_message_chains() const
                 to_location.location.to_string());
         }
 
-        for (const auto &to_activity_id : to_activity_ids) {
-            std::vector<model::message_chain_t> message_chains_unique =
+        for (const auto to_activity_id : to_activity_ids) {
+            const auto &to =
+                model().get_participant<model::function>(to_activity_id);
+
+            nlohmann::json sequence;
+            sequence["to"]["location"] = to.value().full_name(false);
+            sequence["to"]["id"] = std::to_string(to_activity_id.value());
+            sequence["message_chains"] = nlohmann::json::array();
+
+            block_statements_stack_.push_back(std::ref(sequence));
+
+            std::vector<model::message_chain_t> message_chains =
                 model().get_all_from_to_message_chains(eid_t{}, to_activity_id);
 
-            result.insert(result.end(), message_chains_unique.begin(),
-                message_chains_unique.end());
+            for (const auto &mc : message_chains) {
+                const auto from_activity_id = mc.front().from();
+
+                if (model().participants().count(from_activity_id) == 0)
+                    continue;
+
+                nlohmann::json message_chain;
+
+                block_statements_stack_.push_back(std::ref(message_chain));
+
+                for (const auto &m : mc) {
+                    generate_call(m, current_block_statement());
+                }
+
+                block_statements_stack_.pop_back();
+
+                sequence["message_chains"].push_back(std::move(message_chain));
+            }
+
+            block_statements_stack_.pop_back();
+
+            parent["sequences"].push_back(std::move(sequence));
         }
-    }
-
-    return result;
-}
-
-void generator::generate_to_sequences(nlohmann::json &parent) const
-{
-    std::vector<model::message_chain_t> message_chains =
-        find_to_message_chains();
-
-    for (const auto &mc : message_chains) {
-        const auto from_activity_id = mc.front().from();
-        const auto to_activity_id = mc.back().to();
-
-        if (model().participants().count(from_activity_id) == 0)
-            continue;
-
-        const auto &to =
-            model().get_participant<model::function>(to_activity_id);
-
-        nlohmann::json sequence;
-        sequence["to"]["location"] = to.value().full_name(false);
-        sequence["to"]["id"] = std::to_string(to_activity_id.value());
-        sequence["message_chains"] = nlohmann::json::array();
-
-        block_statements_stack_.push_back(std::ref(sequence));
-
-        nlohmann::json message_chain;
-
-        block_statements_stack_.push_back(std::ref(message_chain));
-
-        for (const auto &m : mc) {
-            generate_call(m, current_block_statement());
-        }
-
-        block_statements_stack_.pop_back();
-
-        sequence["message_chains"].push_back(std::move(message_chain));
-
-        block_statements_stack_.pop_back();
-
-        parent["sequences"].push_back(std::move(sequence));
     }
 }
 

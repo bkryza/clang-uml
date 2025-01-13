@@ -24,28 +24,32 @@ TEST_CASE("t20066")
     auto [config, db, diagram, model] =
         CHECK_SEQUENCE_MODEL("t20066", "t20066_sequence");
 
-    CHECK_SEQUENCE_DIAGRAM(*config, diagram, *model, [](const auto &src) {
-        REQUIRE(MessageChainsOrder(src,
-            {
-                //
+    CHECK_SEQUENCE_DIAGRAM(
+        *config, diagram, *model,
+        [](const auto &src) {
+            REQUIRE(MessageChainsOrder(src,
                 {
-                    {Entrypoint{}, "t20066.cc", "aaa()"}, //
-                    {"t20066.cc", "t20066.cc", "aa()"},   //
-                    {"t20066.cc", "t20066.cc", "a()"}     //
-                },
-                {
-                    {Entrypoint{}, "t20066.cc", "baa()"}, //
-                    {"t20066.cc", "t20066.cc", "ba()"},   //
-                    {"t20066.cc", "t20066.cc", "a()"}     //
-                },
-                {
-                    {Entrypoint{}, "t20066.cc", "bb()"}, //
-                    {"t20066.cc", "t20066.cc", "b()"}    //
-                } //
-            }));
-        if constexpr (!std::is_same_v<json_t, std::decay_t<decltype(src)>>) {
-            REQUIRE(!HasMessage(src, {"t20066.cc", "t20066.cc", "cc()"}));
-            REQUIRE(!HasMessage(src, {"t20066.cc", "t20066.cc", "c()"}));
-        }
-    });
+                    //
+                    {
+                        {Entrypoint{}, "t20066.cc", "aaa()"}, //
+                        {"t20066.cc", "t20066.cc", "aa()"},   //
+                        {"t20066.cc", "t20066.cc", "a()"}     //
+                    },
+                    {
+                        {Entrypoint{}, "t20066.cc", "baa()"}, //
+                        {"t20066.cc", "t20066.cc", "ba()"},   //
+                        {"t20066.cc", "t20066.cc", "a()"}     //
+                    },
+                    {
+                        {Entrypoint{}, "t20066.cc", "bb()"}, //
+                        {"t20066.cc", "t20066.cc", "b()"}    //
+                    } //
+                }));
+            if constexpr (!std::is_same_v<json_t,
+                              std::decay_t<decltype(src)>>) {
+                REQUIRE(!HasMessage(src, {"t20066.cc", "t20066.cc", "cc()"}));
+                REQUIRE(!HasMessage(src, {"t20066.cc", "t20066.cc", "c()"}));
+            }
+        },
+        [](const json_t &src) { REQUIRE_EQ(src.src["sequences"].size(), 2); });
 }
