@@ -139,81 +139,71 @@
         </g>
       </g>
       <g class="nodes">
-        <a transform="translate(539.515625, 85)" xlink:href="https://github.com/bkryza/clang-uml/blob/1fa698c8f418c67d7d8c4f8e23c3e56636a93f97/tests/t40004/src/lib1/lib1.m#L0">
-          <g title="lib1.m" id="flowchart-C_0008439140978974674742-0" class="node default clickable">
-            <rect height="54" width="102.6875" y="-27" x="-51.34375" style="" class="basic label-container"/>
-            <g transform="translate(-21.34375, -12)" style="" class="label">
-              <rect/>
-              <foreignObject height="24" width="42.6875">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;">
-                  <span class="nodeLabel">
-                    <p>lib1.m</p>
-                  </span>
-                </div>
-              </foreignObject>
-            </g>
+        <g transform="translate(539.515625, 85)" id="flowchart-C_0008439140978974674742-0" class="node default">
+          <rect height="54" width="102.6875" y="-27" x="-51.34375" style="" class="basic label-container"/>
+          <g transform="translate(-21.34375, -12)" style="" class="label">
+            <rect/>
+            <foreignObject height="24" width="42.6875">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;">
+                <span class="nodeLabel">
+                  <p>lib1.m</p>
+                </span>
+              </div>
+            </foreignObject>
           </g>
-        </a>
-        <a transform="translate(114.34375, 85)" xlink:href="https://github.com/bkryza/clang-uml/blob/1fa698c8f418c67d7d8c4f8e23c3e56636a93f97/tests/t40004/src/lib2/lib2.m#L0">
-          <g title="lib2.m" id="flowchart-C_0013476008407962402737-1" class="node default clickable">
-            <rect height="54" width="102.6875" y="-27" x="-51.34375" style="" class="basic label-container"/>
-            <g transform="translate(-21.34375, -12)" style="" class="label">
-              <rect/>
-              <foreignObject height="24" width="42.6875">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;">
-                  <span class="nodeLabel">
-                    <p>lib2.m</p>
-                  </span>
-                </div>
-              </foreignObject>
-            </g>
+        </g>
+        <g transform="translate(114.34375, 85)" id="flowchart-C_0013476008407962402737-1" class="node default">
+          <rect height="54" width="102.6875" y="-27" x="-51.34375" style="" class="basic label-container"/>
+          <g transform="translate(-21.34375, -12)" style="" class="label">
+            <rect/>
+            <foreignObject height="24" width="42.6875">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;">
+                <span class="nodeLabel">
+                  <p>lib2.m</p>
+                </span>
+              </div>
+            </foreignObject>
           </g>
-        </a>
-        <a transform="translate(331.9296875, 85)" xlink:href="https://github.com/bkryza/clang-uml/blob/1fa698c8f418c67d7d8c4f8e23c3e56636a93f97/tests/t40004/src/t40004.m#L0">
-          <g title="t40004.m" id="flowchart-C_0000857999852472475557-2" class="node default clickable">
-            <rect height="54" width="126.71875" y="-27" x="-63.359375" style="" class="basic label-container"/>
-            <g transform="translate(-33.359375, -12)" style="" class="label">
-              <rect/>
-              <foreignObject height="24" width="66.71875">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;">
-                  <span class="nodeLabel">
-                    <p>t40004.m</p>
-                  </span>
-                </div>
-              </foreignObject>
-            </g>
+        </g>
+        <g transform="translate(331.9296875, 85)" id="flowchart-C_0000857999852472475557-2" class="node default">
+          <rect height="54" width="126.71875" y="-27" x="-63.359375" style="" class="basic label-container"/>
+          <g transform="translate(-33.359375, -12)" style="" class="label">
+            <rect/>
+            <foreignObject height="24" width="66.71875">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;">
+                <span class="nodeLabel">
+                  <p>t40004.m</p>
+                </span>
+              </div>
+            </foreignObject>
           </g>
-        </a>
-        <a transform="translate(486.34375, 289)" xlink:href="https://github.com/bkryza/clang-uml/blob/1fa698c8f418c67d7d8c4f8e23c3e56636a93f97/tests/t40004/include/lib1/lib1.h#L0">
-          <g title="lib1.h" id="flowchart-C_0017548393712337957522-3" class="node default clickable">
-            <rect height="54" width="98.25" y="-27" x="-49.125" style="" class="basic label-container"/>
-            <g transform="translate(-19.125, -12)" style="" class="label">
-              <rect/>
-              <foreignObject height="24" width="38.25">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;">
-                  <span class="nodeLabel">
-                    <p>lib1.h</p>
-                  </span>
-                </div>
-              </foreignObject>
-            </g>
+        </g>
+        <g transform="translate(486.34375, 289)" id="flowchart-C_0017548393712337957522-3" class="node default">
+          <rect height="54" width="98.25" y="-27" x="-49.125" style="" class="basic label-container"/>
+          <g transform="translate(-19.125, -12)" style="" class="label">
+            <rect/>
+            <foreignObject height="24" width="38.25">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;">
+                <span class="nodeLabel">
+                  <p>lib1.h</p>
+                </span>
+              </div>
+            </foreignObject>
           </g>
-        </a>
-        <a transform="translate(167.515625, 289)" xlink:href="https://github.com/bkryza/clang-uml/blob/1fa698c8f418c67d7d8c4f8e23c3e56636a93f97/tests/t40004/include/lib2/lib2.h#L0">
-          <g title="lib2.h" id="flowchart-C_0015757398685574731504-4" class="node default clickable">
-            <rect height="54" width="98.25" y="-27" x="-49.125" style="" class="basic label-container"/>
-            <g transform="translate(-19.125, -12)" style="" class="label">
-              <rect/>
-              <foreignObject height="24" width="38.25">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;">
-                  <span class="nodeLabel">
-                    <p>lib2.h</p>
-                  </span>
-                </div>
-              </foreignObject>
-            </g>
+        </g>
+        <g transform="translate(167.515625, 289)" id="flowchart-C_0015757398685574731504-4" class="node default">
+          <rect height="54" width="98.25" y="-27" x="-49.125" style="" class="basic label-container"/>
+          <g transform="translate(-19.125, -12)" style="" class="label">
+            <rect/>
+            <foreignObject height="24" width="38.25">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;">
+                <span class="nodeLabel">
+                  <p>lib2.h</p>
+                </span>
+              </div>
+            </foreignObject>
           </g>
-        </a>
+        </g>
       </g>
     </g>
   </g>
