@@ -251,19 +251,21 @@ bool HasMessage(const DiagramType &d, const Message &msg)
 template <typename DiagramType>
 bool MessageOrder(const DiagramType &d, std::vector<Message> messages)
 {
+    const bool kFail = false;
     std::vector<int64_t> order;
     int64_t offset{0};
     order.reserve(messages.size());
     std::transform(messages.begin(), messages.end(), std::back_inserter(order),
         [&d, &offset](const auto &m) {
-            offset = FindMessage(d, m, offset);
+            offset = FindMessage(d, m, offset, kFail);
             return offset;
         });
     bool are_messages_in_order = std::is_sorted(order.begin(), order.end());
 
     if (!are_messages_in_order) {
-        FAIL(fmt::format(
-            "Messages are not in order: \n[{}]", fmt::join(order, ",\n")));
+        if (kFail)
+            FAIL(fmt::format(
+                "Messages are not in order: \n[{}]", fmt::join(order, ",\n")));
         return false;
     }
 
@@ -2010,10 +2012,10 @@ bool MessageChainsOrder<json_t>(
 {
     const auto sequence_chains_count{
         d.src["sequences"][0]["message_chains"].size()};
+    for (uint32_t chain_index = 0; chain_index < sequence_chains_count;
+         chain_index++) {
+        for (const auto &messages : message_chains) {
 
-    for (const auto &messages : message_chains) {
-        for (uint32_t chain_index = 0; chain_index < sequence_chains_count;
-             chain_index++) {
             int64_t offset{0};
 
             std::vector<int64_t> order;
@@ -2023,13 +2025,18 @@ bool MessageChainsOrder<json_t>(
                 [&d, &offset, chain_index](const auto &m) -> int64_t {
                     try {
                         offset = find_message_in_chain(
-                            d, m, offset, true, chain_index);
+                            d, m, offset, false, chain_index);
                         return offset;
                     }
                     catch (...) {
                         return 0;
                     }
                 });
+
+            if (count(order.begin(), order.end(), -1) > 0) {
+                // One of the messages was not found
+                continue;
+            }
 
             bool are_messages_in_order =
                 std::is_sorted(order.begin(), order.end());
@@ -2038,8 +2045,6 @@ bool MessageChainsOrder<json_t>(
                 return true;
         }
     }
-
-    FAIL(fmt::format("Messages are not in order"));
 
     return false;
 }

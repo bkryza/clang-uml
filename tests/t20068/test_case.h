@@ -47,17 +47,29 @@ TEST_CASE("t20068")
             }));
         REQUIRE(MessageChainsOrder(src,
             {
+                //
                 {
                     //
                     {Entrypoint{}, "t20068.cc", "aaa()"}, //
                     {"t20068.cc", "t20068.cc", "ab()"},   //
                     {"t20068.cc", "t20068.cc", "a()"}     //
-                },                                        //
-                //
+                } //
+            }));
+        REQUIRE(MessageChainsOrder(src,
+            {
                 {
                     //
                     {Entrypoint{}, "t20068.cc", "aaa()"}, //
                     {"t20068.cc", "t20068.cc", "aa()"},   //
+                    {"t20068.cc", "t20068.cc", "a()"}     //
+                } //
+            }));
+        REQUIRE(!MessageChainsOrder(src,
+            {
+                {
+                    //
+                    {Entrypoint{}, "t20068.cc", "aaa()"}, //
+                    {"t20068.cc", "t20068.cc", "ba()"},   //
                     {"t20068.cc", "t20068.cc", "a()"}     //
                 } //
             }));
