@@ -31,6 +31,25 @@ namespace clanguml::sequence_diagram::model {
 using message_chain_t = std::vector<sequence_diagram::model::message>;
 
 /**
+ * This structure models reverse call graph for building sequence diagrams
+ * with `to` and `from_to` conditions.
+ */
+struct reverse_call_graph_activity_node {
+    eid_t activity_id;
+
+    // `callers` are message pointing towards an activity
+    std::vector<reverse_call_graph_activity_node> callers;
+};
+
+/**
+ * @brief Convert reverse call graph into a list of activity id chains
+ * @param root Root of the reverse call graph tree
+ * @return
+ */
+std::vector<std::vector<eid_t>> find_reverse_message_chains(
+    const reverse_call_graph_activity_node &root);
+
+/**
  * @brief Model of a sequence diagram
  *
  * @embed{sequence_model_class.svg}
@@ -254,21 +273,33 @@ public:
         eid_t from_activity, eid_t to_activity) const;
 
     /**
-     * @brief Get id of a 'to' activity
+     * @brief Build reverse call graph
+     *
+     * This method builds a reverse call graph tree based on `callers()` list
+     * stored in each activity.
+     *
+     * @param node The current reverse call graph node
+     * @param visited_callers This is necessary for breaking recursive calls
+     */
+    void build_reverse_call_graph(reverse_call_graph_activity_node &node,
+        std::set<eid_t> visited_callers = {}) const;
+
+    /**
+     * @brief Get ids of activities matching 'to'
      *
      * @param to_location Target activity
      * @return Activity id
      */
-    std::optional<eid_t> get_to_activity_id(
+    std::vector<eid_t> get_to_activity_ids(
         const config::source_location &to_location) const;
 
     /**
-     * @brief Get id of a 'from' activity
+     * @brief Get ids of activities matching 'from'
      *
      * @param from_location Source activity
      * @return Activity id
      */
-    std::optional<eid_t> get_from_activity_id(
+    std::vector<eid_t> get_from_activity_ids(
         const config::source_location &from_location) const;
 
     /**

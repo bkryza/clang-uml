@@ -18,6 +18,6 @@
 #pragma once
 
 namespace clanguml::version {
-static constexpr auto CLANG_UML_JSON_GENERATOR_SCHEMA_VERSION = 2U;
+static constexpr auto CLANG_UML_JSON_GENERATOR_SCHEMA_VERSION = 3U;
 static constexpr auto CLANG_UML_VERSION = "@GIT_VERSION@";
 } // namespace clanguml::version

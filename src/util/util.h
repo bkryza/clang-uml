@@ -381,6 +381,12 @@ template <typename F> void _if(const bool condition, F &&func)
     _if(condition, std::forward<F>(func), []() {});
 }
 
+template <typename T> void remove_duplicates(T &coll)
+{
+    std::sort(coll.begin(), coll.end());
+    coll.erase(std::unique(coll.begin(), coll.end()), coll.end());
+}
+
 /**
  * @brief Generate a hash seed.
  *

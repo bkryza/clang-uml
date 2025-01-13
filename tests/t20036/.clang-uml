@@ -9,3 +9,8 @@ diagrams:
     using_namespace: clanguml::t20036
     to:
       - function: "clanguml::t20036::A::a2()"
+    participants_order:
+      - clanguml::t20036::C
+      - clanguml::t20036::B
+      - clanguml::t20036::A
+      - clanguml::t20036::D

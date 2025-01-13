@@ -558,6 +558,166 @@ void generator::generate_diagram(std::ostream &ostr) const
         }
     }
 
+    generate_from_to_sequences(ostr);
+
+    generate_to_sequences(ostr);
+
+    generate_from_sequences(ostr);
+}
+
+void generator::generate_from_sequences(std::ostream &ostr) const
+{
+    std::vector<eid_t> start_from = find_from_activities();
+
+    // Use this to break out of recurrent loops
+    std::vector<eid_t> visited_participants;
+
+    for (const auto from_id : start_from) {
+        if (model().participants().count(from_id) == 0)
+            continue;
+
+        const auto &from = model().get_participant<model::function>(from_id);
+
+        if (!from.has_value()) {
+            LOG_WARN("Failed to find participant {} for 'from' "
+                     "condition");
+            continue;
+        }
+
+        generate_participant(ostr, from_id);
+
+        std::string from_alias = generate_alias(from.value());
+
+        model::function::message_render_mode render_mode =
+            select_method_arguments_render_mode();
+
+        // For methods or functions in diagrams where they are
+        // combined into file participants, we need to add an
+        // 'entry' point call to know which method relates to the
+        // first activity for this 'start_from' condition
+        if (from.value().type_name() == "method" ||
+            from.value().type_name() == "objc_method" ||
+            config().combine_free_functions_into_file_participants()) {
+            ostr << "[->" << " " << from_alias << " : "
+                 << from.value().message_name(render_mode) << '\n';
+        }
+
+        ostr << "activate " << from_alias << '\n';
+
+        generate_activity(from_id, ostr, visited_participants);
+
+        if (from.value().type_name() == "method" ||
+            from.value().type_name() == "objc_method" ||
+            config().combine_free_functions_into_file_participants()) {
+
+            if (!from.value().is_void()) {
+                ostr << "[<--" << " " << from_alias;
+
+                if (config().generate_return_types())
+                    ostr << " : //" << from.value().return_type() << "//";
+
+                ostr << '\n';
+            }
+        }
+
+        ostr << "deactivate " << from_alias << '\n';
+    }
+}
+
+std::vector<eid_t> generator::find_from_activities() const
+{
+    std::vector<eid_t> start_from;
+    for (const auto &sf : config().from()) {
+        if (sf.location_type == location_t::function) {
+            bool found{false};
+            for (const auto &[k, v] : model().sequences()) {
+                if (model().participants().count(v.from()) == 0)
+                    continue;
+
+                const auto &caller = *model().participants().at(v.from());
+                std::string vfrom = caller.full_name(false);
+                if (sf.location == vfrom) {
+                    LOG_DBG("Found sequence diagram start point: {}", k);
+                    start_from.push_back(k);
+                    found = true;
+                }
+            }
+
+            if (!found)
+                throw error::invalid_sequence_from_condition(model().type(),
+                    model().name(),
+                    fmt::format("Failed to find participant matching '{}' for "
+                                "'from' condition: ",
+                        sf.location.to_string()));
+        }
+    }
+
+    return start_from;
+}
+
+std::vector<model::message_chain_t> generator::find_to_message_chains() const
+{
+    std::vector<model::message_chain_t> result;
+
+    for (const auto &to_location : config().to()) {
+        auto to_activity_ids = model().get_to_activity_ids(to_location);
+
+        if (to_activity_ids.empty()) {
+            LOG_WARN("Failed to find participant matching '{}' for "
+                     "'to' condition: ",
+                to_location.location.to_string());
+        }
+
+        for (const auto &to_activity_id : to_activity_ids) {
+            std::vector<model::message_chain_t> message_chains_unique =
+                model().get_all_from_to_message_chains(eid_t{}, to_activity_id);
+
+            result.insert(result.end(), message_chains_unique.begin(),
+                message_chains_unique.end());
+        }
+    }
+
+    return result;
+}
+
+void generator::generate_to_sequences(std::ostream &ostr) const
+{
+    std::vector<model::message_chain_t> message_chains =
+        find_to_message_chains();
+
+    bool first_separator_skipped{false};
+    for (const auto &mc : message_chains) {
+        if (!first_separator_skipped)
+            first_separator_skipped = true;
+        else
+            ostr << "====\n";
+
+        const auto from_activity_id = mc.front().from();
+
+        if (model().participants().count(from_activity_id) == 0)
+            continue;
+
+        const auto &from =
+            model().get_participant<model::function>(from_activity_id);
+
+        if (from.value().type_name() == "method" ||
+            from.value().type_name() == "objc_method" ||
+            config().combine_free_functions_into_file_participants()) {
+            generate_participant(ostr, from_activity_id);
+            ostr << "[->" << " " << generate_alias(from.value()) << " : "
+                 << from.value().message_name(
+                        select_method_arguments_render_mode())
+                 << '\n';
+        }
+
+        for (const auto &m : mc) {
+            generate_call(m, ostr);
+        }
+    }
+}
+
+void generator::generate_from_to_sequences(std::ostream &ostr) const
+{
     for (const auto &ft : config().from_to()) {
         // First, find the sequence of activities from 'from' location
         // to 'to' location
@@ -566,187 +726,67 @@ void generator::generate_diagram(std::ostream &ostr) const
         const auto &from_location = ft.front();
         const auto &to_location = ft.back();
 
-        auto from_activity_id = model().get_from_activity_id(from_location);
-        auto to_activity_id = model().get_to_activity_id(to_location);
+        const auto from_activity_ids =
+            model().get_from_activity_ids(from_location);
 
-        if (!from_activity_id) {
-            throw clanguml::error::invalid_sequence_from_condition(
-                model().type(), model().name(),
-                fmt::format("Failed to find participant matching '{}' for "
-                            "'from' condition",
-                    from_location.location));
-        }
+        const auto to_activity_ids = model().get_to_activity_ids(to_location);
 
-        if (!from_activity_id || !to_activity_id) {
-            throw clanguml::error::invalid_sequence_to_condition(model().type(),
+        if (from_activity_ids.empty()) {
+            throw error::invalid_sequence_from_condition(model().type(),
                 model().name(),
                 fmt::format("Failed to find participant matching '{}' for "
-                            "'to' condition",
-                    to_location.location));
+                            "'from' condition: ",
+                    from_location.location.to_string()));
         }
 
-        if (model().participants().count(*from_activity_id) == 0)
-            continue;
-
-        if (model().participants().count(*to_activity_id) == 0)
-            continue;
-
-        auto message_chains_unique = model().get_all_from_to_message_chains(
-            *from_activity_id, *to_activity_id);
-
-        bool first_separator_skipped{false};
-        for (const auto &mc : message_chains_unique) {
-            if (!first_separator_skipped)
-                first_separator_skipped = true;
-            else
-                ostr << "====\n";
-
-            const auto &from =
-                model().get_participant<model::function>(*from_activity_id);
-
-            if (from.value().type_name() == "method" ||
-                from.value().type_name() == "objc_method" ||
-                config().combine_free_functions_into_file_participants()) {
-                generate_participant(ostr, *from_activity_id);
-                ostr << "[->" << " " << generate_alias(from.value()) << " : "
-                     << from.value().message_name(
-                            select_method_arguments_render_mode())
-                     << '\n';
-            }
-
-            for (const auto &m : mc) {
-                generate_call(m, ostr);
-            }
-        }
-    }
-
-    for (const auto &to_location : config().to()) {
-        auto to_activity_id = model().get_to_activity_id(to_location);
-
-        if (!to_activity_id) {
-            throw clanguml::error::invalid_sequence_to_condition(model().type(),
+        if (from_activity_ids.empty() || to_activity_ids.empty()) {
+            throw error::invalid_sequence_to_condition(model().type(),
                 model().name(),
                 fmt::format("Failed to find participant matching '{}' for "
-                            "'to' condition",
-                    to_location.location));
+                            "'to' condition: ",
+                    to_location.location.to_string()));
         }
 
-        auto message_chains_unique =
-            model().get_all_from_to_message_chains(eid_t{}, *to_activity_id);
-
         bool first_separator_skipped{false};
-        for (const auto &mc : message_chains_unique) {
-            if (!first_separator_skipped)
-                first_separator_skipped = true;
-            else
-                ostr << "====\n";
 
-            const auto from_activity_id = mc.front().from();
-
+        for (const auto from_activity_id : from_activity_ids) {
             if (model().participants().count(from_activity_id) == 0)
                 continue;
 
-            const auto &from =
-                model().get_participant<model::function>(from_activity_id);
-
-            if (from.value().type_name() == "method" ||
-                from.value().type_name() == "objc_method" ||
-                config().combine_free_functions_into_file_participants()) {
-                generate_participant(ostr, from_activity_id);
-                ostr << "[->" << " " << generate_alias(from.value()) << " : "
-                     << from.value().message_name(
-                            select_method_arguments_render_mode())
-                     << '\n';
-            }
-
-            for (const auto &m : mc) {
-                generate_call(m, ostr);
-            }
-        }
-    }
-
-    for (const auto &sf : config().from()) {
-        if (sf.location_type == location_t::function) {
-            eid_t start_from{};
-            for (const auto &[k, v] : model().sequences()) {
-                if (model().participants().count(v.from()) == 0)
+            for (const auto to_activity_id : to_activity_ids) {
+                if (model().participants().count(to_activity_id) == 0)
                     continue;
 
-                const auto &caller = *model().participants().at(v.from());
-                std::string vfrom = caller.full_name(false);
-                if (vfrom == sf.location) {
-                    LOG_DBG("Found sequence diagram start point: {}", k);
-                    start_from = k;
-                    break;
+                auto message_chains_unique =
+                    model().get_all_from_to_message_chains(
+                        from_activity_id, to_activity_id);
+
+                for (const auto &mc : message_chains_unique) {
+                    if (!first_separator_skipped)
+                        first_separator_skipped = true;
+                    else
+                        ostr << "====\n";
+
+                    const auto &from = model().get_participant<model::function>(
+                        from_activity_id);
+
+                    if (from.value().type_name() == "method" ||
+                        from.value().type_name() == "objc_method" ||
+                        config()
+                            .combine_free_functions_into_file_participants()) {
+                        generate_participant(ostr, from_activity_id);
+                        ostr << "[->" << " " << generate_alias(from.value())
+                             << " : "
+                             << from.value().message_name(
+                                    select_method_arguments_render_mode())
+                             << '\n';
+                    }
+
+                    for (const auto &m : mc) {
+                        generate_call(m, ostr);
+                    }
                 }
             }
-
-            if (start_from == 0) {
-                throw clanguml::error::invalid_sequence_from_condition(
-                    model().type(), model().name(),
-                    fmt::format("Failed to find participant matching '{}' for "
-                                "'from' condition",
-                        sf.location));
-            }
-
-            if (model().participants().count(start_from) == 0)
-                continue;
-
-            // Use this to break out of recurrent loops
-            std::vector<eid_t> visited_participants;
-
-            const auto &from =
-                model().get_participant<model::function>(start_from);
-
-            if (!from.has_value()) {
-                throw clanguml::error::invalid_sequence_from_condition(
-                    model().type(), model().name(),
-                    fmt::format("Failed to find participant matching '{}' for "
-                                "'from' condition",
-                        sf.location));
-            }
-
-            generate_participant(ostr, start_from);
-
-            std::string from_alias = generate_alias(from.value());
-
-            model::function::message_render_mode render_mode =
-                select_method_arguments_render_mode();
-
-            // For methods or functions in diagrams where they are
-            // combined into file participants, we need to add an
-            // 'entry' point call to know which method relates to the
-            // first activity for this 'start_from' condition
-            if (from.value().type_name() == "method" ||
-                from.value().type_name() == "objc_method" ||
-                config().combine_free_functions_into_file_participants()) {
-                ostr << "[->" << " " << from_alias << " : "
-                     << from.value().message_name(render_mode) << '\n';
-            }
-
-            ostr << "activate " << from_alias << '\n';
-
-            generate_activity(start_from, ostr, visited_participants);
-
-            if (from.value().type_name() == "method" ||
-                from.value().type_name() == "objc_method" ||
-                config().combine_free_functions_into_file_participants()) {
-
-                if (!from.value().is_void()) {
-                    ostr << "[<--" << " " << from_alias;
-
-                    if (config().generate_return_types())
-                        ostr << " : //" << from.value().return_type() << "//";
-
-                    ostr << '\n';
-                }
-            }
-
-            ostr << "deactivate " << from_alias << '\n';
-        }
-        else {
-            // TODO: Add support for other sequence start location types
-            continue;
         }
     }
 }

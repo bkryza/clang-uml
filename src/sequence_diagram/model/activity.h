@@ -65,9 +65,31 @@ public:
      */
     eid_t from() const;
 
+    void add_caller(eid_t caller);
+
+    const std::set<eid_t> &callers() const;
+
+    void set_callers(std::set<eid_t> callers);
+
 private:
+    /**
+     * Id of this activity. All messages originating from this activity must
+     * have `from` property set to this
+     */
     eid_t from_;
+
+    /**
+     * List of messages generated from this activity, in order.
+     */
     std::vector<message> messages_;
+
+    /**
+     * The set of caller ids, i.e. activities which send messages to this
+     * activity. This is necessary in order to optimize reverse call graph
+     * traversal for sequence diagrams with bounded end calls such as `to` and
+     * `from_to`.
+     */
+    std::set<eid_t> callers_;
 };
 
 } // namespace clanguml::sequence_diagram::model

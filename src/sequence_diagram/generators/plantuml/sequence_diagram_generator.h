@@ -141,6 +141,16 @@ private:
     void generate_message_comment(
         std::ostream &ostr, const model::message &m) const;
 
+    void generate_from_to_sequences(std::ostream &ostr) const;
+
+    void generate_to_sequences(std::ostream &ostr) const;
+
+    void generate_from_sequences(std::ostream &ostr) const;
+
+    std::vector<eid_t> find_from_activities() const;
+
+    std::vector<model::message_chain_t> find_to_message_chains() const;
+
     /**
      * @brief Convert config to model message render mode.
      *

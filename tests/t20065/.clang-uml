@@ -1,0 +1,13 @@
+diagrams:
+  t20065_sequence:
+    type: sequence
+    glob:
+      - t20065.cc
+    include:
+      namespaces:
+        - clanguml::t20065
+    using_namespace: clanguml::t20065
+    combine_free_functions_into_file_participants: true
+    from:
+      - function:
+          r: ".*(ba|ca).*"

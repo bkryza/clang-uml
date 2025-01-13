@@ -155,6 +155,17 @@ private:
     model::function::message_render_mode
     select_method_arguments_render_mode() const;
 
+    void generate_from_to_sequences(
+        std::ostream &ostr, bool star_participant_generated) const;
+
+    void generate_to_sequences(std::ostream &ostr) const;
+
+    void generate_from_sequences(std::ostream &ostr) const;
+
+    std::vector<eid_t> find_from_activities() const;
+
+    std::vector<model::message_chain_t> find_to_message_chains() const;
+
     mutable std::set<eid_t> generated_participants_;
     mutable std::set<unsigned int> generated_comment_ids_;
     mutable std::vector<model::message> already_generated_in_static_context_;

@@ -484,7 +484,7 @@ template <> struct convert<std::vector<source_location>> {
             else if (n["function"]) {
                 source_location loc;
                 loc.location_type = location_t::function;
-                loc.location = n["function"].as<std::string>();
+                loc.location = n["function"].as<decltype(loc.location)>();
                 rhs.emplace_back(std::move(loc));
             }
             else {
@@ -921,8 +921,12 @@ template <> struct convert<glob_t> {
         }
 
         if (node.Type() == NodeType::Map) {
-            rhs.include = node["include"].as<std::vector<string_or_regex>>();
-            rhs.exclude = node["exclude"].as<std::vector<string_or_regex>>();
+            if (has_key(node, "include"))
+                rhs.include =
+                    node["include"].as<std::vector<string_or_regex>>();
+            if (has_key(node, "exclude"))
+                rhs.exclude =
+                    node["exclude"].as<std::vector<string_or_regex>>();
             return true;
         }
 

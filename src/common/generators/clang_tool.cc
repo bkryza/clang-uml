@@ -187,6 +187,13 @@ void clang_tool::run(ToolAction *Action)
             continue;
         }
 
+        if (compile_commands_for_file.size() > 1 &&
+            diagram_type_ == common::model::diagram_t::kSequence) {
+            LOG_WARN("Multiple compile commands detected for file '{}' in "
+                     "diagram '{}' - using only the first one...",
+                file, diagram_name_);
+        }
+
         for (auto &compile_command : compile_commands_for_file) {
             if (overlay_fs_->setCurrentWorkingDirectory(
                     compile_command.Directory))
@@ -246,6 +253,9 @@ void clang_tool::run(ToolAction *Action)
                 throw std::runtime_error(
                     fmt::format("Unknown error while processing {}", file));
             }
+
+            if (diagram_type_ == common::model::diagram_t::kSequence)
+                break;
         }
     }
 

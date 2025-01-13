@@ -33,4 +33,13 @@ const std::vector<message> &activity::messages() const { return messages_; }
 
 eid_t activity::from() const { return from_; }
 
+void activity::add_caller(eid_t caller) { callers_.emplace(caller); }
+
+const std::set<eid_t> &activity::callers() const { return callers_; }
+
+void activity::set_callers(std::set<eid_t> callers)
+{
+    callers_ = std::move(callers);
+}
+
 } // namespace clanguml::sequence_diagram::model
