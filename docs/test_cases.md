@@ -160,6 +160,10 @@
  * [t20062](./test_cases/t20062.md) - Test case with vaargs function in sequence diagrams
  * [t20063](./test_cases/t20063.md) - Test case for '::' prefix in sequence diagrams for namespaces outside of using_namespace
  * [t20064](./test_cases/t20064.md) - Metaprogramming test case with recursive type list sequence diagram
+ * [t20065](./test_cases/t20065.md) - Test case for 'from' condition with regular expression
+ * [t20066](./test_cases/t20066.md) - Test case for 'to' condition with regular expression
+ * [t20067](./test_cases/t20067.md) - Test case for 'from_to' condition with regular expression
+ * [t20068](./test_cases/t20068.md) - Test case for combine 'from', 'to' and 'from_to' in one diagram
 ## Package diagrams
  * [t30001](./test_cases/t30001.md) - Basic package diagram test case
  * [t30002](./test_cases/t30002.md) - Package dependency test case

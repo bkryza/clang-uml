@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" data-diagram-type="SEQUENCE" height="471px" preserveAspectRatio="none" style="width:111px;height:471px;background:#FFFFFF;" version="1.1" viewBox="0 0 111 471" width="111px" zoomAndPan="magnify">
+  <defs>
+    <style type="text/css">a:hover { text-decoration: underline; }</style>
+  </defs>
+  <g>
+    <g>
+      <title>t20066.cc</title>
+      <rect fill="transparent" height="394.6481" width="8" x="50.381" y="39.0679"/>
+      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="54.2382" x2="54.2382" y1="39.0679" y2="433.716"/>
+    </g>
+    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="76.2857" x="16.2382" y="5"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="62.2857" x="23.2382" y="26.9659">t20066.cc</text>
+    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="76.2857" x="16.2382" y="432.716"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="62.2857" x="23.2382" y="454.682">t20066.cc</text>
+    <polygon fill="#181818" points="42.381,68.7739,52.381,72.7739,42.381,76.7739,46.381,72.7739" style="stroke:#181818;stroke-width:1;"/>
+    <line style="stroke:#181818;stroke-width:1;" x1="0" x2="48.381" y1="72.7739" y2="72.7739"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="29.679" x="7" y="66.9649">aaa()</text>
+    <a href="https://github.com/bkryza/clang-uml/blob/1fa698c8f418c67d7d8c4f8e23c3e56636a93f97/tests/t20066/t20066.cc#L6" target="_top" title="" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/1fa698c8f418c67d7d8c4f8e23c3e56636a93f97/tests/t20066/t20066.cc#L6" xlink:show="new" xlink:title="" xlink:type="simple">
+      <line style="stroke:#181818;stroke-width:1;" x1="54.381" x2="96.381" y1="104.4799" y2="104.4799"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="96.381" x2="96.381" y1="104.4799" y2="117.4799"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="55.381" x2="96.381" y1="117.4799" y2="117.4799"/>
+      <polygon fill="#181818" points="65.381,113.4799,55.381,117.4799,65.381,121.4799,61.381,117.4799" style="stroke:#181818;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="22.386" x="61.381" y="98.6709">aa()</text>
+    </a>
+    <a href="https://github.com/bkryza/clang-uml/blob/1fa698c8f418c67d7d8c4f8e23c3e56636a93f97/tests/t20066/t20066.cc#L4" target="_top" title="" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/1fa698c8f418c67d7d8c4f8e23c3e56636a93f97/tests/t20066/t20066.cc#L4" xlink:show="new" xlink:title="" xlink:type="simple">
+      <line style="stroke:#181818;stroke-width:1;" x1="54.381" x2="96.381" y1="149.186" y2="149.186"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="96.381" x2="96.381" y1="149.186" y2="162.186"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="55.381" x2="96.381" y1="162.186" y2="162.186"/>
+      <polygon fill="#181818" points="65.381,158.186,55.381,162.186,65.381,166.186,61.381,162.186" style="stroke:#181818;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="15.093" x="61.381" y="143.377">a()</text>
+    </a>
+    <rect fill="#EEEEEE" height="3" style="stroke:#EEEEEE;stroke-width:1;" width="104.381" x="0" y="183.186"/>
+    <line style="stroke:#000000;stroke-width:1;" x1="0" x2="104.381" y1="183.186" y2="183.186"/>
+    <line style="stroke:#000000;stroke-width:1;" x1="0" x2="104.381" y1="186.186" y2="186.186"/>
+    <polygon fill="#181818" points="42.381,217.892,52.381,221.892,42.381,225.892,46.381,221.892" style="stroke:#181818;stroke-width:1;"/>
+    <line style="stroke:#181818;stroke-width:1;" x1="0" x2="48.381" y1="221.892" y2="221.892"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="30.381" x="7" y="216.083">baa()</text>
+    <a href="https://github.com/bkryza/clang-uml/blob/1fa698c8f418c67d7d8c4f8e23c3e56636a93f97/tests/t20066/t20066.cc#L10" target="_top" title="" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/1fa698c8f418c67d7d8c4f8e23c3e56636a93f97/tests/t20066/t20066.cc#L10" xlink:show="new" xlink:title="" xlink:type="simple">
+      <line style="stroke:#181818;stroke-width:1;" x1="54.381" x2="96.381" y1="253.598" y2="253.598"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="96.381" x2="96.381" y1="253.598" y2="266.598"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="55.381" x2="96.381" y1="266.598" y2="266.598"/>
+      <polygon fill="#181818" points="65.381,262.598,55.381,266.598,65.381,270.598,61.381,266.598" style="stroke:#181818;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="23.088" x="61.381" y="247.789">ba()</text>
+    </a>
+    <a href="https://github.com/bkryza/clang-uml/blob/1fa698c8f418c67d7d8c4f8e23c3e56636a93f97/tests/t20066/t20066.cc#L8" target="_top" title="" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/1fa698c8f418c67d7d8c4f8e23c3e56636a93f97/tests/t20066/t20066.cc#L8" xlink:show="new" xlink:title="" xlink:type="simple">
+      <line style="stroke:#181818;stroke-width:1;" x1="54.381" x2="96.381" y1="298.304" y2="298.304"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="96.381" x2="96.381" y1="298.304" y2="311.304"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="55.381" x2="96.381" y1="311.304" y2="311.304"/>
+      <polygon fill="#181818" points="65.381,307.304,55.381,311.304,65.381,315.304,61.381,311.304" style="stroke:#181818;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="15.093" x="61.381" y="292.495">a()</text>
+    </a>
+    <rect fill="#EEEEEE" height="3" style="stroke:#EEEEEE;stroke-width:1;" width="104.381" x="0" y="332.304"/>
+    <line style="stroke:#000000;stroke-width:1;" x1="0" x2="104.381" y1="332.304" y2="332.304"/>
+    <line style="stroke:#000000;stroke-width:1;" x1="0" x2="104.381" y1="335.304" y2="335.304"/>
+    <polygon fill="#181818" points="42.381,367.01,52.381,371.01,42.381,375.01,46.381,371.01" style="stroke:#181818;stroke-width:1;"/>
+    <line style="stroke:#181818;stroke-width:1;" x1="0" x2="48.381" y1="371.01" y2="371.01"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="23.79" x="7" y="365.201">bb()</text>
+    <a href="https://github.com/bkryza/clang-uml/blob/1fa698c8f418c67d7d8c4f8e23c3e56636a93f97/tests/t20066/t20066.cc#L14" target="_top" title="" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/1fa698c8f418c67d7d8c4f8e23c3e56636a93f97/tests/t20066/t20066.cc#L14" xlink:show="new" xlink:title="" xlink:type="simple">
+      <line style="stroke:#181818;stroke-width:1;" x1="54.381" x2="96.381" y1="402.716" y2="402.716"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="96.381" x2="96.381" y1="402.716" y2="415.716"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="55.381" x2="96.381" y1="415.716" y2="415.716"/>
+      <polygon fill="#181818" points="65.381,411.716,55.381,415.716,65.381,419.716,61.381,415.716" style="stroke:#181818;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="15.795" x="61.381" y="396.907">b()</text>
+    </a>
+  </g>
+</svg>
