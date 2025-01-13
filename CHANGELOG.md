@@ -1,5 +1,15 @@
 # CHANGELOG
 
+  * Added support for regular expressions in sequence diagram boundary conditions (#366)
+  * Improved generation performance of to and from_to sequence diagrams (#365)
+  * Fixed handling of empty pack expansion types rendering (#362)
+  * Added support for json logging (#360)
+  * Fixed handling of root namespaces outside using_namespace (#351)
+  * Added support for include diagrams without packages (#350)
+  * Fixed tooltip rendering (#349)
+  * Added support for custom user_data in config file (#95)
+  * Fixed member diagram filter for static fields (#356)
+  * Fixed fixed compilation database detection (#354)
   * Added support for GraphML (#348)
   * Added support for typedef enum (#346)
 
