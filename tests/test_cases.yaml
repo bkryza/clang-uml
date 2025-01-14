@@ -524,6 +524,9 @@ test_cases:
     - name: t30017
       title: Test case for '::' prefix in packages diagrams for namespaces outside of using_namespace
       description:
+    - name: t30018
+      title: Test case for context filter in package diagram
+      description:
   Include diagrams:
     - name: t40001
       title: Basic include graph diagram test case

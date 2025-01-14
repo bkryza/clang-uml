@@ -219,8 +219,15 @@ public:
      *
      * @return True if this nested element is empty.
      */
-    bool is_empty() const
+    bool is_empty(bool include_inner_packages = false) const
     {
+        // If we're interested whether the tree contains any elements including
+        // packages (even if their empty) just check elements_
+        if (include_inner_packages)
+            return elements_.empty();
+
+        // If we're interested only in non-package elements, that we have to
+        // traverse the nested chain
         return elements_.empty() ||
             std::all_of(elements_.cbegin(), elements_.cend(), [](auto &e) {
                 const auto *package_ptr =
@@ -269,7 +276,7 @@ public:
         // Find all elements positions to remove
         size_t idx{0};
         for (const auto &e : elements_) {
-            if (element_ids.count(e->id())) {
+            if (element_ids.count(e->id()) > 0) {
                 auto range = elements_by_name_.equal_range(e->name());
 
                 for (auto it = range.first; it != range.second; ++it) {
