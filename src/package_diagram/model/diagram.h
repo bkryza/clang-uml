@@ -302,7 +302,7 @@ template <typename ElementT>
 bool diagram::add_with_filesystem_path(
     const common::model::path &parent_path, std::unique_ptr<ElementT> &&p)
 {
-    LOG_DBG("Adding package: {}, {}", p->name(), p->full_name(true));
+    LOG_TRACE("Adding package: {}, {}", p->name(), p->full_name(true));
 
     // Make sure all parent directories are already packages in the
     // model

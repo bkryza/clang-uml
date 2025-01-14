@@ -1,9 +1,6 @@
 #pragma once
 
-#include "../libraries/lib1/lib1.h"
-#include "../libraries/lib2/lib2.h"
-#include "../libraries/lib3/lib3.h"
-#include "../libraries/lib4/lib4.h"
+#include "../libraries/common.h"
 
 namespace clanguml {
 namespace t30010 {

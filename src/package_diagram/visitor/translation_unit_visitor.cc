@@ -305,7 +305,7 @@ void translation_unit_visitor::add_relationships(
 
         pkg->set_name(pkg_name);
         pkg->set_namespace(parent_path);
-        pkg->set_id(get_package_id(cls));
+        pkg->set_id(common::to_id(pkg->full_name(false)));
         set_source_location(*cls, *pkg);
 
         if (diagram().should_include(*pkg))

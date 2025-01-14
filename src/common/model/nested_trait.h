@@ -91,7 +91,7 @@ public:
     {
         assert(p);
 
-        LOG_DBG("Adding nested element {} at path '{}{}'", p->name(),
+        LOG_TRACE("Adding nested element {} at path '{}{}'", p->name(),
             path.is_root() ? "::" : "", path.to_string());
 
         if (path.is_empty()) {
