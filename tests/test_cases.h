@@ -119,7 +119,7 @@ template <typename DiagramType, typename... Ts>
 bool IsAssociation(const DiagramType &d, std::string const &from,
     std::string const &to, std::string const &label = "",
     std::string multiplicity_source = "", std::string multiplicity_dest = "",
-    std::string style = "");
+    std::string style = "", std::string link = "", std::string tooltip = "");
 
 template <typename DiagramType, typename... Ts>
 bool IsComposition(const DiagramType &d, std::string const &from,
@@ -131,7 +131,7 @@ template <typename DiagramType, typename... Ts>
 bool IsAggregation(const DiagramType &d, std::string const &from,
     std::string const &to, std::string const &label = "",
     std::string multiplicity_source = "", std::string multiplicity_dest = "",
-    std::string style = "");
+    std::string style = "", std::string link = "", std::string tooltip = "");
 
 template <typename DiagramType>
 bool IsInstantiation(const DiagramType &d, std::string const &from,
@@ -199,6 +199,11 @@ bool HasLink(const DiagramType &d, std::string const &alias,
 template <typename DiagramType>
 bool HasMemberLink(const DiagramType &d, std::string const &method,
     std::string const &link, std::string const &tooltip);
+
+template <typename DiagramType>
+bool HasDependencyLink(const DiagramType &d, QualifiedName from,
+    QualifiedName to, std::string style, std::string const &link,
+    std::string const &tooltip);
 
 template <typename DiagramType>
 bool IsFolder(const DiagramType &d, std::string const &path);
@@ -482,7 +487,7 @@ template <typename... Ts>
 bool IsAssociation(const plantuml_t &d, std::string const &from,
     std::string const &to, std::string const &label = "",
     std::string multiplicity_source = "", std::string multiplicity_dest = "",
-    std::string style = "")
+    std::string style = "", std::string link = "", std::string tooltip = "")
 {
     auto from_id = d.get_alias(from);
     auto to_id = d.get_alias(to);
@@ -498,6 +503,10 @@ bool IsAssociation(const plantuml_t &d, std::string const &from,
 
     format_string += " {}";
 
+    if (!link.empty()) {
+        format_string += " [[{}{{{}}}]]";
+    }
+
     if (!label.empty()) {
         std::string label_prefix;
         if constexpr (has_type<Public, Ts...>())
@@ -508,6 +517,10 @@ bool IsAssociation(const plantuml_t &d, std::string const &from,
             label_prefix = "-";
 
         format_string += " : {}{}";
+        if (!link.empty())
+            return d.contains(fmt::format(fmt::runtime(format_string), from_id,
+                to_id, link, tooltip, label_prefix, label));
+
         return d.contains(fmt::format(
             fmt::runtime(format_string), from_id, to_id, label_prefix, label));
     }
@@ -548,7 +561,7 @@ template <typename... Ts>
 bool IsAggregation(const plantuml_t &d, std::string const &from,
     std::string const &to, std::string const &label = "",
     std::string multiplicity_source = "", std::string multiplicity_dest = "",
-    std::string style = "")
+    std::string style = "", std::string link = "", std::string tooltip = "")
 {
     std::string label_prefix;
     if constexpr (has_type<Public, Ts...>())
@@ -566,6 +579,13 @@ bool IsAggregation(const plantuml_t &d, std::string const &from,
 
     if (!multiplicity_dest.empty())
         format_string += " \"" + multiplicity_dest + "\"";
+
+    if (!link.empty()) {
+        format_string += " {} [[{}{{{}}}]] : {}{}";
+        return d.contains(
+            fmt::format(fmt::runtime(format_string), d.get_alias(from),
+                d.get_alias(to), link, tooltip, label_prefix, label));
+    }
 
     format_string += " {} : {}{}";
 
@@ -589,6 +609,18 @@ bool IsDependency(const plantuml_t &d, QualifiedName from, QualifiedName to,
                "{} .{}.> {}", d.get_alias(from), style, d.get_alias(to))) ||
         d.contains(fmt::format("{} .{}.> {}", d.get_alias(from.name), style,
             d.get_alias(to.name)));
+}
+
+template <>
+bool HasDependencyLink(const plantuml_t &d, QualifiedName from,
+    QualifiedName to, std::string style, std::string const &link,
+    std::string const &tooltip)
+{
+    return d.contains(fmt::format("{} .{}.> {} [[{}{{{}}}]]", d.get_alias(from),
+               style, d.get_alias(to), link, tooltip)) ||
+        d.contains(
+            fmt::format("{} .{}.> {} [[{}{{{}}}]]", d.get_alias(from.name),
+                style, d.get_alias(to.name), link, tooltip));
 }
 
 template <typename... Ts>
@@ -1028,7 +1060,7 @@ template <typename... Ts>
 bool IsAssociation(const mermaid_t &d, std::string const &from,
     std::string const &to, std::string const &label = "",
     std::string multiplicity_source = "", std::string multiplicity_dest = "",
-    std::string style = "")
+    std::string style = "", std::string link = "", std::string tooltip = "")
 {
     auto from_id = d.get_alias(from);
     auto to_id = d.get_alias(to);
@@ -1094,7 +1126,7 @@ template <typename... Ts>
 bool IsAggregation(const mermaid_t &d, std::string const &from,
     std::string const &to, std::string const &label = "",
     std::string multiplicity_source = "", std::string multiplicity_dest = "",
-    std::string style = "")
+    std::string style = "", std::string link = "", std::string tooltip = "")
 {
     std::string label_prefix;
     if constexpr (has_type<Public, Ts...>())
@@ -1307,6 +1339,13 @@ bool HasLink(const mermaid_t &d, std::string const &element,
 template <>
 bool HasMemberLink(const mermaid_t &d, std::string const &method,
     std::string const &link, std::string const &tooltip)
+{
+    return true;
+}
+
+template <>
+bool HasDependencyLink(const mermaid_t &d, QualifiedName from, QualifiedName to,
+    std::string style, std::string const &link, std::string const &tooltip)
 {
     return true;
 }
@@ -1578,7 +1617,7 @@ template <typename... Ts>
 bool IsAssociation(const json_t &d, std::string const &from,
     std::string const &to, std::string const &label = "",
     std::string multiplicity_source = "", std::string multiplicity_dest = "",
-    std::string style = "")
+    std::string style = "", std::string link = "", std::string tooltip = "")
 {
     const auto &j = d.src;
 
@@ -1640,7 +1679,7 @@ template <typename... Ts>
 bool IsAggregation(const json_t &d, std::string const &from,
     std::string const &to, std::string const &label = "",
     std::string multiplicity_source = "", std::string multiplicity_dest = "",
-    std::string style = "")
+    std::string style = "", std::string link = "", std::string tooltip = "")
 {
     const auto &j = d.src;
 
@@ -1869,6 +1908,13 @@ bool HasLink(const json_t &d, std::string const &alias, std::string const &link,
 template <>
 bool HasMemberLink(const json_t &d, std::string const &method,
     std::string const &link, std::string const &tooltip)
+{
+    return true;
+}
+
+template <>
+bool HasDependencyLink(const json_t &d, QualifiedName from, QualifiedName to,
+    std::string style, std::string const &link, std::string const &tooltip)
 {
     return true;
 }
@@ -2218,7 +2264,7 @@ template <typename... Ts>
 bool IsAssociation(const graphml_t &d, std::string const &from,
     std::string const &to, std::string const &label = "",
     std::string multiplicity_source = "", std::string multiplicity_dest = "",
-    std::string style = "")
+    std::string style = "", std::string link = "", std::string tooltip = "")
 {
     auto from_node_id =
         get_element(d, QualifiedName{from}).node().attribute("id").as_string();
@@ -2271,7 +2317,7 @@ template <typename... Ts>
 bool IsAggregation(const graphml_t &d, std::string const &from,
     std::string const &to, std::string const &label = "",
     std::string multiplicity_source = "", std::string multiplicity_dest = "",
-    std::string style = "")
+    std::string style = "", std::string link = "", std::string tooltip = "")
 {
     std::string access;
     if constexpr (has_type<Public, Ts...>())
@@ -2378,6 +2424,13 @@ bool HasLink(const graphml_t &d, std::string const &element,
 template <>
 bool HasMemberLink(const graphml_t &d, std::string const &method,
     std::string const &link, std::string const &tooltip)
+{
+    return true;
+}
+
+template <>
+bool HasDependencyLink(const graphml_t &d, QualifiedName from, QualifiedName to,
+    std::string style, std::string const &link, std::string const &tooltip)
 {
     return true;
 }

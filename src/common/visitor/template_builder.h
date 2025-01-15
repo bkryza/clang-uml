@@ -30,9 +30,6 @@ using common::model::namespace_;
 using common::model::relationship_t;
 using common::model::template_parameter;
 
-using found_relationships_t =
-    std::vector<std::pair<eid_t, common::model::relationship_t>>;
-
 namespace detail {
 
 std::string map_type_parameter_to_template_parameter(

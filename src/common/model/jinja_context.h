@@ -84,6 +84,9 @@ void to_json(
     inja::json &ctx, const element_context<common::model::element> &jc);
 
 void to_json(
+    inja::json &ctx, const element_context<common::model::relationship> &jc);
+
+void to_json(
     inja::json &ctx, const element_context<common::model::source_file> &jc);
 
 void to_json(

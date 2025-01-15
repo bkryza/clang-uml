@@ -64,6 +64,8 @@ std::string to_string(access_t a)
         return "protected";
     case access_t::kPrivate:
         return "private";
+    case access_t::kNone:
+        return "none";
     default:
         assert(false);
         return "";

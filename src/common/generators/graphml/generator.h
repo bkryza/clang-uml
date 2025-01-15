@@ -381,6 +381,12 @@ void generator<C, D>::generate_relationships(
         edge_node.append_attribute("source") = *maybe_src_id;
         edge_node.append_attribute("target") = *maybe_target_id;
 
+        const auto maybe_link = generator<C, D>::render_link(r);
+
+        if (maybe_link) {
+            add_data(edge_node, "url", *maybe_link);
+        }
+
         add_data(edge_node, "type", to_string(r.type()));
         if (!r.label().empty())
             add_data(edge_node, "label", r.label());

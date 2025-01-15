@@ -34,5 +34,11 @@ TEST_CASE("t30018")
         REQUIRE(!IsNamespacePackage(src, "context"s, "X"s));
         REQUIRE(!IsNamespacePackage(src, "context"s, "C"s));
         REQUIRE(!IsNamespacePackage(src, "context"s, "Y"s));
+
+        REQUIRE(HasDependencyLink(src, {"context"s, "F"s}, {"context", "E"}, "",
+            fmt::format("https://github.com/bkryza/clang-uml/blob/{}/tests/"
+                        "t30018/t30018.cc#L40",
+                clanguml::util::get_git_commit()),
+            ""));
     });
 }

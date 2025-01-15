@@ -118,11 +118,13 @@ bool translation_unit_visitor::VisitFunctionDecl(
 
     found_relationships_t relationships;
 
-    find_relationships(function_declaration->getReturnType(), relationships);
+    find_relationships(function_declaration,
+        function_declaration->getReturnType(), relationships);
 
     for (const auto *param : function_declaration->parameters()) {
         if (param != nullptr)
-            find_relationships(param->getType(), relationships);
+            find_relationships(
+                function_declaration, param->getType(), relationships);
     }
 
     add_relationships(function_declaration, relationships);
@@ -223,7 +225,7 @@ bool translation_unit_visitor::VisitObjCCategoryDecl(
     found_relationships_t relationships;
 
     const auto target_id = get_package_id(decl->getClassInterface());
-    relationships.emplace_back(target_id, relationship_t::kDependency);
+    relationships.emplace_back(target_id, relationship_t::kDependency, decl);
 
     process_objc_container_children(*decl, relationships);
     add_relationships(decl, relationships);
@@ -367,7 +369,7 @@ void translation_unit_visitor::add_relationships(
         std::vector<eid_t> parent_ids =
             get_parent_package_ids(current_package_id);
 
-        for (const auto &dependency : relationships) {
+        for (auto &dependency : relationships) {
             const auto destination_id = std::get<0>(dependency);
 
             // Skip dependency relationships to parent packages
@@ -381,6 +383,10 @@ void translation_unit_visitor::add_relationships(
 
             relationship r{relationship_t::kDependency, destination_id,
                 common::model::access_t::kNone};
+
+            if (std::get<2>(dependency) != nullptr)
+                set_source_location(*std::get<2>(dependency), r);
+
             if (destination_id != current_package_id)
                 current_package.value().add_relationship(std::move(r));
         }
@@ -494,29 +500,29 @@ void translation_unit_visitor::process_class_bases(
     const clang::CXXRecordDecl &cls, found_relationships_t &relationships)
 {
     for (const auto &base : cls.bases()) {
-        find_relationships(base.getType(), relationships);
+        find_relationships(&cls, base.getType(), relationships);
     }
 }
 
 void translation_unit_visitor::process_method(
     const clang::CXXMethodDecl &method, found_relationships_t &relationships)
 {
-    find_relationships(method.getReturnType(), relationships);
+    find_relationships(&method, method.getReturnType(), relationships);
 
     for (const auto *param : method.parameters()) {
         if (param != nullptr)
-            find_relationships(param->getType(), relationships);
+            find_relationships(&method, param->getType(), relationships);
     }
 }
 
 void translation_unit_visitor::process_objc_method(
     const clang::ObjCMethodDecl &mf, found_relationships_t &relationships)
 {
-    find_relationships(mf.getReturnType(), relationships);
+    find_relationships(&mf, mf.getReturnType(), relationships);
 
     for (const auto *param : mf.parameters()) {
         if (param != nullptr)
-            find_relationships(param->getType(), relationships);
+            find_relationships(&mf, param->getType(), relationships);
     }
 }
 
@@ -607,11 +613,11 @@ void translation_unit_visitor::process_template_method(
         return;
 
     find_relationships(
-        method.getTemplatedDecl()->getReturnType(), relationships);
+        &method, method.getTemplatedDecl()->getReturnType(), relationships);
 
     for (const auto *param : method.getTemplatedDecl()->parameters()) {
         if (param != nullptr) {
-            find_relationships(param->getType(), relationships);
+            find_relationships(&method, param->getType(), relationships);
         }
     }
 }
@@ -620,8 +626,8 @@ void translation_unit_visitor::process_field(
     const clang::FieldDecl &field_declaration,
     found_relationships_t &relationships)
 {
-    find_relationships(field_declaration.getType(), relationships,
-        relationship_t::kDependency);
+    find_relationships(&field_declaration, field_declaration.getType(),
+        relationships, relationship_t::kDependency);
 }
 
 void translation_unit_visitor::process_interface_protocol(
@@ -629,7 +635,8 @@ void translation_unit_visitor::process_interface_protocol(
     found_relationships_t &relationships)
 {
     const auto target_id = get_package_id(&protocol_declaration);
-    relationships.emplace_back(target_id, relationship_t::kDependency);
+    relationships.emplace_back(
+        target_id, relationship_t::kDependency, &protocol_declaration);
 }
 
 void translation_unit_visitor::process_objc_property(
@@ -643,20 +650,21 @@ void translation_unit_visitor::process_objc_property(
         for (auto i = 0U; i < protocols_count; i++) {
             const auto target_id =
                 get_package_id(property_objc_id_type->getProtocol(i));
-            relationships.emplace_back(target_id, relationship_t::kDependency);
+            relationships.emplace_back(
+                target_id, relationship_t::kDependency, &property_declaration);
         }
     }
 
-    find_relationships(property_declaration.getType(), relationships,
-        relationship_t::kDependency);
+    find_relationships(&property_declaration, property_declaration.getType(),
+        relationships, relationship_t::kDependency);
 }
 
 void translation_unit_visitor::process_static_field(
     const clang::VarDecl &field_declaration,
     found_relationships_t &relationships)
 {
-    find_relationships(field_declaration.getType(), relationships,
-        relationship_t::kDependency);
+    find_relationships(&field_declaration, field_declaration.getType(),
+        relationships, relationship_t::kDependency);
 }
 
 void translation_unit_visitor::process_friend(
@@ -670,12 +678,14 @@ void translation_unit_visitor::process_friend(
         }
     }
     else if (const auto *friend_type = friend_declaration.getFriendType()) {
-        find_relationships(friend_type->getType(), relationships);
+        find_relationships(
+            &friend_declaration, friend_type->getType(), relationships);
     }
 }
 
-bool translation_unit_visitor::find_relationships(const clang::QualType &type,
-    found_relationships_t &relationships, relationship_t relationship_hint)
+bool translation_unit_visitor::find_relationships(const clang::Decl *decl,
+    const clang::QualType &type, found_relationships_t &relationships,
+    relationship_t relationship_hint)
 {
     bool result{false};
 
@@ -687,26 +697,26 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
         const auto *objc_interface =
             type->getPointeeType()->getAsObjCInterfaceType()->getInterface();
         const auto target_id = get_package_id(objc_interface);
-        relationships.emplace_back(target_id, relationship_hint);
+        relationships.emplace_back(target_id, relationship_hint, decl);
         result = true;
     }
     else if (type->isPointerType()) {
         relationship_hint = relationship_t::kAssociation;
         find_relationships(
-            type->getPointeeType(), relationships, relationship_hint);
+            decl, type->getPointeeType(), relationships, relationship_hint);
     }
     else if (type->isRValueReferenceType()) {
         relationship_hint = relationship_t::kAggregation;
         find_relationships(
-            type.getNonReferenceType(), relationships, relationship_hint);
+            decl, type.getNonReferenceType(), relationships, relationship_hint);
     }
     else if (type->isLValueReferenceType()) {
         relationship_hint = relationship_t::kAssociation;
         find_relationships(
-            type.getNonReferenceType(), relationships, relationship_hint);
+            decl, type.getNonReferenceType(), relationships, relationship_hint);
     }
     else if (type->isArrayType()) {
-        find_relationships(type->getAsArrayTypeUnsafe()->getElementType(),
+        find_relationships(decl, type->getAsArrayTypeUnsafe()->getElementType(),
             relationships, relationship_t::kAggregation);
     }
     else if (type->isEnumeralType()) {
@@ -715,7 +725,7 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
             if (const auto *enum_decl = enum_type->getDecl();
                 enum_decl != nullptr)
                 relationships.emplace_back(
-                    get_package_id(enum_decl), relationship_hint);
+                    get_package_id(enum_decl), relationship_hint, decl);
         }
     }
     else if (const auto *template_specialization_type =
@@ -725,7 +735,7 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
             relationships.emplace_back(
                 get_package_id(template_specialization_type->getTemplateName()
                                    .getAsTemplateDecl()),
-                relationship_hint);
+                relationship_hint, decl);
 
             // Add dependencies to template arguments
             for (const auto &template_argument :
@@ -761,14 +771,15 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
                          function_type != nullptr) {
                     for (const auto &param_type :
                         function_type->param_types()) {
-                        result = find_relationships(param_type, relationships,
-                            relationship_t::kDependency);
+                        result = find_relationships(decl, param_type,
+                            relationships, relationship_t::kDependency);
                     }
                 }
                 else if (template_argument_kind ==
                     clang::TemplateArgument::ArgKind::Type) {
-                    result = find_relationships(template_argument.getAsType(),
-                        relationships, relationship_hint);
+                    result =
+                        find_relationships(decl, template_argument.getAsType(),
+                            relationships, relationship_hint);
                 }
             }
         }
@@ -790,7 +801,7 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
                                 *namespace_declaration)})) {
                         const auto target_id = get_package_id(cxxrecord_decl);
                         relationships.emplace_back(
-                            target_id, relationship_hint);
+                            target_id, relationship_hint, decl);
                         result = true;
                     }
                 }
@@ -800,7 +811,8 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
                 const auto *module = cxxrecord_decl->getOwningModule();
                 if (module != nullptr) {
                     const auto target_id = get_package_id(cxxrecord_decl);
-                    relationships.emplace_back(target_id, relationship_hint);
+                    relationships.emplace_back(
+                        target_id, relationship_hint, decl);
                     result = true;
                 }
             }
@@ -810,7 +822,8 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
                             *type->getAsCXXRecordDecl())})) {
                     const auto target_id =
                         get_package_id(type->getAsCXXRecordDecl());
-                    relationships.emplace_back(target_id, relationship_hint);
+                    relationships.emplace_back(
+                        target_id, relationship_hint, decl);
                     result = true;
                 }
             }
@@ -823,7 +836,8 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
                 if (diagram().should_include(
                         namespace_{common::get_qualified_name(*record_decl)})) {
                     const auto target_id = get_package_id(record_decl);
-                    relationships.emplace_back(target_id, relationship_hint);
+                    relationships.emplace_back(
+                        target_id, relationship_hint, decl);
                     result = true;
                 }
             }

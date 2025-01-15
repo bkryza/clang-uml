@@ -33,6 +33,14 @@ void to_json(inja::json &ctx,
         maybe_comment.has_value()) {
         ctx["element"]["comment"] = maybe_comment.value();
     }
+
+    if (jc.diagram_context().contains("git")) {
+        ctx["git"] = jc.diagram_context()["git"];
+    }
+
+    if (jc.diagram_context().contains("user_data")) {
+        ctx["user_data"] = jc.diagram_context()["user_data"];
+    }
 }
 
 void to_json(inja::json &ctx, const element_context<diagram_element> &jc)
@@ -48,14 +56,6 @@ void to_json(inja::json &ctx, const element_context<diagram_element> &jc)
     if (maybe_doxygen_link)
         ctx["element"]["doxygen_link"] = maybe_doxygen_link.value();
 
-    if (jc.diagram_context().contains("git")) {
-        ctx["git"] = jc.diagram_context()["git"];
-    }
-
-    if (jc.diagram_context().contains("user_data")) {
-        ctx["user_data"] = jc.diagram_context()["user_data"];
-    }
-
     to_json(ctx, jc.as<source_location>());
 }
 
@@ -65,6 +65,22 @@ void to_json(inja::json &ctx, const element_context<element> &jc)
 
     ctx["element"]["using_namespace"] = jc.get().using_namespace().to_string();
     ctx["element"]["namespace"] = jc.get().get_namespace().to_string();
+}
+
+void to_json(
+    inja::json &ctx, const element_context<common::model::relationship> &jc)
+{
+    to_json(ctx, jc.as<decorated_element>());
+
+    ctx["element"]["type"] = "relationship";
+    ctx["element"]["name"] = jc.get().label();
+    ctx["element"]["relationship_type"] = to_string(jc.get().type());
+    ctx["element"]["multiplicity"]["source"] = jc.get().multiplicity_source();
+    ctx["element"]["multiplicity"]["destination"] =
+        jc.get().multiplicity_destination();
+    ctx["element"]["access"] = to_string(jc.get().access());
+
+    to_json(ctx, jc.as<source_location>());
 }
 
 void to_json(inja::json &ctx, const element_context<source_file> &jc)

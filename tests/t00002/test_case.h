@@ -49,7 +49,17 @@ TEST_CASE("t00002")
             REQUIRE(IsMethod<Public, Abstract>(src, "A", "foo_a"));
             REQUIRE(IsMethod<Public, Abstract>(src, "C", "foo_c"));
 
-            REQUIRE(IsAssociation<Private>(src, "D", "A", "as"));
+            REQUIRE(IsAssociation<Private>(src, "D", "A", "as", "", "", "",
+                fmt::format("https://github.com/bkryza/clang-uml/blob/{}/tests/"
+                            "t00002/t00002.cc#L58",
+                    clanguml::util::get_git_commit()),
+                "as"));
+
+            REQUIRE(IsAssociation<Private>(src, "E", "A", "as", "", "", "",
+                fmt::format("https://github.com/bkryza/clang-uml/blob/{}/tests/"
+                            "t00002/t00002.cc#L83",
+                    clanguml::util::get_git_commit()),
+                "as"));
 
             REQUIRE(HasNote(src, "A", "left", "This is class A"));
             REQUIRE(HasNote(src, "B", "top", "This is class B"));

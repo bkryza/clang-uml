@@ -294,8 +294,14 @@ void generator<C, D>::print_debug(
 {
     const auto &config = generators::generator<C, D>::config();
 
-    if (config.debug_mode())
-        ostr << "%% " << e.file() << ":" << e.line() << '\n';
+    if (config.debug_mode()) {
+        if (!e.file_relative().empty()) {
+            ostr << "%% " << e.file_relative() << ":" << e.line() << '\n';
+        }
+        else if (!e.file().empty()) {
+            ostr << "%% " << e.file() << ":" << e.line() << '\n';
+        }
+    }
 }
 
 template <typename DiagramModel, typename DiagramConfig>

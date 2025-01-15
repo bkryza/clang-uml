@@ -42,8 +42,8 @@
 
 namespace clanguml::common::visitor {
 
-using found_relationships_t =
-    std::vector<std::pair<eid_t, common::model::relationship_t>>;
+using found_relationships_t = std::vector<
+    std::tuple<eid_t, common::model::relationship_t, const clang::Decl *>>;
 
 /**
  * @brief Diagram translation unit visitor base class
