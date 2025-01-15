@@ -182,6 +182,7 @@
  * [t30015](./test_cases/t30015.md) - C++20 modules package diagram test with partition dependencies
  * [t30016](./test_cases/t30016.md) - Objective-C directory package diagram test
  * [t30017](./test_cases/t30017.md) - Test case for '::' prefix in packages diagrams for namespaces outside of using_namespace
+ * [t30018](./test_cases/t30018.md) - Test case for context filter in package diagram
 ## Include diagrams
  * [t40001](./test_cases/t40001.md) - Basic include graph diagram test case
  * [t40002](./test_cases/t40002.md) - Cyclic include graph diagram test case

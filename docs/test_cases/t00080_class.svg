@@ -1,14 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" data-diagram-type="CLASS" height="663px" preserveAspectRatio="none" style="width:1142px;height:663px;background:#FFFFFF;" version="1.1" viewBox="0 0 1142 663" width="1142px" zoomAndPan="magnify">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" data-diagram-type="CLASS" height="663px" preserveAspectRatio="none" style="width:1139px;height:663px;background:#FFFFFF;" version="1.1" viewBox="0 0 1139 663" width="1139px" zoomAndPan="magnify">
   <defs>
     <style type="text/css">a:hover { text-decoration: underline; }</style>
   </defs>
   <g>
     <g id="elem_C_0015292512913378933439">
-      <rect codeLine="2" fill="#F1F1F1" height="388.1546" id="C_0015292512913378933439" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="775.1651" x="7" y="7"/>
-      <ellipse cx="350.7197" cy="23" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
-      <path d="M353.6884,28.6406 Q353.1103,28.9375 352.4697,29.0781 Q351.8291,29.2344 351.1259,29.2344 Q348.6259,29.2344 347.2978,27.5938 Q345.9853,25.9375 345.9853,22.8125 Q345.9853,19.6875 347.2978,18.0313 Q348.6259,16.375 351.1259,16.375 Q351.8291,16.375 352.4697,16.5313 Q353.1259,16.6875 353.6884,16.9844 L353.6884,19.7031 Q353.0634,19.125 352.4697,18.8594 Q351.8759,18.5781 351.2509,18.5781 Q349.9072,18.5781 349.2197,19.6563 Q348.5322,20.7188 348.5322,22.8125 Q348.5322,24.9063 349.2197,25.9844 Q349.9072,27.0469 351.2509,27.0469 Q351.8759,27.0469 352.4697,26.7813 Q353.0634,26.5 353.6884,25.9219 L353.6884,28.6406 Z " fill="#000000"/>
-      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="79.2257" x="371.2197" y="28.432">::std::thread</text>
-      <line style="stroke:#181818;stroke-width:0.5;" x1="8" x2="781.1651" y1="39" y2="39"/>
+      <rect codeLine="2" fill="#F1F1F1" height="388.1546" id="C_0015292512913378933439" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="771.5251" x="7" y="7"/>
+      <ellipse cx="348.8997" cy="23" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
+      <path d="M351.8684,28.6406 Q351.2903,28.9375 350.6497,29.0781 Q350.0091,29.2344 349.3059,29.2344 Q346.8059,29.2344 345.4778,27.5938 Q344.1653,25.9375 344.1653,22.8125 Q344.1653,19.6875 345.4778,18.0313 Q346.8059,16.375 349.3059,16.375 Q350.0091,16.375 350.6497,16.5313 Q351.3059,16.6875 351.8684,16.9844 L351.8684,19.7031 Q351.2434,19.125 350.6497,18.8594 Q350.0559,18.5781 349.4309,18.5781 Q348.0872,18.5781 347.3997,19.6563 Q346.7122,20.7188 346.7122,22.8125 Q346.7122,24.9063 347.3997,25.9844 Q348.0872,27.0469 349.4309,27.0469 Q350.0559,27.0469 350.6497,26.7813 Q351.2434,26.5 351.8684,25.9219 L351.8684,28.6406 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="79.2257" x="369.3997" y="28.432">::std::thread</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="8" x2="777.5251" y1="39" y2="39"/>
       <ellipse cx="18" cy="54.034" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="217.2092" x="27" y="57.9659">thread() noexcept = default : void</text>
       <ellipse cx="18" cy="73.1019" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
@@ -16,15 +16,15 @@
       <ellipse cx="18" cy="92.1698" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="244.537" x="27" y="96.1018">thread(thread &amp;&amp; __t) noexcept : void</text>
       <ellipse cx="18" cy="111.2377" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
-      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="749.1651" x="27" y="115.1697">thread&lt;_Callable,_Args...,typename=_Require&lt;__not_same&lt;_Callable&gt; &gt;&gt;(_Callable &amp;&amp; __f, _Args &amp;&amp;... __args) : void</text>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="745.5251" x="27" y="115.1697">thread&lt;_Callable,_Args...,typename=_Require&lt;__not_same&lt;_Callable&gt;&gt;&gt;(_Callable &amp;&amp; __f, _Args &amp;&amp;... __args) : void</text>
       <ellipse cx="18" cy="130.3056" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="99.0916" x="27" y="134.2376">~thread() : void</text>
-      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:1.0,2.0;" x1="8" x2="781.1651" y1="142.3396" y2="142.3396"/>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:1.0,2.0;" x1="8" x2="777.5251" y1="142.3396" y2="142.3396"/>
       <ellipse cx="18" cy="157.3735" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="304.9329" x="27" y="161.3055">operator=(const thread &amp;) = deleted : thread &amp;</text>
       <ellipse cx="18" cy="176.4415" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="296.5469" x="27" y="180.3734">operator=(thread &amp;&amp; __t) noexcept : thread &amp;</text>
-      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:1.0,2.0;" x1="8" x2="781.1651" y1="188.4754" y2="188.4754"/>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:1.0,2.0;" x1="8" x2="777.5251" y1="188.4754" y2="188.4754"/>
       <rect fill="#F24D5C" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="15" y="200.5094"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="281.6509" x="27" y="207.4414">_M_start_thread(_State_ptr, void (*)()) : void</text>
       <rect fill="#F24D5C" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="15" y="219.5773"/>
@@ -43,51 +43,51 @@
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="237.691" x="27" y="340.9168">native_handle() : native_handle_type</text>
       <ellipse cx="18" cy="356.0527" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="224.6151" x="27" y="359.9847">swap(thread &amp; __t) noexcept : void</text>
-      <line style="stroke:#181818;stroke-width:0.5;" x1="8" x2="781.1651" y1="368.0867" y2="368.0867"/>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="8" x2="777.5251" y1="368.0867" y2="368.0867"/>
       <rect fill="transparent" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="15" y="380.1206"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="60.6058" x="27" y="387.0526">_M_id : id</text>
     </g>
     <g id="elem_C_0009784607930441346007">
-      <rect codeLine="25" fill="#F1F1F1" height="94.1358" id="C_0009784607930441346007" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="159.7555" x="658.5" y="474"/>
-      <ellipse cx="709.9148" cy="490" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
-      <path d="M712.8836,495.6406 Q712.3055,495.9375 711.6648,496.0781 Q711.0242,496.2344 710.3211,496.2344 Q707.8211,496.2344 706.493,494.5938 Q705.1805,492.9375 705.1805,489.8125 Q705.1805,486.6875 706.493,485.0313 Q707.8211,483.375 710.3211,483.375 Q711.0242,483.375 711.6648,483.5313 Q712.3211,483.6875 712.8836,483.9844 L712.8836,486.7031 Q712.2586,486.125 711.6648,485.8594 Q711.0711,485.5781 710.4461,485.5781 Q709.1023,485.5781 708.4148,486.6563 Q707.7273,487.7188 707.7273,489.8125 Q707.7273,491.9063 708.4148,492.9844 Q709.1023,494.0469 710.4461,494.0469 Q711.0711,494.0469 711.6648,493.7813 Q712.2586,493.5 712.8836,492.9219 L712.8836,495.6406 Z " fill="#000000"/>
-      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="48.4258" x="730.4148" y="495.432">Worker</text>
-      <line style="stroke:#181818;stroke-width:0.5;" x1="659.5" x2="817.2555" y1="506" y2="506"/>
-      <ellipse cx="669.5" cy="521.034" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
-      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="103.6696" x="678.5" y="524.9659">~Worker() : void</text>
-      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:1.0,2.0;" x1="659.5" x2="817.2555" y1="533.0679" y2="533.0679"/>
-      <ellipse cx="669.5" cy="548.1019" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
-      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="133.7555" x="678.5" y="552.0339">start(int delay) : void</text>
-      <line style="stroke:#181818;stroke-width:0.5;" x1="659.5" x2="817.2555" y1="560.1358" y2="560.1358"/>
+      <rect codeLine="25" fill="#F1F1F1" height="94.1358" id="C_0009784607930441346007" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="159.7555" x="656" y="474"/>
+      <ellipse cx="707.4148" cy="490" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
+      <path d="M710.3836,495.6406 Q709.8055,495.9375 709.1648,496.0781 Q708.5242,496.2344 707.8211,496.2344 Q705.3211,496.2344 703.993,494.5938 Q702.6805,492.9375 702.6805,489.8125 Q702.6805,486.6875 703.993,485.0313 Q705.3211,483.375 707.8211,483.375 Q708.5242,483.375 709.1648,483.5313 Q709.8211,483.6875 710.3836,483.9844 L710.3836,486.7031 Q709.7586,486.125 709.1648,485.8594 Q708.5711,485.5781 707.9461,485.5781 Q706.6023,485.5781 705.9148,486.6563 Q705.2273,487.7188 705.2273,489.8125 Q705.2273,491.9063 705.9148,492.9844 Q706.6023,494.0469 707.9461,494.0469 Q708.5711,494.0469 709.1648,493.7813 Q709.7586,493.5 710.3836,492.9219 L710.3836,495.6406 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="48.4258" x="727.9148" y="495.432">Worker</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="657" x2="814.7555" y1="506" y2="506"/>
+      <ellipse cx="667" cy="521.034" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="103.6696" x="676" y="524.9659">~Worker() : void</text>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:1.0,2.0;" x1="657" x2="814.7555" y1="533.0679" y2="533.0679"/>
+      <ellipse cx="667" cy="548.1019" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="133.7555" x="676" y="552.0339">start(int delay) : void</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="657" x2="814.7555" y1="560.1358" y2="560.1358"/>
     </g>
     <g id="elem_C_0012172460947490041262">
-      <rect codeLine="32" fill="#F1F1F1" height="67.0679" id="C_0012172460947490041262" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="107.8157" x="1027.5" y="167.5"/>
-      <ellipse cx="1072.8039" cy="183.5" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
-      <path d="M1075.7726,189.1406 Q1075.1945,189.4375 1074.5539,189.5781 Q1073.9132,189.7344 1073.2101,189.7344 Q1070.7101,189.7344 1069.382,188.0938 Q1068.0695,186.4375 1068.0695,183.3125 Q1068.0695,180.1875 1069.382,178.5313 Q1070.7101,176.875 1073.2101,176.875 Q1073.9132,176.875 1074.5539,177.0313 Q1075.2101,177.1875 1075.7726,177.4844 L1075.7726,180.2031 Q1075.1476,179.625 1074.5539,179.3594 Q1073.9601,179.0781 1073.3351,179.0781 Q1071.9914,179.0781 1071.3039,180.1563 Q1070.6164,181.2188 1070.6164,183.3125 Q1070.6164,185.4063 1071.3039,186.4844 Q1071.9914,187.5469 1073.3351,187.5469 Q1073.9601,187.5469 1074.5539,187.2813 Q1075.1476,187 1075.7726,186.4219 L1075.7726,189.1406 Z " fill="#000000"/>
-      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="8.708" x="1093.3039" y="188.932">R</text>
-      <line style="stroke:#181818;stroke-width:0.5;" x1="1028.5" x2="1134.3157" y1="199.5" y2="199.5"/>
-      <line style="stroke:#181818;stroke-width:0.5;" x1="1028.5" x2="1134.3157" y1="207.5" y2="207.5"/>
-      <ellipse cx="1038.5" cy="222.534" fill="transparent" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
-      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="81.8157" x="1047.5" y="226.4659">w : Worker *</text>
+      <rect codeLine="32" fill="#F1F1F1" height="67.0679" id="C_0012172460947490041262" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="107.8157" x="1025" y="167.5"/>
+      <ellipse cx="1070.3039" cy="183.5" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
+      <path d="M1073.2726,189.1406 Q1072.6945,189.4375 1072.0539,189.5781 Q1071.4132,189.7344 1070.7101,189.7344 Q1068.2101,189.7344 1066.882,188.0938 Q1065.5695,186.4375 1065.5695,183.3125 Q1065.5695,180.1875 1066.882,178.5313 Q1068.2101,176.875 1070.7101,176.875 Q1071.4132,176.875 1072.0539,177.0313 Q1072.7101,177.1875 1073.2726,177.4844 L1073.2726,180.2031 Q1072.6476,179.625 1072.0539,179.3594 Q1071.4601,179.0781 1070.8351,179.0781 Q1069.4914,179.0781 1068.8039,180.1563 Q1068.1164,181.2188 1068.1164,183.3125 Q1068.1164,185.4063 1068.8039,186.4844 Q1069.4914,187.5469 1070.8351,187.5469 Q1071.4601,187.5469 1072.0539,187.2813 Q1072.6476,187 1073.2726,186.4219 L1073.2726,189.1406 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="8.708" x="1090.8039" y="188.932">R</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="1026" x2="1131.8157" y1="199.5" y2="199.5"/>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="1026" x2="1131.8157" y1="207.5" y2="207.5"/>
+      <ellipse cx="1036" cy="222.534" fill="transparent" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="81.8157" x="1045" y="226.4659">w : Worker *</text>
     </g>
     <g id="elem_GMN7">
-      <path d="M817,187 L817,197 L782.48,201 L817,205 L817,214.706 A0,0 0 0 0 817,214.706 L991.8811,214.706 A0,0 0 0 0 991.8811,214.706 L991.8811,197 L981.8811,187 L817,187 A0,0 0 0 0 817,187 " fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;"/>
-      <path d="M981.8811,187 L981.8811,197 L991.8811,197 L981.8811,187 " fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;"/>
-      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="153.8811" x="823" y="205.897">Name in root namespace</text>
+      <path d="M814.5,187 L814.5,197 L779.22,201 L814.5,205 L814.5,214.706 A0,0 0 0 0 814.5,214.706 L989.3811,214.706 A0,0 0 0 0 989.3811,214.706 L989.3811,197 L979.3811,187 L814.5,187 A0,0 0 0 0 814.5,187 " fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;"/>
+      <path d="M979.3811,187 L979.3811,197 L989.3811,197 L979.3811,187 " fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="153.8811" x="820.5" y="205.897">Name in root namespace</text>
     </g>
     <g id="elem_GMN10">
-      <path d="M620,629 L620,656.706 A0,0 0 0 0 620,656.706 L856.8392,656.706 A0,0 0 0 0 856.8392,656.706 L856.8392,639 L846.8392,629 L742.5,629 L738.5,568.05 L734.5,629 L620,629 A0,0 0 0 0 620,629 " fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;"/>
-      <path d="M846.8392,629 L846.8392,639 L856.8392,639 L846.8392,629 " fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;"/>
-      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="215.8392" x="626" y="647.897">Name relative to 'clanguml::t00080'</text>
+      <path d="M617.5,629 L617.5,656.706 A0,0 0 0 0 617.5,656.706 L854.3392,656.706 A0,0 0 0 0 854.3392,656.706 L854.3392,639 L844.3392,629 L740,629 L736,568.05 L732,629 L617.5,629 A0,0 0 0 0 617.5,629 " fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;"/>
+      <path d="M844.3392,629 L844.3392,639 L854.3392,639 L844.3392,629 " fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="215.8392" x="623.5" y="647.897">Name relative to 'clanguml::t00080'</text>
     </g>
     <g id="link_C_0015292512913378933439_C_0009784607930441346007">
-      <path codeLine="36" d="M616.7472,407.4491 C648.3972,436.7091 665.08,452.13 688.66,473.92 " fill="transparent" id="C_0015292512913378933439-backto-C_0009784607930441346007" style="stroke:#181818;stroke-width:1;"/>
-      <polygon fill="transparent" points="603.53,395.23,612.6741,411.8548,620.8202,403.0434,603.53,395.23" style="stroke:#181818;stroke-width:1;"/>
+      <path codeLine="36" d="M614.6217,407.4658 C646.1917,436.7258 662.8,452.13 686.3,473.92 " fill="transparent" id="C_0015292512913378933439-backto-C_0009784607930441346007" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="transparent" points="601.42,395.23,610.5432,411.8663,618.7003,403.0652,601.42,395.23" style="stroke:#181818;stroke-width:1;"/>
     </g>
     <g id="link_C_0012172460947490041262_C_0009784607930441346007">
-      <path codeLine="37" d="M1077.1,234.68 C1069.87,276.61 1051.82,349.38 1009.5,395 C958.5,449.99 884.2733,481.0137 824.4033,499.1137 " fill="transparent" id="C_0012172460947490041262-to-C_0009784607930441346007" style="stroke:#181818;stroke-width:1;"/>
-      <polygon fill="#181818" points="818.66,500.85,828.4325,502.0744,823.4461,499.4031,826.1174,494.4167,818.66,500.85" style="stroke:#181818;stroke-width:1;"/>
-      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="17.654" x="975.5" y="439.897">+w</text>
+      <path codeLine="37" d="M1074.6,234.68 C1067.37,276.61 1049.32,349.38 1007,395 C956,449.99 881.7733,481.0137 821.9033,499.1137 " fill="transparent" id="C_0012172460947490041262-to-C_0009784607930441346007" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="#181818" points="816.16,500.85,825.9325,502.0744,820.9461,499.4031,823.6174,494.4167,816.16,500.85" style="stroke:#181818;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="17.654" x="973" y="439.897">+w</text>
     </g>
   </g>
 </svg>
