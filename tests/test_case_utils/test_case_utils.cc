@@ -441,9 +441,13 @@ int find_message_nested(const nlohmann::json &j, const std::string &from,
     if (j.contains("message_chains") && !chain_index.has_value())
         return -1;
 
-    if (j.contains("message_chains") &&
-        j["message_chains"].size() < chain_index.value())
-        return -1;
+    if (j.contains("message_chains")) {
+        if (j["message_chains"].size() <= chain_index.value())
+            return -1;
+
+        if (!j["message_chains"][chain_index.value()].contains("messages"))
+            return -1;
+    }
 
     const auto &messages = j.contains("messages")
         ? j["messages"]
