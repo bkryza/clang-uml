@@ -26,8 +26,9 @@ The diagrams can be generated in the following formats:
 Full documentation can be found at [clang-uml.github.io](https://clang-uml.github.io).
 
 To see what `clang-uml` can do, check out the diagrams generated for unit
-test cases [here](./docs/test_cases.md) or examples in
-[clang-uml-examples](https://github.com/bkryza/clang-uml-examples) repository.
+test cases [here](./docs/test_cases.md), examples in
+[clang-uml-examples](https://github.com/bkryza/clang-uml-examples) repository
+or my [blog](https://blog.bkryza.com/posts/generating-uml-diagrams-from-moderncpp-using-clang).
 
 ## Features
 
