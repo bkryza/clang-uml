@@ -223,9 +223,6 @@ results in the following diagram (via PlantUML):
 
 ![class_diagram_example](docs/test_cases/t00014_class.svg)
 
-> Open the raw image [here](https://raw.githubusercontent.com/bkryza/clang-uml/master/docs/test_cases/t00014_class.svg),
-> and check out the hover tooltips and hyperlinks to classes and methods.
-
 ### Sequence diagrams
 
 #### Example
@@ -313,6 +310,9 @@ int tmain()
 results in the following diagram (via PlantUML):
 
 ![sequence_diagram_example](docs/test_cases/t20029_sequence.svg)
+
+> Open the raw image [here](https://raw.githubusercontent.com/bkryza/clang-uml/master/docs/test_cases/t20029_sequence.svg),
+> and check out the hover tooltips and hyperlinks to participants and methods.
 
 ### Package diagrams
 
