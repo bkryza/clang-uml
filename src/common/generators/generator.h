@@ -94,8 +94,14 @@ public:
     std::optional<std::string> render_link(
         const common::model::diagram_element &e) const;
 
+    std::optional<std::string> render_link(
+        const common::model::relationship &e) const;
+
     std::optional<std::string> render_tooltip(
         const common::model::diagram_element &e) const;
+
+    std::optional<std::string> render_tooltip(
+        const common::model::relationship &e) const;
 
     /**
      * @brief Initialize diagram Jinja context
@@ -314,6 +320,32 @@ std::optional<std::string> generator<C, D>::render_link(
 }
 
 template <typename C, typename D>
+std::optional<std::string> generator<C, D>::render_link(
+    const common::model::relationship &e) const
+{
+    using common::generators::make_context_source_relative;
+    using common::jinja::render_template;
+
+    if (e.file().empty() && e.file_relative().empty())
+        return {};
+
+    auto maybe_link_pattern = generators::generator<C, D>::get_link_pattern(e);
+
+    if (!maybe_link_pattern)
+        return {};
+
+    const auto &[link_prefix, link_pattern] = *maybe_link_pattern;
+
+    inja::json ec = jinja::element_context<common::model::relationship>(
+        e, generators::generator<C, D>::context());
+
+    make_context_source_relative(ec, link_prefix);
+
+    return render_template(
+        generators::generator<C, D>::env(), ec, link_pattern);
+}
+
+template <typename C, typename D>
 std::optional<std::string> generator<C, D>::render_tooltip(
     const common::model::diagram_element &e) const
 {
@@ -332,6 +364,33 @@ std::optional<std::string> generator<C, D>::render_tooltip(
     const auto &[tooltip_prefix, tooltip_pattern] = *maybe_tooltip_pattern;
 
     inja::json ec = jinja::element_context<common::model::diagram_element>(
+        e, generators::generator<C, D>::context());
+
+    make_context_source_relative(ec, tooltip_prefix);
+
+    return render_template(
+        generators::generator<C, D>::env(), ec, tooltip_pattern);
+}
+
+template <typename C, typename D>
+std::optional<std::string> generator<C, D>::render_tooltip(
+    const common::model::relationship &e) const
+{
+    using common::generators::make_context_source_relative;
+    using common::jinja::render_template;
+
+    if (e.file().empty() && e.file_relative().empty())
+        return {};
+
+    auto maybe_tooltip_pattern =
+        generators::generator<C, D>::get_tooltip_pattern(e);
+
+    if (!maybe_tooltip_pattern)
+        return {};
+
+    const auto &[tooltip_prefix, tooltip_pattern] = *maybe_tooltip_pattern;
+
+    inja::json ec = jinja::element_context<common::model::relationship>(
         e, generators::generator<C, D>::context());
 
     make_context_source_relative(ec, tooltip_prefix);

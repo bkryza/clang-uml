@@ -18,6 +18,7 @@
 #pragma once
 
 #include "common/model/decorated_element.h"
+#include "common/model/source_location.h"
 #include "common/model/stylable_element.h"
 #include "common/types.h"
 
@@ -37,7 +38,8 @@ using clanguml::common::eid_t;
  * @embed{relationship_context_class.svg}
  */
 class relationship : public common::model::decorated_element,
-                     public common::model::stylable_element {
+                     public common::model::stylable_element,
+                     public common::model::source_location {
 public:
     /**
      * Constructor.

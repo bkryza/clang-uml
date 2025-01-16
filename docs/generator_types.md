@@ -268,35 +268,35 @@ An example GraphML diagram is presented below:
    <data key="nd2"><![CDATA[A]]></data>
    <data key="nd3">abstract</data>
    <data key="nd6">false</data>
-   <data key="nd4">https://github.com/bkryza/clang-uml/blob/64b763d4624802c70ee9bb87af5f5444340d46ef/tests/t00002/t00002.cc#L7</data>
+   <data key="nd4">https://github.com/bkryza/clang-uml/blob/f78dc1a0826578be2504188c7efe7d7b3878da63/tests/t00002/t00002.cc#L7</data>
    <data key="nd5">This is class A</data>
   </node>
   <node id="n1">
    <data key="nd1">class</data>
    <data key="nd2"><![CDATA[B]]></data>
    <data key="nd6">false</data>
-   <data key="nd4">https://github.com/bkryza/clang-uml/blob/64b763d4624802c70ee9bb87af5f5444340d46ef/tests/t00002/t00002.cc#L16</data>
+   <data key="nd4">https://github.com/bkryza/clang-uml/blob/f78dc1a0826578be2504188c7efe7d7b3878da63/tests/t00002/t00002.cc#L16</data>
    <data key="nd5">This is class B</data>
   </node>
   <node id="n2">
    <data key="nd1">class</data>
    <data key="nd2"><![CDATA[C]]></data>
    <data key="nd6">false</data>
-   <data key="nd4">https://github.com/bkryza/clang-uml/blob/64b763d4624802c70ee9bb87af5f5444340d46ef/tests/t00002/t00002.cc#L27</data>
+   <data key="nd4">https://github.com/bkryza/clang-uml/blob/f78dc1a0826578be2504188c7efe7d7b3878da63/tests/t00002/t00002.cc#L27</data>
    <data key="nd5">This is class C - class C has a long comment</data>
   </node>
   <node id="n3">
    <data key="nd1">class</data>
    <data key="nd2"><![CDATA[D]]></data>
    <data key="nd6">false</data>
-   <data key="nd4">https://github.com/bkryza/clang-uml/blob/64b763d4624802c70ee9bb87af5f5444340d46ef/tests/t00002/t00002.cc#L36</data>
+   <data key="nd4">https://github.com/bkryza/clang-uml/blob/f78dc1a0826578be2504188c7efe7d7b3878da63/tests/t00002/t00002.cc#L36</data>
    <data key="nd5">D</data>
   </node>
   <node id="n4">
    <data key="nd1">class</data>
    <data key="nd2"><![CDATA[E]]></data>
    <data key="nd6">false</data>
-   <data key="nd4">https://github.com/bkryza/clang-uml/blob/64b763d4624802c70ee9bb87af5f5444340d46ef/tests/t00002/t00002.cc#L61</data>
+   <data key="nd4">https://github.com/bkryza/clang-uml/blob/f78dc1a0826578be2504188c7efe7d7b3878da63/tests/t00002/t00002.cc#L61</data>
    <data key="nd5">E</data>
   </node>
   <node id="n5">
@@ -333,6 +333,7 @@ An example GraphML diagram is presented below:
    <data key="ed1">public</data>
   </edge>
   <edge id="e5" source="n3" target="n0">
+   <data key="ed3">https://github.com/bkryza/clang-uml/blob/f78dc1a0826578be2504188c7efe7d7b3878da63/tests/t00002/t00002.cc#L58</data>
    <data key="ed0">association</data>
    <data key="ed2">as</data>
    <data key="ed1">private</data>
@@ -346,6 +347,7 @@ An example GraphML diagram is presented below:
    <data key="ed1">public</data>
   </edge>
   <edge id="e8" source="n4" target="n0">
+   <data key="ed3">https://github.com/bkryza/clang-uml/blob/f78dc1a0826578be2504188c7efe7d7b3878da63/tests/t00002/t00002.cc#L83</data>
    <data key="ed0">association</data>
    <data key="ed2">as</data>
    <data key="ed1">private</data>
@@ -362,6 +364,26 @@ An example GraphML diagram is presented below:
 </graphml>
 ```
 
+To visualize GraphML, we can use of existing graph tools for instance:
+* [yED](https://www.yworks.com/products/yed) - not open-source but free,
+  supports subgraphs (i.e. packages) and various styles for nodes
+* [Gephi](https://gephi.org/) - free and open source, however does not support
+  subgraphs, only `clang-uml` graphs without packages can be visualized
+
+For example, to visualize the above graph in `yED` we need to simply open it and
+tell `yED` how to map `clang-uml`'s property names (e.g. `"url"`) to it's
+internal properties. We can do this using Properties Mapper dialog accessible
+through `Edit->Properties Mapper...`. The easiest way is to use this property
+mapping file: [clang-uml.cnfx](https://raw.githubusercontent.com/bkryza/clang-uml/refs/heads/master/docs/assets/clang-uml.cnfx)
+as a starting point, it can be loaded using the following icon:
+
+![yed_properties_mapper](img/yed_properties_mapper.png)
+
+For each mapping type (i.e. `clang-uml (Edge)` and `clang-uml (Node)` we
+have to separately click `Apply` button. Finally, we can click on layout button
+and the diagram is visualized in the `yED` like this:
+
+![yed_layout_t00002](img/yed_layout_t00002.png)
 
 ## JSON
 

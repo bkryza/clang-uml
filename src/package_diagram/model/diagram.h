@@ -162,6 +162,15 @@ public:
 
     void apply_filter() override;
 
+    /**
+     * @brief Get reference to vector of elements of specific type
+     *
+     * @tparam ElementT Type of elements view
+     * @return Reference to elements vector
+     */
+    template <typename ElementT>
+    const common::reference_vector<ElementT> &elements() const;
+
 private:
     /**
      * @brief Add element using module as diagram path
@@ -302,7 +311,7 @@ template <typename ElementT>
 bool diagram::add_with_filesystem_path(
     const common::model::path &parent_path, std::unique_ptr<ElementT> &&p)
 {
-    LOG_DBG("Adding package: {}, {}", p->name(), p->full_name(true));
+    LOG_TRACE("Adding package: {}, {}", p->name(), p->full_name(true));
 
     // Make sure all parent directories are already packages in the
     // model
@@ -324,6 +333,12 @@ bool diagram::add_with_filesystem_path(
         element_view<ElementT>::add(pp);
 
     return res;
+}
+
+template <typename ElementT>
+const common::reference_vector<ElementT> &diagram::elements() const
+{
+    return element_view<ElementT>::view();
 }
 
 } // namespace clanguml::package_diagram::model

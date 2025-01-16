@@ -5,6 +5,7 @@ diagrams:
     package_type: directory
     glob:
       - t30010.cc
+      - libraries/common.cc
     include:
       paths:
         - app

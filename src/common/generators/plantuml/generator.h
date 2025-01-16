@@ -169,6 +169,14 @@ public:
     void generate_link(std::ostream &ostr, const E &e) const;
 
     /**
+     * @brief generate_link specialization for relationship
+     *
+     * @param ostr Output stream
+     * @param e Reference to diagram relationship
+     */
+    void generate_link(std::ostream &ostr, const relationship &e) const;
+
+    /**
      * @brief Print debug information in diagram comments
      *
      * @param m Diagram element to describe
@@ -420,13 +428,39 @@ void generator<C, D>::generate_link(std::ostream &ostr, const E &e) const
 }
 
 template <typename C, typename D>
+void generator<C, D>::generate_link(
+    std::ostream &ostr, const common::model::relationship &r) const
+{
+    const auto maybe_link = generator<C, D>::render_link(r);
+    const auto maybe_tooltip = generator<C, D>::render_tooltip(r);
+
+    if (!maybe_link && !maybe_tooltip)
+        return;
+
+    ostr << " [[";
+
+    ostr << maybe_link.value_or("");
+
+    if (maybe_tooltip)
+        ostr << "{" << *maybe_tooltip << "}";
+
+    ostr << "]]";
+}
+
+template <typename C, typename D>
 void generator<C, D>::print_debug(
     const common::model::source_location &e, std::ostream &ostr) const
 {
     const auto &config = generators::generator<C, D>::config();
 
-    if (config.debug_mode())
-        ostr << "' " << e.file() << ":" << e.line() << '\n';
+    if (config.debug_mode()) {
+        if (!e.file_relative().empty()) {
+            ostr << "' " << e.file_relative() << ":" << e.line() << '\n';
+        }
+        else if (!e.file().empty()) {
+            ostr << "' " << e.file() << ":" << e.line() << '\n';
+        }
+    }
 }
 
 template <typename DiagramModel, typename DiagramConfig>

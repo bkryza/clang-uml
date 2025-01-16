@@ -598,11 +598,17 @@ private:
 
     void initialize_effective_context(const diagram &d, unsigned idx) const;
 
+    void initialize_effective_context_class_diagram(
+        const diagram &d, unsigned idx) const;
+
+    void initialize_effective_context_package_diagram(
+        const diagram &d, unsigned idx) const;
+
     bool is_inward(relationship_t r) const;
 
     bool is_outward(relationship_t r) const;
 
-    template <typename ElementT>
+    template <typename ElementT, typename DiagramT>
     void find_elements_in_direct_relationship(const diagram &d,
         const config::context_config &context_cfg,
         std::set<eid_t> &effective_context,
@@ -610,12 +616,13 @@ private:
     {
         static_assert(std::is_same_v<ElementT, class_diagram::model::class_> ||
                 std::is_same_v<ElementT, class_diagram::model::enum_> ||
-                std::is_same_v<ElementT, class_diagram::model::concept_>,
+                std::is_same_v<ElementT, class_diagram::model::concept_> ||
+                std::is_same_v<ElementT, common::model::package>,
             "ElementT must be either class_ or enum_ or concept_");
 
-        const auto &cd = dynamic_cast<const class_diagram::model::diagram &>(d);
+        const auto &cd = dynamic_cast<const DiagramT &>(d);
 
-        for (const auto &el : cd.elements<ElementT>()) {
+        for (const auto &el : cd.template elements<ElementT>()) {
             // First search all elements of type ElementT in the diagram
             // which have a relationship to any of the effective_context
             // elements

@@ -489,9 +489,9 @@ std::string template_parameter::to_string(
     return res;
 }
 
-bool template_parameter::find_nested_relationships(
-    std::vector<std::pair<eid_t, common::model::relationship_t>>
-        &nested_relationships,
+bool template_parameter::find_nested_relationships(const clang::Decl *decl,
+    std::vector<std::tuple<eid_t, common::model::relationship_t,
+        const clang::Decl *>> &nested_relationships,
     common::model::relationship_t hint,
     const std::function<bool(const std::string &full_name)> &should_include)
     const
@@ -511,7 +511,7 @@ bool template_parameter::find_nested_relationships(
 
         const auto maybe_id = id();
         if (maybe_id) {
-            nested_relationships.emplace_back(maybe_id.value(), hint);
+            nested_relationships.emplace_back(maybe_id.value(), hint, decl);
             added_aggregation_relationship =
                 (hint == common::model::relationship_t::kAggregation);
         }
@@ -530,7 +530,7 @@ bool template_parameter::find_nested_relationships(
                     hint == common::model::relationship_t::kAggregation)
                     hint = common::model::relationship_t::kAssociation;
 
-                nested_relationships.emplace_back(maybe_id.value(), hint);
+                nested_relationships.emplace_back(maybe_id.value(), hint, decl);
 
                 added_aggregation_relationship =
                     (hint == common::model::relationship_t::kAggregation);
@@ -541,7 +541,7 @@ bool template_parameter::find_nested_relationships(
 
                 added_aggregation_relationship =
                     template_argument.find_nested_relationships(
-                        nested_relationships, hint, should_include);
+                        decl, nested_relationships, hint, should_include);
             }
         }
     }

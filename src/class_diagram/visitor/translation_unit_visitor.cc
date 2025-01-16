@@ -732,8 +732,8 @@ void translation_unit_visitor::find_relationships_in_constraint_expression(
                 if (ta.getArgument().getKind() !=
                     clang::TemplateArgument::ArgKind::Type)
                     continue;
-                find_relationships(ta.getArgument().getAsType(), relationships,
-                    relationship_t::kConstraint);
+                find_relationships({}, ta.getArgument().getAsType(),
+                    relationships, relationship_t::kConstraint);
             }
         });
 
@@ -755,11 +755,16 @@ void translation_unit_visitor::find_relationships_in_constraint_expression(
         find_relationships_in_constraint_expression(c, op->getSubExpr());
     });
 
-    for (const auto &[type_element_id, relationship_type] : relationships) {
+    for (const auto &[type_element_id, relationship_type, source_decl] :
+        relationships) {
         if (type_element_id != c.id() &&
             (relationship_type != relationship_t::kNone)) {
 
             relationship r{relationship_type, type_element_id};
+
+            if (source_decl != nullptr) {
+                set_source_location(*source_decl, r);
+            }
 
             c.add_relationship(std::move(r));
         }
@@ -1290,12 +1295,12 @@ void translation_unit_visitor::process_objc_ivar(
             const auto *objc_iface =
                 field_type->getAsObjCInterfaceType()->getInterface();
 
-            relationships.emplace_back(
-                common::to_id(*objc_iface), relationship_t::kAggregation);
+            relationships.emplace_back(common::to_id(*objc_iface),
+                relationship_t::kAggregation, &ivar);
         }
         else if ((field_type->getAsRecordDecl() != nullptr) &&
             field_type->getAsRecordDecl()->getNameAsString().empty()) {
-            // Relationships to fields whose type is an anonymous nested
+            // Relationships to fields whose type is an anonymous and nested
             // struct have to be handled separately here
             anonymous_struct_relationships_[field_type->getAsRecordDecl()
                                                 ->getID()] =
@@ -1303,7 +1308,8 @@ void translation_unit_visitor::process_objc_ivar(
                     field.destination_multiplicity());
         }
         else
-            find_relationships(field_type, relationships, relationship_hint);
+            find_relationships(
+                &ivar, field_type, relationships, relationship_hint);
 
         add_relationships(c, field, relationships);
     }
@@ -1544,7 +1550,7 @@ void translation_unit_visitor::process_method(
 
             if (diagram().should_include(*template_specialization_ptr)) {
                 relationships.emplace_back(template_specialization_ptr->id(),
-                    relationship_t::kDependency);
+                    relationship_t::kDependency, &mf);
 
                 add_class(std::move(template_specialization_ptr));
             }
@@ -1552,12 +1558,17 @@ void translation_unit_visitor::process_method(
     }
 
     find_relationships(
-        mf.getReturnType(), relationships, relationship_t::kDependency);
+        &mf, mf.getReturnType(), relationships, relationship_t::kDependency);
 
-    for (const auto &[type_element_id, relationship_type] : relationships) {
+    for (const auto &[type_element_id, relationship_type, source_decl] :
+        relationships) {
         if (type_element_id != c.id() &&
             (relationship_type != relationship_t::kNone)) {
             relationship r{relationship_t::kDependency, type_element_id};
+
+            if (source_decl != nullptr) {
+                set_source_location(*source_decl, r);
+            }
 
             LOG_DBG("Adding method return type relationship from {}::{} to "
                     "{}: {}",
@@ -1621,12 +1632,17 @@ void translation_unit_visitor::process_objc_method(
     found_relationships_t relationships;
 
     find_relationships(
-        mf.getReturnType(), relationships, relationship_t::kDependency);
+        &mf, mf.getReturnType(), relationships, relationship_t::kDependency);
 
-    for (const auto &[type_element_id, relationship_type] : relationships) {
+    for (const auto &[type_element_id, relationship_type, source_decl] :
+        relationships) {
         if (type_element_id != c.id() &&
             (relationship_type != relationship_t::kNone)) {
             relationship r{relationship_t::kDependency, type_element_id};
+
+            if (source_decl != nullptr) {
+                set_source_location(*source_decl, r);
+            }
 
             LOG_DBG("Adding method return type relationship from {}::{} to "
                     "{}: {}",
@@ -1770,8 +1786,8 @@ void translation_unit_visitor::process_template_method(
     }
 }
 
-bool translation_unit_visitor::find_relationships(const clang::QualType &type,
-    found_relationships_t &relationships,
+bool translation_unit_visitor::find_relationships(const clang::Decl *decl,
+    const clang::QualType &type, found_relationships_t &relationships,
     clanguml::common::model::relationship_t relationship_hint)
 {
     bool result{false};
@@ -1779,20 +1795,20 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
     if (type->isPointerType()) {
         relationship_hint = relationship_t::kAssociation;
         find_relationships(
-            type->getPointeeType(), relationships, relationship_hint);
+            decl, type->getPointeeType(), relationships, relationship_hint);
     }
     else if (type->isRValueReferenceType()) {
         relationship_hint = relationship_t::kAggregation;
         find_relationships(
-            type.getNonReferenceType(), relationships, relationship_hint);
+            decl, type.getNonReferenceType(), relationships, relationship_hint);
     }
     else if (type->isLValueReferenceType()) {
         relationship_hint = relationship_t::kAssociation;
         find_relationships(
-            type.getNonReferenceType(), relationships, relationship_hint);
+            decl, type.getNonReferenceType(), relationships, relationship_hint);
     }
     else if (type->isArrayType()) {
-        find_relationships(type->getAsArrayTypeUnsafe()->getElementType(),
+        find_relationships(decl, type->getAsArrayTypeUnsafe()->getElementType(),
             relationships, relationship_t::kAggregation);
     }
     else if (type->isEnumeralType()) {
@@ -1802,7 +1818,7 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
             // calculate here properly the ID for nested enums. It will be
             // resolved properly in finalize().
             relationships.emplace_back(
-                enum_type->getDecl()->getID(), relationship_hint);
+                enum_type->getDecl()->getID(), relationship_hint, decl);
         }
     }
     // TODO: Objc support
@@ -1819,7 +1835,7 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
                     type_instantiation_decl->getTemplateName()
                         .getAsTemplateDecl()
                         ->getID(),
-                    relationship_hint);
+                    relationship_hint, decl);
             }
             for (const auto &template_argument :
                 type_instantiation_decl->template_arguments()) {
@@ -1854,25 +1870,26 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
                          function_type != nullptr) {
                     for (const auto &param_type :
                         function_type->param_types()) {
-                        result = find_relationships(param_type, relationships,
-                            relationship_t::kDependency);
+                        result = find_relationships(decl, param_type,
+                            relationships, relationship_t::kDependency);
                     }
                 }
                 else if (template_argument_kind ==
                     clang::TemplateArgument::ArgKind::Type) {
-                    result = find_relationships(template_argument.getAsType(),
-                        relationships, relationship_hint);
+                    result =
+                        find_relationships(decl, template_argument.getAsType(),
+                            relationships, relationship_hint);
                 }
             }
         }
         else if (type->getAsCXXRecordDecl() != nullptr) {
             relationships.emplace_back(
-                type->getAsCXXRecordDecl()->getID(), relationship_hint);
+                type->getAsCXXRecordDecl()->getID(), relationship_hint, decl);
             result = true;
         }
         else {
             relationships.emplace_back(
-                type->getAsRecordDecl()->getID(), relationship_hint);
+                type->getAsRecordDecl()->getID(), relationship_hint, decl);
             result = true;
         }
     }
@@ -1885,7 +1902,7 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
                 template_specialization_type->getTemplateName()
                     .getAsTemplateDecl()
                     ->getID(),
-                relationship_hint);
+                relationship_hint, decl);
         }
         for (const auto &template_argument :
             template_specialization_type->template_arguments()) {
@@ -1919,13 +1936,13 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
                              ->getAs<clang::FunctionProtoType>();
                      function_type != nullptr) {
                 for (const auto &param_type : function_type->param_types()) {
-                    result = find_relationships(
-                        param_type, relationships, relationship_t::kDependency);
+                    result = find_relationships(decl, param_type, relationships,
+                        relationship_t::kDependency);
                 }
             }
             else if (template_argument_kind ==
                 clang::TemplateArgument::ArgKind::Type) {
-                result = find_relationships(template_argument.getAsType(),
+                result = find_relationships(decl, template_argument.getAsType(),
                     relationships, relationship_hint);
             }
         }
@@ -1956,13 +1973,18 @@ void translation_unit_visitor::process_objc_method_parameter(
         LOG_DBG("Looking for relationships in type: {}",
             common::to_string(param.getType(), param.getASTContext()));
 
-        find_relationships(
-            param.getType(), relationships, relationship_t::kDependency);
+        find_relationships(&param, param.getType(), relationships,
+            relationship_t::kDependency);
 
-        for (const auto &[type_element_id, relationship_type] : relationships) {
+        for (const auto &[type_element_id, relationship_type, source_decl] :
+            relationships) {
             if (type_element_id != c.id() &&
                 (relationship_type != relationship_t::kNone)) {
                 relationship r{relationship_t::kDependency, type_element_id};
+
+                if (source_decl != nullptr) {
+                    set_source_location(*source_decl, r);
+                }
 
                 LOG_DBG("Adding ObjC method parameter relationship from {} to "
                         "{}: {}",
@@ -2027,19 +2049,25 @@ void translation_unit_visitor::process_function_parameter(
 
             if (diagram().should_include(*template_specialization_ptr)) {
                 relationships.emplace_back(template_specialization_ptr->id(),
-                    relationship_t::kDependency);
+                    relationship_t::kDependency, &p);
 
                 add_class(std::move(template_specialization_ptr));
             }
         }
 
         find_relationships(
-            p.getType(), relationships, relationship_t::kDependency);
+            &p, p.getType(), relationships, relationship_t::kDependency);
 
-        for (const auto &[type_element_id, relationship_type] : relationships) {
+        for (const auto &[type_element_id, relationship_type, source_decl] :
+            relationships) {
             if (type_element_id != c.id() &&
                 (relationship_type != relationship_t::kNone)) {
                 relationship r{relationship_t::kDependency, type_element_id};
+
+                if (source_decl != nullptr) {
+                    set_source_location(*source_decl, r);
+                }
+
                 LOG_DBG("Adding function parameter relationship from {} to "
                         "{}: {}",
                     c, r.type(), r.label());
@@ -2058,11 +2086,14 @@ void translation_unit_visitor::add_relationships(
 {
     auto [decorator_rtype, decorator_rmult] = field.get_relationship();
 
-    for (const auto &[target, relationship_type] : relationships) {
+    for (const auto &[target, relationship_type, source_decl] : relationships) {
         if (relationship_type != relationship_t::kNone) {
             relationship r{relationship_type, target};
             r.set_label(field.name());
             r.set_access(field.access());
+            if (source_decl != nullptr) {
+                set_source_location(*source_decl, r);
+            }
             bool mulitplicity_provided_in_comment{false};
             if (decorator_rtype != relationship_t::kNone) {
                 r.set_type(decorator_rtype);
@@ -2121,8 +2152,8 @@ void translation_unit_visitor::process_static_field(
         found_relationships_t relationships;
 
         // find relationship for the type
-        find_relationships(field_declaration.getType(), relationships,
-            relationship_t::kAssociation);
+        find_relationships(&field_declaration, field_declaration.getType(),
+            relationships, relationship_t::kAssociation);
 
         add_relationships(c, field, relationships);
     }
@@ -2301,7 +2332,8 @@ void translation_unit_visitor::process_field(
             if (diagram().should_include(template_specialization)) {
 
                 found_relationships_t::value_type r{
-                    template_specialization.id(), relationship_hint};
+                    template_specialization.id(), relationship_hint,
+                    &field_declaration};
 
                 add_template_instantiation_to_diagram = true;
 
@@ -2327,7 +2359,8 @@ void translation_unit_visitor::process_field(
 
                     template_instantiation_added_as_aggregation =
                         template_argument.find_nested_relationships(
-                            nested_relationships, relationship_hint,
+                            &field_declaration, nested_relationships,
+                            relationship_hint,
                             [&d = diagram()](const std::string &full_name) {
                                 if (full_name.empty())
                                     return false;
@@ -2363,8 +2396,8 @@ void translation_unit_visitor::process_field(
                         field.access(), field.destination_multiplicity());
             }
             else
-                find_relationships(
-                    field_type, relationships, relationship_hint);
+                find_relationships(&field_declaration, field_type,
+                    relationships, relationship_hint);
         }
 
         add_relationships(c, field, relationships);

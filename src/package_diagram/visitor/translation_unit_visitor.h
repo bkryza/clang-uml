@@ -35,8 +35,8 @@ namespace clanguml::package_diagram::visitor {
 
 using clanguml::common::eid_t;
 
-using found_relationships_t =
-    std::vector<std::pair<eid_t, common::model::relationship_t>>;
+using found_relationships_t = std::vector<
+    std::tuple<eid_t, common::model::relationship_t, const clang::Decl *>>;
 
 using visitor_specialization_t =
     common::visitor::translation_unit_visitor<clanguml::config::package_diagram,
@@ -239,8 +239,8 @@ private:
      * @param relationship_hint Default relationship type for discovered
      *                          relationships
      */
-    bool find_relationships(const clang::QualType &type,
-        found_relationships_t &relationships,
+    bool find_relationships(const clang::Decl *decl,
+        const clang::QualType &type, found_relationships_t &relationships,
         common::model::relationship_t relationship_hint =
             common::model::relationship_t::kDependency);
 

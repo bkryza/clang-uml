@@ -62,7 +62,12 @@ TEST_CASE("t00004")
         REQUIRE(IsInnerClass(src, "C::AA", "C::AA::CCC"));
 
         REQUIRE(IsInnerClass(src, "C<T>", "C::B<V>"));
-        REQUIRE(IsAggregation<Public>(src, "C<T>", "C::B<int>", "b_int"));
+        REQUIRE(
+            IsAggregation<Public>(src, "C<T>", "C::B<int>", "b_int", "", "", "",
+                fmt::format("https://github.com/bkryza/clang-uml/blob/{}/tests/"
+                            "t00004/t00004.cc#L48",
+                    clanguml::util::get_git_commit()),
+                "b_int"));
         REQUIRE(!IsInnerClass(src, "C<T>", "C::B"));
         REQUIRE(IsInstantiation(src, "C::B<V>", "C::B<int>"));
 
@@ -70,10 +75,22 @@ TEST_CASE("t00004")
         REQUIRE(IsClass(src, {"detail", "D::DD"}));
         REQUIRE(IsEnum(src, {"detail", "D::AA"}));
 
-        REQUIRE(IsAssociation<Public>(src, "B", "Color", "color"));
-        REQUIRE(IsAggregation<Public>(src, "B", "B::AA", "aa"));
-        REQUIRE(IsAggregation<Private>(
-            src, "A::AA::AAA", "A::AA::Lights", "lights"));
+        REQUIRE(IsAssociation<Public>(src, "B", "Color", "color", "", "", "",
+            fmt::format("https://github.com/bkryza/clang-uml/blob/{}/tests/"
+                        "t00004/t00004.cc#L15",
+                clanguml::util::get_git_commit()),
+            "color"));
+        REQUIRE(IsAggregation<Public>(src, "B", "B::AA", "aa", "", "", "",
+            fmt::format("https://github.com/bkryza/clang-uml/blob/{}/tests/"
+                        "t00004/t00004.cc#L12",
+                clanguml::util::get_git_commit()),
+            "aa"));
+        REQUIRE(IsAggregation<Private>(src, "A::AA::AAA", "A::AA::Lights",
+            "lights", "", "", "",
+            fmt::format("https://github.com/bkryza/clang-uml/blob/{}/tests/"
+                        "t00004/t00004.cc#L27",
+                clanguml::util::get_git_commit()),
+            "lights"));
 
         REQUIRE(HasLink(src, "A::AA::AAA",
             fmt::format("https://github.com/bkryza/clang-uml/blob/{}/tests/"

@@ -250,7 +250,6 @@ TEST_CASE("Test add and remove compile flags options")
     CHECK_EQ(cfg.add_compile_flags()[0], "-fparse-all-comments");
     CHECK_EQ(cfg.remove_compile_flags().size(), 2);
     CHECK_EQ(cfg.remove_compile_flags()[0], "-Wno-class-memaccess");
-    CHECK_NE(cfg.remove_compile_flags()[1], "-Wwarning");
     CHECK_EQ(cfg.remove_compile_flags()[1], "-Wno-dangling-reference");
 }
 

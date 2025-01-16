@@ -27,6 +27,12 @@
 #include <string>
 #include <vector>
 
+namespace clang {
+// TODO: This doesn't belong here, find_nested_relationship should not depend
+//       on clang::Decl - refactor...
+class Decl;
+}
+
 namespace clanguml::common::model {
 
 using clanguml::common::eid_t;
@@ -389,15 +395,16 @@ public:
     /**
      * @brief Find all relationships in this and its nested templates
      *
+     * @param decl Source declaration where this relationship originates from
      * @param nested_relationships Output to store found relationships
      * @param hint Provide hint for the found relationships
      * @param should_include Functor to determine whether nested template
      *                       parameter or argument should be considered
      * @return
      */
-    bool find_nested_relationships(
-        std::vector<std::pair<eid_t, common::model::relationship_t>>
-            &nested_relationships,
+    bool find_nested_relationships(const clang::Decl *decl,
+        std::vector<std::tuple<eid_t, common::model::relationship_t,
+            const clang::Decl *>> &nested_relationships,
         common::model::relationship_t hint,
         const std::function<bool(const std::string &full_name)> &should_include)
         const;

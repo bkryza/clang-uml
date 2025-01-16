@@ -1,6 +1,11 @@
 # CHANGELOG
 
-  * Added support for regular expressions in sequence diagram boundary conditions (#366)
+### 0.6.0
+  * Added support for link in selected relationships in class and package
+    diagrams (#371)
+  * Added support for context filter in package diagrams (#369)
+  * Added support for regular expressions in sequence diagram boundary
+    conditions (#366)
   * Improved generation performance of to and from_to sequence diagrams (#365)
   * Fixed handling of empty pack expansion types rendering (#362)
   * Added support for json logging (#360)

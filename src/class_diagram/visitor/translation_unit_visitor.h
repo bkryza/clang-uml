@@ -421,13 +421,14 @@ private:
     /**
      * @brief Find relationships in a specific type
      *
+     * @param decl Source declaration from which this relationship originates
      * @param type Type to search for relationships
      * @param relationship_hint Default relationship type to infer from this
      *                          type
      * @return True, if any relationships were found
      */
-    bool find_relationships(const clang::QualType &type,
-        found_relationships_t & /*relationships*/,
+    bool find_relationships(const clang::Decl *decl,
+        const clang::QualType &type, found_relationships_t & /*relationships*/,
         clanguml::common::model::relationship_t relationship_hint);
 
     /**

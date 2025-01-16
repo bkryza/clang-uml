@@ -963,7 +963,7 @@ context_filter::context_filter(
 {
 }
 
-void context_filter::initialize_effective_context(
+void context_filter::initialize_effective_context_class_diagram(
     const diagram &d, unsigned idx) const
 {
     bool effective_context_extended{true};
@@ -1013,15 +1013,18 @@ void context_filter::initialize_effective_context(
         current_iteration_context.clear();
 
         // For each class in the model
-        find_elements_in_direct_relationship<class_diagram::model::class_>(
+        find_elements_in_direct_relationship<class_diagram::model::class_,
+            class_diagram::model::diagram>(
             d, context_cfg, effective_context, current_iteration_context);
 
         // For each concept in the model
-        find_elements_in_direct_relationship<class_diagram::model::concept_>(
+        find_elements_in_direct_relationship<class_diagram::model::concept_,
+            class_diagram::model::diagram>(
             d, context_cfg, effective_context, current_iteration_context);
 
         // For each enum in the model
-        find_elements_in_direct_relationship<class_diagram::model::enum_>(
+        find_elements_in_direct_relationship<class_diagram::model::enum_,
+            class_diagram::model::diagram>(
             d, context_cfg, effective_context, current_iteration_context);
 
         for (auto id : current_iteration_context) {
@@ -1031,6 +1034,64 @@ void context_filter::initialize_effective_context(
                 effective_context_extended = true;
             }
         }
+    }
+}
+
+void context_filter::initialize_effective_context_package_diagram(
+    const diagram &d, unsigned idx) const
+{
+    assert(d.type() == diagram_t::kPackage);
+
+    bool effective_context_extended{true};
+
+    auto &effective_context = effective_contexts_[idx];
+
+    // First add to effective context all elements matching context_
+    // patterns
+    const auto &context_cfg = context_.at(idx);
+    const auto &context_matches =
+        dynamic_cast<const package_diagram::model::diagram &>(d)
+            .find<package_diagram::model::package>(context_cfg.pattern);
+
+    for (const auto &maybe_match : context_matches) {
+        if (maybe_match)
+            effective_context.emplace(maybe_match.value().id());
+    }
+
+    // Now repeat radius times - extend the effective context with elements
+    // matching in direct relationship to what is in context
+    auto radius_counter = context_cfg.radius;
+    std::set<eid_t> current_iteration_context;
+
+    while (radius_counter > 0 && effective_context_extended) {
+        // If at any iteration the effective context was not extended - we
+        // don't to need to continue
+        radius_counter--;
+        effective_context_extended = false;
+        current_iteration_context.clear();
+
+        // For each class in the model
+        find_elements_in_direct_relationship<common::model::package,
+            package_diagram::model::diagram>(
+            d, context_cfg, effective_context, current_iteration_context);
+
+        for (auto id : current_iteration_context) {
+            if (effective_context.count(id) == 0) {
+                // Found new element to add to context
+                effective_context.emplace(id);
+                effective_context_extended = true;
+            }
+        }
+    }
+}
+
+void context_filter::initialize_effective_context(
+    const diagram &d, unsigned idx) const
+{
+    if (d.type() == diagram_t::kClass)
+        initialize_effective_context_class_diagram(d, idx);
+    else if (d.type() == diagram_t::kPackage) {
+        initialize_effective_context_package_diagram(d, idx);
     }
 }
 
@@ -1057,13 +1118,25 @@ void context_filter::initialize(const diagram &d) const
 
 tvl::value_t context_filter::match(const diagram &d, const element &e) const
 {
-    if (d.type() != diagram_t::kClass)
+    if (d.type() != diagram_t::kClass && d.type() != diagram_t::kPackage)
         return {};
 
     // Running this filter makes sense only after the entire diagram is
     // generated - i.e. during diagram generation
     if (!d.complete())
         return {};
+
+    // Context filter only makes sense for packages which are empty, i.e. are
+    // leafs in the package diagram tree
+    if (d.type() == diagram_t::kPackage) {
+        if (const auto *package_ptr =
+                dynamic_cast<const common::model::package *>(&e);
+            package_ptr != nullptr) {
+            if (!package_ptr->is_empty(true)) {
+                return {};
+            }
+        }
+    }
 
     initialize(d);
 

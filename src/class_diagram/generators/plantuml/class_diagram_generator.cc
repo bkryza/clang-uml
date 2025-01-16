@@ -622,6 +622,11 @@ void generator::generate_relationships(
             else
                 relstr << target_alias << " <|-- " << c.alias();
 
+            if (config().generate_links) {
+                common_generator<diagram_config, diagram_model>::generate_link(
+                    relstr, r);
+            }
+
             if (!r.label().empty()) {
                 relstr << " : " << plantuml_common::to_plantuml(r.access())
                        << r.label();
@@ -694,6 +699,11 @@ void generator::generate_relationships(
 
             relstr << c.alias() << " " << puml_relation << " " << target_alias;
 
+            if (config().generate_links) {
+                common_generator<diagram_config, diagram_model>::generate_link(
+                    relstr, r);
+            }
+
             if (!r.label().empty()) {
                 relstr << " : " << plantuml_common::to_plantuml(r.access())
                        << r.label();
@@ -757,6 +767,11 @@ void generator::generate_relationships(const enum_ &e, std::ostream &ostr) const
                    << clanguml::common::generators::plantuml::to_plantuml(
                           r, config())
                    << " " << target_alias;
+
+            if (config().generate_links) {
+                common_generator<diagram_config, diagram_model>::generate_link(
+                    relstr, r);
+            }
 
             if (!r.label().empty())
                 relstr << " : " << r.label();
@@ -824,6 +839,11 @@ void generator::generate_relationships(
                        << target_alias;
             else
                 relstr << target_alias << " <|-- " << c.alias();
+
+            if (config().generate_links) {
+                common_generator<diagram_config, diagram_model>::generate_link(
+                    relstr, r);
+            }
 
             if (!r.label().empty()) {
                 relstr << " : " << plantuml_common::to_plantuml(r.access())

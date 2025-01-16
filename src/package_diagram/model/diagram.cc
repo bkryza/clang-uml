@@ -60,19 +60,32 @@ std::string diagram::to_alias(const eid_t id) const
 
 void diagram::apply_filter()
 {
-    // First find all element ids which should be removed
-    std::set<eid_t> to_remove;
+    // Remove elements by traversing down into packages until no elements
+    // were removed. This is necessary to remove all empty packages.
+    while (true) {
+        auto previous_to_remove_size = packages().size();
 
-    for (const auto &c : packages())
-        if (!filter().should_include(c.get()))
-            to_remove.emplace(c.get().id());
+        // First find all element ids which should be removed
+        std::set<eid_t> to_remove;
 
-    element_view<package>::remove(to_remove);
+        for (const auto &c : packages()) {
+            if (!filter().should_include(c.get())) {
+                to_remove.emplace(c.get().id());
+            }
+        }
 
-    nested_trait_ns::remove(to_remove);
+        element_view<package>::remove(to_remove);
 
-    for (auto &c : element_view<package>::view())
-        c.get().apply_filter(filter(), to_remove);
+        nested_trait_ns::remove(to_remove);
+
+        for (const auto &c : packages()) {
+            c.get().apply_filter(filter(), to_remove);
+        }
+
+        // If this loop didn't remove anything - stop it
+        if (previous_to_remove_size == packages().size())
+            break;
+    }
 }
 
 bool diagram::is_empty() const { return element_view<package>::is_empty(); }

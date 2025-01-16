@@ -1,0 +1,14 @@
+diagrams:
+  t30018_package:
+    generate_links:
+      link: 'https://github.com/bkryza/clang-uml/blob/{{ git.commit }}/{{ element.source.path }}#L{{ element.source.line }}'
+      tooltip: '{% if existsIn(element, "comment") and existsIn(element.comment, "brief")  %}{{ abbrv(trim(replace(element.comment.brief.0, "\n+", " ")), 256) }}{% else %}{{ element.name }}{% endif %}'
+    type: package
+    glob:
+      - t30018.cc
+    include:
+      namespaces:
+        - clanguml::t30018
+      context:
+        - clanguml::t30018::context::E
+    using_namespace: clanguml::t30018

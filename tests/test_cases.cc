@@ -704,6 +704,7 @@ void CHECK_INCLUDE_DIAGRAM(const clanguml::config::config &config,
 #endif
 
 #include "t30017/test_case.h"
+#include "t30018/test_case.h"
 
 ///
 /// Include diagram tests

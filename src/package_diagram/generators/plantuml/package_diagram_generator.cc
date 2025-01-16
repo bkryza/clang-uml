@@ -47,7 +47,14 @@ void generator::generate_relationships(
                 auto destination_alias = model().to_alias(r.destination());
 
                 if (!destination_alias.empty()) {
-                    relstr << p.alias() << " ..> " << destination_alias << '\n';
+                    print_debug(r, ostr);
+                    relstr << p.alias() << " ..> " << destination_alias;
+
+                    if (config().generate_links) {
+                        generate_link(relstr, r);
+                    }
+
+                    relstr << '\n';
                     ostr << relstr.str();
                 }
             }
@@ -79,6 +86,8 @@ void generator::generate(const package &p, std::ostream &ostr) const
     // Don't generate packages from namespaces filtered out by
     // using_namespace
     if (!uns.starts_with({p.full_name(false)})) {
+        print_debug(p, ostr);
+
         ostr << "package [" << display_name_adapter(p).with_packages().name()
              << "] ";
         ostr << "as " << p.alias();
