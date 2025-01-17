@@ -4,6 +4,7 @@
 
 * [Distribution packages](#distribution-packages)
   * [Ubuntu](#ubuntu)
+  * [Debian](#debian)
   * [Fedora](#fedora)
   * [Arch Linux](#arch-linux)
   * [Conda](#conda)
@@ -26,10 +27,18 @@
 #### Ubuntu
 
 ```bash
-# Currently supported Ubuntu versions are Focal, Jammy and Mantic
+# Currently supported Ubuntu versions are Focal, Jammy, Kinetic and Oracular
 sudo add-apt-repository ppa:bkryza/clang-uml
 sudo apt update
 sudo apt install clang-uml
+```
+
+#### Debian
+
+```bash
+# Bookworm
+wget https://github.com/bkryza/clang-uml/releases/download/0.6.0/clang-uml_0.6.0-1_amd64.deb
+sudo apt install ./clang-uml_0.6.0-1_amd64.deb
 ```
 
 #### Fedora
