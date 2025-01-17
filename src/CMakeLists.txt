@@ -34,7 +34,6 @@ target_compile_options(
             -Wno-deprecated-declarations
             ${CUSTOM_COMPILE_OPTIONS}>
             $<$<CXX_COMPILER_ID:MSVC>:
-            /MD
             /W1
             /bigobj
             /wd4291
@@ -61,7 +60,6 @@ target_compile_options(
             -Wno-deprecated-declarations
             ${CUSTOM_COMPILE_OPTIONS}>
             $<$<CXX_COMPILER_ID:MSVC>:/MP
-            /MD
             /W1
             /bigobj
             /wd4291

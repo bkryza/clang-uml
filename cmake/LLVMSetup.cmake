@@ -42,7 +42,6 @@ message(STATUS "LLVM library dir: ${LLVM_LIBRARY_DIR}")
 if(MSVC)
     # LLVM_BUILD_LLVM_DYLIB is not available on Windows
     set(LINK_LLVM_SHARED NO)
-    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 endif(MSVC)
 
 if(LINK_LLVM_SHARED)
