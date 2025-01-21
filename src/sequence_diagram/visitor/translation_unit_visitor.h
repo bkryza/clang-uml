@@ -75,6 +75,8 @@ public:
      */
     bool shouldVisitTemplateInstantiations();
 
+    bool VisitReturnStmt(clang::ReturnStmt *stmt);
+
     bool VisitCallExpr(clang::CallExpr *expr);
 
     bool VisitObjCMessageExpr(clang::ObjCMessageExpr *expr);
@@ -98,6 +100,8 @@ public:
     bool TraverseCXXConstructExpr(clang::CXXConstructExpr *expr);
 
     bool TraverseCXXTemporaryObjectExpr(clang::CXXTemporaryObjectExpr *expr);
+
+    bool TraverseReturnStmt(clang::ReturnStmt *stmt);
 
     bool VisitLambdaExpr(clang::LambdaExpr *expr);
 
@@ -506,6 +510,7 @@ private:
     void push_message(clang::CallExpr *expr, model::message &&m);
     void push_message(clang::CXXConstructExpr *expr, model::message &&m);
     void push_message(clang::ObjCMessageExpr *expr, model::message &&m);
+    void push_message(clang::ReturnStmt *stmt, model::message &&m);
 
     /**
      * @brief Move a message model to diagram.
@@ -515,6 +520,7 @@ private:
     void pop_message_to_diagram(clang::CallExpr *expr);
     void pop_message_to_diagram(clang::CXXConstructExpr *expr);
     void pop_message_to_diagram(clang::ObjCMessageExpr *expr);
+    void pop_message_to_diagram(clang::ReturnStmt *stmt);
 
     std::optional<std::pair<unsigned int, std::string>> get_expression_comment(
         const clang::SourceManager &sm, const clang::ASTContext &context,
@@ -551,6 +557,7 @@ private:
      */
     std::map<clang::CallExpr *, std::deque<model::message>>
         call_expr_message_map_;
+    std::map<clang::ReturnStmt *, model::message> return_stmt_message_map_;
     std::map<clang::CXXConstructExpr *, model::message>
         construct_expr_message_map_;
     std::map<clang::ObjCMessageExpr *, model::message> objc_message_map_;

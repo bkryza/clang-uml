@@ -457,6 +457,7 @@ YAML::Emitter &operator<<(
         out << c.generate_condition_statements;
         out << c.generate_method_arguments;
         out << c.generate_return_types;
+        out << c.generate_return_values;
         out << c.participants_order;
         out << c.generate_message_comments;
         out << c.fold_repeated_activities;

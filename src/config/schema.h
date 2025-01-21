@@ -264,6 +264,7 @@ types:
         combine_free_functions_into_file_participants: !optional bool
         inline_lambda_messages: !optional bool
         generate_return_types: !optional bool
+        generate_return_values: !optional bool
         generate_condition_statements: !optional bool
         generate_message_comments: !optional bool
         fold_repeated_activities: !optional bool
@@ -402,6 +403,7 @@ root:
     inline_lambda_messages: !optional bool
     generate_concept_requirements: !optional bool
     generate_return_types: !optional bool
+    generate_return_values: !optional bool
     generate_condition_statements: !optional bool
     generate_message_comments: !optional bool
     fold_repeated_activities: !optional bool

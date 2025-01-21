@@ -861,8 +861,12 @@ int64_t FindMessage(
             style);
     }
     else if (msg.is_response) {
-        call_pattern = fmt::format("{} {} {} : //{}//", d.get_alias(msg.from),
-            "-->", d.get_alias(msg.to), msg_str);
+        if (!msg_str.empty())
+            call_pattern = fmt::format("{} {} {} : //{}//",
+                d.get_alias(msg.from), "-->", d.get_alias(msg.to), msg_str);
+        else
+            call_pattern = fmt::format(
+                "{} {} {}", d.get_alias(msg.from), "-->", d.get_alias(msg.to));
     }
     else {
         call_pattern = fmt::format("{} {} {} "
@@ -2029,18 +2033,12 @@ template <>
 int64_t FindMessage(
     const json_t &d, const Message &msg, int64_t offset, bool fail)
 {
-    if (msg.is_response) {
-        // TODO: Currently response are not generated as separate messages
-        //       in JSON format
-        return offset;
-    }
-
     if (msg.is_entrypoint || msg.is_exitpoint)
         return offset;
 
     try {
         return json_helpers::find_message(d.src, msg.from.str(), msg.to.str(),
-            msg.message, msg.return_type, offset);
+            msg.message, msg.is_response, msg.return_type, offset);
     }
     catch (std::exception &e) {
         if (!fail)

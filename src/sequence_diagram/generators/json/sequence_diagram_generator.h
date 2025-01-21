@@ -132,6 +132,13 @@ private:
         const model::message &m, std::vector<eid_t> &visited) const;
 
     /**
+     * @brief Process return message
+     *
+     * @param m Message model
+     */
+    void process_return_message(const model::message &m) const;
+
+    /**
      * @brief Process `if` statement message
      *
      * @param m Message model
@@ -244,6 +251,14 @@ private:
     void generate_to_sequences(nlohmann::json &parent) const;
 
     void generate_from_sequences(nlohmann::json &parent) const;
+
+    void generate_from_activity(const model::message &m,
+        const common::optional_ref<model::participant> &from,
+        nlohmann::json &msg) const;
+
+    void generate_to_activity(
+        const common::optional_ref<model::participant> &to,
+        nlohmann::json &msg) const;
 
     std::vector<eid_t> find_from_activities() const;
 

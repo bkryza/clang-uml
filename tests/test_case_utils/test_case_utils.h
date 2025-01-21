@@ -239,13 +239,13 @@ struct File {
 
 namespace json_helpers {
 int find_message_nested(const nlohmann::json &j, const std::string &from,
-    const std::string &to, const std::string &msg,
+    const std::string &to, const std::string &msg, bool is_response,
     std::optional<std::string> return_type, const nlohmann::json &from_p,
     const nlohmann::json &to_p, int &count, const int64_t offset,
     std::optional<int32_t> chain_index = {});
 
 int find_message_impl(const nlohmann::json &j, const std::string &from,
-    const std::string &to, const std::string &msg,
+    const std::string &to, const std::string &msg, bool is_response,
     std::optional<std::string> return_type, int64_t offset,
     std::optional<int32_t> chain_index = {});
 
@@ -253,11 +253,11 @@ int64_t find_message(const nlohmann::json &j, const File &from, const File &to,
     const std::string &msg, int64_t offset);
 
 int64_t find_message(const nlohmann::json &j, const std::string &from,
-    const std::string &to, const std::string &msg,
+    const std::string &to, const std::string &msg, bool is_response,
     std::optional<std::string> return_type = {}, int64_t offset = 0);
 
 int64_t find_message_in_chain(const nlohmann::json &j, const std::string &from,
-    const std::string &to, const std::string &msg,
+    const std::string &to, const std::string &msg, bool is_response,
     std::optional<std::string> return_type = {}, int64_t offset = 0,
     uint32_t chain_index = 0);
 

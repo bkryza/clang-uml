@@ -672,6 +672,7 @@ struct inheritable_diagram_options {
         "combine_free_functions_into_file_participants", false};
     option<bool> inline_lambda_messages{"inline_lambda_messages", false};
     option<bool> generate_return_types{"generate_return_types", false};
+    option<bool> generate_return_values{"generate_return_values", false};
     option<bool> generate_condition_statements{
         "generate_condition_statements", false};
     option<std::vector<std::string>> participants_order{"participants_order"};

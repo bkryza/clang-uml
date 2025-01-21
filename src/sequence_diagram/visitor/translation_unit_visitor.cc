@@ -840,6 +840,27 @@ bool translation_unit_visitor::TraverseCXXConstructExpr(
     return true;
 }
 
+bool translation_unit_visitor::TraverseReturnStmt(clang::ReturnStmt *stmt)
+{
+    LOG_TRACE("Entering return statement at {}",
+        stmt->getBeginLoc().printToString(source_manager()));
+
+    context().enter_callexpr(stmt);
+
+    RecursiveASTVisitor<translation_unit_visitor>::TraverseReturnStmt(stmt);
+
+    translation_unit_visitor::VisitReturnStmt(stmt);
+
+    LOG_TRACE("Leaving return statement at {}",
+        stmt->getBeginLoc().printToString(source_manager()));
+
+    context().leave_callexpr();
+
+    pop_message_to_diagram(stmt);
+
+    return true;
+}
+
 bool translation_unit_visitor::TraverseCompoundStmt(clang::CompoundStmt *stmt)
 {
     using clanguml::common::model::message_t;
@@ -1505,6 +1526,74 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
             m.from(), m.from(), m.to(), m.to());
 
         push_message(expr, std::move(m));
+    }
+
+    return true;
+}
+
+bool translation_unit_visitor::VisitReturnStmt(clang::ReturnStmt *stmt)
+{
+    using clanguml::common::model::message_scope_t;
+    using clanguml::common::model::message_t;
+    using clanguml::common::model::namespace_;
+    using clanguml::sequence_diagram::model::activity;
+    using clanguml::sequence_diagram::model::message;
+
+    if (!context().valid() || context().get_ast_context() == nullptr)
+        return true;
+
+    LOG_TRACE("Visiting return statement at {}",
+        stmt->getBeginLoc().printToString(source_manager()));
+
+    message m{message_t::kReturn, context().caller_id()};
+
+    set_source_location(*stmt, m);
+
+    const auto *raw_expr_comment = clanguml::common::get_expression_raw_comment(
+        source_manager(), *context().get_ast_context(), stmt);
+    const auto stripped_comment = process_comment(
+        raw_expr_comment, context().get_ast_context()->getDiagnostics(), m);
+
+    if (m.skip())
+        return true;
+
+    if (stmt->getRetValue() != nullptr)
+        m.set_message_name(common::to_string(stmt->getRetValue()));
+
+    if (context().current_function_decl_ != nullptr) {
+        m.set_return_type(
+            context().current_function_decl_->getReturnType().getAsString());
+    }
+    else if (context().current_function_template_decl_ != nullptr) {
+        m.set_return_type(context()
+                              .current_function_template_decl_->getAsFunction()
+                              ->getReturnType()
+                              .getAsString());
+    }
+    else if (context().current_method_decl_ != nullptr) {
+        m.set_return_type(
+            context().current_method_decl_->getReturnType().getAsString());
+    }
+    else if (context().current_objc_method_decl_ != nullptr) {
+        m.set_return_type(
+            context().current_objc_method_decl_->getReturnType().getAsString());
+    }
+
+    // We can skip the ID of the return activity here, we'll just add it during
+    // diagram generation
+    if (m.from().value() > 0) {
+        if (raw_expr_comment != nullptr)
+            m.set_comment(raw_expr_comment->getBeginLoc().getHashValue(),
+                stripped_comment);
+
+        ensure_activity_exists(m);
+
+        diagram().add_active_participant(m.from());
+
+        LOG_DBG("Found return call {} from {} [{}] to {} [{}] ",
+            m.message_name(), m.from(), m.from(), m.to(), m.to());
+
+        push_message(stmt, std::move(m));
     }
 
     return true;
@@ -2356,6 +2445,12 @@ void translation_unit_visitor::push_message(
     objc_message_map_.emplace(expr, std::move(m));
 }
 
+void translation_unit_visitor::push_message(
+    clang::ReturnStmt *stmt, model::message &&m)
+{
+    return_stmt_message_map_.emplace(stmt, std::move(m));
+}
+
 void translation_unit_visitor::pop_message_to_diagram(clang::CallExpr *expr)
 {
     assert(expr != nullptr);
@@ -2404,6 +2499,23 @@ void translation_unit_visitor::pop_message_to_diagram(
     diagram().get_activity(caller_id).add_message(std::move(msg));
 
     construct_expr_message_map_.erase(expr);
+}
+
+void translation_unit_visitor::pop_message_to_diagram(clang::ReturnStmt *stmt)
+{
+    assert(stmt != nullptr);
+
+    // Skip if no message was generated from this expr
+    if (return_stmt_message_map_.find(stmt) == return_stmt_message_map_.end()) {
+        return;
+    }
+
+    auto msg = std::move(return_stmt_message_map_.at(stmt));
+
+    auto caller_id = msg.from();
+    diagram().get_activity(caller_id).add_message(std::move(msg));
+
+    return_stmt_message_map_.erase(stmt);
 }
 
 void translation_unit_visitor::pop_message_to_diagram(

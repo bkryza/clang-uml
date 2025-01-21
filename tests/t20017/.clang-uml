@@ -4,6 +4,7 @@ diagrams:
     combine_free_functions_into_file_participants: true
     glob:
       - t20017.cc
+      - t20017_b.cc
     include:
       namespaces:
         - clanguml::t20017

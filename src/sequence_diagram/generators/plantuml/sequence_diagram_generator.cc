@@ -128,26 +128,44 @@ void generator::generate_call(const message &m, std::ostream &ostr) const
 
 void generator::generate_return(const message &m, std::ostream &ostr) const
 {
+    assert(m.type() == message_t::kReturn);
 
     // Add return activity only for messages between different actors
     // and only if the return type is different than void
     if (m.from() == m.to())
         return;
 
-    const auto &from = model().get_participant<model::participant>(m.from());
-    const auto &to = model().get_participant<model::function>(m.to());
-    if (to.has_value() && !to.value().is_void()) {
+    const auto &from = model().get_participant<model::function>(m.from());
+    const auto &to = model().get_participant<model::participant>(m.to());
+    if (to.has_value() && from.has_value() && !from.value().is_void()) {
         const std::string from_alias = generate_alias(from.value());
 
         const std::string to_alias = generate_alias(to.value());
 
-        ostr << to_alias << " "
+        ostr << from_alias << " "
              << common::generators::plantuml::to_plantuml(message_t::kReturn)
-             << " " << from_alias;
+             << " " << to_alias;
 
         if (config().generate_return_types()) {
             ostr << " : //" << m.return_type() << "//";
         }
+        else if (config().generate_return_values()) {
+            ostr << " : //" << m.message_name() << "//";
+        }
+
+        ostr << '\n';
+    }
+    else if (from.has_value() && !from.value().is_void() &&
+        (from.value().type_name() == "method" ||
+            from.value().type_name() == "objc_method" ||
+            config().combine_free_functions_into_file_participants())) {
+        const std::string from_alias = generate_alias(from.value());
+
+        ostr << "[<--" << " " << from_alias;
+        if (config().generate_return_types())
+            ostr << " : //" << from.value().return_type() << "//";
+        else if (config().generate_return_values())
+            ostr << " : //" << m.message_name() << "//";
 
         ostr << '\n';
     }
@@ -210,11 +228,18 @@ void generator::generate_activity(
                 LOG_DBG("Skipping activity {} --> {} - missing sequence {}",
                     m.from(), m.to(), m.to());
 
-            generate_return(m, ostr);
-
             ostr << "deactivate " << to_alias << '\n';
 
             visited.pop_back();
+        }
+        else if (m.type() == message_t::kReturn) {
+            print_debug(m, ostr);
+            generate_message_comment(ostr, m);
+            auto return_message = m;
+            if (!visited.empty()) {
+                return_message.set_to(visited.back());
+            }
+            generate_return(return_message, ostr);
         }
         else if (m.type() == message_t::kIf) {
             print_debug(m, ostr);
@@ -605,20 +630,6 @@ void generator::generate_from_sequences(std::ostream &ostr) const
         ostr << "activate " << from_alias << '\n';
 
         generate_activity(from_id, ostr, visited_participants);
-
-        if (from.value().type_name() == "method" ||
-            from.value().type_name() == "objc_method" ||
-            config().combine_free_functions_into_file_participants()) {
-
-            if (!from.value().is_void()) {
-                ostr << "[<--" << " " << from_alias;
-
-                if (config().generate_return_types())
-                    ostr << " : //" << from.value().return_type() << "//";
-
-                ostr << '\n';
-            }
-        }
 
         ostr << "deactivate " << from_alias << '\n';
     }

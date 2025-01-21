@@ -66,8 +66,9 @@ int tmain()
     // \uml{note Just add 2 numbers}
     auto tmp = a.add(1, 2);
 
-    // \uml{note[] And now add another 2}
-    return b.wrap_add3(tmp, 2, 3);
+    return
+        // \uml{note[] And now add another 2}
+        b.wrap_add3(tmp, 2, 3);
 }
 }
 }

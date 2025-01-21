@@ -317,6 +317,7 @@ void inheritable_diagram_options::inherit(
         parent.combine_free_functions_into_file_participants);
     inline_lambda_messages.override(parent.inline_lambda_messages);
     generate_return_types.override(parent.generate_return_types);
+    generate_return_values.override(parent.generate_return_values);
     generate_condition_statements.override(
         parent.generate_condition_statements);
     debug_mode.override(parent.debug_mode);
