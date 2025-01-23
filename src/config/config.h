@@ -672,6 +672,7 @@ struct inheritable_diagram_options {
         "combine_free_functions_into_file_participants", false};
     option<bool> inline_lambda_messages{"inline_lambda_messages", false};
     option<bool> generate_return_types{"generate_return_types", false};
+    option<bool> generate_return_values{"generate_return_values", false};
     option<bool> generate_condition_statements{
         "generate_condition_statements", false};
     option<std::vector<std::string>> participants_order{"participants_order"};
@@ -679,6 +680,8 @@ struct inheritable_diagram_options {
     option<bool> fold_repeated_activities{"fold_repeated_activities", false};
     option<unsigned> message_comment_width{
         "message_comment_width", clanguml::util::kDefaultMessageCommentWidth};
+    option<unsigned> message_name_width{
+        "message_name_width", clanguml::util::kDefaultMessageNameWidth};
     option<bool> debug_mode{"debug_mode", false};
     option<bool> generate_metadata{"generate_metadata", true};
     option<bool> allow_empty_diagrams{"allow_empty_diagrams", false};

@@ -1,111 +1,125 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" data-diagram-type="SEQUENCE" height="237px" preserveAspectRatio="none" style="width:635px;height:237px;background:#FFFFFF;" version="1.1" viewBox="0 0 635 237" width="635px" zoomAndPan="magnify">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" data-diagram-type="SEQUENCE" height="325px" preserveAspectRatio="none" style="width:700px;height:325px;background:#FFFFFF;" version="1.1" viewBox="0 0 700 325" width="700px" zoomAndPan="magnify">
   <defs>
     <style type="text/css">a:hover { text-decoration: underline; }</style>
   </defs>
   <g>
     <g>
       <title>tmain()</title>
-      <rect fill="#FFFFFF" height="132" style="stroke:#181818;stroke-width:1;" width="10" x="30.3309" y="49.0679"/>
+      <rect fill="#FFFFFF" height="220.5301" style="stroke:#181818;stroke-width:1;" width="10" x="30.3309" y="49.0679"/>
     </g>
     <g>
       <title>a2(int)</title>
-      <rect fill="#FFFFFF" height="14" style="stroke:#181818;stroke-width:1;" width="10" x="98.4517" y="55.0679"/>
+      <rect fill="#FFFFFF" height="31.706" style="stroke:#181818;stroke-width:1;" width="10" x="98.4517" y="55.0679"/>
     </g>
     <g>
-      <title>a2(int)</title>
-      <rect fill="#FFFFFF" height="14" style="stroke:#181818;stroke-width:1;" width="10" x="98.4517" y="83.0679"/>
-    </g>
-    <g>
-      <title>a1&lt;(lambda at t20053.cc:23:9)&gt;((lambda at t20053.cc:23:9) &amp;&amp;)</title>
-      <rect fill="#FFFFFF" height="42" style="stroke:#181818;stroke-width:1;" width="10" x="347.4798" y="111.0679"/>
+      <title>a1&lt;(lambda at t20053.cc:30:9)&gt;((lambda at t20053.cc:30:9) &amp;&amp;)</title>
+      <rect fill="#FFFFFF" height="77.412" style="stroke:#181818;stroke-width:1;" width="10" x="347.4798" y="100.7739"/>
     </g>
     <g>
       <title>a3(int)</title>
-      <rect fill="#FFFFFF" height="14" style="stroke:#181818;stroke-width:1;" width="10" x="596.5079" y="125.0679"/>
+      <rect fill="#FFFFFF" height="31.706" style="stroke:#181818;stroke-width:1;" width="10" x="596.5079" y="114.7739"/>
     </g>
     <g>
       <title>a3(int)</title>
-      <rect fill="#FFFFFF" height="14" style="stroke:#181818;stroke-width:1;" width="10" x="596.5079" y="167.0679"/>
+      <rect fill="#FFFFFF" height="31.706" style="stroke:#181818;stroke-width:1;" width="10" x="596.5079" y="192.186"/>
+    </g>
+    <g>
+      <title>a4(int)</title>
+      <rect fill="#FFFFFF" height="31.706" style="stroke:#181818;stroke-width:1;" width="10" x="662.0878" y="237.892"/>
     </g>
     <g>
       <title>tmain()</title>
-      <rect fill="transparent" height="160" width="8" x="31.3309" y="39.0679"/>
-      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="35" x2="35" y1="39.0679" y2="199.0679"/>
+      <rect fill="transparent" height="248.5301" width="8" x="31.3309" y="39.0679"/>
+      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="35" x2="35" y1="39.0679" y2="287.598"/>
     </g>
     <g>
       <title>a2(int)</title>
-      <rect fill="transparent" height="160" width="8" x="99.4517" y="39.0679"/>
-      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="102.6618" x2="102.6618" y1="39.0679" y2="199.0679"/>
+      <rect fill="transparent" height="248.5301" width="8" x="99.4517" y="39.0679"/>
+      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="102.6618" x2="102.6618" y1="39.0679" y2="287.598"/>
     </g>
     <g>
-      <title>a1&lt;(lambda at t20053.cc:23:9)&gt;((lambda at t20053.cc:23:9) &amp;&amp;)</title>
-      <rect fill="transparent" height="160" width="8" x="348.4798" y="39.0679"/>
-      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="352.2417" x2="352.2417" y1="39.0679" y2="199.0679"/>
+      <title>a1&lt;(lambda at t20053.cc:30:9)&gt;((lambda at t20053.cc:30:9) &amp;&amp;)</title>
+      <rect fill="transparent" height="248.5301" width="8" x="348.4798" y="39.0679"/>
+      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="352.2417" x2="352.2417" y1="39.0679" y2="287.598"/>
     </g>
     <g>
       <title>a3(int)</title>
-      <rect fill="transparent" height="160" width="8" x="597.5079" y="39.0679"/>
-      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="600.718" x2="600.718" y1="39.0679" y2="199.0679"/>
+      <rect fill="transparent" height="248.5301" width="8" x="597.5079" y="39.0679"/>
+      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="600.718" x2="600.718" y1="39.0679" y2="287.598"/>
+    </g>
+    <g>
+      <title>a4(int)</title>
+      <rect fill="transparent" height="248.5301" width="8" x="663.0878" y="39.0679"/>
+      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="666.2978" x2="666.2978" y1="39.0679" y2="287.598"/>
     </g>
     <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="60.6618" x="5" y="5"/>
     <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="46.6618" x="12" y="26.9659">tmain()</text>
-    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="60.6618" x="5" y="198.0679"/>
-    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="46.6618" x="12" y="220.0339">tmain()</text>
+    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="60.6618" x="5" y="286.598"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="46.6618" x="12" y="308.5639">tmain()</text>
     <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="55.5798" x="75.6618" y="5"/>
     <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="41.5798" x="82.6618" y="26.9659">a2(int)</text>
-    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="55.5798" x="75.6618" y="198.0679"/>
-    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="41.5798" x="82.6618" y="220.0339">a2(int)</text>
+    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="55.5798" x="75.6618" y="286.598"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="41.5798" x="82.6618" y="308.5639">a2(int)</text>
     <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="422.4763" x="141.2417" y="5"/>
-    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="408.4763" x="148.2417" y="26.9659">a1&lt;(lambda at t20053.cc:23:9)&gt;((lambda at t20053.cc:23:9) &amp;&amp;)</text>
-    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="422.4763" x="141.2417" y="198.0679"/>
-    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="408.4763" x="148.2417" y="220.0339">a1&lt;(lambda at t20053.cc:23:9)&gt;((lambda at t20053.cc:23:9) &amp;&amp;)</text>
+    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="408.4763" x="148.2417" y="26.9659">a1&lt;(lambda at t20053.cc:30:9)&gt;((lambda at t20053.cc:30:9) &amp;&amp;)</text>
+    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="422.4763" x="141.2417" y="286.598"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="408.4763" x="148.2417" y="308.5639">a1&lt;(lambda at t20053.cc:30:9)&gt;((lambda at t20053.cc:30:9) &amp;&amp;)</text>
     <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="55.5798" x="573.718" y="5"/>
     <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="41.5798" x="580.718" y="26.9659">a3(int)</text>
-    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="55.5798" x="573.718" y="198.0679"/>
-    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="41.5798" x="580.718" y="220.0339">a3(int)</text>
+    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="55.5798" x="573.718" y="286.598"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="41.5798" x="580.718" y="308.5639">a3(int)</text>
+    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="55.5798" x="639.2978" y="5"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="41.5798" x="646.2978" y="26.9659">a4(int)</text>
+    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="55.5798" x="639.2978" y="286.598"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="41.5798" x="646.2978" y="308.5639">a4(int)</text>
     <g>
       <title>tmain()</title>
-      <rect fill="#FFFFFF" height="132" style="stroke:#181818;stroke-width:1;" width="10" x="30.3309" y="49.0679"/>
+      <rect fill="#FFFFFF" height="220.5301" style="stroke:#181818;stroke-width:1;" width="10" x="30.3309" y="49.0679"/>
     </g>
     <g>
       <title>a2(int)</title>
-      <rect fill="#FFFFFF" height="14" style="stroke:#181818;stroke-width:1;" width="10" x="98.4517" y="55.0679"/>
+      <rect fill="#FFFFFF" height="31.706" style="stroke:#181818;stroke-width:1;" width="10" x="98.4517" y="55.0679"/>
     </g>
     <g>
-      <title>a2(int)</title>
-      <rect fill="#FFFFFF" height="14" style="stroke:#181818;stroke-width:1;" width="10" x="98.4517" y="83.0679"/>
-    </g>
-    <g>
-      <title>a1&lt;(lambda at t20053.cc:23:9)&gt;((lambda at t20053.cc:23:9) &amp;&amp;)</title>
-      <rect fill="#FFFFFF" height="42" style="stroke:#181818;stroke-width:1;" width="10" x="347.4798" y="111.0679"/>
+      <title>a1&lt;(lambda at t20053.cc:30:9)&gt;((lambda at t20053.cc:30:9) &amp;&amp;)</title>
+      <rect fill="#FFFFFF" height="77.412" style="stroke:#181818;stroke-width:1;" width="10" x="347.4798" y="100.7739"/>
     </g>
     <g>
       <title>a3(int)</title>
-      <rect fill="#FFFFFF" height="14" style="stroke:#181818;stroke-width:1;" width="10" x="596.5079" y="125.0679"/>
+      <rect fill="#FFFFFF" height="31.706" style="stroke:#181818;stroke-width:1;" width="10" x="596.5079" y="114.7739"/>
     </g>
     <g>
       <title>a3(int)</title>
-      <rect fill="#FFFFFF" height="14" style="stroke:#181818;stroke-width:1;" width="10" x="596.5079" y="167.0679"/>
+      <rect fill="#FFFFFF" height="31.706" style="stroke:#181818;stroke-width:1;" width="10" x="596.5079" y="192.186"/>
+    </g>
+    <g>
+      <title>a4(int)</title>
+      <rect fill="#FFFFFF" height="31.706" style="stroke:#181818;stroke-width:1;" width="10" x="662.0878" y="237.892"/>
     </g>
     <polygon fill="#181818" points="86.4517,51.0679,96.4517,55.0679,86.4517,59.0679,90.4517,55.0679" style="stroke:#181818;stroke-width:1;"/>
     <line style="stroke:#181818;stroke-width:1;" x1="40.3309" x2="92.4517" y1="55.0679" y2="55.0679"/>
-    <polygon fill="#181818" points="51.3309,65.0679,41.3309,69.0679,51.3309,73.0679,47.3309,69.0679" style="stroke:#181818;stroke-width:1;"/>
-    <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="45.3309" x2="102.4517" y1="69.0679" y2="69.0679"/>
-    <polygon fill="#181818" points="86.4517,79.0679,96.4517,83.0679,86.4517,87.0679,90.4517,83.0679" style="stroke:#181818;stroke-width:1;"/>
-    <line style="stroke:#181818;stroke-width:1;" x1="40.3309" x2="92.4517" y1="83.0679" y2="83.0679"/>
-    <polygon fill="#181818" points="51.3309,93.0679,41.3309,97.0679,51.3309,101.0679,47.3309,97.0679" style="stroke:#181818;stroke-width:1;"/>
-    <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="45.3309" x2="102.4517" y1="97.0679" y2="97.0679"/>
-    <polygon fill="#181818" points="335.4798,107.0679,345.4798,111.0679,335.4798,115.0679,339.4798,111.0679" style="stroke:#181818;stroke-width:1;"/>
-    <line style="stroke:#181818;stroke-width:1;" x1="40.3309" x2="341.4798" y1="111.0679" y2="111.0679"/>
-    <polygon fill="#181818" points="584.5079,121.0679,594.5079,125.0679,584.5079,129.0679,588.5079,125.0679" style="stroke:#181818;stroke-width:1;"/>
-    <line style="stroke:#181818;stroke-width:1;" x1="357.4798" x2="590.5079" y1="125.0679" y2="125.0679"/>
-    <polygon fill="#181818" points="368.4798,135.0679,358.4798,139.0679,368.4798,143.0679,364.4798,139.0679" style="stroke:#181818;stroke-width:1;"/>
-    <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="362.4798" x2="600.5079" y1="139.0679" y2="139.0679"/>
-    <polygon fill="#181818" points="51.3309,149.0679,41.3309,153.0679,51.3309,157.0679,47.3309,153.0679" style="stroke:#181818;stroke-width:1;"/>
-    <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="45.3309" x2="351.4798" y1="153.0679" y2="153.0679"/>
-    <polygon fill="#181818" points="584.5079,163.0679,594.5079,167.0679,584.5079,171.0679,588.5079,167.0679" style="stroke:#181818;stroke-width:1;"/>
-    <line style="stroke:#181818;stroke-width:1;" x1="40.3309" x2="590.5079" y1="167.0679" y2="167.0679"/>
-    <polygon fill="#181818" points="46.3309,177.0679,36.3309,181.0679,46.3309,185.0679,42.3309,181.0679" style="stroke:#181818;stroke-width:1;"/>
-    <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="40.3309" x2="600.5079" y1="181.0679" y2="181.0679"/>
+    <polygon fill="#181818" points="51.3309,82.7739,41.3309,86.7739,51.3309,90.7739,47.3309,86.7739" style="stroke:#181818;stroke-width:1;"/>
+    <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="45.3309" x2="102.4517" y1="86.7739" y2="86.7739"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="7.163" x="57.3309" y="80.9649">2</text>
+    <polygon fill="#181818" points="335.4798,96.7739,345.4798,100.7739,335.4798,104.7739,339.4798,100.7739" style="stroke:#181818;stroke-width:1;"/>
+    <line style="stroke:#181818;stroke-width:1;" x1="40.3309" x2="341.4798" y1="100.7739" y2="100.7739"/>
+    <polygon fill="#181818" points="584.5079,110.7739,594.5079,114.7739,584.5079,118.7739,588.5079,114.7739" style="stroke:#181818;stroke-width:1;"/>
+    <line style="stroke:#181818;stroke-width:1;" x1="357.4798" x2="590.5079" y1="114.7739" y2="114.7739"/>
+    <polygon fill="#181818" points="368.4798,142.4799,358.4798,146.4799,368.4798,150.4799,364.4798,146.4799" style="stroke:#181818;stroke-width:1;"/>
+    <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="362.4798" x2="600.5079" y1="146.4799" y2="146.4799"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="7.163" x="374.4798" y="140.6709">3</text>
+    <polygon fill="#181818" points="51.3309,174.186,41.3309,178.186,51.3309,182.186,47.3309,178.186" style="stroke:#181818;stroke-width:1;"/>
+    <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="45.3309" x2="351.4798" y1="178.186" y2="178.186"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="26" x="57.3309" y="172.377">f(42)</text>
+    <polygon fill="#181818" points="584.5079,188.186,594.5079,192.186,584.5079,196.186,588.5079,192.186" style="stroke:#181818;stroke-width:1;"/>
+    <line style="stroke:#181818;stroke-width:1;" x1="40.3309" x2="590.5079" y1="192.186" y2="192.186"/>
+    <polygon fill="#181818" points="51.3309,219.892,41.3309,223.892,51.3309,227.892,47.3309,223.892" style="stroke:#181818;stroke-width:1;"/>
+    <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="45.3309" x2="600.5079" y1="223.892" y2="223.892"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="7.163" x="57.3309" y="218.083">3</text>
+    <polygon fill="#181818" points="650.0878,233.892,660.0878,237.892,650.0878,241.892,654.0878,237.892" style="stroke:#181818;stroke-width:1;"/>
+    <line style="stroke:#181818;stroke-width:1;" x1="40.3309" x2="656.0878" y1="237.892" y2="237.892"/>
+    <polygon fill="#181818" points="46.3309,265.598,36.3309,269.598,46.3309,273.598,42.3309,269.598" style="stroke:#181818;stroke-width:1;"/>
+    <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="40.3309" x2="666.0878" y1="269.598" y2="269.598"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="91.9361" x="52.3309" y="263.789">[]() { return 5; }()</text>
   </g>
 </svg>

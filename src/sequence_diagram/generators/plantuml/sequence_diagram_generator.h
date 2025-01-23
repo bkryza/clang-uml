@@ -151,6 +151,8 @@ private:
 
     std::vector<model::message_chain_t> find_to_message_chains() const;
 
+    std::string render_message_name(const std::string &m) const;
+
     /**
      * @brief Convert config to model message render mode.
      *

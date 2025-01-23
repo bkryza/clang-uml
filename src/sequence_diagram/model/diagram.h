@@ -326,6 +326,9 @@ public:
     void inline_lambda_operator_calls();
 
 private:
+    bool inline_lambda_operator_call(
+        eid_t id, model::activity &new_activity, const model::message &m);
+
     /**
      * This method checks the last messages in sequence (current_messages),
      * if they represent a block sequence identified by statement_begin
@@ -366,9 +369,6 @@ private:
 
         return block_end_types.count(mt) > 0;
     };
-
-    bool inline_lambda_operator_call(
-        eid_t id, model::activity &new_activity, const model::message &m);
 
     std::map<eid_t, activity> activities_;
 

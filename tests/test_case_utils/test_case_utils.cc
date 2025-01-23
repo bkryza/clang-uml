@@ -430,7 +430,7 @@ File::File(const std::string &f)
 
 namespace json_helpers {
 int find_message_nested(const nlohmann::json &j, const std::string &from,
-    const std::string &to, const std::string &msg,
+    const std::string &to, const std::string &msg, bool is_response,
     std::optional<std::string> return_type, const nlohmann::json &from_p,
     const nlohmann::json &to_p, int &count, const int64_t offset,
     std::optional<int32_t> chain_index)
@@ -458,16 +458,16 @@ int find_message_nested(const nlohmann::json &j, const std::string &from,
     for (const auto &m : messages) {
         if (m.contains("branches")) {
             for (const auto &b : m["branches"]) {
-                auto nested_res = find_message_nested(
-                    b, from, to, msg, return_type, from_p, to_p, count, offset);
+                auto nested_res = find_message_nested(b, from, to, msg,
+                    is_response, return_type, from_p, to_p, count, offset);
 
                 if (nested_res >= offset)
                     return nested_res;
             }
         }
         else if (m.contains("messages")) {
-            auto nested_res = find_message_nested(
-                m, from, to, msg, return_type, from_p, to_p, count, offset);
+            auto nested_res = find_message_nested(m, from, to, msg, is_response,
+                return_type, from_p, to_p, count, offset);
 
             if (nested_res >= offset)
                 return nested_res;
@@ -476,7 +476,7 @@ int find_message_nested(const nlohmann::json &j, const std::string &from,
             if (count >= offset &&
                 (m["from"]["participant_id"] == from_p["id"]) &&
                 (m["to"]["participant_id"] == to_p["id"]) &&
-                (m["name"] == msg) &&
+                (m["name"] == msg) && (!is_response || m["type"] == "return") &&
                 (!return_type || m["return_type"] == *return_type))
                 return count;
 
@@ -488,7 +488,7 @@ int find_message_nested(const nlohmann::json &j, const std::string &from,
 }
 
 int find_message_impl(const nlohmann::json &j, const std::string &from,
-    const std::string &to, const std::string &msg,
+    const std::string &to, const std::string &msg, bool is_response,
     std::optional<std::string> return_type, int64_t offset,
     std::optional<int32_t> chain_index)
 {
@@ -512,8 +512,8 @@ int find_message_impl(const nlohmann::json &j, const std::string &from,
     for (const auto &seq : j["sequences"]) {
         int64_t res{-1};
 
-        res = find_message_nested(seq, from, to, msg, return_type, *from_p,
-            *to_p, count, offset, chain_index);
+        res = find_message_nested(seq, from, to, msg, is_response, return_type,
+            *from_p, *to_p, count, offset, chain_index);
 
         if (res >= 0)
             return res;
@@ -526,24 +526,24 @@ int find_message_impl(const nlohmann::json &j, const std::string &from,
 int64_t find_message(const nlohmann::json &j, const File &from, const File &to,
     const std::string &msg, int64_t offset)
 {
-    return find_message_impl(j, from.file, to.file, msg, {}, offset);
+    return find_message_impl(j, from.file, to.file, msg, false, {}, offset);
 }
 
 int64_t find_message(const nlohmann::json &j, const std::string &from,
-    const std::string &to, const std::string &msg,
+    const std::string &to, const std::string &msg, bool is_response,
     std::optional<std::string> return_type, int64_t offset)
 {
-    return find_message_impl(
-        j, expand_name(j, from), expand_name(j, to), msg, return_type, offset);
+    return find_message_impl(j, expand_name(j, from), expand_name(j, to), msg,
+        is_response, return_type, offset);
 }
 
 int64_t find_message_in_chain(const nlohmann::json &j, const std::string &from,
-    const std::string &to, const std::string &msg,
+    const std::string &to, const std::string &msg, bool is_response,
     std::optional<std::string> return_type, int64_t offset,
     uint32_t chain_index)
 {
     return find_message_impl(j, expand_name(j, from), expand_name(j, to), msg,
-        return_type, offset, chain_index);
+        is_response, return_type, offset, chain_index);
 }
 
 } // namespace json_helpers
@@ -551,18 +551,13 @@ int64_t find_message_in_chain(const nlohmann::json &j, const std::string &from,
 int64_t find_message_in_chain(const json_t &d, const Message &msg,
     int64_t offset, bool fail, uint32_t chain_index)
 {
-    if (msg.is_response) {
-        // TODO: Currently response are not generated as separate messages
-        //       in JSON format
-        return offset;
-    }
-
     if (msg.is_entrypoint || msg.is_exitpoint)
         return offset;
 
     try {
         return json_helpers::find_message_in_chain(d.src, msg.from.str(),
-            msg.to.str(), msg.message, msg.return_type, offset, chain_index);
+            msg.to.str(), msg.message, msg.is_response, msg.return_type, offset,
+            chain_index);
     }
     catch (std::exception &e) {
         if (!fail)

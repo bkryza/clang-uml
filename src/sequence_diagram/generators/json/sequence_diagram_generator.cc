@@ -115,8 +115,70 @@ void generator::generate_call(const message &m, nlohmann::json &parent) const
 
     msg["name"] = message;
     msg["type"] = "message";
-    msg["from"]["activity_id"] = std::to_string(from.value().id().value());
+
+    generate_from_activity(m, from, msg);
+
+    generate_to_activity(to, msg);
+
+    msg["source_location"] =
+        dynamic_cast<const clanguml::common::model::source_location &>(m);
+
+    msg["scope"] = to_string(m.message_scope());
+    msg["return_type"] = config().simplify_template_type(m.return_type());
+
+    parent["messages"].push_back(std::move(msg));
+
+    LOG_DBG("Generated call '{}' from {} [{}] to {} [{}]", message,
+        from.value().full_name(false), m.from(), to.value().full_name(false),
+        m.to());
+}
+
+void generator::generate_to_activity(
+    const common::optional_ref<model::participant> &to,
+    nlohmann::json &msg) const
+{
     msg["to"]["activity_id"] = std::to_string(to.value().id().value());
+    if (to.value().type_name() == "method") {
+        const auto &class_participant =
+            model().get_participant<model::method>(to.value().id()).value();
+
+        msg["to"]["participant_id"] =
+            std::to_string(class_participant.class_id().value());
+    }
+    else if (to.value().type_name() == "objc_method") {
+        const auto &class_participant =
+            model()
+                .get_participant<model::objc_method>(to.value().id())
+                .value();
+
+        msg["to"]["participant_id"] =
+            std::to_string(class_participant.class_id().value());
+    }
+    else if (to.value().type_name() == "function" ||
+        to.value().type_name() == "function_template") {
+        if (config().combine_free_functions_into_file_participants()) {
+            const auto &file_participant =
+                model()
+                    .get_participant<model::function>(to.value().id())
+                    .value();
+            msg["to"]["participant_id"] = std::to_string(
+                common::to_id(file_participant.file_relative()).value());
+        }
+        else {
+            msg["to"]["participant_id"] =
+                std::to_string(to.value().id().value());
+        }
+    }
+    else if (to.value().type_name() == "lambda") {
+        msg["to"]["participant_id"] = std::to_string(to.value().id().value());
+    }
+}
+
+void generator::generate_from_activity(const message &m,
+    const common::optional_ref<model::participant> &from,
+    nlohmann::json &msg) const
+{
+    msg["from"]["activity_id"] = std::to_string(from.value().id().value());
     if (const auto &cmt = m.comment(); cmt.has_value())
         msg["comment"] = cmt.value().at("comment");
 
@@ -155,53 +217,6 @@ void generator::generate_call(const message &m, nlohmann::json &parent) const
         msg["from"]["participant_id"] =
             std::to_string(from.value().id().value());
     }
-
-    if (to.value().type_name() == "method") {
-        const auto &class_participant =
-            model().get_participant<model::method>(to.value().id()).value();
-
-        msg["to"]["participant_id"] =
-            std::to_string(class_participant.class_id().value());
-    }
-    else if (to.value().type_name() == "objc_method") {
-        const auto &class_participant =
-            model()
-                .get_participant<model::objc_method>(to.value().id())
-                .value();
-
-        msg["to"]["participant_id"] =
-            std::to_string(class_participant.class_id().value());
-    }
-    else if (to.value().type_name() == "function" ||
-        to.value().type_name() == "function_template") {
-        if (config().combine_free_functions_into_file_participants()) {
-            const auto &file_participant =
-                model()
-                    .get_participant<model::function>(to.value().id())
-                    .value();
-            msg["to"]["participant_id"] = std::to_string(
-                common::to_id(file_participant.file_relative()).value());
-        }
-        else {
-            msg["to"]["participant_id"] =
-                std::to_string(to.value().id().value());
-        }
-    }
-    else if (to.value().type_name() == "lambda") {
-        msg["to"]["participant_id"] = std::to_string(to.value().id().value());
-    }
-
-    msg["source_location"] =
-        dynamic_cast<const clanguml::common::model::source_location &>(m);
-
-    msg["scope"] = to_string(m.message_scope());
-    msg["return_type"] = config().simplify_template_type(m.return_type());
-
-    parent["messages"].push_back(std::move(msg));
-
-    LOG_DBG("Generated call '{}' from {} [{}] to {} [{}]", message,
-        from.value().full_name(false), m.from(), to.value().full_name(false),
-        m.to());
 }
 
 void generator::generate_activity(
@@ -268,8 +283,14 @@ void generator::generate_activity(
         case message_t::kConditionalEnd:
             process_end_conditional_message();
             break;
-        case message_t::kNone:
-        case message_t::kReturn:; // noop
+        case message_t::kReturn: {
+            auto return_message = m;
+            if (!visited.empty()) {
+                return_message.set_to(visited.back());
+            }
+            process_return_message(return_message);
+        }
+        case message_t::kNone:;
         }
     }
 }
@@ -303,8 +324,8 @@ void generator::process_call_message(
         if (std::find(visited.begin(), visited.end(), m.to()) ==
             visited.end()) { // break infinite recursion on recursive calls
 
-            LOG_DBG("Creating activity {} --> {} - missing sequence {}",
-                m.from(), m.to(), m.to());
+            LOG_DBG(
+                "Generating activity {} (called from {})", m.to(), m.from());
 
             generate_activity(model().get_activity(m.to()), visited);
         }
@@ -314,6 +335,54 @@ void generator::process_call_message(
             m.to(), m.to());
 
     visited.pop_back();
+}
+
+void generator::process_return_message(const message &m) const
+{
+    const auto &from = model().get_participant<model::participant>(m.from());
+    const auto &to = model().get_participant<model::participant>(m.to());
+
+    if (!from) {
+        LOG_DBG("Skipping return call - no participant for id {}", m.from());
+        return;
+    }
+
+    if (!to) {
+        LOG_DBG("Skipping return call - no participant for id {}", m.to());
+        return;
+    }
+
+    generate_participant(json_, m.from());
+    generate_participant(json_, m.to());
+
+    std::string message;
+
+    if (config().generate_return_types()) {
+        message = m.return_type();
+    }
+    else if (config().generate_return_values()) {
+        message = m.message_name();
+    }
+
+    nlohmann::json msg;
+    msg["name"] = message;
+    msg["type"] = "return";
+
+    generate_from_activity(m, from, msg);
+
+    generate_to_activity(to, msg);
+
+    msg["source_location"] =
+        dynamic_cast<const clanguml::common::model::source_location &>(m);
+
+    msg["scope"] = to_string(m.message_scope());
+    msg["return_type"] = config().simplify_template_type(m.return_type());
+
+    current_block_statement()["messages"].push_back(std::move(msg));
+
+    LOG_DBG("Generated return call '{}' from {} [{}] to {} [{}]", message,
+        from.value().full_name(false), m.from(), to.value().full_name(false),
+        m.to());
 }
 
 void generator::process_while_message(const message &m) const

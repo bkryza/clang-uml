@@ -31,6 +31,7 @@
 namespace clanguml::util {
 
 constexpr unsigned kDefaultMessageCommentWidth{25U};
+constexpr unsigned kDefaultMessageNameWidth{100U};
 
 /**
  * @brief Left trim a string
@@ -246,6 +247,14 @@ bool find_element_alias(
  */
 bool replace_all(std::string &input, const std::string &pattern,
     const std::string &replace_with);
+
+/**
+ * Replace all consecutive space like characters with just one space
+ *
+ * @param input
+ * @return Condensed string
+ */
+std::string condense_whitespace(const std::string &input);
 
 /**
  * @brief Appends a vector to a vector.

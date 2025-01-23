@@ -24,20 +24,33 @@ TEST_CASE("t20053")
         CHECK_SEQUENCE_MODEL("t20053", "t20053_sequence");
 
     CHECK_SEQUENCE_DIAGRAM(*config, diagram, *model, [](const auto &src) {
-        REQUIRE(!IsFileParticipant(src, "t20053.cu"));
+        REQUIRE(!IsFileParticipant(src, "t20053.cc"));
 
         REQUIRE(MessageOrder(src,
             {
                 //
-                {"tmain()", "a2(int)", ""}, //
+                {"tmain()", "a2(int)", ""},              //
+                {"a2(int)", "tmain()", "2", Response{}}, //
 
                 {"tmain()",
-                    "a1<(lambda at t20053.cc:23:9)>((lambda at t20053.cc:23:9) "
+                    "a1<(lambda at t20053.cc:30:9)>((lambda at t20053.cc:30:9) "
                     "&&)",
                     ""}, //
-                {"a1<(lambda at t20053.cc:23:9)>((lambda at t20053.cc:23:9) "
+
+                {"a1<(lambda at t20053.cc:30:9)>((lambda at t20053.cc:30:9) "
                  "&&)",
                     "a3(int)", ""}, //
+                {"a3(int)",
+                    "a1<(lambda at t20053.cc:30:9)>((lambda at t20053.cc:30:9) "
+                    "&&)",
+                    "3", Response{}}, //
+
+                {"a1<(lambda at t20053.cc:30:9)>((lambda at t20053.cc:30:9) "
+                 "&&)",
+                    "tmain()", "f(42)", Response{}}, //
+
+                {"tmain()", "a4(int)", ""},                                 //
+                {"a4(int)", "tmain()", "[]() { return 5; }()", Response{}}, //
             }));
     });
 }

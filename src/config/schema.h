@@ -264,10 +264,12 @@ types:
         combine_free_functions_into_file_participants: !optional bool
         inline_lambda_messages: !optional bool
         generate_return_types: !optional bool
+        generate_return_values: !optional bool
         generate_condition_statements: !optional bool
         generate_message_comments: !optional bool
         fold_repeated_activities: !optional bool
         message_comment_width: !optional int
+        message_name_width: !optional int
         participants_order: !optional [string]
         start_from: !optional [source_location_t] # deprecated -> 'from'
         from: !optional [source_location_t]
@@ -402,10 +404,12 @@ root:
     inline_lambda_messages: !optional bool
     generate_concept_requirements: !optional bool
     generate_return_types: !optional bool
+    generate_return_values: !optional bool
     generate_condition_statements: !optional bool
     generate_message_comments: !optional bool
     fold_repeated_activities: !optional bool
     message_comment_width: !optional int
+    message_name_width: !optional int
     generate_packages: !optional bool
     group_methods: !optional bool
     package_type: !optional package_type_t

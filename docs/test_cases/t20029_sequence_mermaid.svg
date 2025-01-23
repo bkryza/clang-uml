@@ -173,25 +173,25 @@
     <rect class="activation0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="762" x="834"/>
   </g>
   <g>
-    <line class="loopLine" y2="697" x2="854" y1="697" x1="585"/>
+    <line class="loopLine" y2="697" x2="854" y1="697" x1="313.5"/>
     <line class="loopLine" y2="790" x2="854" y1="697" x1="854"/>
-    <line class="loopLine" y2="790" x2="854" y1="790" x1="585"/>
-    <line class="loopLine" y2="790" x2="585" y1="697" x1="585"/>
-    <polygon class="labelBox" points="585,697 635,697 635,710 626.6,717 585,717"/>
-    <text style="font-size: 16px; font-weight: 400;" class="labelText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="710" x="610">alt</text>
-    <text style="font-size: 16px; font-weight: 400;" class="loopText" text-anchor="middle" y="715" x="744.5">
-      <tspan x="744.5">​</tspan>
+    <line class="loopLine" y2="790" x2="854" y1="790" x1="313.5"/>
+    <line class="loopLine" y2="790" x2="313.5" y1="697" x1="313.5"/>
+    <polygon class="labelBox" points="313.5,697 363.5,697 363.5,710 355.1,717 313.5,717"/>
+    <text style="font-size: 16px; font-weight: 400;" class="labelText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="710" x="339">alt</text>
+    <text style="font-size: 16px; font-weight: 400;" class="loopText" text-anchor="middle" y="715" x="608.75">
+      <tspan x="608.75">​</tspan>
     </text>
   </g>
   <g>
-    <line class="loopLine" y2="672" x2="864" y1="672" x1="575"/>
+    <line class="loopLine" y2="672" x2="864" y1="672" x1="303.5"/>
     <line class="loopLine" y2="800" x2="864" y1="672" x1="864"/>
-    <line class="loopLine" y2="800" x2="864" y1="800" x1="575"/>
-    <line class="loopLine" y2="800" x2="575" y1="672" x1="575"/>
-    <polygon class="labelBox" points="575,672 625,672 625,685 616.6,692 575,692"/>
-    <text style="font-size: 16px; font-weight: 400;" class="labelText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="685" x="600">loop</text>
-    <text style="font-size: 16px; font-weight: 400;" class="loopText" text-anchor="middle" y="690" x="744.5">
-      <tspan x="744.5">​</tspan>
+    <line class="loopLine" y2="800" x2="864" y1="800" x1="303.5"/>
+    <line class="loopLine" y2="800" x2="303.5" y1="672" x1="303.5"/>
+    <polygon class="labelBox" points="303.5,672 353.5,672 353.5,685 345.1,692 303.5,692"/>
+    <text style="font-size: 16px; font-weight: 400;" class="labelText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="685" x="329">loop</text>
+    <text style="font-size: 16px; font-weight: 400;" class="loopText" text-anchor="middle" y="690" x="608.75">
+      <tspan x="608.75">​</tspan>
     </text>
   </g>
   <g>
@@ -234,6 +234,8 @@
   <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="758" x2="835" y1="758" x1="605"/>
   <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="773" x="721">​</text>
   <line style="stroke-dasharray: 3, 3; fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine1" y2="768" x2="608" y1="768" x1="834"/>
+  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="783" x="466">​</text>
+  <line style="stroke-dasharray: 3, 3; fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine1" y2="778" x2="336.5" y1="778" x1="595"/>
   <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="815" x="466">​</text>
   <line style="stroke-dasharray: 3, 3; fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine1" y2="810" x2="336.5" y1="810" x1="595"/>
   <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="825" x="203">​</text>

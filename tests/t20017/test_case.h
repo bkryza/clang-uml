@@ -24,15 +24,21 @@ TEST_CASE("t20017")
         CHECK_SEQUENCE_MODEL("t20017", "t20017_sequence");
 
     CHECK_SEQUENCE_DIAGRAM(*config, diagram, *model, [](const auto &src) {
+        //        REQUIRE(HasTitle(src, "AAA"));
         REQUIRE(MessageOrder(src,
             {
                 //
                 {Entrypoint{}, "t20017.cc", "tmain()"},                  //
                 {"t20017.cc", "include/t20017_a.h", "a3(int,int)"},      //
+                {"include/t20017_a.h", "t20017.cc", "", Response{}},     //
                 {"t20017.cc", "include/t20017_b.h", "b1(int,int)"},      //
+                {"include/t20017_b.h", "t20017.cc", "", Response{}},     //
                 {"t20017.cc", "include/t20017_a.h", "a2(int,int)"},      //
+                {"include/t20017_a.h", "t20017.cc", "", Response{}},     //
                 {"t20017.cc", "include/t20017_a.h", "a1(int,int)"},      //
+                {"include/t20017_a.h", "t20017.cc", "", Response{}},     //
                 {"t20017.cc", "include/t20017_b.h", "b2<int>(int,int)"}, //
+                {"include/t20017_b.h", "t20017.cc", "", Response{}},     //
                 {Exitpoint{}, "t20017.cc"},                              //
             }));
     });

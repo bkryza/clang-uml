@@ -472,6 +472,9 @@ test_cases:
     - name: t20068
       title: Test case for combine 'from', 'to' and 'from_to' in one diagram
       description:
+    - name: t20069
+      title: Test case for return messages from all branches and exitpoints
+      description:
   Package diagrams:
     - name: t30001
       title: Basic package diagram test case
