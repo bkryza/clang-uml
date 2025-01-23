@@ -7,7 +7,7 @@
 * [Grouping free functions by file](#grouping-free-functions-by-file)
 * [Lambda expressions in sequence diagrams](#lambda-expressions-in-sequence-diagrams)
 * [Customizing participants order](#customizing-participants-order)
-* [Generating return types](#generating-return-types)
+* [Generating return types or values](#generating-return-types-or-values)
 * [Generating condition statements](#generating-condition-statements)
 * [Folding repeated activities](#folding-repeated-activities)
 * [Injecting call expressions manually through comments](#injecting-call-expressions-manually-through-comments)
@@ -16,6 +16,7 @@
 <!-- tocstop -->
 
 The minimal config required to generate a sequence diagram is presented below:
+
 ```yaml
 # Path to the directory where `compile_commands.json` can be found
 compilation_database_dir: _build
@@ -51,29 +52,31 @@ Consider the following diagram:
 `clang-uml` generated sequence diagrams are not strictly speaking conforming to
 the UML specification. In order to make them more useful for documenting modern
 C++ code, the following assumptions were made:
- * Free functions are included in the sequence diagrams as standalone
-   participants (in fact `clang-uml` can be used to generate sequence diagrams
-   from plain old C code). Functions can also be aggregated into file
-   participants, based on their place of declaration
- * Call expressions in conditional expressions in block statements (e.g. `if`
-   or `while`) are rendered inside the PlantUML or MermaidJS `alt` or `loop`
-   blocks but wrapped in `[`, `]` brackets
- * Lambda expressions are generated as standalone participants, whose name
-   comprises the parent context where they are defined and the exact source code
-   location
+
+* Free functions are included in the sequence diagrams as standalone
+  participants (in fact `clang-uml` can be used to generate sequence diagrams
+  from plain old C code). Functions can also be aggregated into file
+  participants, based on their place of declaration
+* Call expressions in conditional expressions in block statements (e.g. `if`
+  or `while`) are rendered inside the PlantUML or MermaidJS `alt` or `loop`
+  blocks but wrapped in `[`, `]` brackets
+* Lambda expressions are generated as standalone participants, whose name
+  comprises the parent context where they are defined and the exact source code
+  location
 
 ## Specifying diagram location constraints
 
 Sequence diagrams require specification of location constraints in order to
 determine, which call chains should be included in the diagram. Currently,
 there are 3 types of constraints:
+
 * `from` - will include all message call chains, which start at the
-           locations specified in this constraint (this was previously named
-           `start_from`)
+  locations specified in this constraint (this was previously named
+  `start_from`)
 * `to` - will include all message call chains, which end at the specified
-         locations
+  locations
 * `from_to` - will include all call chains, which start and end at the specified
-              locations
+  locations
 
 Currently, the constraints can be a method or a free function, both specified
 using either the full signature of the function or a regular expression, e.g.:
@@ -90,6 +93,7 @@ or
       - function:
           r: "main.*"
 ```
+
 However note that the latter will match all functions starting with 'main', so
 make sure the regular expression only matches the intended functions.
 
@@ -110,10 +114,11 @@ or regular expression matching against the fully qualified name, e.g.:
 
 In case of the `from_to` constraint, it is necessary to provide both `from`
 and `to` locations as follows:
+
 ```yaml
     from_to:
-      - [function: "clanguml::t20034::D::d2()",
-         function: "clanguml::t20034::A::a2()"]
+      - [ function: "clanguml::t20034::D::d2()",
+          function: "clanguml::t20034::A::a2()" ]
 ```
 
 To find the exact function signature, which can be used as a `from` location,
@@ -138,6 +143,7 @@ Since that list can be quite large, it's best to filter the output to limit
 the number of lines to a subset of possible candidates.
 
 ## Grouping free functions by file
+
 By default, `clang-uml` will generate a new participant for each call to a free
 function (not method), which can lead to a very large number of participants in
 the diagram. If it's an issue, an option can be provided in the diagram
@@ -153,15 +159,17 @@ thus minimizing the diagram size. An example of such diagram is presented below:
 ![extension](test_cases/t20017_sequence.svg)
 
 ## Lambda expressions in sequence diagrams
+
 Lambda expressions in sequence diagrams are... tricky. There is currently
 tentative support, which follows the following rules:
-  * If lambda expression is called within the scope of the diagram, the calls
-    from the lambda will be placed at the lambda invocation and not declaration
-  * If lambda expression is passed to some function or method, which is outside
-    the scope of the diagram (e.g. used in `std::transform` call) the call will
-    not be generated
-  * If the lambda is passed as template argument in instantiation it will not
-    be generated
+
+* If lambda expression is called within the scope of the diagram, the calls
+  from the lambda will be placed at the lambda invocation and not declaration
+* If lambda expression is passed to some function or method, which is outside
+  the scope of the diagram (e.g. used in `std::transform` call) the call will
+  not be generated
+* If the lambda is passed as template argument in instantiation it will not
+  be generated
 
 Another issue is the naming of lambda participants. Currently, each lambda is
 rendered in the diagram as a separate class whose name is composed of the lambda
@@ -283,6 +291,7 @@ For example compare the test cases [t20012](test_cases/t20012.md) and
 [t20052](test_cases/t20052.md).
 
 ## Customizing participants order
+
 The default participant order in the sequence diagram can be suboptimal in the
 sense that consecutive calls can go right, then left, then right again
 depending on the specific call chain in the code. It is however possible to
@@ -312,7 +321,8 @@ diagrams:
       - "clanguml::t20029::encode_b64(std::string &&)"
 ```
 
-## Generating return types
+## Generating return types or values
+
 By default, return messages do not contain the return type information from
 the function or method. Instead, if the result is void there is no return
 arrow from the activity representing the function body.
@@ -330,7 +340,26 @@ generator `return_type` property is always present in the message nodes.
 The diagram below presents what it looks like in a PlantUML generated diagram:
 ![extension](test_cases/t20032_sequence.svg)
 
+Sometimes it would be more useful to see actual expressions used in return
+statements, instead of return types. This can be easily enabled using:
+
+```yaml
+generate_return_values: true
+```
+
+The diagram below presents what it looks like in a PlantUML generated diagram:
+![extension](test_cases/t20053_sequence.svg)
+
+By default, these messages will be truncated at `100` characters to make
+diagrams
+more eligble. This setting can be overridden using for instance:
+
+```yaml
+message_name_width: 200
+```
+
 ## Generating condition statements
+
 Sometimes, it is useful to include actual condition statements (for instance
 contents of the `if()` condition in the `alt` or `loop` blocks in the sequence
 diagrams, to make them more readable.
@@ -345,6 +374,7 @@ An example of a diagram with this feature enabled is presented below:
 ![extension](test_cases/t20033_sequence.svg)
 
 ## Folding repeated activities
+
 If in a given sequence diagram functions or methods are called multiple times
 from different branches, each of these activities will be rendered fully
 which can mean that the diagram be very large.
@@ -356,18 +386,22 @@ fold_repeated_activities: true
 ```
 
 which will render any activity only once, and any further calls to that activity
-will only render a call to the activity and an indicator - a single `*` character
+will only render a call to the activity and an indicator - a single `*`
+character
+
 - in a note over the activity.
 
 For an example of this see the test case [t20056](test_cases/t20056.md).
 
 ## Injecting call expressions manually through comments
+
 In some cases, `clang-uml` is not yet able to discover a call expression target
 in some line of code. This can include passing function or method address to
 some executor (e.g. thread), async calls etc.
 
 However, a call expression can be injected manually through a comment
 directive
+
 ```cpp
 // \uml{note CALLEE}
 ```
@@ -394,6 +428,7 @@ add_compile_flags:
 otherwise Clang will skip these comments during AST traversal.
 
 ## Including comments in sequence diagrams
+
 `clang-uml` can add code comments placed directly before or next to a call
 expression as notes in the diagram (see for instance
 [t20038](test_cases/t20038_sequence.svg)).

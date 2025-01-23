@@ -641,10 +641,13 @@ bool translation_unit_visitor::VisitLambdaExpr(clang::LambdaExpr *expr)
         lambda_method_model_ptr->id());
 
     // If lambda expression is in an argument to a method/function, and that
-    // method function would be excluded by filters
+    // method function would be excluded by filters and if it is not a lambda
+    // call itself
     if (std::holds_alternative<clang::CallExpr *>(
             context().current_callexpr()) &&
-        (!context().lambda_caller_id().has_value())) {
+        (!context().lambda_caller_id().has_value()) &&
+        !common::is_lambda_call(
+            std::get<clang::CallExpr *>(context().current_callexpr()))) {
         using clanguml::common::model::message_t;
         using clanguml::sequence_diagram::model::message;
 
@@ -658,8 +661,8 @@ bool translation_unit_visitor::VisitLambdaExpr(clang::LambdaExpr *expr)
         diagram().add_active_participant(m.from());
         diagram().add_active_participant(m.to());
 
-        LOG_DBG("Found call {} from {} [{}] to {} [{}]", m.message_name(),
-            m.from(), m.from(), m.to(), m.to());
+        LOG_DBG("Found call in lambda expression {} from {} [{}] to {} [{}]",
+            m.message_name(), m.from(), m.from(), m.to(), m.to());
 
         push_message(std::get<clang::CallExpr *>(context().current_callexpr()),
             std::move(m));
@@ -849,7 +852,7 @@ bool translation_unit_visitor::TraverseReturnStmt(clang::ReturnStmt *stmt)
 
     RecursiveASTVisitor<translation_unit_visitor>::TraverseReturnStmt(stmt);
 
-    translation_unit_visitor::VisitReturnStmt(stmt);
+    //    translation_unit_visitor::VisitReturnStmt(stmt);
 
     LOG_TRACE("Leaving return statement at {}",
         stmt->getBeginLoc().printToString(source_manager()));
@@ -1480,8 +1483,7 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
                 if (!process_unresolved_lookup_call_expression(m, expr))
                     return true;
             }
-            else if (clang::dyn_cast_or_null<clang::LambdaExpr>(
-                         expr->getCallee()) != nullptr) {
+            else if (common::is_lambda_call(expr)) {
                 LOG_DBG("Processing lambda expression callee");
                 if (!process_lambda_call_expression(m, expr))
                     return true;
@@ -1557,8 +1559,10 @@ bool translation_unit_visitor::VisitReturnStmt(clang::ReturnStmt *stmt)
     if (m.skip())
         return true;
 
-    if (stmt->getRetValue() != nullptr)
-        m.set_message_name(common::to_string(stmt->getRetValue()));
+    if (stmt->getRetValue() != nullptr) {
+        std::string message_name = common::to_string(stmt->getRetValue());
+        m.set_message_name(util::condense_whitespace(message_name));
+    }
 
     if (context().current_function_decl_ != nullptr) {
         m.set_return_type(

@@ -383,6 +383,28 @@ bool replace_all(std::string &input, const std::string &pattern,
     return replaced;
 }
 
+std::string condense_whitespace(const std::string &input)
+{
+    std::string output;
+    output.reserve(input.size());
+
+    bool in_whitespace = false;
+    for (char ch : input) {
+        if (std::isspace(ch) != 0) {
+            if (!in_whitespace) {
+                output.push_back(' ');
+                in_whitespace = true;
+            }
+        }
+        else {
+            output.push_back(ch);
+            in_whitespace = false;
+        }
+    }
+
+    return output;
+}
+
 template <> bool starts_with(const std::string &s, const std::string &prefix)
 {
     return s.rfind(prefix, 0) == 0;

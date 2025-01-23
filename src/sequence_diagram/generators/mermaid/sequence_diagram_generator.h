@@ -147,6 +147,8 @@ private:
     void generate_message_comment(
         std::ostream &ostr, const model::message &m) const;
 
+    std::string render_message_name(const std::string &m) const;
+
     /**
      * @brief Convert config to model message render mode.
      *

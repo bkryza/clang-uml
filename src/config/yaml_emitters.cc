@@ -462,6 +462,7 @@ YAML::Emitter &operator<<(
         out << c.generate_message_comments;
         out << c.fold_repeated_activities;
         out << c.message_comment_width;
+        out << c.message_name_width;
     }
     else if (const auto *pd = dynamic_cast<const package_diagram *>(&c);
              pd != nullptr) {

@@ -8,5 +8,6 @@ diagrams:
         - clanguml::t20053
     using_namespace: clanguml::t20053
     inline_lambda_messages: true
+    generate_return_values: true
     from:
       - function: "clanguml::t20053::tmain()"

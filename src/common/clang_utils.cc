@@ -1167,4 +1167,33 @@ const clang::EnumDecl *get_typedef_enum_decl(const clang::TypedefDecl *decl)
 
     return nullptr;
 }
+
+bool is_lambda_call(const clang::Expr *expr)
+{
+    const auto *call_expr = clang::dyn_cast<clang::CallExpr>(expr);
+
+    if (call_expr == nullptr)
+        return false;
+
+    if (clang::dyn_cast_or_null<clang::LambdaExpr>(call_expr->getCallee()) !=
+        nullptr) {
+        return true;
+    }
+
+    const auto *function_callee = call_expr->getDirectCallee();
+    if (function_callee != nullptr) {
+
+        const auto *method_decl =
+            clang::dyn_cast<clang::CXXMethodDecl>(function_callee);
+        if (method_decl == nullptr)
+            return false;
+
+        if (method_decl->getParent()->isLambda() &&
+            method_decl->getOverloadedOperator() == clang::OO_Call) {
+            return true;
+        }
+    }
+
+    return false;
+}
 } // namespace clanguml::common

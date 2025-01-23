@@ -371,4 +371,12 @@ const clang::Type *get_unqualified_type(const clang::TypedefDecl *decl);
  * @return Pointer to enum decl inside typedef
  */
 const clang::EnumDecl *get_typedef_enum_decl(const clang::TypedefDecl *decl);
+
+/**
+ * Check if clang::Expr is a call on lambda operator()
+ *
+ * @param callExpr
+ * @return True, if the expression points to lambda invocation
+ */
+bool is_lambda_call(const clang::Expr *callExpr);
 } // namespace clanguml::common

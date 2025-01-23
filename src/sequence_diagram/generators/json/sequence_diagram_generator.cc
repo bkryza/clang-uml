@@ -324,8 +324,8 @@ void generator::process_call_message(
         if (std::find(visited.begin(), visited.end(), m.to()) ==
             visited.end()) { // break infinite recursion on recursive calls
 
-            LOG_DBG("Creating activity {} --> {} - missing sequence {}",
-                m.from(), m.to(), m.to());
+            LOG_DBG(
+                "Generating activity {} (called from {})", m.to(), m.from());
 
             generate_activity(model().get_activity(m.to()), visited);
         }

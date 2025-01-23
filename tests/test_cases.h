@@ -828,12 +828,15 @@ int64_t FindMessage(
     const plantuml_t &d, const Message &msg, int64_t offset, bool fail)
 {
     auto msg_str = msg.message;
+
     util::replace_all(msg_str, "(", "\\(");
     util::replace_all(msg_str, ")", "\\)");
     util::replace_all(msg_str, "*", "\\*");
     util::replace_all(msg_str, "[", "\\[");
     util::replace_all(msg_str, "]", "\\]");
     util::replace_all(msg_str, "+", "\\+");
+    util::replace_all(msg_str, "{", "\\{");
+    util::replace_all(msg_str, "}", "\\}");
 
     if (msg.is_cuda_kernel)
         msg_str = fmt::format("<< CUDA Kernel >>\\\\n{}", msg_str);
@@ -1425,6 +1428,9 @@ int64_t FindMessage(
     util::replace_all(msg_str, "[", "\\[");
     util::replace_all(msg_str, "]", "\\]");
     util::replace_all(msg_str, "+", "\\+");
+    util::replace_all(msg_str, "{", "\\{");
+    util::replace_all(msg_str, "}", "\\}");
+    util::replace_all(msg_str, ";", "&#59;");
 
     if (msg.is_cuda_kernel)
         msg_str = fmt::format("<< CUDA Kernel >><br>{}", msg_str);

@@ -433,6 +433,8 @@ bool diagram::is_empty() const
 
 void diagram::inline_lambda_operator_calls()
 {
+    using namespace std::string_literals;
+
     std::map<eid_t, activity> activities;
     std::map<eid_t, std::unique_ptr<participant>> participants;
     std::set<eid_t> active_participants;
@@ -440,7 +442,9 @@ void diagram::inline_lambda_operator_calls()
     for (auto &[id, act] : sequences()) {
         model::activity new_activity{id};
 
-        // If activity is a lambda operator() - skip it
+        // If activity is a lambda operator() - skip it, we're only processing
+        // normal activities at this level, and descend recursively into
+        // lambda activities when encountering a lambda call expression
         auto maybe_lambda_activity = get_participant<model::method>(id);
 
         if (maybe_lambda_activity) {
@@ -486,8 +490,9 @@ void diagram::inline_lambda_operator_calls()
             maybe_method != nullptr) {
             auto maybe_class =
                 get_participant<model::class_>(maybe_method->class_id());
-            if (maybe_class && maybe_class.value().is_lambda())
+            if (maybe_class && maybe_class.value().is_lambda()) {
                 continue;
+            }
         }
 
         // Otherwise move the participant to the new diagram model
@@ -510,6 +515,8 @@ void diagram::inline_lambda_operator_calls()
 bool diagram::inline_lambda_operator_call(
     const eid_t id, model::activity &new_activity, const model::message &m)
 {
+    using namespace std::string_literals;
+
     bool message_call_to_lambda{false};
     auto maybe_lambda_operator = get_participant<model::method>(m.to());
 
@@ -526,9 +533,16 @@ bool diagram::inline_lambda_operator_call(
                 // call to the current activity
                 for (auto &mm : lambda_operator_activity.messages()) {
                     if (!inline_lambda_operator_call(id, new_activity, mm)) {
+
+                        // Do not propagate return calls from nested lambdas
+                        if (mm.type() == common::model::message_t::kReturn) {
+                            continue;
+                        }
+
                         auto new_message{mm};
 
                         new_message.set_from(id);
+
                         new_activity.add_message(new_message);
                     }
                 }

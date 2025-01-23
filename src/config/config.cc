@@ -298,6 +298,8 @@ void inheritable_diagram_options::inherit(
     graphml.override(parent.graphml);
     generate_method_arguments.override(parent.generate_method_arguments);
     fold_repeated_activities.override(parent.fold_repeated_activities);
+    message_comment_width.override(parent.message_comment_width);
+    message_name_width.override(parent.message_name_width);
     generate_concept_requirements.override(
         parent.generate_concept_requirements);
     generate_packages.override(parent.generate_packages);

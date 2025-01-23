@@ -529,3 +529,13 @@ TEST_CASE("Test find_entry_by_path_prefix")
     kv = find_entry_by_path_prefix(m, "../my_other_project/src/lib.cc");
     CHECK(kv.value().second == "my_other_project_sources");
 }
+
+TEST_CASE("Test condense_whitespace")
+{
+    using clanguml::util::condense_whitespace;
+
+    CHECK_EQ(condense_whitespace(""), "");
+
+    CHECK_EQ(condense_whitespace("  \t\n        "), " ");
+    CHECK_EQ(condense_whitespace("A  \t\n        A"), "A A");
+}

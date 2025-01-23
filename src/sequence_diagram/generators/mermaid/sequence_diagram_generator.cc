@@ -157,7 +157,7 @@ void generator::generate_call(const message &m, std::ostream &ostr) const
     if (m.message_scope() == common::model::message_scope_t::kCondition)
         ostr << "[";
 
-    ostr << message;
+    ostr << render_message_name(message);
 
     if (m.message_scope() == common::model::message_scope_t::kCondition)
         ostr << "]";
@@ -190,10 +190,10 @@ void generator::generate_return(const message &m, std::ostream &ostr) const
              << " " << to_alias << " : ";
 
         if (config().generate_return_types()) {
-            ostr << m.return_type();
+            ostr << render_message_name(m.return_type());
         }
         else if (config().generate_return_values()) {
-            ostr << m.message_name();
+            ostr << render_message_name(m.message_name());
         }
 
         ostr << '\n';
@@ -209,12 +209,18 @@ void generator::generate_return(const message &m, std::ostream &ostr) const
              << " * : ";
 
         if (config().generate_return_types())
-            ostr << from.value().return_type();
+            ostr << render_message_name(from.value().return_type());
         else if (config().generate_return_values())
-            ostr << m.message_name();
+            ostr << render_message_name(m.message_name());
 
         ostr << '\n';
     }
+}
+
+std::string generator::render_message_name(const std::string &m) const
+{
+    return render_message_text(
+        util::abbreviate(m, config().message_name_width()));
 }
 
 void generator::generate_activity(
@@ -348,7 +354,7 @@ void generator::generate_activity(
         else if (m.type() == message_t::kCatch) {
             print_debug(m, ostr);
             ostr << indent(1) << "option "
-                 << render_message_text(m.message_name()) << '\n';
+                 << render_message_name(m.message_name()) << '\n';
         }
         else if (m.type() == message_t::kTryEnd) {
             print_debug(m, ostr);
@@ -362,7 +368,7 @@ void generator::generate_activity(
         else if (m.type() == message_t::kCase) {
             print_debug(m, ostr);
             ostr << indent(1) << "else "
-                 << render_message_text(m.message_name()) << '\n';
+                 << render_message_name(m.message_name()) << '\n';
         }
         else if (m.type() == message_t::kSwitchEnd) {
             ostr << indent(1) << "end\n";
@@ -668,8 +674,8 @@ void generator::generate_to_sequences(std::ostream &ostr) const
             ostr << indent(1) << "* "
                  << common::generators::mermaid::to_mermaid(message_t::kCall)
                  << " " << generate_alias(from.value()) << " : "
-                 << from.value().message_name(
-                        select_method_arguments_render_mode())
+                 << render_message_name(from.value().message_name(
+                        select_method_arguments_render_mode()))
                  << '\n';
         }
 
@@ -737,8 +743,8 @@ void generator::generate_from_to_sequences(
                              << common::generators::mermaid::to_mermaid(
                                     message_t::kCall)
                              << " " << generate_alias(from.value()) << " : "
-                             << from.value().message_name(
-                                    select_method_arguments_render_mode())
+                             << render_message_name(from.value().message_name(
+                                    select_method_arguments_render_mode()))
                              << '\n';
                     }
 
