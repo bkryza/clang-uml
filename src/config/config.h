@@ -719,7 +719,8 @@ struct diagram : public inheritable_diagram_options {
      * @return List of translation unit paths
      */
     std::vector<std::string> glob_translation_units(
-        const std::vector<std::string> &compilation_database_files) const;
+        const std::vector<std::string> &compilation_database_files,
+        bool is_fixed = false) const;
 
     /**
      * @brief Make path relative to the `relative_to` config option

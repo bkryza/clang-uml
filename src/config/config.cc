@@ -356,9 +356,9 @@ bool inheritable_diagram_options::generate_fully_qualified_name() const
 }
 
 std::vector<std::string> diagram::glob_translation_units(
-    const std::vector<std::string> &compilation_database_files) const
+    const std::vector<std::string> &compilation_database_files,
+    bool is_fixed) const
 {
-
     // Make sure that the paths are in preferred format for a given platform
     // before intersecting the matches with compliation database
     std::vector<std::string> compilation_database_paths;
@@ -471,7 +471,7 @@ std::vector<std::string> diagram::glob_translation_units(
     for (const auto &gm : glob_matches) {
         std::filesystem::path gm_path{gm};
         gm_path.make_preferred();
-        if (util::contains(compilation_database_paths, gm_path) ||
+        if (is_fixed || util::contains(compilation_database_paths, gm_path) ||
             util::contains(compilation_database_files, gm)) {
             result.emplace_back(gm_path.string());
         }

@@ -46,7 +46,7 @@ void make_context_source_relative(
 void find_translation_units_for_diagrams(
     const std::vector<std::string> &diagram_names,
     clanguml::config::config &config,
-    const std::vector<std::string> &compilation_database_files,
+    const compilation_database &compilation_database,
     std::map<std::string, std::vector<std::string>> &translation_units_map)
 {
     for (const auto &[name, diagram] : config.diagrams) {
@@ -56,7 +56,8 @@ void find_translation_units_for_diagrams(
             continue;
 
         translation_units_map[name] =
-            diagram->glob_translation_units(compilation_database_files);
+            diagram->glob_translation_units(compilation_database.getAllFiles(),
+                compilation_database.is_fixed());
 
         LOG_DBG("Found {} translation units for diagram '{}'",
             translation_units_map.at(name).size(), name);

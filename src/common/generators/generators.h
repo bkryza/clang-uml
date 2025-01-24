@@ -255,13 +255,13 @@ constexpr bool generator_supports_diagram_type(
  *
  * @param diagram_names List of diagram names, applies to all if empty
  * @param config Reference to config instance
- * @param compilation_database_files List of files found in compilation database
+ * @param compilation_database Reference to a compilation database
  * @param translation_units_map Resulting translation units map is stored here
  */
 void find_translation_units_for_diagrams(
     const std::vector<std::string> &diagram_names,
     clanguml::config::config &config,
-    const std::vector<std::string> &compilation_database_files,
+    const compilation_database &compilation_database,
     std::map<std::string, std::vector<std::string>> &translation_units_map);
 
 /**
