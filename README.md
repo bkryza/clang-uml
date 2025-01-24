@@ -84,9 +84,12 @@ Installation instructions for `Linux`, `macos` and `Windows` can be found
 
 `clang-uml` requires an up-to-date
 [compile_commands.json](https://clang.llvm.org/docs/JSONCompilationDatabase.html)
-file, containing the list of commands used for compiling the source code.
+file, containing the list of commands used for compiling the source code
+or alternatively a list of compilation flags in a file called
+`compile_flags.txt`
+(see [here](https://clang.llvm.org/docs/JSONCompilationDatabase.html#alternatives).
 
-See [here](https://blog.bkryza.com/posts/compile-commands-json-gallery/)
+See also [here](https://blog.bkryza.com/posts/compile-commands-json-gallery/)
 for instructions on how to generate `compile_commands.json` using some of the
 existing C++ build systems.
 

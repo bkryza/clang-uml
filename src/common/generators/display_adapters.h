@@ -130,7 +130,7 @@ protected:
             }
         }
 
-        return n;
+        return util::condense_whitespace(n);
     }
 
 private:

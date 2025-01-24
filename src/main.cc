@@ -75,8 +75,7 @@ int main(int argc, const char *argv[])
         // before scheduling tasks, because std::filesystem::current_path
         // cannot be trusted with multiple threads
         common::generators::find_translation_units_for_diagrams(
-            cli.diagram_names, cli.config, compilation_database_files,
-            translation_units_map);
+            cli.diagram_names, cli.config, *db, translation_units_map);
 
         if (cli.progress) {
             // llvm::errs() output stream mangles the stdout stream , we need
