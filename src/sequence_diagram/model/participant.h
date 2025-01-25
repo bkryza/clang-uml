@@ -340,6 +340,20 @@ struct function : public participant {
     void is_cuda_device(bool c);
 
     /**
+     * @brief Check, if a function is a coroutine
+     *
+     * @return True, if the function is a coroutine
+     */
+    bool is_coroutine() const;
+
+    /**
+     * @brief Set whether the function is a coroutine
+     *
+     * @param v True, if the function is a coroutine
+     */
+    void is_coroutine(bool c);
+
+    /**
      * @brief Set functions return type
      *
      * @param rt Return type
@@ -385,6 +399,7 @@ private:
     bool is_operator_{false};
     bool is_cuda_kernel_{false};
     bool is_cuda_device_{false};
+    bool is_coroutine_{false};
     std::string return_type_;
     std::vector<std::string> parameters_;
 };

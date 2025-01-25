@@ -85,6 +85,10 @@ public:
 
     bool TraverseVarDecl(clang::VarDecl *VD);
 
+    bool TraverseCoyieldExpr(clang::CoyieldExpr *expr);
+
+    bool TraverseCoreturnExpr(clang::CoreturnStmt *stmt);
+
     bool TraverseCallExpr(clang::CallExpr *expr);
 
     bool TraverseObjCMessageExpr(clang::ObjCMessageExpr *expr);

@@ -520,6 +520,8 @@ bool translation_unit_visitor::VisitFunctionDecl(
     function_model_ptr->is_cuda_device(
         common::has_attr(declaration, clang::attr::CUDADevice));
 
+    function_model_ptr->is_coroutine(common::is_coroutine(*declaration));
+
     context().update(declaration);
 
     context().set_caller_id(function_model_ptr->id());
@@ -712,6 +714,51 @@ bool translation_unit_visitor::TraverseObjCMessageExpr(
 
     pop_message_to_diagram(expr);
 
+    return true;
+}
+
+bool translation_unit_visitor::TraverseCoyieldExpr(clang::CoyieldExpr *expr)
+{
+    if (!config().include_system_headers() &&
+        source_manager().isInSystemHeader(expr->getSourceRange().getBegin()))
+        return true;
+
+    LOG_TRACE("Entering co_yield expression at {}",
+        expr->getBeginLoc().printToString(source_manager()));
+
+    // context().enter_callexpr(expr);
+
+    // RecursiveASTVisitor<translation_unit_visitor>::TraverseCallExpr(expr);
+
+    LOG_TRACE("Leaving co_yield expression at {}",
+        expr->getBeginLoc().printToString(source_manager()));
+
+    // context().leave_callexpr();
+
+    // pop_message_to_diagram(expr);
+
+    return true;
+}
+
+bool translation_unit_visitor::TraverseCoreturnExpr(clang::CoreturnStmt *stmt)
+{
+    if (!config().include_system_headers() &&
+        source_manager().isInSystemHeader(stmt->getSourceRange().getBegin()))
+        return true;
+
+    LOG_TRACE("Entering co_return expression at {}",
+        stmt->getBeginLoc().printToString(source_manager()));
+
+    // context().enter_callexpr(expr);
+
+    // RecursiveASTVisitor<translation_unit_visitor>::TraverseCallExpr(expr);
+
+    LOG_TRACE("Leaving co_return expression at {}",
+        stmt->getBeginLoc().printToString(source_manager()));
+
+    // context().leave_callexpr();
+
+    // pop_message_to_diagram(expr);
     return true;
 }
 
@@ -2757,6 +2804,7 @@ translation_unit_visitor::create_method_model(clang::CXXMethodDecl *declaration)
     method_model_ptr->is_operator(declaration->isOverloadedOperator());
     method_model_ptr->is_constructor(
         clang::dyn_cast<clang::CXXConstructorDecl>(declaration) != nullptr);
+    method_model_ptr->is_coroutine(common::is_coroutine(*declaration));
 
     clang::Decl *parent_decl = declaration->getParent();
 

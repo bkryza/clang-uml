@@ -79,6 +79,8 @@ void generator::generate_call(const message &m, std::ostream &ostr) const
                 message = fmt::format("<< CUDA Kernel >>\\n{}", message);
             else if (f.is_cuda_device())
                 message = fmt::format("<< CUDA Device >>\\n{}", message);
+            else if (f.is_coroutine())
+                message = fmt::format("<< Coroutine >>\\n{}", message);
         }
         else if (to.value().type_name() == "function_template") {
             const auto &f = dynamic_cast<const model::function &>(to.value());
@@ -88,6 +90,8 @@ void generator::generate_call(const message &m, std::ostream &ostr) const
                 message = fmt::format("<< CUDA Kernel >>\\n{}", message);
             else if (f.is_cuda_device())
                 message = fmt::format("<< CUDA Device >>\\n{}", message);
+            else if (f.is_coroutine())
+                message = fmt::format("<< Coroutine >>\\n{}", message);
         }
     }
 
@@ -541,6 +545,8 @@ void generator::generate_participant(
                 ostr << " << CUDA Kernel >>";
             else if (function_ptr->is_cuda_device())
                 ostr << " << CUDA Device >>";
+            else if (function_ptr->is_coroutine())
+                ostr << fmt::format("<< Coroutine >>");
         }
 
         if (config().generate_links) {
