@@ -640,6 +640,10 @@ void diagram::fold_or_end_block_statement(message &&m,
             is_empty_statement = false;
             break;
         }
+        if (rit->type() == common::model::message_t::kCoReturn) {
+            is_empty_statement = false;
+            break;
+        }
         if (rit->type() == common::model::message_t::kCall) {
             is_empty_statement = false;
             break;
@@ -705,7 +709,8 @@ void diagram::finalize()
                 if (std::count_if(block_message_stack.back().begin(),
                         block_message_stack.back().end(), [](auto &m) {
                             return (m.type() == message_t::kCall) ||
-                                (m.type() == message_t::kReturn);
+                                (m.type() == message_t::kReturn) ||
+                                (m.type() == message_t::kCoReturn);
                         }) > 0) {
                     std::copy(block_message_stack.back().begin(),
                         block_message_stack.back().end(),

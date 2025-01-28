@@ -283,7 +283,13 @@ void generator::generate_activity(
         case message_t::kConditionalEnd:
             process_end_conditional_message();
             break;
-        case message_t::kReturn: {
+        case message_t::kCoAwait:
+//            process_call_message(m, visited);
+            break;
+        case message_t::kReturn:
+        case message_t::kCoReturn:
+        case message_t::kCoYield:
+        {
             auto return_message = m;
             if (!visited.empty()) {
                 return_message.set_to(visited.back());
@@ -366,7 +372,7 @@ void generator::process_return_message(const message &m) const
 
     nlohmann::json msg;
     msg["name"] = message;
-    msg["type"] = "return";
+    msg["type"] = to_string(m.type());
 
     generate_from_activity(m, from, msg);
 

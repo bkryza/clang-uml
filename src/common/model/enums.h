@@ -66,8 +66,13 @@ enum class message_t {
     kConditional,
     kConditionalElse,
     kConditionalEnd,
+    kCoReturn,
+    kCoAwait,
+    kCoYield,
     kNone
 };
+
+bool is_return(message_t t);
 
 /// The scope of the call expression represented in the sequence diagram
 enum class message_scope_t {

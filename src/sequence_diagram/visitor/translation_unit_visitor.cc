@@ -726,39 +726,85 @@ bool translation_unit_visitor::TraverseCoyieldExpr(clang::CoyieldExpr *expr)
     LOG_TRACE("Entering co_yield expression at {}",
         expr->getBeginLoc().printToString(source_manager()));
 
+    context().enter_callexpr(expr);
+
+    RecursiveASTVisitor<translation_unit_visitor>::TraverseCoyieldExpr(expr);
+
+    LOG_TRACE("Leaving co_yield expression at {}",
+        expr->getBeginLoc().printToString(source_manager()));
+
+    context().leave_callexpr();
+
+    pop_message_to_diagram(expr);
+
+    return true;
+}
+
+bool translation_unit_visitor::TraverseCoAwaitExpr(clang::CoawaitExpr *expr)
+{
+    if (!config().include_system_headers() &&
+        source_manager().isInSystemHeader(expr->getSourceRange().getBegin()))
+        return true;
+
+    LOG_TRACE("Entering co_yield expression at {}",
+        expr->getBeginLoc().printToString(source_manager()));
+
+    context().enter_callexpr(expr);
+
+    RecursiveASTVisitor<translation_unit_visitor>::TraverseCoyieldExpr(expr);
+
+    LOG_TRACE("Leaving co_yield expression at {}",
+        expr->getBeginLoc().printToString(source_manager()));
+
+    context().leave_callexpr();
+
+    pop_message_to_diagram(expr);
+
+    return true;
+}
+
+bool translation_unit_visitor::TraverseCoawaitExpr(clang::CoawaitExpr *expr)
+{
+    if (!config().include_system_headers() &&
+        source_manager().isInSystemHeader(expr->getSourceRange().getBegin()))
+        return true;
+
+    LOG_TRACE("Entering co_await expression at {}",
+        expr->getBeginLoc().printToString(source_manager()));
+
     // context().enter_callexpr(expr);
 
     // RecursiveASTVisitor<translation_unit_visitor>::TraverseCallExpr(expr);
 
-    LOG_TRACE("Leaving co_yield expression at {}",
+    LOG_TRACE("Leaving co_await expression at {}",
         expr->getBeginLoc().printToString(source_manager()));
 
     // context().leave_callexpr();
 
     // pop_message_to_diagram(expr);
-
     return true;
 }
 
-bool translation_unit_visitor::TraverseCoreturnExpr(clang::CoreturnStmt *stmt)
+bool translation_unit_visitor::TraverseCoreturnStmt(clang::CoreturnStmt *stmt)
 {
     if (!config().include_system_headers() &&
         source_manager().isInSystemHeader(stmt->getSourceRange().getBegin()))
         return true;
 
-    LOG_TRACE("Entering co_return expression at {}",
+    LOG_TRACE("Entering co_return statement at {}",
         stmt->getBeginLoc().printToString(source_manager()));
 
-    // context().enter_callexpr(expr);
+    context().enter_callexpr(stmt);
 
-    // RecursiveASTVisitor<translation_unit_visitor>::TraverseCallExpr(expr);
+    RecursiveASTVisitor<translation_unit_visitor>::TraverseCoreturnStmt(stmt);
 
-    LOG_TRACE("Leaving co_return expression at {}",
+    LOG_TRACE("Leaving co_return statement at {}",
         stmt->getBeginLoc().printToString(source_manager()));
 
-    // context().leave_callexpr();
+    context().leave_callexpr();
 
-    // pop_message_to_diagram(expr);
+    pop_message_to_diagram(stmt);
+
     return true;
 }
 
@@ -1580,6 +1626,58 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
     return true;
 }
 
+bool translation_unit_visitor::VisitCoawaitExpr(clang::CoawaitExpr *expr)
+{
+    using clanguml::common::model::message_scope_t;
+    using clanguml::common::model::message_t;
+    using clanguml::common::model::namespace_;
+    using clanguml::sequence_diagram::model::activity;
+    using clanguml::sequence_diagram::model::message;
+
+    if (!context().valid() || context().get_ast_context() == nullptr)
+        return true;
+
+    LOG_TRACE("Visiting co_await expression at {} [caller_id = {}]",
+        expr->getBeginLoc().printToString(source_manager()),
+        context().caller_id());
+
+    message m{message_t::kCoAwait, context().caller_id()};
+    set_source_location(*expr, m);
+
+    if (expr->getOperand() != nullptr) {
+        std::string message_name = common::to_string(expr->getOperand());
+        m.set_message_name(util::condense_whitespace(message_name));
+    }
+
+    expr->getSuspendReturnType()
+
+
+
+    const auto *raw_expr_comment = clanguml::common::get_expression_raw_comment(
+        source_manager(), *context().get_ast_context(), expr);
+    const auto stripped_comment = process_comment(
+        raw_expr_comment, context().get_ast_context()->getDiagnostics(), m);
+
+    // We can skip the ID of the return activity here, we'll just add it during
+    // diagram generation
+    if (m.from().value() > 0) {
+        if (raw_expr_comment != nullptr)
+            m.set_comment(raw_expr_comment->getBeginLoc().getHashValue(),
+                stripped_comment);
+
+        ensure_activity_exists(m);
+
+        diagram().add_active_participant(m.from());
+
+        LOG_DBG("Found return call {} from {} [{}] to {} [{}] ",
+            m.message_name(), m.from(), m.from(), m.to(), m.to());
+
+        push_message(expr, std::move(m));
+    }
+
+    return true;
+}
+
 bool translation_unit_visitor::VisitReturnStmt(clang::ReturnStmt *stmt)
 {
     using clanguml::common::model::message_scope_t;
@@ -1642,6 +1740,146 @@ bool translation_unit_visitor::VisitReturnStmt(clang::ReturnStmt *stmt)
         diagram().add_active_participant(m.from());
 
         LOG_DBG("Found return call {} from {} [{}] to {} [{}] ",
+            m.message_name(), m.from(), m.from(), m.to(), m.to());
+
+        push_message(stmt, std::move(m));
+    }
+
+    return true;
+}
+
+bool translation_unit_visitor::VisitCoyieldExpr(clang::CoyieldExpr *expr)
+{
+    using clanguml::common::model::message_scope_t;
+    using clanguml::common::model::message_t;
+    using clanguml::common::model::namespace_;
+    using clanguml::sequence_diagram::model::activity;
+    using clanguml::sequence_diagram::model::message;
+
+    if (!context().valid() || context().get_ast_context() == nullptr)
+        return true;
+
+    LOG_TRACE("Visiting co_yield expression at {}",
+        expr->getBeginLoc().printToString(source_manager()));
+
+    message m{message_t::kCoYield, context().caller_id()};
+
+    set_source_location(*expr, m);
+
+    const auto *raw_expr_comment = clanguml::common::get_expression_raw_comment(
+        source_manager(), *context().get_ast_context(), expr);
+    const auto stripped_comment = process_comment(
+        raw_expr_comment, context().get_ast_context()->getDiagnostics(), m);
+
+    if (m.skip())
+        return true;
+
+    if (expr->getOperand() != nullptr) {
+        std::string message_name = common::to_string(expr->getOperand());
+        m.set_message_name(util::condense_whitespace(message_name));
+    }
+
+    if (context().current_function_decl_ != nullptr) {
+        m.set_return_type(
+            context().current_function_decl_->getReturnType().getAsString());
+    }
+    else if (context().current_function_template_decl_ != nullptr) {
+        m.set_return_type(context()
+                              .current_function_template_decl_->getAsFunction()
+                              ->getReturnType()
+                              .getAsString());
+    }
+    else if (context().current_method_decl_ != nullptr) {
+        m.set_return_type(
+            context().current_method_decl_->getReturnType().getAsString());
+    }
+    else if (context().current_objc_method_decl_ != nullptr) {
+        m.set_return_type(
+            context().current_objc_method_decl_->getReturnType().getAsString());
+    }
+
+    // We can skip the ID of the return activity here, we'll just add it during
+    // diagram generation
+    if (m.from().value() > 0) {
+        if (raw_expr_comment != nullptr)
+            m.set_comment(raw_expr_comment->getBeginLoc().getHashValue(),
+                stripped_comment);
+
+        ensure_activity_exists(m);
+
+        diagram().add_active_participant(m.from());
+
+        LOG_DBG("Found co_yield call {} from {} [{}] to {} [{}] ",
+            m.message_name(), m.from(), m.from(), m.to(), m.to());
+
+        push_message(expr, std::move(m));
+    }
+
+    return true;
+}
+
+bool translation_unit_visitor::VisitCoreturnStmt(clang::CoreturnStmt *stmt)
+{
+    using clanguml::common::model::message_scope_t;
+    using clanguml::common::model::message_t;
+    using clanguml::common::model::namespace_;
+    using clanguml::sequence_diagram::model::activity;
+    using clanguml::sequence_diagram::model::message;
+
+    if (!context().valid() || context().get_ast_context() == nullptr)
+        return true;
+
+    LOG_TRACE("Visiting co_return statement at {}",
+        stmt->getBeginLoc().printToString(source_manager()));
+
+    message m{message_t::kCoReturn, context().caller_id()};
+
+    set_source_location(*stmt, m);
+
+    const auto *raw_expr_comment = clanguml::common::get_expression_raw_comment(
+        source_manager(), *context().get_ast_context(), stmt);
+    const auto stripped_comment = process_comment(
+        raw_expr_comment, context().get_ast_context()->getDiagnostics(), m);
+
+    if (m.skip())
+        return true;
+
+    if (stmt->getOperand() != nullptr) {
+        std::string message_name = common::to_string(stmt->getOperand());
+        m.set_message_name(util::condense_whitespace(message_name));
+    }
+
+    if (context().current_function_decl_ != nullptr) {
+        m.set_return_type(
+            context().current_function_decl_->getReturnType().getAsString());
+    }
+    else if (context().current_function_template_decl_ != nullptr) {
+        m.set_return_type(context()
+                              .current_function_template_decl_->getAsFunction()
+                              ->getReturnType()
+                              .getAsString());
+    }
+    else if (context().current_method_decl_ != nullptr) {
+        m.set_return_type(
+            context().current_method_decl_->getReturnType().getAsString());
+    }
+    else if (context().current_objc_method_decl_ != nullptr) {
+        m.set_return_type(
+            context().current_objc_method_decl_->getReturnType().getAsString());
+    }
+
+    // We can skip the ID of the return activity here, we'll just add it during
+    // diagram generation
+    if (m.from().value() > 0) {
+        if (raw_expr_comment != nullptr)
+            m.set_comment(raw_expr_comment->getBeginLoc().getHashValue(),
+                stripped_comment);
+
+        ensure_activity_exists(m);
+
+        diagram().add_active_participant(m.from());
+
+        LOG_DBG("Found co_return call {} from {} [{}] to {} [{}] ",
             m.message_name(), m.from(), m.from(), m.to(), m.to());
 
         push_message(stmt, std::move(m));
@@ -2502,6 +2740,24 @@ void translation_unit_visitor::push_message(
     return_stmt_message_map_.emplace(stmt, std::move(m));
 }
 
+void translation_unit_visitor::push_message(
+    clang::CoreturnStmt *stmt, model::message &&m)
+{
+    co_return_stmt_message_map_.emplace(stmt, std::move(m));
+}
+
+void translation_unit_visitor::push_message(
+    clang::CoyieldExpr *expr, model::message &&m)
+{
+    co_yield_stmt_message_map_.emplace(expr, std::move(m));
+}
+
+void translation_unit_visitor::push_message(
+    clang::CoyieldExpr *expr, model::message &&m)
+{
+    co_await_stmt_message_map_.emplace(expr, std::move(m));
+}
+
 void translation_unit_visitor::pop_message_to_diagram(clang::CallExpr *expr)
 {
     assert(expr != nullptr);
@@ -2567,6 +2823,60 @@ void translation_unit_visitor::pop_message_to_diagram(clang::ReturnStmt *stmt)
     diagram().get_activity(caller_id).add_message(std::move(msg));
 
     return_stmt_message_map_.erase(stmt);
+}
+
+void translation_unit_visitor::pop_message_to_diagram(clang::CoreturnStmt *stmt)
+{
+    assert(stmt != nullptr);
+
+    // Skip if no message was generated from this expr
+    if (co_return_stmt_message_map_.find(stmt) ==
+        co_return_stmt_message_map_.end()) {
+        return;
+    }
+
+    auto msg = std::move(co_return_stmt_message_map_.at(stmt));
+
+    auto caller_id = msg.from();
+    diagram().get_activity(caller_id).add_message(std::move(msg));
+
+    co_return_stmt_message_map_.erase(stmt);
+}
+
+void translation_unit_visitor::pop_message_to_diagram(clang::CoyieldExpr *expr)
+{
+    assert(expr != nullptr);
+
+    // Skip if no message was generated from this expr
+    if (co_yield_stmt_message_map_.find(expr) ==
+        co_yield_stmt_message_map_.end()) {
+        return;
+    }
+
+    auto msg = std::move(co_yield_stmt_message_map_.at(expr));
+
+    auto caller_id = msg.from();
+    diagram().get_activity(caller_id).add_message(std::move(msg));
+
+    co_yield_stmt_message_map_.erase(expr);
+}
+
+void translation_unit_visitor::pop_message_to_diagram(clang::CoawaitExpr *expr)
+{
+    assert(expr != nullptr);
+
+    // Skip if no message was generated from this expr
+    if (co_await_stmt_message_map_.find(expr) ==
+        co_await_stmt_message_map_.end()) {
+        return;
+    }
+
+    auto msg = std::move(co_await_stmt_message_map_.at(expr));
+
+    auto caller_id = msg.from();
+    diagram().get_activity(caller_id).add_message(std::move(msg));
+
+    co_await_stmt_message_map_.erase(expr);
 }
 
 void translation_unit_visitor::pop_message_to_diagram(

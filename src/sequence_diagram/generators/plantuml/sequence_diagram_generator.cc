@@ -132,12 +132,20 @@ void generator::generate_call(const message &m, std::ostream &ostr) const
 
 void generator::generate_return(const message &m, std::ostream &ostr) const
 {
-    assert(m.type() == message_t::kReturn);
-
     // Add return activity only for messages between different actors
     // and only if the return type is different than void
     if (m.from() == m.to())
         return;
+
+    std::string message_stereotype;
+    if (m.type() == message_t::kCoReturn) {
+        message_stereotype = "<< co_return >>";
+    }
+    else if(m.type() == message_t::kCoYield) {
+        message_stereotype = "<< co_yield >>";
+    }
+
+    std::string message_label;
 
     const auto &from = model().get_participant<model::function>(m.from());
     const auto &to = model().get_participant<model::participant>(m.to());
@@ -150,14 +158,10 @@ void generator::generate_return(const message &m, std::ostream &ostr) const
              << common::generators::plantuml::to_plantuml(message_t::kReturn)
              << " " << to_alias;
 
-        if (config().generate_return_types()) {
-            ostr << " : //" << render_message_name(m.return_type()) << "//";
-        }
-        else if (config().generate_return_values()) {
-            ostr << " : //" << render_message_name(m.message_name()) << "//";
-        }
-
-        ostr << '\n';
+        if (config().generate_return_types())
+            message_label = render_message_name(m.return_type());
+        else if (config().generate_return_values())
+            message_label = render_message_name(m.message_name());
     }
     else if (from.has_value() && !from.value().is_void() &&
         (from.value().type_name() == "method" ||
@@ -167,13 +171,23 @@ void generator::generate_return(const message &m, std::ostream &ostr) const
 
         ostr << "[<--" << " " << from_alias;
         if (config().generate_return_types())
-            ostr << " : //" << render_message_name(from.value().return_type())
-                 << "//";
+            message_label = render_message_name(from.value().return_type());
         else if (config().generate_return_values())
-            ostr << " : //" << render_message_name(m.message_name()) << "//";
-
-        ostr << '\n';
+            message_label = render_message_name(m.message_name());
     }
+
+    if (!message_stereotype.empty()) {
+        if (message_label.empty())
+            message_label = message_stereotype;
+        else
+            message_label =
+                fmt::format("{}\n{}", message_stereotype, message_label);
+    }
+
+    if (!message_label.empty())
+        ostr << " : //" << message_label << "//";
+
+    ostr << '\n';
 }
 
 void generator::generate_activity(
@@ -240,6 +254,24 @@ void generator::generate_activity(
             visited.pop_back();
         }
         else if (m.type() == message_t::kReturn) {
+            print_debug(m, ostr);
+            generate_message_comment(ostr, m);
+            auto return_message = m;
+            if (!visited.empty()) {
+                return_message.set_to(visited.back());
+            }
+            generate_return(return_message, ostr);
+        }
+        else if (m.type() == message_t::kCoReturn) {
+            print_debug(m, ostr);
+            generate_message_comment(ostr, m);
+            auto return_message = m;
+            if (!visited.empty()) {
+                return_message.set_to(visited.back());
+            }
+            generate_return(return_message, ostr);
+        }
+        else if (m.type() == message_t::kCoYield) {
             print_debug(m, ostr);
             generate_message_comment(ostr, m);
             auto return_message = m;

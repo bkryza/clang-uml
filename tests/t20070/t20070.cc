@@ -3,8 +3,9 @@
 #include <exception>
 #include <iostream>
 
-namespace clanguml::t20069 {
+namespace clanguml::t20070 {
 
+void foo() {}
 //
 // Based on https://en.cppreference.com/w/cpp/language/coroutines
 //
@@ -22,8 +23,11 @@ template <typename T> struct Generator {
         {
             return Generator(handle_type::from_promise(*this));
         }
+
         std::suspend_always initial_suspend() { return {}; }
+
         std::suspend_always final_suspend() noexcept { return {}; }
+
         void unhandled_exception()
         {
             exception_ = std::current_exception();
@@ -36,6 +40,7 @@ template <typename T> struct Generator {
             value_ = std::forward<From>(from); // caching the result in promise
             return {};
         }
+
         void return_void() { }
     };
 
@@ -45,12 +50,15 @@ template <typename T> struct Generator {
         : h_(h)
     {
     }
+
     ~Generator() { h_.destroy(); }
+
     explicit operator bool()
     {
         fill();
         return !h_.done();
     }
+
     T operator()()
     {
         fill();
@@ -75,8 +83,10 @@ private:
 
 Generator<std::uint64_t> fibonacci_sequence(unsigned n)
 {
-    if (n == 0)
+    if (n == 0) {
+        foo();
         co_return;
+    }
 
     if (n > 94)
         throw std::runtime_error(
@@ -106,7 +116,7 @@ Generator<std::uint64_t> fibonacci_sequence(unsigned n)
 int tmain()
 {
     try {
-        auto gen = fibonacci_sequence(10);
+        auto gen = fibonacci_sequence(10ULL);
 
         for (int j = 0; gen; ++j)
             std::cout << "fib(" << j << ")=" << gen() << '\n';
@@ -120,4 +130,4 @@ int tmain()
 
     return 0;
 }
-} // namespace clanguml::t20069
+} // namespace clanguml::t20070

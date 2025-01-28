@@ -47,7 +47,8 @@ struct call_expression_context {
      */
     using callexpr_stack_t = std::variant<std::monostate, clang::CallExpr *,
         clang::CXXConstructExpr *, clang::ObjCMessageExpr *,
-        clang::ReturnStmt *>;
+        clang::ReturnStmt *, clang::CoreturnStmt *, clang::CoyieldExpr *,
+        clang::CoawaitExpr *>;
 
     call_expression_context();
 
@@ -284,6 +285,9 @@ struct call_expression_context {
     void enter_callexpr(clang::CXXConstructExpr *expr);
     void enter_callexpr(clang::ObjCMessageExpr *expr);
     void enter_callexpr(clang::ReturnStmt *stmt);
+    void enter_callexpr(clang::CoreturnStmt *stmt);
+    void enter_callexpr(clang::CoyieldExpr *expr);
+    void enter_callexpr(clang::CoawaitExpr *expr);
 
     /**
      * @brief Leave call expression
