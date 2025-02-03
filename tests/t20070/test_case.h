@@ -52,14 +52,14 @@ TEST_CASE("t20070")
 
                 {"tmain()", "Generator<unsigned long long>", "operator bool()",
                     InControlCondition{}}, //
-                {"Generator<unsigned long long>", "Generator<unsigned long long>",
-                    "fill()"},
+                {"Generator<unsigned long long>",
+                    "Generator<unsigned long long>", "fill()"},
 
                 {"tmain()", "Generator<unsigned long long>", "operator()()"}, //
-                {"Generator<unsigned long long>", "Generator<unsigned long long>",
-                    "fill()"}, //
-                {"Generator<unsigned long long>", "tmain()", "unsigned long long",
-                    Response{}} //
+                {"Generator<unsigned long long>",
+                    "Generator<unsigned long long>", "fill()"}, //
+                {"Generator<unsigned long long>", "tmain()",
+                    "unsigned long long", Response{}} //
 
             }));
     });
