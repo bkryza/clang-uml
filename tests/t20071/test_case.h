@@ -30,9 +30,9 @@ TEST_CASE("t20071")
                 //
                 {Entrypoint{}, "t20071.cc", "tmain()"}, //
                 {"t20071.cc", "t20071.cc",
-                    "resuming_on_new_thread(std::jthread &)", Coroutine{}}, //
+                    "resuming_on_new_thread(std::thread &)", Coroutine{}}, //
                 {"t20071.cc", "t20071.cc",
-                    "switch_to_new_thread(std::jthread &)"}, //
+                    "switch_to_new_thread(std::thread &)"}, //
                 {"t20071.cc", "t20071.cc", "awaitable_on_thread",
                     Response{}}, //
                 {"t20071.cc", "awaitable_on_thread", "await_resume()",

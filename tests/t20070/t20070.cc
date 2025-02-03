@@ -89,7 +89,7 @@ private:
     }
 };
 
-Generator<std::uint64_t> fibonacci_sequence(unsigned n)
+Generator<unsigned long long> fibonacci_sequence(unsigned n)
 {
     if (n == 0) {
         foo();
@@ -112,11 +112,11 @@ Generator<std::uint64_t> fibonacci_sequence(unsigned n)
     if (n == 2)
         co_return;
 
-    std::uint64_t a = 0;
-    std::uint64_t b = 1;
+    unsigned long long a = 0;
+    unsigned long long b = 1;
 
     for (unsigned i = 2; i < n; ++i) {
-        std::uint64_t s = a + b;
+        unsigned long long s = a + b;
         co_yield s;
         a = b;
         b = s;

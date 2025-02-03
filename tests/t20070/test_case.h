@@ -30,7 +30,7 @@ TEST_CASE("t20070")
                 //
                 {"fibonacci_sequence(unsigned int)", "foo()", ""}, //
                 {"fibonacci_sequence(unsigned int)", "tmain()",
-                    "Generator<std::uint64_t>", Response{}, CoReturn{}}, //
+                    "Generator<unsigned long long>", Response{}, CoReturn{}}, //
                 {"fibonacci_sequence(unsigned int)", "AwaitableFoo",
                     "await_resume() const", CoAwait()}, //
 
@@ -39,26 +39,26 @@ TEST_CASE("t20070")
                 {"Generator::promise_type", "fibonacci_sequence(unsigned int)",
                     "std::suspend_always", Response{}},
                 {"fibonacci_sequence(unsigned int)", "tmain()",
-                    "Generator<std::uint64_t>", Response{}, CoYield{}}, //
+                    "Generator<unsigned long long>", Response{}, CoYield{}}, //
                 {"fibonacci_sequence(unsigned int)", "tmain()",
-                    "Generator<std::uint64_t>", Response{}, CoReturn{}}, //
+                    "Generator<unsigned long long>", Response{}, CoReturn{}}, //
 
                 {"fibonacci_sequence(unsigned int)", "Generator::promise_type",
-                    "yield_value(unsigned long &)"}, //
+                    "yield_value(unsigned long long &)"}, //
                 {"Generator::promise_type", "fibonacci_sequence(unsigned int)",
                     "std::suspend_always", Response{}},
                 {"fibonacci_sequence(unsigned int)", "tmain()",
-                    "Generator<std::uint64_t>", Response{}, CoYield{}}, //
+                    "Generator<unsigned long long>", Response{}, CoYield{}}, //
 
-                {"tmain()", "Generator<unsigned long>", "operator bool()",
+                {"tmain()", "Generator<unsigned long long>", "operator bool()",
                     InControlCondition{}}, //
-                {"Generator<unsigned long>", "Generator<unsigned long>",
+                {"Generator<unsigned long long>", "Generator<unsigned long long>",
                     "fill()"},
 
-                {"tmain()", "Generator<unsigned long>", "operator()()"}, //
-                {"Generator<unsigned long>", "Generator<unsigned long>",
+                {"tmain()", "Generator<unsigned long long>", "operator()()"}, //
+                {"Generator<unsigned long long>", "Generator<unsigned long long>",
                     "fill()"}, //
-                {"Generator<unsigned long>", "tmain()", "unsigned long",
+                {"Generator<unsigned long long>", "tmain()", "unsigned long long",
                     Response{}} //
 
             }));

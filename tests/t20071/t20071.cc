@@ -5,19 +5,19 @@
 
 namespace clanguml::t20071 {
 struct awaitable_on_thread {
-    std::jthread *p_out;
+    std::thread *p_out;
     bool await_ready() { return false; }
     void await_suspend(std::coroutine_handle<> h)
     {
-        std::jthread &out = *p_out;
+        auto &out = *p_out;
         if (out.joinable())
-            throw std::runtime_error("Output jthread parameter not empty");
-        out = std::jthread([h] { h.resume(); });
+            throw std::runtime_error("Output thread parameter not empty");
+        out = std::thread([h] { h.resume(); });
     }
     void await_resume() { }
 };
 
-auto switch_to_new_thread(std::jthread &out)
+auto switch_to_new_thread(std::thread &out)
 {
     return awaitable_on_thread{&out};
 }
@@ -32,7 +32,7 @@ struct task {
     };
 };
 
-task resuming_on_new_thread(std::jthread &out)
+task resuming_on_new_thread(std::thread &out)
 {
     std::cout << "Coroutine started on thread: " << std::this_thread::get_id()
               << '\n';
@@ -44,7 +44,7 @@ task resuming_on_new_thread(std::jthread &out)
 
 int tmain()
 {
-    std::jthread out;
+    std::thread out;
     resuming_on_new_thread(out);
     return 0;
 }
