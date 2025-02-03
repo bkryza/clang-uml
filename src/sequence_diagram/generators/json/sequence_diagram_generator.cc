@@ -42,6 +42,8 @@ void to_json(nlohmann::json &j, const participant &c)
             j["is_cuda_kernel"] = true;
         if (f.is_cuda_device())
             j["is_cuda_device"] = true;
+        if (f.is_coroutine())
+            j["is_coroutine"] = true;
     }
 }
 
@@ -114,7 +116,10 @@ void generator::generate_call(const message &m, nlohmann::json &parent) const
     nlohmann::json msg;
 
     msg["name"] = message;
-    msg["type"] = "message";
+    if (m.type() == message_t::kCoAwait)
+        msg["type"] = "co_await";
+    else
+        msg["type"] = "message";
 
     generate_from_activity(m, from, msg);
 
@@ -226,6 +231,7 @@ void generator::generate_activity(
     for (const auto &m : a.messages()) {
         switch (m.type()) {
         case message_t::kCall:
+        case message_t::kCoAwait:
             process_call_message(m, visited);
             break;
         case message_t::kIf:
@@ -283,7 +289,9 @@ void generator::generate_activity(
         case message_t::kConditionalEnd:
             process_end_conditional_message();
             break;
-        case message_t::kReturn: {
+        case message_t::kReturn:
+        case message_t::kCoReturn:
+        case message_t::kCoYield: {
             auto return_message = m;
             if (!visited.empty()) {
                 return_message.set_to(visited.back());
@@ -366,7 +374,7 @@ void generator::process_return_message(const message &m) const
 
     nlohmann::json msg;
     msg["name"] = message;
-    msg["type"] = "return";
+    msg["type"] = to_string(m.type());
 
     generate_from_activity(m, from, msg);
 

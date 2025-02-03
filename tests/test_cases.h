@@ -265,7 +265,10 @@ bool MessageOrder(const DiagramType &d, std::vector<Message> messages)
             offset = FindMessage(d, m, offset, kFail);
             return offset;
         });
-    bool are_messages_in_order = std::is_sorted(order.begin(), order.end());
+
+    bool are_messages_in_order =
+        (std::count(order.begin(), order.end(), -1) <= 1) &&
+        std::is_sorted(order.begin(), order.end());
 
     if (!are_messages_in_order) {
         if (kFail)
@@ -842,6 +845,17 @@ int64_t FindMessage(
         msg_str = fmt::format("<< CUDA Kernel >>\\\\n{}", msg_str);
     if (msg.is_cuda_device)
         msg_str = fmt::format("<< CUDA Device >>\\\\n{}", msg_str);
+    if (msg.is_co_await)
+        msg_str = fmt::format("<< co_await >>\\\\n{}", msg_str);
+    if (msg.is_coroutine)
+        msg_str = fmt::format("<< Coroutine >>\\\\n{}", msg_str);
+
+    if (msg.is_co_yield)
+        msg_str = fmt::format("//<< co_yield >>//\\\\n//{}//", msg_str);
+    else if (msg.is_co_return)
+        msg_str = fmt::format("//<< co_return >>//\\\\n//{}//", msg_str);
+    else if (msg.is_response && !msg_str.empty())
+        msg_str = fmt::format("//{}//", msg_str);
 
     std::string style;
     if (msg.is_static)
@@ -865,8 +879,8 @@ int64_t FindMessage(
     }
     else if (msg.is_response) {
         if (!msg_str.empty())
-            call_pattern = fmt::format("{} {} {} : //{}//",
-                d.get_alias(msg.from), "-->", d.get_alias(msg.to), msg_str);
+            call_pattern = fmt::format("{} {} {} : {}", d.get_alias(msg.from),
+                "-->", d.get_alias(msg.to), msg_str);
         else
             call_pattern = fmt::format(
                 "{} {} {}", d.get_alias(msg.from), "-->", d.get_alias(msg.to));
@@ -1436,6 +1450,14 @@ int64_t FindMessage(
         msg_str = fmt::format("<< CUDA Kernel >><br>{}", msg_str);
     if (msg.is_cuda_device)
         msg_str = fmt::format("<< CUDA Device >><br>{}", msg_str);
+    if (msg.is_co_await)
+        msg_str = fmt::format("<< co_await >><br>{}", msg_str);
+    if (msg.is_co_yield)
+        msg_str = fmt::format("<< co_yield >><br>{}", msg_str);
+    if (msg.is_co_return)
+        msg_str = fmt::format("<< co_return >><br>{}", msg_str);
+    if (msg.is_coroutine)
+        msg_str = fmt::format("<< Coroutine >><br>{}", msg_str);
 
     std::string call_pattern{"__INVALID__"};
 
@@ -2043,8 +2065,8 @@ int64_t FindMessage(
         return offset;
 
     try {
-        return json_helpers::find_message(d.src, msg.from.str(), msg.to.str(),
-            msg.message, msg.is_response, msg.return_type, offset);
+        return json_helpers::find_message(
+            d.src, msg.from.str(), msg.to.str(), msg, offset);
     }
     catch (std::exception &e) {
         if (!fail)

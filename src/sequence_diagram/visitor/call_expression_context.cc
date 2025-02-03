@@ -295,6 +295,21 @@ void call_expression_context::enter_callexpr(clang::ReturnStmt *stmt)
     call_expr_stack_.emplace(stmt);
 }
 
+void call_expression_context::enter_callexpr(clang::CoreturnStmt *stmt)
+{
+    call_expr_stack_.emplace(stmt);
+}
+
+void call_expression_context::enter_callexpr(clang::CoyieldExpr *expr)
+{
+    call_expr_stack_.emplace(expr);
+}
+
+void call_expression_context::enter_callexpr(clang::CoawaitExpr *expr)
+{
+    call_expr_stack_.emplace(expr);
+}
+
 void call_expression_context::leave_callexpr()
 {
     if (!call_expr_stack_.empty()) {

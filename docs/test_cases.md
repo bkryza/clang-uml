@@ -165,6 +165,8 @@
  * [t20067](./test_cases/t20067.md) - Test case for 'from_to' condition with regular expression
  * [t20068](./test_cases/t20068.md) - Test case for combine 'from', 'to' and 'from_to' in one diagram
  * [t20069](./test_cases/t20069.md) - Test case for return messages from all branches and exitpoints
+ * [t20070](./test_cases/t20070.md) - Test case for sequence diagram with coroutines
+ * [t20071](./test_cases/t20071.md) - Test case for sequence diagram with coroutines and combined participants
 ## Package diagrams
  * [t30001](./test_cases/t30001.md) - Basic package diagram test case
  * [t30002](./test_cases/t30002.md) - Package dependency test case

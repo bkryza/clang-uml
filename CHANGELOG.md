@@ -1,5 +1,13 @@
 # CHANGELOG
 
+  * Added support for coroutines in sequence diagrams (#376)
+  * Fixed supported for compile_flags.txt (#381)
+  * Added separate return messages for each return branch in sequence diagrams
+    (#378)
+  * Added option to generate return expressions (values) in addition to types
+    in sequence diagrams (#377)
+  * Fixed MSVC compilation flags (Thanks @leha-bot)
+
 ### 0.6.0
   * Added support for link in selected relationships in class and package
     diagrams (#371)

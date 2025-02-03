@@ -57,6 +57,10 @@ struct Exitpoint { };
 struct CUDAKernel { };
 struct CUDADevice { };
 
+struct CoAwait { };
+struct CoYield { };
+struct CoReturn { };
+
 struct ObjCOptional { };
 
 struct InControlCondition { };
@@ -195,6 +199,10 @@ struct Message {
         , is_response{has_type<Response, Attrs...>()}
         , is_cuda_kernel{has_type<CUDAKernel, Attrs...>()}
         , is_cuda_device{has_type<CUDADevice, Attrs...>()}
+        , is_co_await{has_type<CoAwait, Attrs...>()}
+        , is_co_yield{has_type<CoYield, Attrs...>()}
+        , is_co_return{has_type<CoReturn, Attrs...>()}
+        , is_coroutine{has_type<Coroutine, Attrs...>()}
     {
     }
 
@@ -226,6 +234,10 @@ struct Message {
     bool is_response{false};
     bool is_cuda_kernel{false};
     bool is_cuda_device{false};
+    bool is_co_await{false};
+    bool is_co_yield{false};
+    bool is_co_return{false};
+    bool is_coroutine{false};
 };
 
 //
@@ -239,26 +251,22 @@ struct File {
 
 namespace json_helpers {
 int find_message_nested(const nlohmann::json &j, const std::string &from,
-    const std::string &to, const std::string &msg, bool is_response,
-    std::optional<std::string> return_type, const nlohmann::json &from_p,
+    const std::string &to, const Message &msg, const nlohmann::json &from_p,
     const nlohmann::json &to_p, int &count, const int64_t offset,
     std::optional<int32_t> chain_index = {});
 
 int find_message_impl(const nlohmann::json &j, const std::string &from,
-    const std::string &to, const std::string &msg, bool is_response,
-    std::optional<std::string> return_type, int64_t offset,
+    const std::string &to, const Message &msg, int64_t offset,
     std::optional<int32_t> chain_index = {});
 
 int64_t find_message(const nlohmann::json &j, const File &from, const File &to,
-    const std::string &msg, int64_t offset);
+    const Message &msg, int64_t offset);
 
 int64_t find_message(const nlohmann::json &j, const std::string &from,
-    const std::string &to, const std::string &msg, bool is_response,
-    std::optional<std::string> return_type = {}, int64_t offset = 0);
+    const std::string &to, const Message &msg, int64_t offset = 0);
 
 int64_t find_message_in_chain(const nlohmann::json &j, const std::string &from,
-    const std::string &to, const std::string &msg, bool is_response,
-    std::optional<std::string> return_type = {}, int64_t offset = 0,
+    const std::string &to, const Message &msg, int64_t offset = 0,
     uint32_t chain_index = 0);
 
 } // namespace json_helpers

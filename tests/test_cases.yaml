@@ -475,6 +475,12 @@ test_cases:
     - name: t20069
       title: Test case for return messages from all branches and exitpoints
       description:
+    - name: t20070
+      title: Test case for sequence diagram with coroutines
+      description:
+    - name: t20071
+      title: Test case for sequence diagram with coroutines and combined participants
+      description:
   Package diagrams:
     - name: t30001
       title: Basic package diagram test case

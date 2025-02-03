@@ -110,7 +110,11 @@ void generator::generate_call(const message &m, std::ostream &ostr) const
 
     if (to.value().type_name() == "method") {
         const auto &f = dynamic_cast<const model::method &>(to.value());
-        message = f.message_name(render_mode);
+        if (m.type() == message_t::kCoAwait)
+            message = fmt::format(
+                "<< co_await >><br>{}", f.message_name(render_mode));
+        else
+            message = f.message_name(render_mode);
     }
     else if (to.value().type_name() == "objc_method") {
         const auto &f = dynamic_cast<const model::objc_method &>(to.value());
@@ -126,6 +130,8 @@ void generator::generate_call(const message &m, std::ostream &ostr) const
                 message = fmt::format("<< CUDA Kernel >><br>{}", message);
             else if (f.is_cuda_device())
                 message = fmt::format("<< CUDA Device >><br>{}", message);
+            else if (f.is_coroutine())
+                message = fmt::format("<< Coroutine >><br>{}", message);
         }
         else if (to.value().type_name() == "function_template") {
             const auto &f = dynamic_cast<const model::function &>(to.value());
@@ -135,6 +141,8 @@ void generator::generate_call(const message &m, std::ostream &ostr) const
                 message = fmt::format("<< CUDA Kernel >><br>{}", message);
             else if (f.is_cuda_device())
                 message = fmt::format("<< CUDA Device >><br>{}", message);
+            else if (f.is_coroutine())
+                message = fmt::format("<< Coroutine >><br>{}", message);
         }
     }
 
@@ -171,12 +179,20 @@ void generator::generate_call(const message &m, std::ostream &ostr) const
 
 void generator::generate_return(const message &m, std::ostream &ostr) const
 {
-    assert(m.type() == message_t::kReturn);
-
     // Add return activity only for messages between different actors
     // and only if the return type is different than void
     if (m.from() == m.to())
         return;
+
+    std::string message_stereotype;
+    if (m.type() == message_t::kCoReturn) {
+        message_stereotype = "<< co_return >>";
+    }
+    else if (m.type() == message_t::kCoYield) {
+        message_stereotype = "<< co_yield >>";
+    }
+
+    std::string message_label;
 
     const auto &from = model().get_participant<model::function>(m.from());
     const auto &to = model().get_participant<model::participant>(m.to());
@@ -190,13 +206,11 @@ void generator::generate_return(const message &m, std::ostream &ostr) const
              << " " << to_alias << " : ";
 
         if (config().generate_return_types()) {
-            ostr << render_message_name(m.return_type());
+            message_label = render_message_name(m.return_type());
         }
         else if (config().generate_return_values()) {
-            ostr << render_message_name(m.message_name());
+            message_label = render_message_name(m.message_name());
         }
-
-        ostr << '\n';
     }
     else if (from.has_value() && !from.value().is_void() &&
         (from.value().type_name() == "method" ||
@@ -209,12 +223,27 @@ void generator::generate_return(const message &m, std::ostream &ostr) const
              << " * : ";
 
         if (config().generate_return_types())
-            ostr << render_message_name(from.value().return_type());
+            message_label = render_message_name(from.value().return_type());
         else if (config().generate_return_values())
-            ostr << render_message_name(m.message_name());
-
-        ostr << '\n';
+            message_label = render_message_name(m.message_name());
     }
+
+    if (!message_stereotype.empty()) {
+        if (message_label.empty())
+            message_label = fmt::format("{}", message_stereotype);
+        else
+            message_label =
+                fmt::format("{}<br>{}", message_stereotype, message_label);
+    }
+    else {
+        if (!message_label.empty())
+            message_label = fmt::format("{}", message_label);
+    }
+
+    if (!message_label.empty())
+        ostr << message_label;
+
+    ostr << '\n';
 }
 
 std::string generator::render_message_name(const std::string &m) const
@@ -251,9 +280,16 @@ void generator::generate_activity(
             already_generated_in_static_context_.push_back(m);
         }
 
-        if (m.type() == message_t::kCall) {
+        if (m.type() == message_t::kCall || m.type() == message_t::kCoAwait) {
             const auto &to =
                 model().get_participant<model::participant>(m.to());
+
+            if (!to.has_value()) {
+                LOG_DBG("Skipping activity {} due to missing target paricipant "
+                        "in the diagram",
+                    m.from());
+                continue;
+            }
 
             visited.push_back(m.from());
 
@@ -283,6 +319,24 @@ void generator::generate_activity(
             visited.pop_back();
         }
         else if (m.type() == message_t::kReturn) {
+            print_debug(m, ostr);
+            generate_message_comment(ostr, m);
+            auto return_message = m;
+            if (!visited.empty()) {
+                return_message.set_to(visited.back());
+            }
+            generate_return(return_message, ostr);
+        }
+        else if (m.type() == message_t::kCoReturn) {
+            print_debug(m, ostr);
+            generate_message_comment(ostr, m);
+            auto return_message = m;
+            if (!visited.empty()) {
+                return_message.set_to(visited.back());
+            }
+            generate_return(return_message, ostr);
+        }
+        else if (m.type() == message_t::kCoYield) {
             print_debug(m, ostr);
             generate_message_comment(ostr, m);
             auto return_message = m;
@@ -333,7 +387,7 @@ void generator::generate_activity(
             ostr << '\n';
         }
         else if (m.type() == message_t::kForEnd) {
-            ostr << "end\n";
+            ostr << indent(1) << "end\n";
         }
         else if (m.type() == message_t::kDo) {
             print_debug(m, ostr);

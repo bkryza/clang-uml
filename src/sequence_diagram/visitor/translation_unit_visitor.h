@@ -85,6 +85,12 @@ public:
 
     bool TraverseVarDecl(clang::VarDecl *VD);
 
+    bool TraverseCoyieldExpr(clang::CoyieldExpr *expr);
+
+    bool TraverseCoawaitExpr(clang::CoawaitExpr *expr);
+
+    bool TraverseCoreturnStmt(clang::CoreturnStmt *stmt);
+
     bool TraverseCallExpr(clang::CallExpr *expr);
 
     bool TraverseObjCMessageExpr(clang::ObjCMessageExpr *expr);
@@ -102,6 +108,12 @@ public:
     bool TraverseCXXTemporaryObjectExpr(clang::CXXTemporaryObjectExpr *expr);
 
     bool TraverseReturnStmt(clang::ReturnStmt *stmt);
+
+    bool VisitCoreturnStmt(clang::CoreturnStmt *stmt);
+
+    bool VisitCoyieldExpr(clang::CoyieldExpr *expr);
+
+    bool VisitCoawaitExpr(clang::CoawaitExpr *expr);
 
     bool VisitLambdaExpr(clang::LambdaExpr *expr);
 
@@ -425,6 +437,9 @@ private:
     bool is_callee_valid_template_specialization(
         const clang::CXXDependentScopeMemberExpr *dependent_member_expr) const;
 
+    bool process_callee(clang::CallExpr *expr, model::message &m,
+        bool generated_message_from_comment);
+
     /**
      * @brief Handle CXX constructor call
      *
@@ -511,6 +526,9 @@ private:
     void push_message(clang::CXXConstructExpr *expr, model::message &&m);
     void push_message(clang::ObjCMessageExpr *expr, model::message &&m);
     void push_message(clang::ReturnStmt *stmt, model::message &&m);
+    void push_message(clang::CoreturnStmt *stmt, model::message &&m);
+    void push_message(clang::CoyieldExpr *stmt, model::message &&m);
+    void push_message(clang::CoawaitExpr *stmt, model::message &&m);
 
     /**
      * @brief Move a message model to diagram.
@@ -521,6 +539,9 @@ private:
     void pop_message_to_diagram(clang::CXXConstructExpr *expr);
     void pop_message_to_diagram(clang::ObjCMessageExpr *expr);
     void pop_message_to_diagram(clang::ReturnStmt *stmt);
+    void pop_message_to_diagram(clang::CoreturnStmt *stmt);
+    void pop_message_to_diagram(clang::CoyieldExpr *expr);
+    void pop_message_to_diagram(clang::CoawaitExpr *expr);
 
     std::optional<std::pair<unsigned int, std::string>> get_expression_comment(
         const clang::SourceManager &sm, const clang::ASTContext &context,
@@ -558,6 +579,10 @@ private:
     std::map<clang::CallExpr *, std::deque<model::message>>
         call_expr_message_map_;
     std::map<clang::ReturnStmt *, model::message> return_stmt_message_map_;
+    std::map<clang::CoreturnStmt *, model::message> co_return_stmt_message_map_;
+    std::map<clang::CoyieldExpr *, model::message> co_yield_stmt_message_map_;
+    std::map<clang::CoawaitExpr *, model::message> co_await_stmt_message_map_;
+
     std::map<clang::CXXConstructExpr *, model::message>
         construct_expr_message_map_;
     std::map<clang::ObjCMessageExpr *, model::message> objc_message_map_;
