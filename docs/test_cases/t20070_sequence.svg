@@ -1,0 +1,258 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" data-diagram-type="SEQUENCE" height="1271px" preserveAspectRatio="none" style="width:938px;height:1271px;background:#FFFFFF;" version="1.1" viewBox="0 0 938 1271" width="938px" zoomAndPan="magnify">
+  <defs>
+    <style type="text/css">a:hover { text-decoration: underline; }</style>
+  </defs>
+  <g>
+    <g>
+      <title>tmain()</title>
+      <rect fill="#FFFFFF" height="1136.5563" style="stroke:#181818;stroke-width:1;" width="10" x="55.3309" y="68.1358"/>
+    </g>
+    <g>
+      <title>&lt;&lt; Coroutine &gt;&gt;</title>
+      <rect fill="#FFFFFF" height="752.9444" style="stroke:#181818;stroke-width:1;" width="10" x="233.5011" y="100.8419"/>
+    </g>
+    <g>
+      <title>foo()</title>
+      <rect fill="#FFFFFF" height="30" style="stroke:#181818;stroke-width:1;" width="10" x="382.1076" y="141.5479"/>
+    </g>
+    <g>
+      <title>AwaitableFoo</title>
+      <rect fill="#FFFFFF" height="30" style="stroke:#181818;stroke-width:1;" width="10" x="465.5094" y="277.3719"/>
+    </g>
+    <g>
+      <title>Generator::promise_type</title>
+      <rect fill="#FFFFFF" height="31.706" style="stroke:#181818;stroke-width:1;" width="10" x="615.9149" y="339.0779"/>
+    </g>
+    <g>
+      <title>Generator::promise_type</title>
+      <rect fill="#FFFFFF" height="31.706" style="stroke:#181818;stroke-width:1;" width="10" x="615.9149" y="535.0201"/>
+    </g>
+    <g>
+      <title>Generator::promise_type</title>
+      <rect fill="#FFFFFF" height="31.706" style="stroke:#181818;stroke-width:1;" width="10" x="615.9149" y="757.6682"/>
+    </g>
+    <g>
+      <title>Generator&lt;unsigned long&gt;</title>
+      <rect fill="#FFFFFF" height="106.412" style="stroke:#181818;stroke-width:1;" width="10" x="810.9802" y="904.1983"/>
+    </g>
+    <g>
+      <title>Generator&lt;unsigned long&gt;</title>
+      <rect fill="#FFFFFF" height="28" style="stroke:#181818;stroke-width:1;" width="10" x="815.9802" y="943.9043"/>
+    </g>
+    <g>
+      <title>Generator&lt;unsigned long&gt;</title>
+      <rect fill="#FFFFFF" height="106.412" style="stroke:#181818;stroke-width:1;" width="10" x="810.9802" y="1042.3163"/>
+    </g>
+    <g>
+      <title>Generator&lt;unsigned long&gt;</title>
+      <rect fill="#FFFFFF" height="28" style="stroke:#181818;stroke-width:1;" width="10" x="815.9802" y="1082.0223"/>
+    </g>
+    <rect fill="transparent" height="1122.5563" style="stroke:#000000;stroke-width:1.5;" width="921.9639" x="10" y="75.1358"/>
+    <rect fill="transparent" height="113.118" style="stroke:#000000;stroke-width:1.5;" width="399.1855" x="20" y="115.8419"/>
+    <rect fill="transparent" height="69.118" style="stroke:#000000;stroke-width:1.5;" width="345.0296" x="20" y="435.196"/>
+    <rect fill="transparent" height="69.118" style="stroke:#000000;stroke-width:1.5;" width="345.0296" x="20" y="631.1381"/>
+    <rect fill="transparent" height="132.5301" style="stroke:#000000;stroke-width:1.5;" width="699.9966" x="20" y="714.2562"/>
+    <rect fill="transparent" height="295.9421" style="stroke:#000000;stroke-width:1.5;" width="901.9639" x="20" y="860.7862"/>
+    <g>
+      <title>tmain()</title>
+      <rect fill="transparent" height="1156.5563" width="8" x="56.3309" y="58.1358"/>
+      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="60" x2="60" y1="58.1358" y2="1214.6921"/>
+    </g>
+    <g>
+      <title>&lt;&lt; Coroutine &gt;&gt;</title>
+      <rect fill="transparent" height="1156.5563" width="8" x="234.5011" y="58.1358"/>
+      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="237.9725" x2="237.9725" y1="58.1358" y2="1214.6921"/>
+    </g>
+    <g>
+      <title>foo()</title>
+      <rect fill="transparent" height="1156.5563" width="8" x="383.1076" y="58.1358"/>
+      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="387.0296" x2="387.0296" y1="58.1358" y2="1214.6921"/>
+    </g>
+    <g>
+      <title>AwaitableFoo</title>
+      <rect fill="transparent" height="1156.5563" width="8" x="466.5094" y="58.1358"/>
+      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="470.1855" x2="470.1855" y1="58.1358" y2="1214.6921"/>
+    </g>
+    <g>
+      <title>Generator::promise_type</title>
+      <rect fill="transparent" height="1156.5563" width="8" x="616.9149" y="58.1358"/>
+      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="620.8332" x2="620.8332" y1="58.1358" y2="1214.6921"/>
+    </g>
+    <g>
+      <title>Generator&lt;unsigned long&gt;</title>
+      <rect fill="transparent" height="1156.5563" width="8" x="811.9802" y="58.1358"/>
+      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="814.9966" x2="814.9966" y1="58.1358" y2="1214.6921"/>
+    </g>
+    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="60.6618" x="30" y="24.0679"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="46.6618" x="37" y="46.0339">tmain()</text>
+    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="60.6618" x="30" y="1213.6921"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="46.6618" x="37" y="1235.6581">tmain()</text>
+    <rect fill="#E2E2F0" height="52.1358" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="233.0571" x="121.9725" y="5"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="74.3677" x="201.3172" y="26.9659">«Coroutine»</text>
+    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="219.0571" x="128.9725" y="46.0339">fibonacci_sequence(unsigned int)</text>
+    <rect fill="#E2E2F0" height="52.1358" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="233.0571" x="121.9725" y="1213.6921"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="74.3677" x="201.3172" y="1235.6581">«Coroutine»</text>
+    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="219.0571" x="128.9725" y="1254.726">fibonacci_sequence(unsigned int)</text>
+    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="44.1559" x="365.0296" y="24.0679"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="30.1559" x="372.0296" y="46.0339">foo()</text>
+    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="44.1559" x="365.0296" y="1213.6921"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="30.1559" x="372.0296" y="1235.6581">foo()</text>
+    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="102.6477" x="419.1855" y="24.0679"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="88.6477" x="426.1855" y="46.0339">AwaitableFoo</text>
+    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="102.6477" x="419.1855" y="1213.6921"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="88.6477" x="426.1855" y="1235.6581">AwaitableFoo</text>
+    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="178.1634" x="531.8332" y="24.0679"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="164.1634" x="538.8332" y="46.0339">Generator::promise_type</text>
+    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="178.1634" x="531.8332" y="1213.6921"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="164.1634" x="538.8332" y="1235.6581">Generator::promise_type</text>
+    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="191.9673" x="719.9966" y="24.0679"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="177.9673" x="726.9966" y="46.0339">Generator&lt;unsigned long&gt;</text>
+    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="191.9673" x="719.9966" y="1213.6921"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="177.9673" x="726.9966" y="1235.6581">Generator&lt;unsigned long&gt;</text>
+    <g>
+      <title>tmain()</title>
+      <rect fill="#FFFFFF" height="1136.5563" style="stroke:#181818;stroke-width:1;" width="10" x="55.3309" y="68.1358"/>
+    </g>
+    <g>
+      <title>&lt;&lt; Coroutine &gt;&gt;</title>
+      <rect fill="#FFFFFF" height="752.9444" style="stroke:#181818;stroke-width:1;" width="10" x="233.5011" y="100.8419"/>
+    </g>
+    <g>
+      <title>foo()</title>
+      <rect fill="#FFFFFF" height="30" style="stroke:#181818;stroke-width:1;" width="10" x="382.1076" y="141.5479"/>
+    </g>
+    <g>
+      <title>AwaitableFoo</title>
+      <rect fill="#FFFFFF" height="30" style="stroke:#181818;stroke-width:1;" width="10" x="465.5094" y="277.3719"/>
+    </g>
+    <g>
+      <title>Generator::promise_type</title>
+      <rect fill="#FFFFFF" height="31.706" style="stroke:#181818;stroke-width:1;" width="10" x="615.9149" y="339.0779"/>
+    </g>
+    <g>
+      <title>Generator::promise_type</title>
+      <rect fill="#FFFFFF" height="31.706" style="stroke:#181818;stroke-width:1;" width="10" x="615.9149" y="535.0201"/>
+    </g>
+    <g>
+      <title>Generator::promise_type</title>
+      <rect fill="#FFFFFF" height="31.706" style="stroke:#181818;stroke-width:1;" width="10" x="615.9149" y="757.6682"/>
+    </g>
+    <g>
+      <title>Generator&lt;unsigned long&gt;</title>
+      <rect fill="#FFFFFF" height="106.412" style="stroke:#181818;stroke-width:1;" width="10" x="810.9802" y="904.1983"/>
+    </g>
+    <g>
+      <title>Generator&lt;unsigned long&gt;</title>
+      <rect fill="#FFFFFF" height="28" style="stroke:#181818;stroke-width:1;" width="10" x="815.9802" y="943.9043"/>
+    </g>
+    <g>
+      <title>Generator&lt;unsigned long&gt;</title>
+      <rect fill="#FFFFFF" height="106.412" style="stroke:#181818;stroke-width:1;" width="10" x="810.9802" y="1042.3163"/>
+    </g>
+    <g>
+      <title>Generator&lt;unsigned long&gt;</title>
+      <rect fill="#FFFFFF" height="28" style="stroke:#181818;stroke-width:1;" width="10" x="815.9802" y="1082.0223"/>
+    </g>
+    <path d="M10,75.1358 L73.941,75.1358 L73.941,84.8419 L63.941,94.8419 L10,94.8419 L10,75.1358 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/>
+    <rect fill="transparent" height="1122.5563" style="stroke:#000000;stroke-width:1.5;" width="921.9639" x="10" y="75.1358"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="18.941" x="25" y="90.0328">try</text>
+    <polygon fill="#181818" points="221.5011,96.8419,231.5011,100.8419,221.5011,104.8419,225.5011,100.8419" style="stroke:#181818;stroke-width:1;"/>
+    <line style="stroke:#181818;stroke-width:1;" x1="65.3309" x2="227.5011" y1="100.8419" y2="100.8419"/>
+    <path d="M20,115.8419 L82.459,115.8419 L82.459,125.5479 L72.459,135.5479 L20,135.5479 L20,115.8419 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/>
+    <rect fill="transparent" height="113.118" style="stroke:#000000;stroke-width:1.5;" width="399.1855" x="20" y="115.8419"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="17.459" x="35" y="130.7389">alt</text>
+    <text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="39.1047" x="97.459" y="129.6008">[n == 0]</text>
+    <polygon fill="#181818" points="370.1076,137.5479,380.1076,141.5479,370.1076,145.5479,374.1076,141.5479" style="stroke:#181818;stroke-width:1;"/>
+    <line style="stroke:#181818;stroke-width:1;" x1="243.5011" x2="376.1076" y1="141.5479" y2="141.5479"/>
+    <polygon fill="#181818" points="76.3309,216.9599,66.3309,220.9599,76.3309,224.9599,72.3309,220.9599" style="stroke:#181818;stroke-width:1;"/>
+    <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="70.3309" x2="232.5011" y1="220.9599" y2="220.9599"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="66.9501" x="82.3309" y="197.4449">«co_return»</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="144.1702" x="82.3309" y="215.1509">Generator&lt;std::uint64_t&gt;</text>
+    <polygon fill="#181818" points="453.5094,273.3719,463.5094,277.3719,453.5094,281.3719,457.5094,277.3719" style="stroke:#181818;stroke-width:1;"/>
+    <line style="stroke:#181818;stroke-width:1;" x1="243.5011" x2="459.5094" y1="277.3719" y2="277.3719"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="65.962" x="250.5011" y="253.8569">«co_await»</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="129.3111" x="250.5011" y="271.5629">await_resume() const</text>
+    <polygon fill="#181818" points="603.9149,335.0779,613.9149,339.0779,603.9149,343.0779,607.9149,339.0779" style="stroke:#181818;stroke-width:1;"/>
+    <line style="stroke:#181818;stroke-width:1;" x1="243.5011" x2="609.9149" y1="339.0779" y2="339.0779"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="113.3471" x="250.5011" y="333.2689">yield_value(int &amp;&amp;)</text>
+    <polygon fill="#181818" points="254.5011,366.784,244.5011,370.784,254.5011,374.784,250.5011,370.784" style="stroke:#181818;stroke-width:1;"/>
+    <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="248.5011" x2="619.9149" y1="370.784" y2="370.784"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="116.2851" x="260.5011" y="364.975">std::suspend_always</text>
+    <polygon fill="#181818" points="76.3309,416.196,66.3309,420.196,76.3309,424.196,72.3309,420.196" style="stroke:#181818;stroke-width:1;"/>
+    <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="70.3309" x2="232.5011" y1="420.196" y2="420.196"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="57.538" x="82.3309" y="396.681">«co_yield»</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="144.1702" x="82.3309" y="414.387">Generator&lt;std::uint64_t&gt;</text>
+    <path d="M20,435.196 L82.459,435.196 L82.459,444.902 L72.459,454.902 L20,454.902 L20,435.196 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/>
+    <rect fill="transparent" height="69.118" style="stroke:#000000;stroke-width:1.5;" width="345.0296" x="20" y="435.196"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="17.459" x="35" y="450.093">alt</text>
+    <text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="39.1047" x="97.459" y="448.9549">[n == 1]</text>
+    <polygon fill="#181818" points="76.3309,492.314,66.3309,496.314,76.3309,500.314,72.3309,496.314" style="stroke:#181818;stroke-width:1;"/>
+    <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="70.3309" x2="232.5011" y1="496.314" y2="496.314"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="66.9501" x="82.3309" y="472.799">«co_return»</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="144.1702" x="82.3309" y="490.505">Generator&lt;std::uint64_t&gt;</text>
+    <polygon fill="#181818" points="603.9149,531.0201,613.9149,535.0201,603.9149,539.0201,607.9149,535.0201" style="stroke:#181818;stroke-width:1;"/>
+    <line style="stroke:#181818;stroke-width:1;" x1="243.5011" x2="609.9149" y1="535.0201" y2="535.0201"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="113.3471" x="250.5011" y="529.2111">yield_value(int &amp;&amp;)</text>
+    <polygon fill="#181818" points="254.5011,562.7261,244.5011,566.7261,254.5011,570.7261,250.5011,566.7261" style="stroke:#181818;stroke-width:1;"/>
+    <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="248.5011" x2="619.9149" y1="566.7261" y2="566.7261"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="116.2851" x="260.5011" y="560.9171">std::suspend_always</text>
+    <polygon fill="#181818" points="76.3309,612.1381,66.3309,616.1381,76.3309,620.1381,72.3309,616.1381" style="stroke:#181818;stroke-width:1;"/>
+    <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="70.3309" x2="232.5011" y1="616.1381" y2="616.1381"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="57.538" x="82.3309" y="592.6231">«co_yield»</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="144.1702" x="82.3309" y="610.3291">Generator&lt;std::uint64_t&gt;</text>
+    <path d="M20,631.1381 L82.459,631.1381 L82.459,640.8441 L72.459,650.8441 L20,650.8441 L20,631.1381 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/>
+    <rect fill="transparent" height="69.118" style="stroke:#000000;stroke-width:1.5;" width="345.0296" x="20" y="631.1381"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="17.459" x="35" y="646.0351">alt</text>
+    <text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="39.1047" x="97.459" y="644.897">[n == 2]</text>
+    <polygon fill="#181818" points="76.3309,688.2562,66.3309,692.2562,76.3309,696.2562,72.3309,692.2562" style="stroke:#181818;stroke-width:1;"/>
+    <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="70.3309" x2="232.5011" y1="692.2562" y2="692.2562"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="66.9501" x="82.3309" y="668.7411">«co_return»</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="144.1702" x="82.3309" y="686.4472">Generator&lt;std::uint64_t&gt;</text>
+    <path d="M20,714.2562 L93.288,714.2562 L93.288,723.9622 L83.288,733.9622 L20,733.9622 L20,714.2562 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/>
+    <rect fill="transparent" height="132.5301" style="stroke:#000000;stroke-width:1.5;" width="699.9966" x="20" y="714.2562"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="28.288" x="35" y="729.1532">loop</text>
+    <text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="133.2531" x="108.288" y="728.0151">[unsigned i = 2; i &lt; n; ++i]</text>
+    <polygon fill="#181818" points="603.9149,753.6682,613.9149,757.6682,603.9149,761.6682,607.9149,757.6682" style="stroke:#181818;stroke-width:1;"/>
+    <line style="stroke:#181818;stroke-width:1;" x1="243.5011" x2="609.9149" y1="757.6682" y2="757.6682"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="175.3832" x="250.5011" y="751.8592">yield_value(unsigned long &amp;)</text>
+    <polygon fill="#181818" points="254.5011,785.3742,244.5011,789.3742,254.5011,793.3742,250.5011,789.3742" style="stroke:#181818;stroke-width:1;"/>
+    <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="248.5011" x2="619.9149" y1="789.3742" y2="789.3742"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="116.2851" x="260.5011" y="783.5652">std::suspend_always</text>
+    <polygon fill="#181818" points="76.3309,834.7862,66.3309,838.7862,76.3309,842.7862,72.3309,838.7862" style="stroke:#181818;stroke-width:1;"/>
+    <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="70.3309" x2="232.5011" y1="838.7862" y2="838.7862"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="57.538" x="82.3309" y="815.2712">«co_yield»</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="144.1702" x="82.3309" y="832.9772">Generator&lt;std::uint64_t&gt;</text>
+    <path d="M20,860.7862 L93.288,860.7862 L93.288,870.4923 L83.288,880.4923 L20,880.4923 L20,860.7862 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/>
+    <rect fill="transparent" height="295.9421" style="stroke:#000000;stroke-width:1.5;" width="901.9639" x="20" y="860.7862"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="28.288" x="35" y="875.6833">loop</text>
+    <text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="95.7763" x="108.288" y="874.5452">[int j = 0; gen; ++j]</text>
+    <polygon fill="#181818" points="798.9802,900.1983,808.9802,904.1983,798.9802,908.1983,802.9802,904.1983" style="stroke:#181818;stroke-width:1;"/>
+    <line style="stroke:#181818;stroke-width:1;" x1="65.3309" x2="804.9802" y1="904.1983" y2="904.1983"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="4.303" x="72.3309" y="898.3893">[</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="92.0401" x="76.6339" y="898.3893">operator bool()</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="4.303" x="168.674" y="898.3893">]</text>
+    <line style="stroke:#181818;stroke-width:1;" x1="825.9802" x2="867.9802" y1="935.9043" y2="935.9043"/>
+    <line style="stroke:#181818;stroke-width:1;" x1="867.9802" x2="867.9802" y1="935.9043" y2="948.9043"/>
+    <line style="stroke:#181818;stroke-width:1;" x1="826.9802" x2="867.9802" y1="948.9043" y2="948.9043"/>
+    <polygon fill="#181818" points="836.9802,944.9043,826.9802,948.9043,836.9802,952.9043,832.9802,948.9043" style="stroke:#181818;stroke-width:1;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="22.334" x="832.9802" y="930.0953">fill()</text>
+    <polygon fill="#181818" points="76.3309,1006.6103,66.3309,1010.6103,76.3309,1014.6103,72.3309,1010.6103" style="stroke:#181818;stroke-width:1;"/>
+    <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="70.3309" x2="814.9802" y1="1010.6103" y2="1010.6103"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="30.927" x="82.3309" y="1004.8013">_Bool</text>
+    <polygon fill="#181818" points="798.9802,1038.3163,808.9802,1042.3163,798.9802,1046.3163,802.9802,1042.3163" style="stroke:#181818;stroke-width:1;"/>
+    <line style="stroke:#181818;stroke-width:1;" x1="65.3309" x2="804.9802" y1="1042.3163" y2="1042.3163"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="69.3811" x="72.3309" y="1036.5073">operator()()</text>
+    <line style="stroke:#181818;stroke-width:1;" x1="825.9802" x2="867.9802" y1="1074.0223" y2="1074.0223"/>
+    <line style="stroke:#181818;stroke-width:1;" x1="867.9802" x2="867.9802" y1="1074.0223" y2="1087.0223"/>
+    <line style="stroke:#181818;stroke-width:1;" x1="826.9802" x2="867.9802" y1="1087.0223" y2="1087.0223"/>
+    <polygon fill="#181818" points="836.9802,1083.0223,826.9802,1087.0223,836.9802,1091.0223,832.9802,1087.0223" style="stroke:#181818;stroke-width:1;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="22.334" x="832.9802" y="1068.2133">fill()</text>
+    <polygon fill="#181818" points="76.3309,1144.7284,66.3309,1148.7284,76.3309,1152.7284,72.3309,1148.7284" style="stroke:#181818;stroke-width:1;"/>
+    <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="70.3309" x2="814.9802" y1="1148.7284" y2="1148.7284"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="82.1991" x="82.3309" y="1142.9194">unsigned long</text>
+    <line style="stroke:#000000;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="10" x2="931.9639" y1="1164.7284" y2="1164.7284"/>
+    <text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="128.7981" x="15" y="1176.4873">[const std::exception &amp;]</text>
+    <line style="stroke:#000000;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="10" x2="931.9639" y1="1181.7103" y2="1181.7103"/>
+    <text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="16.6869" x="15" y="1193.4692">[...]</text>
+  </g>
+</svg>
