@@ -24,24 +24,43 @@ TEST_CASE("t20070")
     auto [config, db, diagram, model] =
         CHECK_SEQUENCE_MODEL("t20070", "t20070_sequence");
 
-    
-    CHECK_SEQUENCE_DIAGRAM(
-       *config, diagram, *model,
-        [](const auto &src) {
-            REQUIRE(HasTitle(src, "Basic sequence diagram example"));
+    CHECK_SEQUENCE_DIAGRAM(*config, diagram, *model, [](const auto &src) {
+        REQUIRE(MessageOrder(src,
+            {
+                //
+                {"fibonacci_sequence(unsigned int)", "foo()", ""}, //
+                {"fibonacci_sequence(unsigned int)", "tmain()",
+                    "Generator<std::uint64_t>", Response{}, CoReturn{}}, //
+                {"fibonacci_sequence(unsigned int)", "AwaitableFoo",
+                    "await_resume() const", CoAwait()}, //
 
-            REQUIRE(MessageOrder(src,
-                 {
-                     //
-                    {"tmainaa()", "A", "A()"},    //
-                    // {"B", "A", "log_result(int)", Static{}}     //
-                }));
+                {"fibonacci_sequence(unsigned int)", "Generator::promise_type",
+                    "yield_value(int &&)"}, //
+                {"Generator::promise_type", "fibonacci_sequence(unsigned int)",
+                    "std::suspend_always", Response{}},
+                {"fibonacci_sequence(unsigned int)", "tmain()",
+                    "Generator<std::uint64_t>", Response{}, CoYield{}}, //
+                {"fibonacci_sequence(unsigned int)", "tmain()",
+                    "Generator<std::uint64_t>", Response{}, CoReturn{}}, //
 
-            REQUIRE(!HasMessage(src, {"A", {"detail", "C"}, "add(int,int)"}));
+                {"fibonacci_sequence(unsigned int)", "Generator::promise_type",
+                    "yield_value(unsigned long &)"}, //
+                {"Generator::promise_type", "fibonacci_sequence(unsigned int)",
+                    "std::suspend_always", Response{}},
+                {"fibonacci_sequence(unsigned int)", "tmain()",
+                    "Generator<std::uint64_t>", Response{}, CoYield{}}, //
 
-            // REQUIRE(HasComment(src, "t20001 test diagram of type sequence"));
+                {"tmain()", "Generator<unsigned long>", "operator bool()",
+                    InControlCondition{}}, //
+                {"Generator<unsigned long>", "Generator<unsigned long>",
+                    "fill()"},
 
-            // REQUIRE(HasMessageComment(src, "tmain()", "Just add 2 numbers"));
-        });
+                {"tmain()", "Generator<unsigned long>", "operator()()"}, //
+                {"Generator<unsigned long>", "Generator<unsigned long>",
+                    "fill()"}, //
+                {"Generator<unsigned long>", "tmain()", "unsigned long",
+                    Response{}} //
 
+            }));
+    });
 }

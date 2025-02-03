@@ -22,6 +22,12 @@
 
 namespace clanguml::common::model {
 
+bool is_return(message_t t)
+{
+    return t == message_t::kReturn || t == message_t::kCoReturn ||
+        t == message_t::kCoYield;
+}
+
 std::string to_string(relationship_t r)
 {
     switch (r) {
@@ -130,6 +136,12 @@ std::string to_string(message_t r)
         return "conditional else";
     case message_t::kConditionalEnd:
         return "end conditional";
+    case message_t::kCoReturn:
+        return "co_return";
+    case message_t::kCoYield:
+        return "co_yield";
+    case message_t::kCoAwait:
+        return "co_await";
     default:
         assert(false);
         return "";

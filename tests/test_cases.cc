@@ -681,6 +681,7 @@ void CHECK_INCLUDE_DIAGRAM(const clanguml::config::config &config,
 
 #if defined(ENABLE_CXX_STD_20_TEST_CASES)
 #include "t20070/test_case.h"
+#include "t20071/test_case.h"
 #endif
 
 ///
