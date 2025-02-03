@@ -1,4 +1,4 @@
-<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" aria-roledescription="sequence" role="graphics-document document" viewBox="-102.5 -10 721.5 568" style="max-width: 721.5px; background-color: white;" width="721.5" id="my-svg">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" aria-roledescription="sequence" role="graphics-document document" viewBox="-100.5 -10 719.5 568" style="max-width: 719.5px; background-color: white;" width="719.5" id="my-svg">
   <g>
     <rect class="actor actor-bottom" ry="3" rx="3" name="C_0017910232009778350338" height="65" width="169" stroke="#666" fill="#eaeaea" y="482" x="400"/>
     <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="514.5" x="484.5">
@@ -97,9 +97,9 @@
   <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="80" x="177">tmain()</text>
   <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="111" x2="79" y1="111" x1="274"/>
   <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="126" x="80">&lt;&lt; Coroutine &gt;&gt;</text>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="143" x="80">resuming_on_new_thread(std::jthread &amp;)</text>
+  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="143" x="80">resuming_on_new_thread(std::thread &amp;)</text>
   <path style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" d="M 80,173.5 C 140,163.5 140,203.5 80,193.5"/>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="219" x="85">switch_to_new_thread(std::jthread &amp;)</text>
+  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="219" x="85">switch_to_new_thread(std::thread &amp;)</text>
   <path style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" d="M 85,249.5 C 145,239.5 145,279.5 85,269.5"/>
   <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="295" x="90">awaitable_on_thread</text>
   <path style="stroke-dasharray: 3, 3; fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine1" d="M 90,325.5 C 150,315.5 150,355.5 90,345.5"/>
