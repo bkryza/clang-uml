@@ -33,8 +33,14 @@ TEST_CASE("t20071")
                     "resuming_on_new_thread(std::thread &)", Coroutine{}}, //
                 {"t20071.cc", "t20071.cc",
                     "switch_to_new_thread(std::thread &)"}, //
+#if LLVM_VERSION_MAJOR == 14 || LLVM_VERSION_MAJOR == 15
+                {"t20071.cc", "t20071.cc",
+                    "struct clanguml::t20071::awaitable_on_thread",
+                    Response{}}, //
+#else
                 {"t20071.cc", "t20071.cc", "awaitable_on_thread",
                     Response{}}, //
+#endif
                 {"t20071.cc", "awaitable_on_thread", "await_resume()",
                     CoAwait{}} //
             }));
