@@ -284,6 +284,13 @@ void generator::generate_activity(
             const auto &to =
                 model().get_participant<model::participant>(m.to());
 
+            if (!to.has_value()) {
+                LOG_DBG("Skipping activity {} due to missing target paricipant "
+                        "in the diagram",
+                    m.from());
+                continue;
+            }
+
             visited.push_back(m.from());
 
             LOG_DBG("Generating message [{}] --> [{}]", m.from(), m.to());
