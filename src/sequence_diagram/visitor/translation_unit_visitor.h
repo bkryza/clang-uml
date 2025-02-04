@@ -127,6 +127,8 @@ public:
 
     bool VisitCXXMethodDecl(clang::CXXMethodDecl *declaration);
 
+    bool TraverseCXXRecordDecl(clang::CXXRecordDecl *declaration);
+
     bool VisitCXXRecordDecl(clang::CXXRecordDecl *declaration);
 
     bool VisitClassTemplateDecl(clang::ClassTemplateDecl *declaration);

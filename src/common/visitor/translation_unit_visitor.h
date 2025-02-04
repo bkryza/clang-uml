@@ -264,8 +264,19 @@ public:
         if (config().filter_mode() == config::filter_mode_t::advanced)
             return true;
 
-        auto should_include_namespace = diagram().should_include(
-            common::model::namespace_{decl->getQualifiedNameAsString()});
+        auto should_include_namespace{false};
+
+        if (const auto *record = clang::dyn_cast<clang::CXXRecordDecl>(decl);
+            record != nullptr && record->isLocalClass() != nullptr &&
+            diagram().type() == common::model::diagram_t::kSequence) {
+            should_include_namespace =
+                diagram().should_include(common::model::namespace_{
+                    record->isLocalClass()->getQualifiedNameAsString()});
+        }
+        else {
+            should_include_namespace = diagram().should_include(
+                common::model::namespace_{decl->getQualifiedNameAsString()});
+        }
 
         const auto decl_file =
             decl->getLocation().printToString(source_manager());

@@ -1,0 +1,12 @@
+diagrams:
+  t20072_sequence:
+    type: sequence
+    glob:
+      - t20072.cc
+    include:
+      namespaces:
+        - clanguml::t20072
+    using_namespace: clanguml::t20072
+    generate_return_types: true
+    from:
+      - function: "clanguml::t20072::tmain()"

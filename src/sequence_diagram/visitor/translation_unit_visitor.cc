@@ -153,6 +153,19 @@ bool translation_unit_visitor::VisitObjCInterfaceDecl(
     return true;
 }
 
+bool translation_unit_visitor::TraverseCXXRecordDecl(
+    clang::CXXRecordDecl *declaration)
+{
+    auto context_backup = context();
+
+    RecursiveASTVisitor<translation_unit_visitor>::TraverseCXXRecordDecl(
+        declaration);
+
+    call_expression_context_ = context_backup;
+
+    return true;
+}
+
 bool translation_unit_visitor::VisitCXXRecordDecl(
     clang::CXXRecordDecl *declaration)
 {
@@ -165,10 +178,6 @@ bool translation_unit_visitor::VisitCXXRecordDecl(
         if (get_unique_id(eid_t{declaration->getDescribedTemplate()->getID()}))
             return true;
     }
-
-    // TODO: Add support for classes defined in function/method bodies
-    if (declaration->isLocalClass() != nullptr)
-        return true;
 
     LOG_TRACE("Visiting class declaration at {}",
         declaration->getBeginLoc().printToString(source_manager()));
@@ -922,8 +931,6 @@ bool translation_unit_visitor::TraverseReturnStmt(clang::ReturnStmt *stmt)
     context().enter_callexpr(stmt);
 
     RecursiveASTVisitor<translation_unit_visitor>::TraverseReturnStmt(stmt);
-
-    //    translation_unit_visitor::VisitReturnStmt(stmt);
 
     LOG_TRACE("Leaving return statement at {}",
         stmt->getBeginLoc().printToString(source_manager()));
@@ -2504,6 +2511,31 @@ translation_unit_visitor::create_class_model(clang::CXXRecordDecl *cls)
                 cls->getQualifiedNameAsString());
             return {};
         }
+    }
+    else if (cls->isLocalClass() != nullptr) {
+        const auto *func_declaration = cls->isLocalClass();
+
+        eid_t func_model_id =
+            get_unique_id(eid_t{func_declaration->getID()}).has_value()
+            ? *get_unique_id(eid_t{func_declaration->getID()})
+            : eid_t{func_declaration->getID()};
+
+        const auto &func_model =
+            diagram().get_participant<model::participant>(func_model_id);
+
+        if (!func_model.has_value())
+            return {};
+
+        LOG_DBG("Visiting local class declaration: {} in {}",
+            cls->getQualifiedNameAsString(),
+            func_model.value().full_name(false));
+
+        auto local_cls_ns = func_model.value().get_namespace();
+
+        c.set_name(func_model.value().full_name_no_ns() + "##" +
+            common::get_tag_name(*cls));
+        c.set_namespace(local_cls_ns);
+        c.set_id(common::to_id(c.full_name(false)));
     }
     else {
         c.set_name(common::get_tag_name(*cls));
