@@ -1,8 +1,8 @@
-<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" aria-roledescription="sequence" role="graphics-document document" viewBox="-100.5 -10 719.5 568" style="max-width: 719.5px; background-color: white;" width="719.5" id="my-svg">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" aria-roledescription="sequence" role="graphics-document document" viewBox="-100.5 -10 952.5 568" style="max-width: 952.5px; background-color: white;" width="952.5" id="my-svg">
   <g>
-    <rect class="actor actor-bottom" ry="3" rx="3" name="C_0017910232009778350338" height="65" width="169" stroke="#666" fill="#eaeaea" y="482" x="400"/>
-    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="514.5" x="484.5">
-      <tspan dy="0" x="484.5">awaitable_on_thread</tspan>
+    <rect class="actor actor-bottom" ry="3" rx="3" name="C_0001837645032261779240" height="65" width="402" stroke="#666" fill="#eaeaea" y="482" x="400"/>
+    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="514.5" x="601">
+      <tspan dy="0" x="601">switch_to_new_thread(std::thread &amp;)::awaitable_on_thread</tspan>
     </text>
   </g>
   <g>
@@ -18,11 +18,11 @@
     </text>
   </g>
   <g>
-    <line name="C_0017910232009778350338" stroke="#999" stroke-width="0.5px" class="actor-line 200" y2="482" x2="484.5" y1="65" x1="484.5" id="actor2"/>
+    <line name="C_0001837645032261779240" stroke="#999" stroke-width="0.5px" class="actor-line 200" y2="482" x2="601" y1="65" x1="601" id="actor2"/>
     <g id="root-2">
-      <rect class="actor actor-top" ry="3" rx="3" name="C_0017910232009778350338" height="65" width="169" stroke="#666" fill="#eaeaea" y="0" x="400"/>
-      <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="32.5" x="484.5">
-        <tspan dy="0" x="484.5">awaitable_on_thread</tspan>
+      <rect class="actor actor-top" ry="3" rx="3" name="C_0001837645032261779240" height="65" width="402" stroke="#666" fill="#eaeaea" y="0" x="400"/>
+      <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="32.5" x="601">
+        <tspan dy="0" x="601">switch_to_new_thread(std::thread &amp;)::awaitable_on_thread</tspan>
       </text>
     </g>
   </g>
@@ -92,7 +92,7 @@
     <rect class="activation2" height="74" width="10" stroke="#666" fill="#EDF2AE" y="281.5" x="80"/>
   </g>
   <g>
-    <rect class="activation0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="412" x="479.5"/>
+    <rect class="activation0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="412" x="596"/>
   </g>
   <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="80" x="177">tmain()</text>
   <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="111" x2="79" y1="111" x1="274"/>
@@ -103,9 +103,9 @@
   <path style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" d="M 85,249.5 C 145,239.5 145,279.5 85,269.5"/>
   <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="295" x="90">awaitable_on_thread</text>
   <path style="stroke-dasharray: 3, 3; fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine1" d="M 90,325.5 C 150,315.5 150,355.5 90,345.5"/>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="371" x="283">&lt;&lt; co_await &gt;&gt;</text>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="389" x="283">await_resume()</text>
-  <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="418" x2="480.5" y1="418" x1="85"/>
+  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="371" x="341">&lt;&lt; co_await &gt;&gt;</text>
+  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="389" x="341">await_resume()</text>
+  <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="418" x2="597" y1="418" x1="85"/>
   <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="433" x="176">int</text>
   <line style="stroke-dasharray: 3, 3; fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine1" y2="462" x2="271" y1="462" x1="80"/>
 </svg>

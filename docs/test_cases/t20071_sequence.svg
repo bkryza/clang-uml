@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" data-diagram-type="SEQUENCE" height="391px" preserveAspectRatio="none" style="width:428px;height:391px;background:#FFFFFF;" version="1.1" viewBox="0 0 428 391" width="428px" zoomAndPan="magnify">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" data-diagram-type="SEQUENCE" height="391px" preserveAspectRatio="none" style="width:551px;height:391px;background:#FFFFFF;" version="1.1" viewBox="0 0 551 391" width="551px" zoomAndPan="magnify">
   <defs>
     <style type="text/css">a:hover { text-decoration: underline; }</style>
   </defs>
@@ -16,7 +16,7 @@
       <rect fill="#FFFFFF" height="42.706" style="stroke:#181818;stroke-width:1;" width="10" x="72.3291" y="174.892"/>
     </g>
     <g>
-      <title>awaitable_on_thread</title>
+      <title>switch_to_new_thread(std::thread &amp;)::awaitable_on_thread</title>
       <rect fill="#FFFFFF" height="30" style="stroke:#181818;stroke-width:1;" width="10" x="341.6393" y="274.01"/>
     </g>
     <g>
@@ -25,18 +25,18 @@
       <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="67.1862" x2="67.1862" y1="39.0679" y2="353.716"/>
     </g>
     <g>
-      <title>awaitable_on_thread</title>
+      <title>switch_to_new_thread(std::thread &amp;)::awaitable_on_thread</title>
       <rect fill="transparent" height="314.6481" width="8" x="342.6393" y="39.0679"/>
-      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="346.2636" x2="346.2636" y1="39.0679" y2="353.716"/>
+      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="345.847" x2="345.847" y1="39.0679" y2="353.716"/>
     </g>
     <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="76.2857" x="29.1862" y="5"/>
     <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="62.2857" x="36.1862" y="26.9659">t20071.cc</text>
     <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="76.2857" x="29.1862" y="352.716"/>
     <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="62.2857" x="36.1862" y="374.682">t20071.cc</text>
-    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="150.7515" x="271.2636" y="5"/>
-    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="136.7515" x="278.2636" y="26.9659">awaitable_on_thread</text>
-    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="150.7515" x="271.2636" y="352.716"/>
-    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="136.7515" x="278.2636" y="374.682">awaitable_on_thread</text>
+    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="397.5846" x="147.847" y="5"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="383.5846" x="154.847" y="26.9659">switch_to_new_thread(std::thread &amp;)::awaitable_on_thread</text>
+    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="397.5846" x="147.847" y="352.716"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="383.5846" x="154.847" y="374.682">switch_to_new_thread(std::thread &amp;)::awaitable_on_thread</text>
     <g>
       <title>t20071.cc</title>
       <rect fill="#FFFFFF" height="262.9421" style="stroke:#181818;stroke-width:1;" width="10" x="62.3291" y="72.7739"/>
@@ -50,7 +50,7 @@
       <rect fill="#FFFFFF" height="42.706" style="stroke:#181818;stroke-width:1;" width="10" x="72.3291" y="174.892"/>
     </g>
     <g>
-      <title>awaitable_on_thread</title>
+      <title>switch_to_new_thread(std::thread &amp;)::awaitable_on_thread</title>
       <rect fill="#FFFFFF" height="30" style="stroke:#181818;stroke-width:1;" width="10" x="341.6393" y="274.01"/>
     </g>
     <polygon fill="#181818" points="50.3291,68.7739,60.3291,72.7739,50.3291,76.7739,54.3291,72.7739" style="stroke:#181818;stroke-width:1;"/>
