@@ -318,6 +318,13 @@ struct call_expression_context {
      */
     void dump();
 
+    /**
+     * @brief Check if current context is inside a local class
+     *
+     * @return True, if current context is inside a local class
+     */
+    bool is_local_class() const;
+
     clang::CXXRecordDecl *current_class_decl_{nullptr};
     clang::ClassTemplateDecl *current_class_template_decl_{nullptr};
     clang::ClassTemplateSpecializationDecl

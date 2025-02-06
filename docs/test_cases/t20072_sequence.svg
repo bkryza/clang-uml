@@ -1,0 +1,245 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" data-diagram-type="SEQUENCE" height="697px" preserveAspectRatio="none" style="width:1586px;height:697px;background:#FFFFFF;" version="1.1" viewBox="0 0 1586 697" width="1586px" zoomAndPan="magnify">
+  <defs>
+    <style type="text/css">a:hover { text-decoration: underline; }</style>
+  </defs>
+  <g>
+    <g>
+      <title>tmain()</title>
+      <rect fill="#FFFFFF" height="592.7083" style="stroke:#181818;stroke-width:1;" width="10" x="30.3309" y="49.0679"/>
+    </g>
+    <g>
+      <title>foo(int)</title>
+      <rect fill="#FFFFFF" height="160.5301" style="stroke:#181818;stroke-width:1;" width="10" x="101.3987" y="55.0679"/>
+    </g>
+    <g>
+      <title>foo(int)::Foo</title>
+      <rect fill="#FFFFFF" height="105.118" style="stroke:#181818;stroke-width:1;" width="10" x="188.7275" y="86.7739"/>
+    </g>
+    <g>
+      <title>foo(int)::Foo</title>
+      <rect fill="#FFFFFF" height="31.706" style="stroke:#181818;stroke-width:1;" width="10" x="188.7275" y="261.304"/>
+    </g>
+    <g>
+      <title>validate(int)</title>
+      <rect fill="#FFFFFF" height="31.706" style="stroke:#181818;stroke-width:1;" width="10" x="290.9802" y="145.186"/>
+    </g>
+    <g>
+      <title>bar&lt;Foo&gt;(const Foo &amp;,std::string)</title>
+      <rect fill="#FFFFFF" height="158.5301" style="stroke:#181818;stroke-width:1;" width="10" x="462.7636" y="229.598"/>
+    </g>
+    <g>
+      <title>bar&lt;Foo&gt;(const Foo &amp;,std::string)::Foo</title>
+      <rect fill="#FFFFFF" height="31.706" style="stroke:#181818;stroke-width:1;" width="10" x="720.8638" y="324.716"/>
+    </g>
+    <g>
+      <title>Baz</title>
+      <rect fill="#FFFFFF" height="95.118" style="stroke:#181818;stroke-width:1;" width="10" x="881.6083" y="419.8341"/>
+    </g>
+    <g>
+      <title>Baz::baz(int)::Buzz</title>
+      <rect fill="#FFFFFF" height="31.706" style="stroke:#181818;stroke-width:1;" width="10" x="1005.9374" y="451.5401"/>
+    </g>
+    <g>
+      <title>tmain()::(lambda t20072.cc:64:9)</title>
+      <rect fill="#FFFFFF" height="31.706" style="stroke:#181818;stroke-width:1;" width="10" x="1193.8697" y="546.6582"/>
+    </g>
+    <g>
+      <title>tmain()::(lambda t20072.cc:64:9)::Luzz</title>
+      <rect fill="#FFFFFF" height="31.706" style="stroke:#181818;stroke-width:1;" width="10" x="1445.8448" y="610.0702"/>
+    </g>
+    <rect fill="transparent" height="83.118" style="stroke:#000000;stroke-width:1.5;" width="214.5054" x="137.1356" y="101.7739"/>
+    <g>
+      <title>tmain()</title>
+      <rect fill="transparent" height="620.7083" width="8" x="31.3309" y="39.0679"/>
+      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="35" x2="35" y1="39.0679" y2="659.7762"/>
+    </g>
+    <g>
+      <title>foo(int)</title>
+      <rect fill="transparent" height="620.7083" width="8" x="102.3987" y="39.0679"/>
+      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="105.6618" x2="105.6618" y1="39.0679" y2="659.7762"/>
+    </g>
+    <g>
+      <title>foo(int)::Foo</title>
+      <rect fill="transparent" height="620.7083" width="8" x="189.7275" y="39.0679"/>
+      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="193.1356" x2="193.1356" y1="39.0679" y2="659.7762"/>
+    </g>
+    <g>
+      <title>validate(int)</title>
+      <rect fill="transparent" height="620.7083" width="8" x="291.9802" y="39.0679"/>
+      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="295.3193" x2="295.3193" y1="39.0679" y2="659.7762"/>
+    </g>
+    <g>
+      <title>bar&lt;Foo&gt;(const Foo &amp;,std::string)</title>
+      <rect fill="transparent" height="620.7083" width="8" x="463.7636" y="39.0679"/>
+      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="467.641" x2="467.641" y1="39.0679" y2="659.7762"/>
+    </g>
+    <g>
+      <title>bar&lt;Foo&gt;(const Foo &amp;,std::string)::Foo</title>
+      <rect fill="transparent" height="620.7083" width="8" x="721.8638" y="39.0679"/>
+      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="724.8862" x2="724.8862" y1="39.0679" y2="659.7762"/>
+    </g>
+    <g>
+      <title>Baz</title>
+      <rect fill="transparent" height="620.7083" width="8" x="882.6083" y="39.0679"/>
+      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="885.8413" x2="885.8413" y1="39.0679" y2="659.7762"/>
+    </g>
+    <g>
+      <title>Baz::baz(int)::Buzz</title>
+      <rect fill="transparent" height="620.7083" width="8" x="1006.9374" y="39.0679"/>
+      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="1010.8296" x2="1010.8296" y1="39.0679" y2="659.7762"/>
+    </g>
+    <g>
+      <title>tmain()::(lambda t20072.cc:64:9)</title>
+      <rect fill="transparent" height="620.7083" width="8" x="1194.8697" y="39.0679"/>
+      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="1198.0451" x2="1198.0451" y1="39.0679" y2="659.7762"/>
+    </g>
+    <g>
+      <title>tmain()::(lambda t20072.cc:64:9)::Luzz</title>
+      <rect fill="transparent" height="620.7083" width="8" x="1446.8448" y="39.0679"/>
+      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="1450.6943" x2="1450.6943" y1="39.0679" y2="659.7762"/>
+    </g>
+    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="60.6618" x="5" y="5"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="46.6618" x="12" y="26.9659">tmain()</text>
+    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="60.6618" x="5" y="658.7762"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="46.6618" x="12" y="680.7421">tmain()</text>
+    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="61.4738" x="75.6618" y="5"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="47.4738" x="82.6618" y="26.9659">foo(int)</text>
+    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="61.4738" x="75.6618" y="658.7762"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="47.4738" x="82.6618" y="680.7421">foo(int)</text>
+    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="93.1837" x="147.1356" y="5"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="79.1837" x="154.1356" y="26.9659">foo(int)::Foo</text>
+    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="93.1837" x="147.1356" y="658.7762"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="79.1837" x="154.1356" y="680.7421">foo(int)::Foo</text>
+    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="91.3217" x="250.3193" y="5"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="77.3217" x="257.3193" y="26.9659">validate(int)</text>
+    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="91.3217" x="250.3193" y="658.7762"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="77.3217" x="257.3193" y="680.7421">validate(int)</text>
+    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="232.2452" x="351.641" y="5"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="218.2452" x="358.641" y="26.9659">bar&lt;Foo&gt;(const Foo &amp;,std::string)</text>
+    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="232.2452" x="351.641" y="658.7762"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="218.2452" x="358.641" y="680.7421">bar&lt;Foo&gt;(const Foo &amp;,std::string)</text>
+    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="263.9551" x="593.8862" y="5"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="249.9551" x="600.8862" y="26.9659">bar&lt;Foo&gt;(const Foo &amp;,std::string)::Foo</text>
+    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="263.9551" x="593.8862" y="658.7762"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="249.9551" x="600.8862" y="680.7421">bar&lt;Foo&gt;(const Foo &amp;,std::string)::Foo</text>
+    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="37.5339" x="867.8413" y="5"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="23.5339" x="874.8413" y="26.9659">Baz</text>
+    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="37.5339" x="867.8413" y="658.7762"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="23.5339" x="874.8413" y="680.7421">Baz</text>
+    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="132.2155" x="944.8296" y="5"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="118.2155" x="951.8296" y="26.9659">Baz::baz(int)::Buzz</text>
+    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="132.2155" x="944.8296" y="658.7762"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="118.2155" x="951.8296" y="680.7421">Baz::baz(int)::Buzz</text>
+    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="223.6492" x="1087.0451" y="5"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="209.6492" x="1094.0451" y="26.9659">tmain()::(lambda t20072.cc:64:9)</text>
+    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="223.6492" x="1087.0451" y="658.7762"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="209.6492" x="1094.0451" y="680.7421">tmain()::(lambda t20072.cc:64:9)</text>
+    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="260.301" x="1320.6943" y="5"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="246.301" x="1327.6943" y="26.9659">tmain()::(lambda t20072.cc:64:9)::Luzz</text>
+    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="260.301" x="1320.6943" y="658.7762"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="246.301" x="1327.6943" y="680.7421">tmain()::(lambda t20072.cc:64:9)::Luzz</text>
+    <g>
+      <title>tmain()</title>
+      <rect fill="#FFFFFF" height="592.7083" style="stroke:#181818;stroke-width:1;" width="10" x="30.3309" y="49.0679"/>
+    </g>
+    <g>
+      <title>foo(int)</title>
+      <rect fill="#FFFFFF" height="160.5301" style="stroke:#181818;stroke-width:1;" width="10" x="101.3987" y="55.0679"/>
+    </g>
+    <g>
+      <title>foo(int)::Foo</title>
+      <rect fill="#FFFFFF" height="105.118" style="stroke:#181818;stroke-width:1;" width="10" x="188.7275" y="86.7739"/>
+    </g>
+    <g>
+      <title>foo(int)::Foo</title>
+      <rect fill="#FFFFFF" height="31.706" style="stroke:#181818;stroke-width:1;" width="10" x="188.7275" y="261.304"/>
+    </g>
+    <g>
+      <title>validate(int)</title>
+      <rect fill="#FFFFFF" height="31.706" style="stroke:#181818;stroke-width:1;" width="10" x="290.9802" y="145.186"/>
+    </g>
+    <g>
+      <title>bar&lt;Foo&gt;(const Foo &amp;,std::string)</title>
+      <rect fill="#FFFFFF" height="158.5301" style="stroke:#181818;stroke-width:1;" width="10" x="462.7636" y="229.598"/>
+    </g>
+    <g>
+      <title>bar&lt;Foo&gt;(const Foo &amp;,std::string)::Foo</title>
+      <rect fill="#FFFFFF" height="31.706" style="stroke:#181818;stroke-width:1;" width="10" x="720.8638" y="324.716"/>
+    </g>
+    <g>
+      <title>Baz</title>
+      <rect fill="#FFFFFF" height="95.118" style="stroke:#181818;stroke-width:1;" width="10" x="881.6083" y="419.8341"/>
+    </g>
+    <g>
+      <title>Baz::baz(int)::Buzz</title>
+      <rect fill="#FFFFFF" height="31.706" style="stroke:#181818;stroke-width:1;" width="10" x="1005.9374" y="451.5401"/>
+    </g>
+    <g>
+      <title>tmain()::(lambda t20072.cc:64:9)</title>
+      <rect fill="#FFFFFF" height="31.706" style="stroke:#181818;stroke-width:1;" width="10" x="1193.8697" y="546.6582"/>
+    </g>
+    <g>
+      <title>tmain()::(lambda t20072.cc:64:9)::Luzz</title>
+      <rect fill="#FFFFFF" height="31.706" style="stroke:#181818;stroke-width:1;" width="10" x="1445.8448" y="610.0702"/>
+    </g>
+    <polygon fill="#181818" points="89.3987,51.0679,99.3987,55.0679,89.3987,59.0679,93.3987,55.0679" style="stroke:#181818;stroke-width:1;"/>
+    <line style="stroke:#181818;stroke-width:1;" x1="40.3309" x2="95.3987" y1="55.0679" y2="55.0679"/>
+    <polygon fill="#181818" points="176.7275,82.7739,186.7275,86.7739,176.7275,90.7739,180.7275,86.7739" style="stroke:#181818;stroke-width:1;"/>
+    <line style="stroke:#181818;stroke-width:1;" x1="111.3987" x2="182.7275" y1="86.7739" y2="86.7739"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="42.1331" x="118.3987" y="80.9649">set(int)</text>
+    <path d="M137.1356,101.7739 L199.5946,101.7739 L199.5946,111.4799 L189.5946,121.4799 L137.1356,121.4799 L137.1356,101.7739 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/>
+    <rect fill="transparent" height="83.118" style="stroke:#000000;stroke-width:1.5;" width="214.5054" x="137.1356" y="101.7739"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="17.459" x="152.1356" y="116.6709">alt</text>
+    <polygon fill="#181818" points="278.9802,141.186,288.9802,145.186,278.9802,149.186,282.9802,145.186" style="stroke:#181818;stroke-width:1;"/>
+    <line style="stroke:#181818;stroke-width:1;" x1="198.7275" x2="284.9802" y1="145.186" y2="145.186"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="4.303" x="205.7275" y="139.377">[</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="4.303" x="210.0305" y="139.377">]</text>
+    <polygon fill="#181818" points="209.7275,172.892,199.7275,176.892,209.7275,180.892,205.7275,176.892" style="stroke:#181818;stroke-width:1;"/>
+    <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="203.7275" x2="294.9802" y1="176.892" y2="176.892"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="30.927" x="215.7275" y="171.083">_Bool</text>
+    <polygon fill="#181818" points="51.3309,211.598,41.3309,215.598,51.3309,219.598,47.3309,215.598" style="stroke:#181818;stroke-width:1;"/>
+    <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="45.3309" x2="105.3987" y1="215.598" y2="215.598"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="20.839" x="57.3309" y="209.789">Foo</text>
+    <polygon fill="#181818" points="450.7636,225.598,460.7636,229.598,450.7636,233.598,454.7636,229.598" style="stroke:#181818;stroke-width:1;"/>
+    <line style="stroke:#181818;stroke-width:1;" x1="40.3309" x2="456.7636" y1="229.598" y2="229.598"/>
+    <polygon fill="#181818" points="209.7275,257.304,199.7275,261.304,209.7275,265.304,205.7275,261.304" style="stroke:#181818;stroke-width:1;"/>
+    <line style="stroke:#181818;stroke-width:1;" x1="203.7275" x2="461.7636" y1="261.304" y2="261.304"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="64.2591" x="215.7275" y="255.495">get() const</text>
+    <polygon fill="#181818" points="450.7636,289.01,460.7636,293.01,450.7636,297.01,454.7636,293.01" style="stroke:#181818;stroke-width:1;"/>
+    <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="193.7275" x2="456.7636" y1="293.01" y2="293.01"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="15.197" x="200.7275" y="287.201">int</text>
+    <polygon fill="#181818" points="708.8638,320.716,718.8638,324.716,708.8638,328.716,712.8638,324.716" style="stroke:#181818;stroke-width:1;"/>
+    <line style="stroke:#181818;stroke-width:1;" x1="472.7636" x2="714.8638" y1="324.716" y2="324.716"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="95.3291" x="479.7636" y="318.907">result(int) const</text>
+    <polygon fill="#181818" points="483.7636,352.4221,473.7636,356.4221,483.7636,360.4221,479.7636,356.4221" style="stroke:#181818;stroke-width:1;"/>
+    <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="477.7636" x2="724.8638" y1="356.4221" y2="356.4221"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="15.197" x="489.7636" y="350.6131">int</text>
+    <polygon fill="#181818" points="51.3309,384.1281,41.3309,388.1281,51.3309,392.1281,47.3309,388.1281" style="stroke:#181818;stroke-width:1;"/>
+    <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="45.3309" x2="466.7636" y1="388.1281" y2="388.1281"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="15.197" x="57.3309" y="382.3191">int</text>
+    <polygon fill="#181818" points="869.6083,415.8341,879.6083,419.8341,869.6083,423.8341,873.6083,419.8341" style="stroke:#181818;stroke-width:1;"/>
+    <line style="stroke:#181818;stroke-width:1;" x1="40.3309" x2="875.6083" y1="419.8341" y2="419.8341"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="45.2791" x="47.3309" y="414.0251">baz(int)</text>
+    <polygon fill="#181818" points="993.9374,447.5401,1003.9374,451.5401,993.9374,455.5401,997.9374,451.5401" style="stroke:#181818;stroke-width:1;"/>
+    <line style="stroke:#181818;stroke-width:1;" x1="891.6083" x2="999.9374" y1="451.5401" y2="451.5401"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="95.3291" x="898.6083" y="445.7311">result(int) const</text>
+    <polygon fill="#181818" points="902.6083,479.2461,892.6083,483.2461,902.6083,487.2461,898.6083,483.2461" style="stroke:#181818;stroke-width:1;"/>
+    <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="896.6083" x2="1009.9374" y1="483.2461" y2="483.2461"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="15.197" x="908.6083" y="477.4371">int</text>
+    <polygon fill="#181818" points="51.3309,510.9521,41.3309,514.9521,51.3309,518.9521,47.3309,514.9521" style="stroke:#181818;stroke-width:1;"/>
+    <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="45.3309" x2="885.6083" y1="514.9521" y2="514.9521"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="15.197" x="57.3309" y="509.1431">int</text>
+    <polygon fill="#181818" points="1181.8697,542.6582,1191.8697,546.6582,1181.8697,550.6582,1185.8697,546.6582" style="stroke:#181818;stroke-width:1;"/>
+    <line style="stroke:#181818;stroke-width:1;" x1="40.3309" x2="1187.8697" y1="546.6582" y2="546.6582"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="121.9011" x="47.3309" y="540.8492">operator()(int) const</text>
+    <polygon fill="#181818" points="51.3309,574.3642,41.3309,578.3642,51.3309,582.3642,47.3309,578.3642" style="stroke:#181818;stroke-width:1;"/>
+    <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="45.3309" x2="1197.8697" y1="578.3642" y2="578.3642"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="25.311" x="57.3309" y="572.5552">Luzz</text>
+    <polygon fill="#181818" points="1433.8448,606.0702,1443.8448,610.0702,1433.8448,614.0702,1437.8448,610.0702" style="stroke:#181818;stroke-width:1;"/>
+    <line style="stroke:#181818;stroke-width:1;" x1="40.3309" x2="1439.8448" y1="610.0702" y2="610.0702"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="95.3291" x="47.3309" y="604.2612">result(int) const</text>
+    <polygon fill="#181818" points="46.3309,637.7762,36.3309,641.7762,46.3309,645.7762,42.3309,641.7762" style="stroke:#181818;stroke-width:1;"/>
+    <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="40.3309" x2="1449.8448" y1="641.7762" y2="641.7762"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="15.197" x="52.3309" y="635.9672">int</text>
+  </g>
+</svg>

@@ -167,6 +167,7 @@
  * [t20069](./test_cases/t20069.md) - Test case for return messages from all branches and exitpoints
  * [t20070](./test_cases/t20070.md) - Test case for sequence diagram with coroutines
  * [t20071](./test_cases/t20071.md) - Test case for sequence diagram with coroutines and combined participants
+ * [t20072](./test_cases/t20072.md) - Test case for sequence diagram with local classes defined in function bodies
 ## Package diagrams
  * [t30001](./test_cases/t30001.md) - Basic package diagram test case
  * [t30002](./test_cases/t30002.md) - Package dependency test case

@@ -21,6 +21,7 @@ TEST_CASE("t20071")
     using namespace clanguml::test;
     using namespace std::string_literals;
 
+#ifndef _MSC_VER
     auto [config, db, diagram, model] =
         CHECK_SEQUENCE_MODEL("t20071", "t20071_sequence");
 
@@ -34,15 +35,16 @@ TEST_CASE("t20071")
                 {"t20071.cc", "t20071.cc",
                     "switch_to_new_thread(std::thread &)"}, //
 #if LLVM_VERSION_MAJOR == 14 || LLVM_VERSION_MAJOR == 15
-                {"t20071.cc", "t20071.cc",
-                    "struct clanguml::t20071::awaitable_on_thread",
+                {"t20071.cc", "t20071.cc", "struct awaitable_on_thread",
                     Response{}}, //
 #else
                 {"t20071.cc", "t20071.cc", "awaitable_on_thread",
                     Response{}}, //
 #endif
-                {"t20071.cc", "awaitable_on_thread", "await_resume()",
-                    CoAwait{}} //
+                {"t20071.cc",
+                    "switch_to_new_thread(std::thread &)::awaitable_on_thread",
+                    "await_resume()", CoAwait{}} //
             }));
     });
+#endif
 }

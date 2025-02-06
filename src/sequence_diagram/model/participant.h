@@ -56,6 +56,8 @@ struct participant : public common::model::template_element,
     participant &operator=(const participant &) = delete;
     participant &operator=(participant &&) = delete;
 
+    ~participant() override = default;
+
     /**
      * Get the type name of the diagram element.
      *
@@ -84,6 +86,8 @@ public:
     class_(class_ &&) noexcept = delete;
     class_ &operator=(const class_ &) = delete;
     class_ &operator=(class_ &&) = delete;
+
+    ~class_() override = default;
 
     /**
      * Get the type name of the diagram element.
@@ -232,6 +236,8 @@ struct function : public participant {
     function(function &&) noexcept = delete;
     function &operator=(const function &) = delete;
     function &operator=(function &&) = delete;
+
+    ~function() override = default;
 
     /**
      * Get the type name of the diagram element.
@@ -415,6 +421,8 @@ struct method : public function {
     method &operator=(const method &) = delete;
     method &operator=(method &&) = delete;
 
+    ~method() override = default;
+
     /**
      * Get the type name of the diagram element.
      *
@@ -550,6 +558,8 @@ struct objc_method : public function {
     objc_method &operator=(const objc_method &) = delete;
     objc_method &operator=(objc_method &&) = delete;
 
+    ~objc_method() override = default;
+
     /**
      * Get the type name of the diagram element.
      *
@@ -642,6 +652,8 @@ struct function_template : public function {
     function_template(function_template &&) noexcept = delete;
     function_template &operator=(const function_template &) = delete;
     function_template &operator=(function_template &&) = delete;
+
+    ~function_template() override = default;
 
     /**
      * Get the type name of the diagram element.
