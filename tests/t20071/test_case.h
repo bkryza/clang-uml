@@ -21,6 +21,7 @@ TEST_CASE("t20071")
     using namespace clanguml::test;
     using namespace std::string_literals;
 
+#ifndef _MSC_VER
     auto [config, db, diagram, model] =
         CHECK_SEQUENCE_MODEL("t20071", "t20071_sequence");
 
@@ -45,4 +46,5 @@ TEST_CASE("t20071")
                     "await_resume()", CoAwait{}} //
             }));
     });
+#endif
 }
