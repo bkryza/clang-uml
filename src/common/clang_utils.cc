@@ -1196,4 +1196,18 @@ bool is_lambda_call(const clang::Expr *expr)
 
     return false;
 }
+
+bool is_lambda_method(const clang::FunctionDecl *decl)
+{
+    if (decl == nullptr)
+        return false;
+
+    if (const auto *method = clang::dyn_cast<clang::CXXMethodDecl>(decl);
+        method != nullptr) {
+        if (method->getParent() != nullptr && method->getParent()->isLambda())
+            return true;
+    }
+
+    return false;
+}
 } // namespace clanguml::common

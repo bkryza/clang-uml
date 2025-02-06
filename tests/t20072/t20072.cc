@@ -39,9 +39,39 @@ template <typename T> auto bar(const T &b, std::string msg = "two")
     return foo.result(msg.size());
 }
 
+struct Baz {
+    auto baz(int b)
+    {
+        struct Buzz {
+            int result(int c) const { return value * c; }
+
+            int value;
+        };
+
+        Buzz buzz{100};
+
+        return buzz.result(10);
+    }
+};
+
 int tmain()
 {
-    auto v = bar(foo(1));
+    Baz baz;
+
+    auto v = baz.baz(bar(foo(1)));
+
+    auto f =
+        [](int value) {
+            struct Luzz {
+                int result(int c) const { return value + c; }
+
+                int value;
+            };
+
+            Luzz luzz{100};
+            return luzz;
+        }(10)
+            .result(2);
 
     return 0;
 }

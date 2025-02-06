@@ -168,10 +168,19 @@ void call_expression_context::update(
 
 eid_t call_expression_context::caller_id() const
 {
-    if (lambda_caller_id().has_value())
-        return *lambda_caller_id(); // NOLINT
+    if (lambda_caller_id().has_value()) {
+        // Handle a case when local class is defined inside a lambda
+        if (!is_local_class())
+            return *lambda_caller_id(); // NOLINT
+    }
 
     return current_caller_id_;
+}
+
+bool call_expression_context::is_local_class() const
+{
+    return current_class_decl_ != nullptr &&
+        current_class_decl_->isLocalClass() != nullptr;
 }
 
 std::optional<eid_t> call_expression_context::lambda_caller_id() const

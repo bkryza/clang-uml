@@ -286,7 +286,6 @@ bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
         declaration->getQualifiedNameAsString(),
         declaration->getLocation().printToString(source_manager()));
 
-    // TODO: Add support for classes defined in function/method bodies
     if (declaration->isLocalClass() != nullptr)
         return true;
 
@@ -629,6 +628,8 @@ bool translation_unit_visitor::VisitLambdaExpr(clang::LambdaExpr *expr)
     if (!lambda_class_model_ptr)
         return true;
 
+    lambda_class_model_ptr->is_lambda(true);
+
     const auto cls_id = lambda_class_model_ptr->id();
 
     set_unique_id(cls->getID(), cls_id);
@@ -693,10 +694,14 @@ bool translation_unit_visitor::VisitLambdaExpr(clang::LambdaExpr *expr)
 
 bool translation_unit_visitor::TraverseLambdaExpr(clang::LambdaExpr *expr)
 {
+    auto context_backup = context();
+
     RecursiveASTVisitor<translation_unit_visitor>::TraverseLambdaExpr(expr);
 
     // lambda context is entered inside the visitor
     context().leave_lambda_expression();
+
+    call_expression_context_ = context_backup;
 
     return true;
 }
@@ -1725,7 +1730,17 @@ bool translation_unit_visitor::VisitReturnStmt(clang::ReturnStmt *stmt)
         m.set_message_name(util::condense_whitespace(message_name));
     }
 
-    if (context().current_function_decl_ != nullptr) {
+    if (context().lambda_caller_id().has_value() &&
+        !context().is_local_class()) {
+        const auto &lambda_model = get_participant<model::method>(
+            *context().lambda_caller_id()); // NOLINT
+
+        if (lambda_model.has_value()) {
+            if (lambda_model.has_value())
+                m.set_return_type(lambda_model.value().return_type());
+        }
+    }
+    else if (context().current_function_decl_ != nullptr) {
         m.set_return_type(
             context().current_function_decl_->getReturnType().getAsString());
     }
@@ -2512,16 +2527,32 @@ translation_unit_visitor::create_class_model(clang::CXXRecordDecl *cls)
             return {};
         }
     }
+    // This is equivalent to parent != nullptr and parent->isFunctionDecl()
     else if (cls->isLocalClass() != nullptr) {
         const auto *func_declaration = cls->isLocalClass();
 
-        eid_t func_model_id =
-            get_unique_id(eid_t{func_declaration->getID()}).has_value()
-            ? *get_unique_id(eid_t{func_declaration->getID()})
-            : eid_t{func_declaration->getID()};
+        eid_t local_parent_id{int64_t{}};
+
+        if (common::is_lambda_method(func_declaration)) {
+            LOG_DBG("The local class is defined in a lambda operator()");
+            const auto *method_declaration =
+                clang::dyn_cast<clang::CXXMethodDecl>(func_declaration);
+
+            if (method_declaration != nullptr &&
+                method_declaration->getParent() != nullptr) {
+                local_parent_id = method_declaration->getParent()->getID();
+            }
+        }
+        else {
+            local_parent_id = func_declaration->getID();
+        }
+
+        eid_t parent_id = get_unique_id(local_parent_id).has_value()
+            ? *get_unique_id(local_parent_id) // NOLINT
+            : local_parent_id;
 
         const auto &func_model =
-            diagram().get_participant<model::participant>(func_model_id);
+            diagram().get_participant<model::participant>(parent_id);
 
         if (!func_model.has_value())
             return {};
@@ -2532,10 +2563,11 @@ translation_unit_visitor::create_class_model(clang::CXXRecordDecl *cls)
 
         auto local_cls_ns = func_model.value().get_namespace();
 
-        c.set_name(func_model.value().full_name_no_ns() + "##" +
-            common::get_tag_name(*cls));
+        c.set_name(
+            func_model.value().full_name_no_ns(), common::get_tag_name(*cls));
         c.set_namespace(local_cls_ns);
         c.set_id(common::to_id(c.full_name(false)));
+        c.nested(true);
     }
     else {
         c.set_name(common::get_tag_name(*cls));
@@ -3172,6 +3204,9 @@ translation_unit_visitor::create_method_model(clang::CXXMethodDecl *declaration)
             declaration->getParent()->getQualifiedNameAsString());
         return {};
     }
+
+    LOG_DBG(
+        "Found method class: {}", maybe_method_class.value().full_name(false));
 
     const auto &method_class = maybe_method_class.value();
 

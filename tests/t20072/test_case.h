@@ -37,6 +37,22 @@ TEST_CASE("t20072")
                 {"bar<Foo>(const Foo &,std::string)",
                     "bar<Foo>(const Foo &,std::string)::Foo",
                     "result(int) const"}, //
+
+                {"tmain()", "Baz", "baz(int)"},                      //
+                {"Baz", "Baz::baz(int)::Buzz", "result(int) const"}, //
+                {"Baz::baz(int)::Buzz", "Baz", "int", Response{}},
+                {"Baz", "tmain()", "int", Response{}}, //
+
+                {"tmain()", "tmain()::(lambda t20072.cc:64:9)",
+                    "operator()(int) const"}, //
+                {"tmain()::(lambda t20072.cc:64:9)", "tmain()", "Luzz",
+                    Response{}}, //
+
+                {"tmain()", "tmain()::(lambda t20072.cc:64:9)::Luzz",
+                    "result(int) const"}, //
+                {"tmain()::(lambda t20072.cc:64:9)::Luzz", "tmain()", "int",
+                    Response{}}, //
+
             }));
     });
 }

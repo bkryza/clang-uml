@@ -379,4 +379,6 @@ const clang::EnumDecl *get_typedef_enum_decl(const clang::TypedefDecl *decl);
  * @return True, if the expression points to lambda invocation
  */
 bool is_lambda_call(const clang::Expr *callExpr);
+
+bool is_lambda_method(const clang::FunctionDecl *decl);
 } // namespace clanguml::common
