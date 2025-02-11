@@ -242,6 +242,15 @@ private:
         clanguml::class_diagram::model::class_ &c);
 
     /**
+     * @brief Process enum declaration
+     *
+     * @param enm Enum declaration
+     * @param e Enum diagram element returned from `create_enum_declaration`
+     */
+    void process_enum_declaration(
+        const clang::EnumDecl &enm, clanguml::class_diagram::model::enum_ &e);
+
+    /**
      * @brief Process Objective-C category declaration
      *
      * @param cls Objective-C category declaration
@@ -561,6 +570,8 @@ private:
 
     std::map<eid_t, std::unique_ptr<clanguml::class_diagram::model::class_>>
         forward_declarations_;
+    std::map<eid_t, std::unique_ptr<clanguml::class_diagram::model::enum_>>
+        enum_forward_declarations_;
 
     std::map<int64_t /* local anonymous struct id */,
         std::tuple<std::string /* field name */, common::model::relationship_t,

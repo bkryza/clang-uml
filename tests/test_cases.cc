@@ -594,6 +594,9 @@ void CHECK_INCLUDE_DIAGRAM(const clanguml::config::config &config,
 #if defined(ENABLE_CXX_STD_20_TEST_CASES)
 #include "t00090/test_case.h"
 #endif
+
+#include "t00091/test_case.h"
+
 ///
 /// Sequence diagram tests
 ///
