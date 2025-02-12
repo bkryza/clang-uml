@@ -45,5 +45,7 @@ TEST_CASE("t00057")
             src, "t00057_E", "t00057_E::(coordinates)", "coordinates"));
         REQUIRE(IsAggregation<Public>(
             src, "t00057_E", "t00057_E::(height)", "height"));
+
+        REQUIRE(IsField<Public>(src, "t00057_F", "f1", "int"));
     });
 }

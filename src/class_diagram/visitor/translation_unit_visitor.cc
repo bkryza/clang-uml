@@ -117,6 +117,13 @@ bool translation_unit_visitor::VisitTypedefDecl(clang::TypedefDecl *decl)
 
         auto e_ptr = create_enum_declaration(enm, decl);
 
+        if (!e_ptr)
+            return true;
+
+        if (enm->isComplete()) {
+            process_enum_declaration(*enm, *e_ptr);
+        }
+
         if (e_ptr && diagram().should_include(*e_ptr))
             add_enum(std::move(e_ptr));
     }
@@ -142,6 +149,24 @@ bool translation_unit_visitor::VisitEnumDecl(clang::EnumDecl *enm)
         enm->getLocation().printToString(source_manager()));
 
     auto e_ptr = create_enum_declaration(enm, nullptr);
+    if (!e_ptr)
+        return true;
+
+    auto id = e_ptr->id();
+
+    auto &enum_model = diagram().find<enum_>(id).has_value()
+        ? *diagram().find<enum_>(id).get()
+        : *e_ptr;
+
+    if (enm->isComplete() && !enum_model.complete()) {
+        process_enum_declaration(*enm, enum_model);
+    }
+
+    if (!enm->isCompleteDefinition()) {
+        enum_forward_declarations_.emplace(id, std::move(e_ptr));
+        return true;
+    }
+    enum_forward_declarations_.erase(id);
 
     if (e_ptr && diagram().should_include(*e_ptr))
         add_enum(std::move(e_ptr));
@@ -206,11 +231,17 @@ translation_unit_visitor::create_enum_declaration(
 
     e.set_style(e.style_spec());
 
-    for (const auto &ev : enm->enumerators()) {
+    return e_ptr;
+}
+
+void translation_unit_visitor::process_enum_declaration(
+    const clang::EnumDecl &enm, clanguml::class_diagram::model::enum_ &e)
+{
+    for (const auto &ev : enm.enumerators()) {
         e.constants().push_back(ev->getNameAsString());
     }
 
-    return e_ptr;
+    e.complete(true);
 }
 
 bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
@@ -236,15 +267,28 @@ bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
     if (!template_specialization_ptr)
         return true;
 
-    auto &template_specialization = *template_specialization_ptr;
+    auto id = template_specialization_ptr->id();
 
-    if (cls->hasDefinition()) {
+    auto &template_specialization = diagram().find<class_>(id).has_value()
+        ? *diagram().find<class_>(id).get()
+        : *template_specialization_ptr;
+
+    if (cls->hasDefinition() && !template_specialization.complete()) {
         // Process template specialization bases
         process_class_bases(cls, template_specialization);
 
         // Process class child entities
         process_class_children(cls, template_specialization);
+
+        template_specialization.complete(true);
     }
+
+    if (!cls->isCompleteDefinition()) {
+        forward_declarations_.emplace(
+            id, std::move(template_specialization_ptr));
+        return true;
+    }
+    forward_declarations_.erase(id);
 
     if (!template_specialization.template_specialization_found()) {
         // Only do this if we haven't found a better specialization during
@@ -258,7 +302,6 @@ bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
 
     if (diagram().should_include(template_specialization)) {
         const auto full_name = template_specialization.full_name(false);
-        const auto id = template_specialization.id();
 
         LOG_DBG("Adding class template specialization {} with id {}", full_name,
             id);
@@ -347,11 +390,19 @@ bool translation_unit_visitor::VisitClassTemplateDecl(
         find_relationships_in_constraint_expression(*c_ptr, expr);
     }
 
+    auto &template_model = diagram().find<class_>(id).has_value()
+        ? *diagram().find<class_>(id).get()
+        : *c_ptr;
+
+    if (cls->getTemplatedDecl()->hasDefinition() &&
+        !template_model.complete()) {
+        process_class_declaration(*cls->getTemplatedDecl(), template_model);
+    }
+
     if (!cls->getTemplatedDecl()->isCompleteDefinition()) {
         forward_declarations_.emplace(id, std::move(c_ptr));
         return true;
     }
-    process_class_declaration(*cls->getTemplatedDecl(), *c_ptr);
     forward_declarations_.erase(id);
 
     if (diagram().should_include(*c_ptr)) {
@@ -366,6 +417,9 @@ bool translation_unit_visitor::VisitClassTemplateDecl(
 
 bool translation_unit_visitor::VisitRecordDecl(clang::RecordDecl *rec)
 {
+    if (rec == nullptr)
+        return true;
+
     if (clang::dyn_cast_or_null<clang::CXXRecordDecl>(rec) != nullptr)
         // This is handled by VisitCXXRecordDecl()
         return true;
@@ -844,6 +898,7 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
     LOG_DBG("== isTemplateDecl() = {}", cls->isTemplateDecl());
     LOG_DBG("== isTemplated() = {}", cls->isTemplated());
     LOG_DBG("== getParent()->isRecord()() = {}", cls->getParent()->isRecord());
+    LOG_DBG("== isCompleteDefinition() = {}", cls->isCompleteDefinition());
 
     if (const auto *parent_record =
             clang::dyn_cast<clang::RecordDecl>(cls->getParent());
@@ -2473,6 +2528,13 @@ void translation_unit_visitor::add_incomplete_forward_declarations()
         }
     }
     forward_declarations_.clear();
+
+    for (auto &[id, e] : enum_forward_declarations_) {
+        if (diagram().should_include(e->get_namespace())) {
+            add_enum(std::move(e));
+        }
+    }
+    enum_forward_declarations_.clear();
 }
 
 void translation_unit_visitor::resolve_local_to_global_ids()
@@ -2553,8 +2615,6 @@ void translation_unit_visitor::add_diagram_element(
 
 void translation_unit_visitor::add_class(std::unique_ptr<class_> &&c)
 {
-    c->complete(true);
-
     if ((config().generate_packages() &&
             config().package_type() == config::package_type_t::kDirectory)) {
         assert(!c->file().empty());
@@ -2584,8 +2644,6 @@ void translation_unit_visitor::add_class(std::unique_ptr<class_> &&c)
 void translation_unit_visitor::add_objc_interface(
     std::unique_ptr<objc_interface> &&c)
 {
-    c->complete(true);
-
     if ((config().generate_packages() &&
             config().package_type() == config::package_type_t::kDirectory)) {
         assert(!c->file().empty());
@@ -2605,8 +2663,6 @@ void translation_unit_visitor::add_objc_interface(
 
 void translation_unit_visitor::add_enum(std::unique_ptr<enum_> &&e)
 {
-    e->complete(true);
-
     if ((config().generate_packages() &&
             config().package_type() == config::package_type_t::kDirectory)) {
         assert(!e->file().empty());
@@ -2635,8 +2691,6 @@ void translation_unit_visitor::add_enum(std::unique_ptr<enum_> &&e)
 
 void translation_unit_visitor::add_concept(std::unique_ptr<concept_> &&c)
 {
-    c->complete(true);
-
     if ((config().generate_packages() &&
             config().package_type() == config::package_type_t::kDirectory)) {
         assert(!c->file().empty());
@@ -2709,6 +2763,11 @@ void translation_unit_visitor::find_instantiation_relationships(
         template_instantiation.add_relationship(
             {common::model::relationship_t::kInstantiation,
                 templated_decl_global_id});
+        template_instantiation.template_specialization_found(true);
+    }
+    else if (id_mapper().get_global_id(templated_decl_id).has_value()) {
+        template_instantiation.add_relationship(
+            {common::model::relationship_t::kInstantiation, templated_decl_id});
         template_instantiation.template_specialization_found(true);
     }
     else if (diagram().should_include(common::model::namespace_{full_name})) {

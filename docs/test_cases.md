@@ -95,6 +95,7 @@
  * [t00088](./test_cases/t00088.md) - Typed element Objective-C class diagram filter test case
  * [t00089](./test_cases/t00089.md) - Test case for '::' prefix in class diagrams for namespaces outside of using_namespace
  * [t00090](./test_cases/t00090.md) - Metaprogramming test case with recursive type list
+ * [t00091](./test_cases/t00091.md) - Declaration forwarding test case
 ## Sequence diagrams
  * [t20001](./test_cases/t20001.md) - Basic sequence diagram test case
  * [t20002](./test_cases/t20002.md) - Free function sequence diagram test case

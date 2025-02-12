@@ -267,6 +267,9 @@ test_cases:
     - name: t00090
       title: Metaprogramming test case with recursive type list
       description:
+    - name: t00091
+      title: Declaration forwarding test case
+      description:
   Sequence diagrams:
     - name: t20001
       title: Basic sequence diagram test case

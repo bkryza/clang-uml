@@ -1,5 +1,6 @@
 # CHANGELOG
 
+  * Fixed handling of forward declarations in class diagrams (#388)
   * Added support for coroutines in sequence diagrams (#376)
   * Fixed supported for compile_flags.txt (#381)
   * Added separate return messages for each return branch in sequence diagrams

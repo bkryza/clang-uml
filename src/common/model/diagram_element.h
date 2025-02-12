@@ -196,14 +196,14 @@ public:
     void nested(bool nested);
 
     /**
-     * Returns the diagrams completion status.
+     * Returns the diagram element building completion status.
      *
-     * @return Whether the diagram is complete.
+     * @return Whether the diagram element is complete.
      */
     bool complete() const;
 
     /**
-     * Set the diagrams completion status.
+     * Set the diagram element building completion status.
      *
      * @param completed
      */
