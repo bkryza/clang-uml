@@ -117,6 +117,13 @@ bool translation_unit_visitor::VisitTypedefDecl(clang::TypedefDecl *decl)
 
         auto e_ptr = create_enum_declaration(enm, decl);
 
+        if (!e_ptr)
+            return true;
+
+        if (enm->isComplete()) {
+            process_enum_declaration(*enm, *e_ptr);
+        }
+
         if (e_ptr && diagram().should_include(*e_ptr))
             add_enum(std::move(e_ptr));
     }
@@ -151,16 +158,15 @@ bool translation_unit_visitor::VisitEnumDecl(clang::EnumDecl *enm)
         ? *diagram().find<enum_>(id).get()
         : *e_ptr;
 
-    if (enm->isCompleteDefinition() && !enum_model.complete())
+    if (enm->isComplete() && !enum_model.complete()) {
         process_enum_declaration(*enm, enum_model);
+    }
 
     if (!enm->isCompleteDefinition()) {
         enum_forward_declarations_.emplace(id, std::move(e_ptr));
         return true;
     }
     enum_forward_declarations_.erase(id);
-
-    e_ptr->complete(true);
 
     if (e_ptr && diagram().should_include(*e_ptr))
         add_enum(std::move(e_ptr));
@@ -234,6 +240,8 @@ void translation_unit_visitor::process_enum_declaration(
     for (const auto &ev : enm.enumerators()) {
         e.constants().push_back(ev->getNameAsString());
     }
+
+    e.complete(true);
 }
 
 bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
