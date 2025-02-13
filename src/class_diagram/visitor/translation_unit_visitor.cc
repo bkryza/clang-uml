@@ -158,7 +158,7 @@ bool translation_unit_visitor::VisitEnumDecl(clang::EnumDecl *enm)
         ? *diagram().find<enum_>(id).get()
         : *e_ptr;
 
-    if (enm->isComplete() && !enum_model.complete()) {
+    if (enm->isCompleteDefinition() && !enum_model.complete()) {
         process_enum_declaration(*enm, enum_model);
     }
 
