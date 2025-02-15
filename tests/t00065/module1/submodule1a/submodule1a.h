@@ -2,8 +2,11 @@
 
 namespace clanguml {
 namespace t00065 {
+struct A;
 namespace detail {
-struct AImpl { };
+struct AImpl {
+    A *a;
+};
 }
 }
 }

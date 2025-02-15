@@ -1,6 +1,6 @@
-#include "submodule1a/submodule1a.h"
-
 #pragma once
+
+#include "submodule1a/submodule1a.h"
 
 namespace clanguml {
 namespace t00065 {

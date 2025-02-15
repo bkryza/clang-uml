@@ -367,6 +367,11 @@ bool diagram::add_with_filesystem_path(
 {
     const auto element_type = e->type_name();
 
+    if (find<ElementT>(e->id()).has_value() && !e->complete()) {
+        // Skip repeated forward declarations
+        return false;
+    }
+
     // Make sure all parent modules are already packages in the
     // model
     for (auto it = parent_path.begin(); it != parent_path.end(); it++) {
