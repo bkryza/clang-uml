@@ -2523,14 +2523,16 @@ void translation_unit_visitor::find_record_parent_id(const clang::TagDecl *decl,
 void translation_unit_visitor::add_incomplete_forward_declarations()
 {
     for (auto &[id, c] : forward_declarations_) {
-        if (diagram().should_include(c->get_namespace())) {
+        if (!diagram().find<class_>(id).has_value() &&
+            diagram().should_include(c->get_namespace())) {
             add_class(std::move(c));
         }
     }
     forward_declarations_.clear();
 
     for (auto &[id, e] : enum_forward_declarations_) {
-        if (diagram().should_include(e->get_namespace())) {
+        if (!diagram().find<enum_>(id).has_value() &&
+            diagram().should_include(e->get_namespace())) {
             add_enum(std::move(e));
         }
     }
@@ -2561,8 +2563,8 @@ void translation_unit_visitor::resolve_local_to_global_ids()
 
 void translation_unit_visitor::finalize()
 {
-    add_incomplete_forward_declarations();
     resolve_local_to_global_ids();
+    add_incomplete_forward_declarations();
     if (config().skip_redundant_dependencies()) {
         diagram().remove_redundant_dependencies();
     }

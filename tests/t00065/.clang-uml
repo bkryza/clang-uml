@@ -2,6 +2,8 @@ diagrams:
   t00065_class:
     type: class
     glob:
+      - module1/submodule1a/submodule1a.cc
+      - module1/submodule1/module1.cc
       - t00065.cc
     generate_packages: true
     package_type: directory

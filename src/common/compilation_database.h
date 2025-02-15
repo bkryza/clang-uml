@@ -117,9 +117,6 @@ public:
     bool is_fixed() const;
 
 private:
-    bool match_filename(const clang::tooling::CompileCommand &command,
-        const std::string &file) const;
-
     void adjust_compilation_database(
         std::vector<clang::tooling::CompileCommand> &commands) const;
 
