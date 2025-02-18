@@ -175,8 +175,24 @@ private:
      * @param cls Class declaration
      * @return Class diagram element model
      */
-    std::unique_ptr<clanguml::class_diagram::model::class_>
-    create_class_declaration(clang::CXXRecordDecl *cls);
+    std::unique_ptr<clanguml::class_diagram::model::class_> create_declaration(
+        clang::CXXRecordDecl *cls);
+
+    /**
+     * @brief Add the element model or update update if the model already exists
+     *
+     * @tparam T Type of clang declaration
+     * @param cls Pointer to clang declaration
+     * @param c_ptr Pointer to the element model
+     * @return
+     */
+    template <typename T>
+    bool add_or_update_class(const T *cls,
+        std::unique_ptr<clanguml::class_diagram::model::class_> &&c_ptr);
+
+    template <typename T>
+    bool add_or_update_enum(const T *cls,
+        std::unique_ptr<clanguml::class_diagram::model::enum_> &&c_ptr);
 
     /**
      * @brief Create enum element model from enum (e.g. struct) declaration
@@ -184,8 +200,7 @@ private:
      * @param rec Enum declaration
      * @return Enum diagram element model
      */
-    std::unique_ptr<clanguml::class_diagram::model::enum_>
-    create_enum_declaration(
+    std::unique_ptr<clanguml::class_diagram::model::enum_> create_declaration(
         const clang::EnumDecl *enm, const clang::TypedefDecl *typedef_decl);
 
     /**
@@ -194,8 +209,8 @@ private:
      * @param rec Record declaration
      * @return Class diagram element model
      */
-    std::unique_ptr<clanguml::class_diagram::model::class_>
-    create_record_declaration(clang::RecordDecl *rec);
+    std::unique_ptr<clanguml::class_diagram::model::class_> create_declaration(
+        clang::RecordDecl *rec);
 
     /**
      * @brief Create class element model from Objective-C protocol
@@ -236,18 +251,18 @@ private:
      * @brief Process class declaration
      *
      * @param cls Class declaration
-     * @param c Class diagram element returned from `create_class_declaration`
+     * @param c Class diagram element returned from `create_declaration`
      */
-    void process_class_declaration(const clang::CXXRecordDecl &cls,
+    void process_declaration(const clang::CXXRecordDecl &cls,
         clanguml::class_diagram::model::class_ &c);
 
     /**
      * @brief Process enum declaration
      *
      * @param enm Enum declaration
-     * @param e Enum diagram element returned from `create_enum_declaration`
+     * @param e Enum diagram element returned from `create_declaration`
      */
-    void process_enum_declaration(
+    void process_declaration(
         const clang::EnumDecl &enm, clanguml::class_diagram::model::enum_ &e);
 
     /**
@@ -295,15 +310,15 @@ private:
      * @param cls Class declaration
      * @param c Class diagram element model
      */
-    void process_class_children(const clang::CXXRecordDecl *cls,
+    void process_children(const clang::CXXRecordDecl *cls,
         clanguml::class_diagram::model::class_ &c);
 
     /**
-     * @brief Process class or record data members
+     * @brief Process record members
      * @param cls Class declaration
      * @param c Class diagram element model
      */
-    void process_record_members(const clang::RecordDecl *cls, class_ &c);
+    void process_declaration(const clang::RecordDecl &cls, class_ &c);
 
     /**
      * @brief Process class template specialization/instantiation
@@ -640,5 +655,137 @@ void translation_unit_visitor::process_record_parent_by_type(eid_t parent_id,
     }
 
     c.nested(true);
+}
+
+template <typename T>
+bool translation_unit_visitor::add_or_update_class(const T *cls,
+    std::unique_ptr<clanguml::class_diagram::model::class_> &&c_ptr)
+{
+    const auto cls_id = c_ptr->id();
+
+    id_mapper().add(cls->getID(), cls_id);
+
+    auto maybe_existing_model = diagram().find<class_>(cls_id);
+
+    class_ &class_model =
+        maybe_existing_model.has_value() ? *maybe_existing_model.get() : *c_ptr;
+
+    auto id = class_model.id();
+
+    if (cls->isCompleteDefinition() && !class_model.complete()) {
+        process_declaration(*cls, class_model);
+
+        // Update the source location for the element, otherwise
+        // it can point to the location of first encountered forward
+        // declaration
+        set_source_location(*cls, class_model);
+    }
+
+    if (cls->isCompleteDefinition()) {
+        if (maybe_existing_model &&
+            config().package_type() == config::package_type_t::kDirectory) {
+            // Move the class model to current filesystem path
+            // Eventually, this should be refactored so that it's
+            // not needed
+            const auto file = config().make_path_relative(class_model.file());
+            common::model::path p{
+                file.string(), common::model::path_type::kFilesystem};
+            p.pop_back();
+            diagram().move<class_>(id, p);
+        }
+    }
+    else {
+        forward_declarations_.emplace(id, std::move(c_ptr));
+        return true;
+    }
+
+    forward_declarations_.erase(id);
+
+    if constexpr (std::is_same_v<T, clang::ClassTemplateSpecializationDecl>) {
+        if (!class_model.template_specialization_found()) {
+            // Only do this if we haven't found a better specialization
+            // during construction of the template specialization
+            const eid_t ast_id{cls->getSpecializedTemplate()->getID()};
+            const auto maybe_id = id_mapper().get_global_id(ast_id);
+            if (maybe_id.has_value())
+                class_model.add_relationship(
+                    {relationship_t::kInstantiation, maybe_id.value()});
+        }
+    }
+
+    if (maybe_existing_model)
+        return true;
+
+    if (diagram().should_include(class_model)) {
+        LOG_DBG("Adding {} {} with id {}", class_model.type_name(), class_model,
+            class_model.id());
+        add_class(std::move(c_ptr));
+    }
+    else {
+        LOG_DBG("Skipping {} {} with id {}", class_model.type_name(),
+            class_model, class_model.id());
+    }
+
+    return true;
+}
+
+template <typename T>
+bool translation_unit_visitor::add_or_update_enum(const T *cls,
+    std::unique_ptr<clanguml::class_diagram::model::enum_> &&c_ptr)
+{
+    const auto cls_id = c_ptr->id();
+
+    id_mapper().add(cls->getID(), cls_id);
+
+    auto maybe_existing_model = diagram().find<enum_>(cls_id);
+
+    auto &class_model =
+        maybe_existing_model.has_value() ? *maybe_existing_model.get() : *c_ptr;
+
+    auto id = class_model.id();
+
+    if (cls->isCompleteDefinition() && !class_model.complete()) {
+        process_declaration(*cls, class_model);
+
+        // Update the source location for the element, otherwise
+        // it can point to the location of first encountered forward
+        // declaration
+        set_source_location(*cls, class_model);
+    }
+
+    if (cls->isCompleteDefinition()) {
+        if (maybe_existing_model &&
+            config().package_type() == config::package_type_t::kDirectory) {
+            // Move the class model to current filesystem path
+            // Eventually, this should be refactored so that it's
+            // not needed
+            const auto file = config().make_path_relative(class_model.file());
+            common::model::path p{
+                file.string(), common::model::path_type::kFilesystem};
+            p.pop_back();
+            diagram().move<enum_>(id, p);
+        }
+    }
+    else {
+        enum_forward_declarations_.emplace(id, std::move(c_ptr));
+        return true;
+    }
+
+    enum_forward_declarations_.erase(id);
+
+    if (maybe_existing_model)
+        return true;
+
+    if (diagram().should_include(class_model)) {
+        LOG_DBG("Adding {} {} with id {}", class_model.type_name(), class_model,
+            class_model.id());
+        add_enum(std::move(c_ptr));
+    }
+    else {
+        LOG_DBG("Skipping {} {} with id {}", class_model.type_name(),
+            class_model, class_model.id());
+    }
+
+    return true;
 }
 } // namespace clanguml::class_diagram::visitor

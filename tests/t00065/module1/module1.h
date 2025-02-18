@@ -9,10 +9,15 @@ enum class ABC { a, b, c };
 
 enum XYZ { x, y, z };
 
+struct submodule1a {
+    int version;
+};
+
 struct A {
     ABC abc;
     XYZ xyz;
     detail::AImpl *pimpl;
+    submodule1a *mod;
 };
 }
 }

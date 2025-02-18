@@ -115,13 +115,13 @@ bool translation_unit_visitor::VisitTypedefDecl(clang::TypedefDecl *decl)
             enm->getQualifiedNameAsString(),
             enm->getLocation().printToString(source_manager()));
 
-        auto e_ptr = create_enum_declaration(enm, decl);
+        auto e_ptr = create_declaration(enm, decl);
 
         if (!e_ptr)
             return true;
 
         if (enm->isComplete()) {
-            process_enum_declaration(*enm, *e_ptr);
+            process_declaration(*enm, *e_ptr);
         }
 
         if (e_ptr && diagram().should_include(*e_ptr))
@@ -148,34 +148,15 @@ bool translation_unit_visitor::VisitEnumDecl(clang::EnumDecl *enm)
         enm->getQualifiedNameAsString(),
         enm->getLocation().printToString(source_manager()));
 
-    auto e_ptr = create_enum_declaration(enm, nullptr);
+    auto e_ptr = create_declaration(enm, nullptr);
     if (!e_ptr)
         return true;
 
-    auto id = e_ptr->id();
-
-    auto &enum_model = diagram().find<enum_>(id).has_value()
-        ? *diagram().find<enum_>(id).get()
-        : *e_ptr;
-
-    if (enm->isCompleteDefinition() && !enum_model.complete()) {
-        process_enum_declaration(*enm, enum_model);
-    }
-
-    if (!enm->isCompleteDefinition()) {
-        enum_forward_declarations_.emplace(id, std::move(e_ptr));
-        return true;
-    }
-    enum_forward_declarations_.erase(id);
-
-    if (e_ptr && diagram().should_include(*e_ptr))
-        add_enum(std::move(e_ptr));
-
-    return true;
+    return add_or_update_enum(enm, std::move(e_ptr));
 }
 
 std::unique_ptr<clanguml::class_diagram::model::enum_>
-translation_unit_visitor::create_enum_declaration(
+translation_unit_visitor::create_declaration(
     const clang::EnumDecl *enm, const clang::TypedefDecl *typedef_decl)
 {
     auto e_ptr = std::make_unique<enum_>(config().using_namespace());
@@ -234,7 +215,7 @@ translation_unit_visitor::create_enum_declaration(
     return e_ptr;
 }
 
-void translation_unit_visitor::process_enum_declaration(
+void translation_unit_visitor::process_declaration(
     const clang::EnumDecl &enm, clanguml::class_diagram::model::enum_ &e)
 {
     for (const auto &ev : enm.enumerators()) {
@@ -267,48 +248,7 @@ bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
     if (!template_specialization_ptr)
         return true;
 
-    auto id = template_specialization_ptr->id();
-
-    auto &template_specialization = diagram().find<class_>(id).has_value()
-        ? *diagram().find<class_>(id).get()
-        : *template_specialization_ptr;
-
-    if (cls->hasDefinition() && !template_specialization.complete()) {
-        // Process template specialization bases
-        process_class_bases(cls, template_specialization);
-
-        // Process class child entities
-        process_class_children(cls, template_specialization);
-
-        template_specialization.complete(true);
-    }
-
-    if (!cls->isCompleteDefinition()) {
-        forward_declarations_.emplace(
-            id, std::move(template_specialization_ptr));
-        return true;
-    }
-    forward_declarations_.erase(id);
-
-    if (!template_specialization.template_specialization_found()) {
-        // Only do this if we haven't found a better specialization during
-        // construction of the template specialization
-        const eid_t ast_id{cls->getSpecializedTemplate()->getID()};
-        const auto maybe_id = id_mapper().get_global_id(ast_id);
-        if (maybe_id.has_value())
-            template_specialization.add_relationship(
-                {relationship_t::kInstantiation, maybe_id.value()});
-    }
-
-    if (diagram().should_include(template_specialization)) {
-        const auto full_name = template_specialization.full_name(false);
-
-        LOG_DBG("Adding class template specialization {} with id {}", full_name,
-            id);
-        add_class(std::move(template_specialization_ptr));
-    }
-
-    return true;
+    return add_or_update_class(cls, std::move(template_specialization_ptr));
 }
 
 bool translation_unit_visitor::VisitTypeAliasTemplateDecl(
@@ -361,7 +301,7 @@ bool translation_unit_visitor::VisitClassTemplateDecl(
         cls->getQualifiedNameAsString(),
         cls->getLocation().printToString(source_manager()));
 
-    auto c_ptr = create_class_declaration(cls->getTemplatedDecl());
+    auto c_ptr = create_declaration(cls->getTemplatedDecl());
 
     if (!c_ptr)
         return true;
@@ -390,29 +330,7 @@ bool translation_unit_visitor::VisitClassTemplateDecl(
         find_relationships_in_constraint_expression(*c_ptr, expr);
     }
 
-    auto &template_model = diagram().find<class_>(id).has_value()
-        ? *diagram().find<class_>(id).get()
-        : *c_ptr;
-
-    if (cls->getTemplatedDecl()->hasDefinition() &&
-        !template_model.complete()) {
-        process_class_declaration(*cls->getTemplatedDecl(), template_model);
-    }
-
-    if (!cls->getTemplatedDecl()->isCompleteDefinition()) {
-        forward_declarations_.emplace(id, std::move(c_ptr));
-        return true;
-    }
-    forward_declarations_.erase(id);
-
-    if (diagram().should_include(*c_ptr)) {
-        const auto name = c_ptr->full_name(true);
-        LOG_DBG("Adding class template {} with id {}", name, id);
-
-        add_class(std::move(c_ptr));
-    }
-
-    return true;
+    return add_or_update_class(cls->getTemplatedDecl(), std::move(c_ptr));
 }
 
 bool translation_unit_visitor::VisitRecordDecl(clang::RecordDecl *rec)
@@ -432,43 +350,12 @@ bool translation_unit_visitor::VisitRecordDecl(clang::RecordDecl *rec)
         rec->getQualifiedNameAsString(),
         rec->getLocation().printToString(source_manager()));
 
-    auto record_ptr = create_record_declaration(rec);
+    auto record_ptr = create_declaration(rec);
 
     if (!record_ptr)
         return true;
 
-    const auto rec_id = record_ptr->id();
-
-    id_mapper().add(rec->getID(), rec_id);
-
-    auto &record_model = diagram().find<class_>(rec_id).has_value()
-        ? *diagram().find<class_>(rec_id).get()
-        : *record_ptr;
-
-    if (rec->isCompleteDefinition() && !record_model.complete()) {
-        process_record_members(rec, record_model);
-        record_model.complete(true);
-    }
-
-    auto id = record_model.id();
-    if (!rec->isCompleteDefinition()) {
-        forward_declarations_.emplace(id, std::move(record_ptr));
-        return true;
-    }
-    forward_declarations_.erase(id);
-
-    if (diagram().should_include(record_model)) {
-        LOG_DBG("Adding struct/union {} with id {}",
-            record_model.full_name(false), record_model.id());
-
-        add_class(std::move(record_ptr));
-    }
-    else {
-        LOG_DBG("Skipping struct/union {} with id {}",
-            record_model.full_name(true), record_model.id());
-    }
-
-    return true;
+    return add_or_update_class(rec, std::move(record_ptr));
 }
 
 bool translation_unit_visitor::VisitObjCCategoryDecl(
@@ -924,39 +811,12 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
     if (cls->isLocalClass() != nullptr)
         return true;
 
-    auto c_ptr = create_class_declaration(cls);
+    auto c_ptr = create_declaration(cls);
 
     if (!c_ptr)
         return true;
 
-    const auto cls_id = c_ptr->id();
-
-    id_mapper().add(cls->getID(), cls_id);
-
-    auto &class_model = diagram().find<class_>(cls_id).has_value()
-        ? *diagram().find<class_>(cls_id).get()
-        : *c_ptr;
-
-    if (cls->isCompleteDefinition() && !class_model.complete())
-        process_class_declaration(*cls, class_model);
-
-    auto id = class_model.id();
-    if (!cls->isCompleteDefinition()) {
-        forward_declarations_.emplace(id, std::move(c_ptr));
-        return true;
-    }
-    forward_declarations_.erase(id);
-
-    if (diagram().should_include(class_model)) {
-        LOG_DBG("Adding class {} with id {}", class_model, class_model.id());
-
-        add_class(std::move(c_ptr));
-    }
-    else {
-        LOG_DBG("Skipping class {} with id {}", class_model, class_model.id());
-    }
-
-    return true;
+    return add_or_update_class(cls, std::move(c_ptr));
 }
 
 std::unique_ptr<clanguml::class_diagram::model::concept_>
@@ -989,7 +849,7 @@ translation_unit_visitor::create_concept_declaration(clang::ConceptDecl *cpt)
     return concept_ptr;
 }
 
-std::unique_ptr<class_> translation_unit_visitor::create_record_declaration(
+std::unique_ptr<class_> translation_unit_visitor::create_declaration(
     clang::RecordDecl *rec)
 {
     assert(rec != nullptr);
@@ -1035,7 +895,7 @@ std::unique_ptr<class_> translation_unit_visitor::create_record_declaration(
     return record_ptr;
 }
 
-std::unique_ptr<class_> translation_unit_visitor::create_class_declaration(
+std::unique_ptr<class_> translation_unit_visitor::create_declaration(
     clang::CXXRecordDecl *cls)
 {
     assert(cls != nullptr);
@@ -1173,11 +1033,11 @@ void translation_unit_visitor::process_record_parent(
     }
 }
 
-void translation_unit_visitor::process_class_declaration(
-    const clang::CXXRecordDecl &cls, class_ &c)
+void translation_unit_visitor::process_declaration(
+    const clang::CXXRecordDecl &cls, clanguml::class_diagram::model::class_ &c)
 {
     // Process class child entities
-    process_class_children(&cls, c);
+    process_children(&cls, c);
 
     // Process class bases
     process_class_bases(&cls, c);
@@ -1423,18 +1283,20 @@ void translation_unit_visitor::process_class_bases(
     }
 }
 
-void translation_unit_visitor::process_record_members(
-    const clang::RecordDecl *cls, class_ &c)
+void translation_unit_visitor::process_declaration(
+    const clang::RecordDecl &cls, class_ &c)
 {
-    // Iterate over regular class fields
-    for (const auto *field : cls->fields()) {
+    // Iterate over C struct fields
+    for (const auto *field : cls.fields()) {
         if (field != nullptr)
             process_field(*field, c);
     }
+
+    c.complete(true);
 }
 
-void translation_unit_visitor::process_class_children(
-    const clang::CXXRecordDecl *cls, class_ &c)
+void translation_unit_visitor::process_children(
+    const clang::CXXRecordDecl *cls, clanguml::class_diagram::model::class_ &c)
 {
     assert(cls != nullptr);
 

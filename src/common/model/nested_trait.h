@@ -20,6 +20,7 @@
 #include "util/util.h"
 
 #include <iostream>
+#include <list>
 #include <optional>
 #include <set>
 #include <string>
@@ -62,18 +63,22 @@ public:
      * @return True, if element was added.
      */
     template <typename V = T>
-    [[nodiscard]] bool add_element(std::unique_ptr<V> p)
+    [[nodiscard]] bool add_element(std::unique_ptr<V> element)
     {
-        if (auto id = p->id();
-            added_elements_.count(std::make_pair<eid_t, std::string>(
-                std::move(id), p->type_name()))) {
+        const auto element_id = element->id();
+        const auto element_name = element->name();
+
+        if (elements_by_id_.count(element_id) > 0) {
             // Element already in element tree
             return false;
         }
 
-        added_elements_.emplace(p->id(), p->type_name());
-        elements_by_name_.emplace(p->name(), elements_.size());
-        elements_.emplace_back(std::move(p));
+        elements_.push_back(std::move(element));
+
+        auto element_it = std::prev(elements_.end());
+
+        elements_by_id_.emplace(element_id, element_it);
+        elements_by_name_.emplace(element_name, element_it);
 
         return true;
     }
@@ -169,16 +174,13 @@ public:
             if (it == matches_end)
                 break;
 
-            assert((*it).second < elements_.size());
+            auto element_it = it->second;
+            it++;
 
-            auto [element_name, element_index] = *it;
-
-            // Return the element if it has the expected type
-            if (auto element_ptr =
-                    dynamic_cast<V *>(elements_.at(element_index).get());
+            if (auto element_ptr = dynamic_cast<V *>(element_it->get());
                 element_ptr != nullptr) {
                 if (auto nt_ptr = dynamic_cast<nested_trait<T, Path> *>(
-                        elements_.at(element_index).get());
+                        element_it->get());
                     nt_ptr != nullptr) {
                     if (nt_ptr->is_root_ == is_root)
                         return optional_ref<V>{std::ref<V>(*element_ptr)};
@@ -186,8 +188,6 @@ public:
                 else
                     return optional_ref<V>{std::ref<V>(*element_ptr)};
             }
-
-            ++it;
         }
 
         return optional_ref<V>{};
@@ -236,9 +236,6 @@ public:
             });
     }
 
-    auto begin() { return elements_.begin(); }
-    auto end() { return elements_.end(); }
-
     auto cbegin() const { return elements_.cbegin(); }
     auto cend() const { return elements_.cend(); }
 
@@ -254,63 +251,70 @@ public:
      */
     void print_tree(const int level) const
     {
-        const auto &d = *this;
-
         if (level == 0) {
             std::cout << "--- Printing tree:\n";
         }
-        for (const auto &e : d) {
+
+        for (auto it = elements_.cbegin(); it != elements_.cend(); it++) {
+            const auto &e = *it;
             if (dynamic_cast<nested_trait<T, Path> *>(e.get())) {
-                std::cout << std::string(level, '.') << "[" << *e << "]\n";
+                std::cout << std::string(level, ' ');
+                std::cout << "[" << *e << "]\n";
                 dynamic_cast<nested_trait<T, Path> *>(e.get())->print_tree(
-                    level + 1);
+                    level + 2);
             }
             else {
-                std::cout << std::string(level, '.') << "- " << *e << "]\n";
+                std::cout << std::string(level, ' ');
+                std::cout << "- " << *e << "]\n";
             }
         }
     }
 
-    void remove(const std::set<eid_t> &element_ids)
+    template <typename V = T> std::unique_ptr<V> get_and_remove(eid_t id)
     {
-        // Find all elements positions to remove
-        size_t idx{0};
-        for (const auto &e : elements_) {
-            if (element_ids.count(e->id()) > 0) {
-                auto range = elements_by_name_.equal_range(e->name());
+        std::unique_ptr<V> result;
 
-                for (auto it = range.first; it != range.second; ++it) {
-                    if (it->second == idx) {
-                        elements_by_name_.erase(it);
+        auto id_it = elements_by_id_.find(id);
+        if (id_it == elements_by_id_.end()) {
+            for (auto &p : elements_) {
+                if (dynamic_cast<nested_trait<T, Path> *>(p.get())) {
+                    result = dynamic_cast<nested_trait<T, Path> *>(p.get())
+                                 ->get_and_remove<V>(id);
+                    if (result)
                         break;
-                    }
                 }
             }
-
-            idx++;
+            return result;
         }
 
-        // First remove all matching elements on this level
-        elements_.erase(std::remove_if(elements_.begin(), elements_.end(),
-                            [&element_ids](auto &&e) {
-                                return element_ids.count(e->id()) > 0;
-                            }),
-            elements_.end());
+        // Get the iterator into the elements_ storage.
+        element_iterator_t element_it = id_it->second;
 
-        decltype(added_elements_) to_keep_;
-
-        for (const auto &e : added_elements_) {
-            if (element_ids.count(e.first) == 0)
-                to_keep_.emplace(e);
+        // Remove from the name index.
+        auto name = (*element_it)->name();
+        auto name_range = elements_by_name_.equal_range(name);
+        for (auto it = name_range.first; it != name_range.second; ++it) {
+            if (it->second == element_it) {
+                elements_by_name_.erase(it);
+                break;
+            }
         }
 
-        std::swap(to_keep_, added_elements_);
+        elements_by_id_.erase(id);
 
-        // Now recurse to any packages on this level
-        for (auto &p : elements_) {
-            if (dynamic_cast<nested_trait<T, Path> *>(p.get()))
-                dynamic_cast<nested_trait<T, Path> *>(p.get())->remove(
-                    element_ids);
+        result = util::unique_pointer_cast<V>(std::move(*element_it));
+
+        elements_.erase(element_it);
+
+        assert(result);
+
+        return result;
+    }
+
+    void remove(const std::set<eid_t> &element_ids)
+    {
+        for (const auto id : element_ids) {
+            get_and_remove(id);
         }
     }
 
@@ -329,9 +333,11 @@ private:
 
     bool is_root_{false};
 
-    std::set<std::pair<eid_t, std::string>> added_elements_;
-    std::vector<std::unique_ptr<T>> elements_;
-    std::multimap<std::string, size_t> elements_by_name_;
+    std::list<std::unique_ptr<T>> elements_;
+    using element_iterator_t = typename std::list<std::unique_ptr<T>>::iterator;
+
+    std::map<eid_t, element_iterator_t> elements_by_id_;
+    std::multimap<std::string, element_iterator_t> elements_by_name_;
 };
 
 } // namespace clanguml::common::model
