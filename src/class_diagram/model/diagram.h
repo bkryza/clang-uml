@@ -214,6 +214,26 @@ public:
         return add_with_filesystem_path(parent_path, std::move(e));
     }
 
+    template <typename ElementT> void move(eid_t id, const path &parent_path)
+    {
+        LOG_DBG("Moving element {} to package {}", id.value(),
+            parent_path.to_string());
+
+        auto e = nested_trait_ns::get_and_remove<ElementT>(id);
+        if (!e)
+            return;
+
+        element_view<ElementT>::remove({id});
+
+        this->add<ElementT>(parent_path, std::move(e));
+    }
+
+    template <typename ElementT> void remove(eid_t id)
+    {
+        nested_trait_ns::remove({id});
+        element_view<ElementT>::remove({id});
+    }
+
     /**
      * @brief Convert element id to PlantUML alias.
      *
@@ -294,6 +314,7 @@ bool diagram::add_with_namespace_path(std::unique_ptr<ElementT> &&e)
         throw std::runtime_error("Name cannot contain *: " + base_name);
 
     const auto ns = e->get_relative_namespace();
+
     auto name = base_name;
     auto name_and_ns = ns | name;
     auto &e_ref = *e;
@@ -304,7 +325,9 @@ bool diagram::add_with_namespace_path(std::unique_ptr<ElementT> &&e)
             if (add_element(ns, std::move(e)))
                 element_view<ElementT>::add(std::ref(e_ref));
 
-            const auto &el = get_element<ElementT>(name_and_ns).value();
+#if !defined(NDEBUG)
+            const auto maybe_el = get_element<ElementT>(name_and_ns);
+            const auto &el = maybe_el.value();
 
             if ((el.name() != name) || !(el.get_relative_namespace() == ns))
                 throw std::runtime_error(
@@ -312,6 +335,7 @@ bool diagram::add_with_namespace_path(std::unique_ptr<ElementT> &&e)
 
             LOG_DBG("Added {} {} ({} - [{}])", element_type, base_name,
                 full_name, id);
+#endif
 
             return true;
         }
@@ -373,13 +397,15 @@ bool diagram::add_with_filesystem_path(
         auto pkg = std::make_unique<common::model::package>(
             e->using_namespace(), parent_path.type());
         pkg->set_name(*it);
-        auto ns =
+        auto package_path =
             common::model::path(parent_path.begin(), it, parent_path.type());
-        // ns.pop_back();
-        pkg->set_namespace(ns);
+        pkg->set_namespace(package_path);
         pkg->set_id(common::to_id(pkg->full_name(false)));
 
-        add(ns, std::move(pkg));
+        LOG_DBG("Adding filesystem package {} at path {}", pkg->name(),
+            package_path.to_string());
+
+        add(package_path, std::move(pkg));
     }
 
     const auto base_name = e->name();

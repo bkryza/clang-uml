@@ -42,7 +42,8 @@ bool operator==(const element &l, const element &r)
 std::ostream &operator<<(std::ostream &out, const element &rhs)
 {
     out << "(" << rhs.name() << ", ns=[" << rhs.get_namespace().to_string()
-        << "], full_name=[" << rhs.full_name(true) << "])";
+        << "], full_name=[" << rhs.full_name(true)
+        << "], type_name=" << rhs.type_name() << ")";
 
     return out;
 }

@@ -171,18 +171,4 @@ void compilation_database::adjust_compilation_database(
         }
     }
 }
-
-bool compilation_database::match_filename(
-    const clang::tooling::CompileCommand &command,
-    const std::string &file) const
-{
-    auto command_filename = std::filesystem::path{command.Filename};
-
-    if (!command_filename.is_absolute()) {
-        command_filename = config().root_directory() / command_filename;
-    }
-
-    return (command_filename == file) ||
-        (command_filename.lexically_normal().string() == file);
-}
 } // namespace clanguml::common

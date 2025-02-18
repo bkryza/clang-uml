@@ -136,9 +136,10 @@ bool diagram::add_with_filesystem_path<common::model::package>(
     const common::model::path & /*parent_path*/,
     std::unique_ptr<common::model::package> &&p)
 {
-    LOG_DBG("Adding filesystem package: {}, {}", p->name(), p->full_name(true));
-
     auto ns = p->get_relative_namespace();
+
+    LOG_DBG("Adding filesystem package: {}, {}, {}", p->name(),
+        p->full_name(true), ns.to_string());
 
     return add_element(ns, std::move(p));
 }
