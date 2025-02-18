@@ -65,6 +65,21 @@ using visitor_specialization_t =
     common::visitor::translation_unit_visitor<clanguml::config::class_diagram,
         clanguml::class_diagram::model::diagram>;
 
+template <typename T> class typed_storage_t {
+protected:
+    std::map<eid_t, std::unique_ptr<T>> values;
+
+    std::map<eid_t, std::unique_ptr<T>> &get() { return values; }
+
+    const std::map<eid_t, std::unique_ptr<T>> &get() const { return values; }
+};
+
+template <typename... Ts>
+class forward_declarations_t : public typed_storage_t<Ts>... {
+public:
+    template <typename T> auto &get() { return typed_storage_t<T>::get(); }
+};
+
 /**
  * @brief Class diagram translation unit visitor
  *
@@ -130,9 +145,9 @@ public:
      * @brief Finalize diagram model
      *
      * This method is called after the entire AST has been visited by this
-     * visitor. It is used to perform necessary post processing on the diagram
-     * (e.g. resolve translation unit local element ID's into global ID's based
-     * on elements full names).
+     * visitor. It is used to perform necessary post processing on the
+     * diagram (e.g. resolve translation unit local element ID's into global
+     * ID's based on elements full names).
      */
     void finalize();
 
@@ -179,20 +194,17 @@ private:
         clang::CXXRecordDecl *cls);
 
     /**
-     * @brief Add the element model or update update if the model already exists
+     * @brief Add the element model or update update if the model already
+     * exists
      *
      * @tparam T Type of clang declaration
+     * @tparam ElementT Type of model element
      * @param cls Pointer to clang declaration
      * @param c_ptr Pointer to the element model
      * @return
      */
-    template <typename T>
-    bool add_or_update_class(const T *cls,
-        std::unique_ptr<clanguml::class_diagram::model::class_> &&c_ptr);
-
-    template <typename T>
-    bool add_or_update_enum(const T *cls,
-        std::unique_ptr<clanguml::class_diagram::model::enum_> &&c_ptr);
+    template <typename T, typename ElementT>
+    bool add_or_update(const T *cls, std::unique_ptr<ElementT> &&c_ptr);
 
     /**
      * @brief Create enum element model from enum (e.g. struct) declaration
@@ -204,7 +216,8 @@ private:
         const clang::EnumDecl *enm, const clang::TypedefDecl *typedef_decl);
 
     /**
-     * @brief Create class element model from record (e.g. struct) declaration
+     * @brief Create class element model from record (e.g. struct)
+     * declaration
      *
      * @param rec Record declaration
      * @return Class diagram element model
@@ -445,7 +458,8 @@ private:
     /**
      * @brief Find relationships in a specific type
      *
-     * @param decl Source declaration from which this relationship originates
+     * @param decl Source declaration from which this relationship
+     * originates
      * @param type Type to search for relationships
      * @param relationship_hint Default relationship type to infer from this
      *                          type
@@ -460,14 +474,14 @@ private:
      * model
      *
      * This method takes a list of relationships whose originating element
-     * is class `c` and adds them to it, ignoring any duplicates and skipping
-     * relationships that should be excluded from the diagram.
+     * is class `c` and adds them to it, ignoring any duplicates and
+     * skipping relationships that should be excluded from the diagram.
      *
      * @param c Diagram element model
      * @param field Class member model
      * @param relationships List of found relationships
-     * @param break_on_first_aggregation Stop adding relatinoships, after first
-     *        aggregation is found
+     * @param break_on_first_aggregation Stop adding relatinoships, after
+     * first aggregation is found
      */
     void add_relationships(diagram_element &c, const class_member_base &field,
         const found_relationships_t &relationships,
@@ -512,9 +526,9 @@ private:
      * @brief Replace any AST local ids in diagram elements with global ones
      *
      * Not all elements global ids can be set in relationships during
-     * traversal of the AST. In such cases, a local id (obtained from `getID()`)
-     * and at after the traversal is complete, the id is replaced with the
-     * global diagram id.
+     * traversal of the AST. In such cases, a local id (obtained from
+     * `getID()`) and at after the traversal is complete, the id is replaced
+     * with the global diagram id.
      */
     void resolve_local_to_global_ids();
 
@@ -542,7 +556,8 @@ private:
      *
      * @param concept_specialization Concept specialization expression
      * @param cpt Concept declaration
-     * @param constrained_template_params Found constraint template param names
+     * @param constrained_template_params Found constraint template param
+     * names
      * @param argument_index Argument index
      * @param type_name Type parameter name - used if extraction fails
      */
@@ -583,10 +598,7 @@ private:
 
     template_builder_t template_builder_;
 
-    std::map<eid_t, std::unique_ptr<clanguml::class_diagram::model::class_>>
-        forward_declarations_;
-    std::map<eid_t, std::unique_ptr<clanguml::class_diagram::model::enum_>>
-        enum_forward_declarations_;
+    forward_declarations_t<class_, enum_> forward_declarations_;
 
     std::map<int64_t /* local anonymous struct id */,
         std::tuple<std::string /* field name */, common::model::relationship_t,
@@ -657,17 +669,20 @@ void translation_unit_visitor::process_record_parent_by_type(eid_t parent_id,
     c.nested(true);
 }
 
-template <typename T>
-bool translation_unit_visitor::add_or_update_class(const T *cls,
-    std::unique_ptr<clanguml::class_diagram::model::class_> &&c_ptr)
+template <typename T, typename ElementT>
+bool translation_unit_visitor::add_or_update(
+    const T *cls, std::unique_ptr<ElementT> &&c_ptr)
 {
+    static_assert(
+        std::is_same_v<ElementT, class_> || std::is_same_v<ElementT, enum_>);
+
     const auto cls_id = c_ptr->id();
 
     id_mapper().add(cls->getID(), cls_id);
 
-    auto maybe_existing_model = diagram().find<class_>(cls_id);
+    auto maybe_existing_model = diagram().find<ElementT>(cls_id);
 
-    class_ &class_model =
+    ElementT &class_model =
         maybe_existing_model.has_value() ? *maybe_existing_model.get() : *c_ptr;
 
     auto id = class_model.id();
@@ -691,15 +706,15 @@ bool translation_unit_visitor::add_or_update_class(const T *cls,
             common::model::path p{
                 file.string(), common::model::path_type::kFilesystem};
             p.pop_back();
-            diagram().move<class_>(id, p);
+            diagram().move<ElementT>(id, p);
         }
     }
     else {
-        forward_declarations_.emplace(id, std::move(c_ptr));
+        forward_declarations_.get<ElementT>().emplace(id, std::move(c_ptr));
         return true;
     }
 
-    forward_declarations_.erase(id);
+    forward_declarations_.get<ElementT>().erase(id);
 
     if constexpr (std::is_same_v<T, clang::ClassTemplateSpecializationDecl>) {
         if (!class_model.template_specialization_found()) {
@@ -719,67 +734,10 @@ bool translation_unit_visitor::add_or_update_class(const T *cls,
     if (diagram().should_include(class_model)) {
         LOG_DBG("Adding {} {} with id {}", class_model.type_name(), class_model,
             class_model.id());
-        add_class(std::move(c_ptr));
-    }
-    else {
-        LOG_DBG("Skipping {} {} with id {}", class_model.type_name(),
-            class_model, class_model.id());
-    }
-
-    return true;
-}
-
-template <typename T>
-bool translation_unit_visitor::add_or_update_enum(const T *cls,
-    std::unique_ptr<clanguml::class_diagram::model::enum_> &&c_ptr)
-{
-    const auto cls_id = c_ptr->id();
-
-    id_mapper().add(cls->getID(), cls_id);
-
-    auto maybe_existing_model = diagram().find<enum_>(cls_id);
-
-    auto &class_model =
-        maybe_existing_model.has_value() ? *maybe_existing_model.get() : *c_ptr;
-
-    auto id = class_model.id();
-
-    if (cls->isCompleteDefinition() && !class_model.complete()) {
-        process_declaration(*cls, class_model);
-
-        // Update the source location for the element, otherwise
-        // it can point to the location of first encountered forward
-        // declaration
-        set_source_location(*cls, class_model);
-    }
-
-    if (cls->isCompleteDefinition()) {
-        if (maybe_existing_model &&
-            config().package_type() == config::package_type_t::kDirectory) {
-            // Move the class model to current filesystem path
-            // Eventually, this should be refactored so that it's
-            // not needed
-            const auto file = config().make_path_relative(class_model.file());
-            common::model::path p{
-                file.string(), common::model::path_type::kFilesystem};
-            p.pop_back();
-            diagram().move<enum_>(id, p);
-        }
-    }
-    else {
-        enum_forward_declarations_.emplace(id, std::move(c_ptr));
-        return true;
-    }
-
-    enum_forward_declarations_.erase(id);
-
-    if (maybe_existing_model)
-        return true;
-
-    if (diagram().should_include(class_model)) {
-        LOG_DBG("Adding {} {} with id {}", class_model.type_name(), class_model,
-            class_model.id());
-        add_enum(std::move(c_ptr));
+        if constexpr (std::is_same_v<ElementT, class_>)
+            add_class(std::move(c_ptr));
+        else
+            add_enum(std::move(c_ptr));
     }
     else {
         LOG_DBG("Skipping {} {} with id {}", class_model.type_name(),

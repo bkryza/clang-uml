@@ -288,7 +288,7 @@ public:
         }
 
         // Get the iterator into the elements_ storage.
-        element_iterator_t element_it = id_it->second;
+        auto element_it = id_it->second;
 
         // Remove from the name index.
         auto name = (*element_it)->name();

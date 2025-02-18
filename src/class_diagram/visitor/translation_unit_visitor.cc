@@ -152,7 +152,7 @@ bool translation_unit_visitor::VisitEnumDecl(clang::EnumDecl *enm)
     if (!e_ptr)
         return true;
 
-    return add_or_update_enum(enm, std::move(e_ptr));
+    return add_or_update(enm, std::move(e_ptr));
 }
 
 std::unique_ptr<clanguml::class_diagram::model::enum_>
@@ -248,7 +248,7 @@ bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
     if (!template_specialization_ptr)
         return true;
 
-    return add_or_update_class(cls, std::move(template_specialization_ptr));
+    return add_or_update(cls, std::move(template_specialization_ptr));
 }
 
 bool translation_unit_visitor::VisitTypeAliasTemplateDecl(
@@ -330,7 +330,7 @@ bool translation_unit_visitor::VisitClassTemplateDecl(
         find_relationships_in_constraint_expression(*c_ptr, expr);
     }
 
-    return add_or_update_class(cls->getTemplatedDecl(), std::move(c_ptr));
+    return add_or_update(cls->getTemplatedDecl(), std::move(c_ptr));
 }
 
 bool translation_unit_visitor::VisitRecordDecl(clang::RecordDecl *rec)
@@ -355,7 +355,7 @@ bool translation_unit_visitor::VisitRecordDecl(clang::RecordDecl *rec)
     if (!record_ptr)
         return true;
 
-    return add_or_update_class(rec, std::move(record_ptr));
+    return add_or_update(rec, std::move(record_ptr));
 }
 
 bool translation_unit_visitor::VisitObjCCategoryDecl(
@@ -816,7 +816,7 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
     if (!c_ptr)
         return true;
 
-    return add_or_update_class(cls, std::move(c_ptr));
+    return add_or_update(cls, std::move(c_ptr));
 }
 
 std::unique_ptr<clanguml::class_diagram::model::concept_>
@@ -2384,21 +2384,21 @@ void translation_unit_visitor::find_record_parent_id(const clang::TagDecl *decl,
 
 void translation_unit_visitor::add_incomplete_forward_declarations()
 {
-    for (auto &[id, c] : forward_declarations_) {
+    for (auto &[id, c] : forward_declarations_.get<class_>()) {
         if (!diagram().find<class_>(id).has_value() &&
             diagram().should_include(c->get_namespace())) {
             add_class(std::move(c));
         }
     }
-    forward_declarations_.clear();
+    forward_declarations_.get<class_>().clear();
 
-    for (auto &[id, e] : enum_forward_declarations_) {
+    for (auto &[id, e] : forward_declarations_.get<enum_>()) {
         if (!diagram().find<enum_>(id).has_value() &&
             diagram().should_include(e->get_namespace())) {
             add_enum(std::move(e));
         }
     }
-    enum_forward_declarations_.clear();
+    forward_declarations_.get<enum_>().clear();
 }
 
 void translation_unit_visitor::resolve_local_to_global_ids()
