@@ -270,26 +270,47 @@ void diagram::remove_redundant_dependencies()
 
 void diagram::apply_filter()
 {
+//    print_tree(1);
+
     // First find all element ids which should be removed
     std::set<eid_t> to_remove;
 
-    for_all_elements([&](auto &&elements_view) mutable {
-        for (const auto &el : elements_view)
-            if (!filter().should_include(el.get()))
-                to_remove.emplace(el.get().id());
-    });
+//    int lc{0};
+//    while (true) {
+//        LOG_DBG("CLEANING DIAGRAM: {}", lc++);
 
-    element_view<class_>::remove(to_remove);
-    element_view<enum_>::remove(to_remove);
-    element_view<concept_>::remove(to_remove);
-    element_view<objc_interface>::remove(to_remove);
+        for_all_elements([&](auto &&elements_view) mutable {
+            for (const auto &el : elements_view)
+                if (!filter().should_include(el.get()))
+                    to_remove.emplace(el.get().id());
+        });
 
-    nested_trait_ns::remove(to_remove);
+//        if (to_remove.empty())
+//            break;
+
+        element_view<class_>::remove(to_remove);
+        element_view<enum_>::remove(to_remove);
+        element_view<concept_>::remove(to_remove);
+        element_view<objc_interface>::remove(to_remove);
+
+        nested_trait_ns::remove(to_remove);
+
+//        LOG_DBG("REMOVED: {}", to_remove.size());
+
+        to_remove.clear();
+
+        filter().reset();
+//    }
 
     for_all_elements([&](auto &&elements_view) mutable {
         for (const auto &el : elements_view)
             el.get().apply_filter(filter(), to_remove);
     });
+//
+//    LOG_INFO("\n\n\n==========================================================="
+//             "\n\n\n");
+//
+//    print_tree(1);
 }
 
 bool diagram::is_empty() const
