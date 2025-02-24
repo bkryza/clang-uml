@@ -2642,7 +2642,7 @@ translation_unit_visitor::build_function_template_instantiation(
 
     set_qualified_name(decl, template_instantiation);
 
-    tbuilder().build(template_instantiation, &decl, decl.getPrimaryTemplate(),
+    tbuilder().build(decl, template_instantiation, &decl, decl.getPrimaryTemplate(),
         decl.getTemplateSpecializationArgs()->asArray(),
         common::to_string(&decl));
 

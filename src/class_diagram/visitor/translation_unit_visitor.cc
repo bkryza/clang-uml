@@ -271,7 +271,7 @@ bool translation_unit_visitor::VisitTypeAliasTemplateDecl(
 
     auto template_specialization_ptr =
         std::make_unique<class_>(config().using_namespace());
-    tbuilder().build_from_template_specialization_type(
+    tbuilder().build_from_template_specialization_type(*cls->getTemplatedDecl(),
         *template_specialization_ptr, cls, *template_type_specialization_ptr);
 
     template_specialization_ptr->is_template(true);
@@ -1254,7 +1254,7 @@ void translation_unit_visitor::process_class_bases(
             auto template_specialization_ptr =
                 std::make_unique<class_>(config().using_namespace());
             tbuilder().build_from_template_specialization_type(
-                *template_specialization_ptr, cls, *tsp, {});
+                *cls, *template_specialization_ptr, cls, *tsp, {});
 
             parent_id = template_specialization_ptr->id();
 
@@ -1458,7 +1458,7 @@ void translation_unit_visitor::process_method(
         if (unaliased_type != nullptr) {
             auto template_specialization_ptr =
                 std::make_unique<class_>(config().using_namespace());
-            tbuilder().build_from_template_specialization_type(
+            tbuilder().build_from_template_specialization_type(mf,
                 *template_specialization_ptr,
                 unaliased_type->getTemplateName().getAsTemplateDecl(),
                 *unaliased_type, &c);
@@ -1958,7 +1958,7 @@ void translation_unit_visitor::process_function_parameter(
             templ != nullptr) {
             auto template_specialization_ptr =
                 std::make_unique<class_>(config().using_namespace());
-            tbuilder().build_from_template_specialization_type(
+            tbuilder().build_from_template_specialization_type(p,
                 *template_specialization_ptr,
                 templ->getTemplateName().getAsTemplateDecl(), *templ, &c);
 
@@ -2082,6 +2082,10 @@ std::unique_ptr<class_>
 translation_unit_visitor::process_template_specialization(
     clang::ClassTemplateSpecializationDecl *cls)
 {
+    LOG_DBG("Processing template specialization {} at {}",
+        cls->getQualifiedNameAsString(),
+        cls->getLocation().printToString(source_manager()));
+
     auto c_ptr = std::make_unique<class_>(config().using_namespace());
     tbuilder().build_from_class_template_specialization(*c_ptr, *cls);
 
@@ -2230,7 +2234,7 @@ void translation_unit_visitor::process_field(
         // Build the template instantiation for the field type
         auto template_specialization_ptr =
             std::make_unique<class_>(config().using_namespace());
-        tbuilder().build_from_template_specialization_type(
+        tbuilder().build_from_template_specialization_type(field_declaration,
             *template_specialization_ptr,
             field_type->getAs<clang::TemplateSpecializationType>()
                 ->getTemplateName()

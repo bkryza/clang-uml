@@ -8,5 +8,8 @@ diagrams:
     include:
       paths:
         - .
+    exclude:
+      namespaces:
+        - std
     using_module: t00072
     using_namespace: clanguml::t00072

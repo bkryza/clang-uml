@@ -43,6 +43,8 @@ class diagram : public clanguml::common::model::diagram,
                 public clanguml::common::model::element_views<package>,
                 public nested_trait_ns {
 public:
+    using nested_trait_t = nested_trait_ns;
+
     diagram() = default;
 
     diagram(const diagram &) = delete;

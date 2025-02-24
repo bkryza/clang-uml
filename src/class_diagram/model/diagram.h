@@ -55,6 +55,8 @@ class diagram : public common::model::diagram,
                 public element_views<class_, enum_, concept_, objc_interface>,
                 public nested_trait_ns {
 public:
+    using nested_trait_t = nested_trait_ns;
+
     diagram() = default;
 
     diagram(const diagram &) = delete;
@@ -310,9 +312,6 @@ bool diagram::add_with_namespace_path(std::unique_ptr<ElementT> &&e)
     if (util::contains(base_name, "::"))
         throw std::runtime_error("Name cannot contain namespace: " + base_name);
 
-    if (util::contains(base_name, "*"))
-        throw std::runtime_error("Name cannot contain *: " + base_name);
-
     const auto ns = e->get_relative_namespace();
 
     auto name = base_name;
@@ -389,6 +388,12 @@ template <typename ElementT>
 bool diagram::add_with_filesystem_path(
     const common::model::path &parent_path, std::unique_ptr<ElementT> &&e)
 {
+    LOG_DBG("Adding element {} at path {}", e->full_name(false),
+        parent_path.to_string());
+
+    if(e->full_name(false) == "clanguml::t00014::A<char,std::string>")
+        LOG_DBG("AAAAA");
+
     const auto element_type = e->type_name();
 
     // Make sure all parent modules are already packages in the
