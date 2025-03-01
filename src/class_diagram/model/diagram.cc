@@ -210,7 +210,7 @@ bool diagram::has_element(eid_t id) const
 
 std::string diagram::to_alias(eid_t id) const
 {
-    LOG_DBG("Looking for alias for {}", id);
+    LOG_TRACE("Looking for alias for {}", id);
 
     for (const auto &c : classes()) {
         if (c.get().id() == id) {
@@ -273,18 +273,27 @@ void diagram::apply_filter()
     // First find all element ids which should be removed
     std::set<eid_t> to_remove;
 
-    for_all_elements([&](auto &&elements_view) mutable {
-        for (const auto &el : elements_view)
-            if (!filter().should_include(el.get()))
-                to_remove.emplace(el.get().id());
-    });
+    while (true) {
+        for_all_elements([&](auto &&elements_view) mutable {
+            for (const auto &el : elements_view)
+                if (!filter().should_include(el.get()))
+                    to_remove.emplace(el.get().id());
+        });
 
-    element_view<class_>::remove(to_remove);
-    element_view<enum_>::remove(to_remove);
-    element_view<concept_>::remove(to_remove);
-    element_view<objc_interface>::remove(to_remove);
+        if (to_remove.empty())
+            break;
 
-    nested_trait_ns::remove(to_remove);
+        element_view<class_>::remove(to_remove);
+        element_view<enum_>::remove(to_remove);
+        element_view<concept_>::remove(to_remove);
+        element_view<objc_interface>::remove(to_remove);
+
+        nested_trait_ns::remove(to_remove);
+
+        to_remove.clear();
+
+        filter().reset();
+    }
 
     for_all_elements([&](auto &&elements_view) mutable {
         for (const auto &el : elements_view)

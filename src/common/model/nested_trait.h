@@ -17,6 +17,7 @@
  */
 #pragma once
 
+#include "common/types.h"
 #include "util/util.h"
 
 #include <iostream>
@@ -79,6 +80,9 @@ public:
 
         elements_by_id_.emplace(element_id, element_it);
         elements_by_name_.emplace(element_name, element_it);
+
+        assert(elements_.size() == elements_by_id_.size());
+        assert(elements_.size() == elements_by_name_.size());
 
         return true;
     }
@@ -307,6 +311,9 @@ public:
         elements_.erase(element_it);
 
         assert(result);
+
+        assert(elements_.size() == elements_by_id_.size());
+        assert(elements_.size() == elements_by_name_.size());
 
         return result;
     }

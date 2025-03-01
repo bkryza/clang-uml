@@ -586,7 +586,7 @@ void generator::generate_relationships(
     std::set<std::string> unique_relations;
 
     for (const auto &r : c.relationships()) {
-        LOG_DBG("== Processing relationship {}",
+        LOG_TRACE("== Processing relationship {}",
             plantuml_common::to_plantuml(r, config()));
 
         std::stringstream relstr;
@@ -668,7 +668,7 @@ void generator::generate_relationships(
         if (!model().should_include(r.type()))
             continue;
 
-        LOG_DBG("== Processing relationship {}", to_string(r.type()));
+        LOG_TRACE("== Processing relationship {}", to_string(r.type()));
 
         std::stringstream relstr;
         eid_t destination{};
@@ -804,7 +804,7 @@ void generator::generate_relationships(
     std::set<std::string> unique_relations;
 
     for (const auto &r : c.relationships()) {
-        LOG_DBG("== Processing relationship {}",
+        LOG_TRACE("== Processing relationship {}",
             plantuml_common::to_plantuml(r, config()));
 
         std::stringstream relstr;

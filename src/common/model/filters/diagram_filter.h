@@ -127,6 +127,8 @@ public:
     filter_mode_t mode() const;
     void set_mode(filter_mode_t mode);
 
+    virtual void reset();
+
 private:
     filter_t type_;
     filter_mode_t mode_{filter_mode_t::basic};
@@ -164,6 +166,8 @@ struct anyof_filter : public filter_visitor {
 
     tvl::value_t match(const diagram &d,
         const sequence_diagram::model::participant &p) const override;
+
+    void reset() override;
 
 private:
     template <typename E>
@@ -213,6 +217,8 @@ struct allof_filter : public filter_visitor {
 
     tvl::value_t match(const diagram &d,
         const sequence_diagram::model::participant &p) const override;
+
+    void reset() override;
 
 private:
     template <typename E>
@@ -395,6 +401,12 @@ struct edge_traversal_filter : public filter_visitor {
 
     ~edge_traversal_filter() override = default;
 
+    void reset() override
+    {
+        initialized_ = false;
+        matching_elements_.clear();
+    };
+
     tvl::value_t match(const diagram &d, const MatchOverrideT &e) const override
     {
         // This filter should only be run only on diagram models after the
@@ -485,6 +497,8 @@ private:
     {
         if (initialized_)
             return;
+
+        matching_elements_.clear();
 
         // First get all elements specified in the filter configuration
         // which will serve as starting points for the search
@@ -608,83 +622,168 @@ private:
 
     bool is_outward(relationship_t r) const;
 
-    template <typename ElementT, typename DiagramT>
+    template <typename NestedTraitT>
+    void process_elements(const diagram &d, const NestedTraitT &nt,
+        const config::context_config &context_cfg,
+        std::set<eid_t> &effective_context,
+        std::set<eid_t> &current_iteration_context) const
+    {
+        if (d.type() == diagram_t::kClass) {
+            for (const auto &p : nt) {
+                if (auto *pkg = dynamic_cast<package *>(p.get());
+                    pkg != nullptr) {
+                    process_elements(d, *pkg, context_cfg, effective_context,
+                        current_iteration_context);
+                }
+                else {
+                    for (const relationship &rel : p.get()->relationships()) {
+                        if (!should_include(context_cfg, rel.type()) ||
+                            !d.should_include(rel.type())) {
+                            continue;
+                        }
+                        // At the moment aggregation and composition are added
+                        // in the model in reverse direction, so we don't
+                        // consider them here
+                        if (context_cfg.direction ==
+                                config::context_direction_t::inward &&
+                            (rel.type() == relationship_t::kAggregation ||
+                                rel.type() == relationship_t::kComposition)) {
+                            continue;
+                        }
+                        if (context_cfg.direction ==
+                                config::context_direction_t::outward &&
+                            (rel.type() != relationship_t::kAggregation &&
+                                rel.type() != relationship_t::kComposition)) {
+                            continue;
+                        }
+                        for (const auto &element_id : effective_context) {
+                            if (rel.destination() == element_id)
+                                current_iteration_context.emplace(
+                                    p.get()->id());
+                        }
+                    }
+
+                    // Now search current effective_context elements and add any
+                    // elements of any type in the diagram which have a
+                    // relationship to that element
+                    for (const auto element_id : effective_context) {
+                        const auto &maybe_element = d.get(element_id);
+
+                        if (!maybe_element)
+                            continue;
+
+                        for (const relationship &rel :
+                            maybe_element.value().relationships()) {
+                            if (!should_include(context_cfg, rel.type()) ||
+                                !d.should_include(rel.type())) {
+                                continue;
+                            }
+
+                            if ((context_cfg.direction ==
+                                    config::context_direction_t::inward) &&
+                                (rel.type() != relationship_t::kAggregation &&
+                                    rel.type() !=
+                                        relationship_t::kComposition)) {
+                                continue;
+                            }
+                            if (context_cfg.direction ==
+                                    config::context_direction_t::outward &&
+                                (rel.type() == relationship_t::kAggregation ||
+                                    rel.type() ==
+                                        relationship_t::kComposition)) {
+                                continue;
+                            }
+
+                            if (rel.destination() == p.get()->id())
+                                current_iteration_context.emplace(
+                                    p.get()->id());
+                        }
+                    }
+                }
+            }
+        }
+        else if (d.type() == diagram_t::kPackage) {
+            for (const auto &p : nt) {
+                auto *pkg = dynamic_cast<package *>(p.get());
+                if (pkg == nullptr)
+                    continue;
+
+                process_elements(d, *pkg, context_cfg, effective_context,
+                    current_iteration_context);
+
+                for (const relationship &rel : p.get()->relationships()) {
+                    if (!should_include(context_cfg, rel.type()) ||
+                        !d.should_include(rel.type())) {
+                        continue;
+                    }
+                    // At the moment aggregation and composition are added
+                    // in the model in reverse direction, so we don't
+                    // consider them here
+                    if (context_cfg.direction ==
+                            config::context_direction_t::inward &&
+                        (rel.type() == relationship_t::kAggregation ||
+                            rel.type() == relationship_t::kComposition)) {
+                        continue;
+                    }
+                    if (context_cfg.direction ==
+                            config::context_direction_t::outward &&
+                        (rel.type() != relationship_t::kAggregation &&
+                            rel.type() != relationship_t::kComposition)) {
+                        continue;
+                    }
+                    for (const auto &element_id : effective_context) {
+                        if (rel.destination() == element_id)
+                            current_iteration_context.emplace(p.get()->id());
+                    }
+                }
+
+                // Now search current effective_context elements and add any
+                // elements of any type in the diagram which have a
+                // relationship to that element
+                for (const auto element_id : effective_context) {
+                    const auto &maybe_element = d.get(element_id);
+
+                    if (!maybe_element)
+                        continue;
+
+                    for (const relationship &rel :
+                        maybe_element.value().relationships()) {
+                        if (!should_include(context_cfg, rel.type()) ||
+                            !d.should_include(rel.type())) {
+                            continue;
+                        }
+
+                        if ((context_cfg.direction ==
+                                config::context_direction_t::inward) &&
+                            (rel.type() != relationship_t::kAggregation &&
+                                rel.type() != relationship_t::kComposition)) {
+                            continue;
+                        }
+                        if (context_cfg.direction ==
+                                config::context_direction_t::outward &&
+                            (rel.type() == relationship_t::kAggregation ||
+                                rel.type() == relationship_t::kComposition)) {
+                            continue;
+                        }
+
+                        if (rel.destination() == p.get()->id())
+                            current_iteration_context.emplace(p.get()->id());
+                    }
+                }
+            }
+        }
+    }
+
+    template <typename DiagramT>
     void find_elements_in_direct_relationship(const diagram &d,
         const config::context_config &context_cfg,
         std::set<eid_t> &effective_context,
         std::set<eid_t> &current_iteration_context) const
     {
-        static_assert(std::is_same_v<ElementT, class_diagram::model::class_> ||
-                std::is_same_v<ElementT, class_diagram::model::enum_> ||
-                std::is_same_v<ElementT, class_diagram::model::concept_> ||
-                std::is_same_v<ElementT, common::model::package>,
-            "ElementT must be either class_ or enum_ or concept_");
-
         const auto &cd = dynamic_cast<const DiagramT &>(d);
 
-        for (const auto &el : cd.template elements<ElementT>()) {
-            // First search all elements of type ElementT in the diagram
-            // which have a relationship to any of the effective_context
-            // elements
-            for (const relationship &rel : el.get().relationships()) {
-                if (!should_include(context_cfg, rel.type()) ||
-                    !d.should_include(rel.type())) {
-                    continue;
-                }
-                // At the moment aggregation and composition are added in the
-                // model in reverse direction, so we don't consider them here
-                if (context_cfg.direction ==
-                        config::context_direction_t::inward &&
-                    (rel.type() == relationship_t::kAggregation ||
-                        rel.type() == relationship_t::kComposition)) {
-                    continue;
-                }
-                if (context_cfg.direction ==
-                        config::context_direction_t::outward &&
-                    (rel.type() != relationship_t::kAggregation &&
-                        rel.type() != relationship_t::kComposition)) {
-                    continue;
-                }
-                for (const auto &element_id : effective_context) {
-                    if (rel.destination() == element_id)
-                        current_iteration_context.emplace(el.get().id());
-                }
-            }
-
-            // Now search current effective_context elements and add any
-            // elements of any type in the diagram which have a relationship
-            // to that element
-            for (const auto element_id : effective_context) {
-                const auto &maybe_element = cd.get(element_id);
-
-                if (!maybe_element)
-                    continue;
-
-                for (const relationship &rel :
-                    maybe_element.value().relationships()) {
-                    if (!should_include(context_cfg, rel.type()) ||
-                        !d.should_include(rel.type())) {
-                        continue;
-                    }
-
-                    if ((context_cfg.direction ==
-                            config::context_direction_t::inward) &&
-                        (rel.type() != relationship_t::kAggregation &&
-                            rel.type() != relationship_t::kComposition)) {
-                        continue;
-                    }
-                    if (context_cfg.direction ==
-                            config::context_direction_t::outward &&
-                        (rel.type() == relationship_t::kAggregation ||
-                            rel.type() == relationship_t::kComposition)) {
-                        continue;
-                    }
-
-                    if (rel.destination() == el.get().id())
-                        current_iteration_context.emplace(el.get().id());
-                }
-            }
-        }
+        process_elements(
+            cd, cd, context_cfg, effective_context, current_iteration_context);
     }
 
     bool should_include(
@@ -765,8 +864,8 @@ class diagram_filter_factory;
 /**
  * @brief Composite of all diagrams filters.
  *
- * Instances of this class contain all filters specified in configuration file
- * for a given diagram.
+ * Instances of this class contain all filters specified in configuration
+ * file for a given diagram.
  *
  * @embed{diagram_filter_context_class.svg}
  *
@@ -807,7 +906,8 @@ public:
     /**
      * Generic `should_include` overload for various diagram elements.
      *
-     * @tparam T Type to to match - must match one of filter_visitor's match(T)
+     * @tparam T Type to to match - must match one of filter_visitor's
+     * match(T)
      * @param e Value of type T to match
      * @return Match result.
      */
@@ -836,6 +936,8 @@ public:
     filter_mode_t mode() const;
 
     void set_mode(filter_mode_t mode);
+
+    void reset();
 
     friend class diagram_filter_factory;
 

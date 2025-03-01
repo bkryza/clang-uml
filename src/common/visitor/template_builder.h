@@ -108,12 +108,13 @@ public:
      * @return Created template class model
      */
     void build_from_template_specialization_type(
+        const clang::NamedDecl &location_declaration,
         clanguml::common::model::template_element &template_instantiation,
         const clang::NamedDecl *cls,
         const clang::TemplateSpecializationType &template_type_decl,
         std::optional<clanguml::common::model::template_element *> parent = {});
 
-    void build(
+    void build(const clang::NamedDecl &location_declaration,
         clanguml::common::model::template_element &template_instantiation,
         const clang::NamedDecl *cls, const clang::TemplateDecl *template_decl,
         clang::ArrayRef<clang::TemplateArgument> template_arguments,
@@ -161,7 +162,7 @@ public:
      * @param template_instantiation Template class model to add template args
      * @param template_decl Base template declaration
      */
-    void process_template_arguments(
+    void process_template_arguments(const clang::NamedDecl &location_decl,
         std::optional<clanguml::common::model::template_element *> &parent,
         const clang::NamedDecl *cls,
         std::deque<std::tuple<std::string, int, bool>> &template_base_params,
@@ -181,7 +182,7 @@ public:
      * @param argument Output list of arguments (can be more than one for
      *                 variadic parameters)
      */
-    void argument_process_dispatch(
+    void argument_process_dispatch(const clang::NamedDecl &location_decl,
         std::optional<clanguml::common::model::template_element *> &parent,
         const clang::NamedDecl *cls,
         clanguml::common::model::template_element &template_instantiation,
@@ -265,6 +266,7 @@ public:
      * @return Return template argument model
      */
     std::vector<template_parameter> process_pack_argument(
+        const clang::NamedDecl &location_decl,
         std::optional<clanguml::common::model::template_element *> &parent,
         const clang::NamedDecl *cls,
         clanguml::common::model::template_element &template_instantiation,
@@ -281,6 +283,7 @@ public:
      * @return Return template argument model
      */
     template_parameter process_type_argument(
+        const clang::NamedDecl &location_decl,
         std::optional<clanguml::common::model::template_element *> &parent,
         const clang::NamedDecl *cls,
         const clang::TemplateDecl *base_template_decl, clang::QualType type,
@@ -323,6 +326,7 @@ public:
      * @return Function template argument if succeeds, or std::nullopt
      */
     std::optional<template_parameter> try_as_function_prototype(
+        const clang::NamedDecl &location_decl,
         std::optional<clanguml::common::model::template_element *> &parent,
         const clang::NamedDecl *cls, const clang::TemplateDecl *template_decl,
         clang::QualType &type,
@@ -341,6 +345,7 @@ public:
      * @return Array template argument if succeeds, or std::nullopt
      */
     std::optional<template_parameter> try_as_array(
+        const clang::NamedDecl &location_decl,
         std::optional<clanguml::common::model::template_element *> &parent,
         const clang::NamedDecl *cls, const clang::TemplateDecl *template_decl,
         clang::QualType &type,
@@ -360,6 +365,7 @@ public:
      *         or std::nullopt
      */
     std::optional<template_parameter> try_as_template_specialization_type(
+        const clang::NamedDecl &location_decl,
         std::optional<clanguml::common::model::template_element *> &parent,
         const clang::NamedDecl *cls, const clang::TemplateDecl *template_decl,
         clang::QualType &type,
@@ -401,6 +407,7 @@ public:
      * @return Record type template argument if succeeds, or std::nullopt
      */
     std::optional<template_parameter> try_as_record_type(
+        const clang::NamedDecl &location_decl,
         std::optional<clanguml::common::model::template_element *> &parent,
         const clang::NamedDecl *cls, const clang::TemplateDecl *template_decl,
         clang::QualType &type,
@@ -448,6 +455,7 @@ public:
      *         or std::nullopt
      */
     std::optional<template_parameter> try_as_member_pointer(
+        const clang::NamedDecl &location_decl,
         std::optional<clanguml::common::model::template_element *> &parent,
         const clang::NamedDecl *cls, const clang::TemplateDecl *template_decl,
         clang::QualType &type,
@@ -734,6 +742,7 @@ void template_builder<VisitorT>::build_from_template_declaration(
 
 template <typename VisitorT>
 void template_builder<VisitorT>::build_from_template_specialization_type(
+    const clang::NamedDecl &location_declaration,
     clanguml::common::model::template_element &template_instantiation,
     const clang::NamedDecl *cls,
     const clang::TemplateSpecializationType &template_type_decl,
@@ -759,13 +768,13 @@ void template_builder<VisitorT>::build_from_template_specialization_type(
 
     auto *template_decl{template_type.getTemplateName().getAsTemplateDecl()};
 
-    build(template_instantiation, cls, template_decl,
+    build(location_declaration, template_instantiation, cls, template_decl,
         template_type.template_arguments(), full_template_specialization_name,
         parent);
 }
 
 template <typename VisitorT>
-void template_builder<VisitorT>::build(
+void template_builder<VisitorT>::build(const clang::NamedDecl &location_decl,
     clanguml::common::model::template_element &template_instantiation,
     const clang::NamedDecl *cls, const clang::TemplateDecl *template_decl,
     const clang::ArrayRef<clang::TemplateArgument> template_arguments,
@@ -876,7 +885,7 @@ void template_builder<VisitorT>::build(
             base_index++;
         }
 
-    process_template_arguments(parent, cls, template_base_params,
+    process_template_arguments(location_decl, parent, cls, template_base_params,
         template_arguments, template_instantiation, template_decl);
 
     if constexpr (std::is_same_v<typename VisitorT::diagram_t,
@@ -888,7 +897,7 @@ void template_builder<VisitorT>::build(
     template_instantiation.set_id(
         common::to_id(template_instantiation.full_name(false)));
 
-    visitor_.set_source_location(*cls, template_instantiation);
+    visitor_.set_source_location(location_decl, template_instantiation);
 }
 
 template <typename VisitorT>
@@ -897,6 +906,9 @@ void template_builder<VisitorT>::build_from_class_template_specialization(
     const clang::ClassTemplateSpecializationDecl &template_specialization,
     std::optional<clanguml::common::model::template_element *> parent)
 {
+    LOG_DBG("Building class template specialization model: {}",
+        template_specialization.getQualifiedNameAsString());
+
     //
     // Here we'll hold the template base params to replace with the
     // instantiated values
@@ -915,8 +927,8 @@ void template_builder<VisitorT>::build_from_class_template_specialization(
     template_instantiation.set_name(template_decl->getNameAsString());
     template_instantiation.set_namespace(ns);
 
-    process_template_arguments(parent, &template_specialization,
-        template_base_params,
+    process_template_arguments(template_specialization, parent,
+        &template_specialization, template_base_params,
         template_specialization.getTemplateArgs().asArray(),
         template_instantiation, template_decl);
 
@@ -930,7 +942,8 @@ void template_builder<VisitorT>::build_from_class_template_specialization(
             eid_t{template_specialization.getID()}, qualified_name);
     }
 
-    visitor_.set_source_location(*template_decl, template_instantiation);
+    visitor_.set_source_location(
+        template_specialization, template_instantiation);
 }
 
 template <typename VisitorT>
@@ -944,6 +957,7 @@ void template_builder<VisitorT>::find_instantiation_relationships(
 
 template <typename VisitorT>
 void template_builder<VisitorT>::process_template_arguments(
+    const clang::NamedDecl &location_decl,
     std::optional<clanguml::common::model::template_element *> &parent,
     const clang::NamedDecl *cls,
     std::deque<std::tuple<std::string, int, bool>> &template_base_params,
@@ -990,8 +1004,8 @@ void template_builder<VisitorT>::process_template_arguments(
         //
         // Handle the template parameter/argument based on its kind
         //
-        argument_process_dispatch(parent, cls, template_instantiation,
-            template_decl, arg, arg_index, arguments);
+        argument_process_dispatch(location_decl, parent, cls,
+            template_instantiation, template_decl, arg, arg_index, arguments);
 
         if (arguments.empty()) {
             arg_index++;
@@ -1037,6 +1051,7 @@ void template_builder<VisitorT>::process_template_arguments(
 
 template <typename VisitorT>
 void template_builder<VisitorT>::argument_process_dispatch(
+    const clang::NamedDecl &location_decl,
     std::optional<clanguml::common::model::template_element *> &parent,
     const clang::NamedDecl *cls,
     clanguml::common::model::template_element &template_instantiation,
@@ -1055,8 +1070,9 @@ void template_builder<VisitorT>::argument_process_dispatch(
         argument.push_back(process_template_argument(arg));
         break;
     case clang::TemplateArgument::Type: {
-        argument.push_back(process_type_argument(parent, cls, template_decl,
-            arg.getAsType(), template_instantiation, argument_index));
+        argument.push_back(
+            process_type_argument(location_decl, parent, cls, template_decl,
+                arg.getAsType(), template_instantiation, argument_index));
         break;
     }
     case clang::TemplateArgument::Declaration:
@@ -1075,9 +1091,9 @@ void template_builder<VisitorT>::argument_process_dispatch(
         argument.push_back(process_expression_argument(arg));
         break;
     case clang::TemplateArgument::Pack:
-        for (auto &a :
-            process_pack_argument(parent, cls, template_instantiation,
-                template_decl, arg, argument_index, argument)) {
+        for (auto &a : process_pack_argument(location_decl, parent, cls,
+                 template_instantiation, template_decl, arg, argument_index,
+                 argument)) {
             argument.push_back(a);
         }
         break;
@@ -1131,6 +1147,7 @@ clang::QualType template_builder<VisitorT>::consume_context(
 
 template <typename VisitorT>
 template_parameter template_builder<VisitorT>::process_type_argument(
+    const clang::NamedDecl &location_decl,
     std::optional<clanguml::common::model::template_element *> &parent,
     const clang::NamedDecl *cls, const clang::TemplateDecl *template_decl,
     clang::QualType type,
@@ -1150,17 +1167,17 @@ template_parameter template_builder<VisitorT>::process_type_argument(
         type->getTypeClassName(),
         common::to_string(type, cls->getASTContext()));
 
-    argument = try_as_function_prototype(parent, cls, template_decl, type,
-        template_instantiation, argument_index);
+    argument = try_as_function_prototype(location_decl, parent, cls,
+        template_decl, type, template_instantiation, argument_index);
     if (argument)
         return *argument;
 
-    argument = try_as_member_pointer(parent, cls, template_decl, type,
-        template_instantiation, argument_index);
+    argument = try_as_member_pointer(location_decl, parent, cls, template_decl,
+        type, template_instantiation, argument_index);
     if (argument)
         return *argument;
 
-    argument = try_as_array(parent, cls, template_decl, type,
+    argument = try_as_array(location_decl, parent, cls, template_decl, type,
         template_instantiation, argument_index);
     if (argument)
         return *argument;
@@ -1169,8 +1186,8 @@ template_parameter template_builder<VisitorT>::process_type_argument(
     if (argument)
         return *argument;
 
-    argument = try_as_template_specialization_type(parent, cls, template_decl,
-        type, template_instantiation, argument_index);
+    argument = try_as_template_specialization_type(location_decl, parent, cls,
+        template_decl, type, template_instantiation, argument_index);
     if (argument)
         return *argument;
 
@@ -1188,8 +1205,8 @@ template_parameter template_builder<VisitorT>::process_type_argument(
     if (argument)
         return *argument;
 
-    argument = try_as_record_type(parent, cls, template_decl, type,
-        template_instantiation, argument_index);
+    argument = try_as_record_type(location_decl, parent, cls, template_decl,
+        type, template_instantiation, argument_index);
     if (argument)
         return *argument;
 
@@ -1316,6 +1333,7 @@ template_parameter template_builder<VisitorT>::process_expression_argument(
 template <typename VisitorT>
 std::vector<template_parameter>
 template_builder<VisitorT>::process_pack_argument(
+    const clang::NamedDecl &location_decl,
     std::optional<clanguml::common::model::template_element *> &parent,
     const clang::NamedDecl *cls,
     clanguml::common::model::template_element &template_instantiation,
@@ -1330,8 +1348,9 @@ template_builder<VisitorT>::process_pack_argument(
     auto pack_argument_index = argument_index;
 
     for (const auto &a : arg.getPackAsArray()) {
-        argument_process_dispatch(parent, cls, template_instantiation,
-            base_template_decl, a, pack_argument_index++, res);
+        argument_process_dispatch(location_decl, parent, cls,
+            template_instantiation, base_template_decl, a,
+            pack_argument_index++, res);
     }
 
     return res;
@@ -1340,6 +1359,7 @@ template_builder<VisitorT>::process_pack_argument(
 template <typename VisitorT>
 std::optional<template_parameter>
 template_builder<VisitorT>::try_as_member_pointer(
+    const clang::NamedDecl &location_decl,
     std::optional<clanguml::common::model::template_element *> &parent,
     const clang::NamedDecl *cls, const clang::TemplateDecl *template_decl,
     clang::QualType &type,
@@ -1359,8 +1379,9 @@ template_builder<VisitorT>::try_as_member_pointer(
         argument.is_member_pointer(false);
         argument.is_data_pointer(true);
 
-        auto pointee_arg = process_type_argument(parent, cls, template_decl,
-            mp_type->getPointeeType(), template_instantiation, argument_index);
+        auto pointee_arg = process_type_argument(location_decl, parent, cls,
+            template_decl, mp_type->getPointeeType(), template_instantiation,
+            argument_index);
 
         argument.add_template_param(std::move(pointee_arg));
 
@@ -1369,8 +1390,8 @@ template_builder<VisitorT>::try_as_member_pointer(
         if (member_class_type == nullptr)
             return {};
 
-        auto class_type_arg = process_type_argument(parent, cls, template_decl,
-            mp_type->getClass()->getCanonicalTypeUnqualified(),
+        auto class_type_arg = process_type_argument(location_decl, parent, cls,
+            template_decl, mp_type->getClass()->getCanonicalTypeUnqualified(),
             template_instantiation, argument_index);
 
         argument.add_template_param(std::move(class_type_arg));
@@ -1385,9 +1406,9 @@ template_builder<VisitorT>::try_as_member_pointer(
 
         assert(function_type != nullptr);
 
-        auto return_type_arg = process_type_argument(parent, cls, template_decl,
-            function_type->getReturnType(), template_instantiation,
-            argument_index);
+        auto return_type_arg = process_type_argument(location_decl, parent, cls,
+            template_decl, function_type->getReturnType(),
+            template_instantiation, argument_index);
 
         // Add return type argument
         argument.add_template_param(std::move(return_type_arg));
@@ -1397,8 +1418,8 @@ template_builder<VisitorT>::try_as_member_pointer(
         if (member_class_type == nullptr)
             return {};
 
-        auto class_type_arg = process_type_argument(parent, cls, template_decl,
-            mp_type->getClass()->getCanonicalTypeUnqualified(),
+        auto class_type_arg = process_type_argument(location_decl, parent, cls,
+            template_decl, mp_type->getClass()->getCanonicalTypeUnqualified(),
             template_instantiation, argument_index);
 
         // Add class type argument
@@ -1407,8 +1428,8 @@ template_builder<VisitorT>::try_as_member_pointer(
         // Add argument types
         for (const auto &param_type : function_type->param_types()) {
             argument.add_template_param(
-                process_type_argument(parent, cls, template_decl, param_type,
-                    template_instantiation, argument_index));
+                process_type_argument(location_decl, parent, cls, template_decl,
+                    param_type, template_instantiation, argument_index));
         }
     }
 
@@ -1417,6 +1438,7 @@ template_builder<VisitorT>::try_as_member_pointer(
 
 template <typename VisitorT>
 std::optional<template_parameter> template_builder<VisitorT>::try_as_array(
+    const clang::NamedDecl &location_decl,
     std::optional<clanguml::common::model::template_element *> &parent,
     const clang::NamedDecl *cls, const clang::TemplateDecl *template_decl,
     clang::QualType &type,
@@ -1434,8 +1456,9 @@ std::optional<template_parameter> template_builder<VisitorT>::try_as_array(
     argument.is_array(true);
 
     // Set function template return type
-    auto element_type = process_type_argument(parent, cls, template_decl,
-        array_type->getElementType(), template_instantiation, argument_index);
+    auto element_type = process_type_argument(location_decl, parent, cls,
+        template_decl, array_type->getElementType(), template_instantiation,
+        argument_index);
 
     argument.add_template_param(element_type);
 
@@ -1462,6 +1485,7 @@ std::optional<template_parameter> template_builder<VisitorT>::try_as_array(
 template <typename VisitorT>
 std::optional<template_parameter>
 template_builder<VisitorT>::try_as_function_prototype(
+    const clang::NamedDecl &location_decl,
     std::optional<clanguml::common::model::template_element *> &parent,
     const clang::NamedDecl *cls, const clang::TemplateDecl *template_decl,
     clang::QualType &type,
@@ -1489,8 +1513,9 @@ template_builder<VisitorT>::try_as_function_prototype(
     argument.is_function_template(true);
 
     // Set function template return type
-    auto return_arg = process_type_argument(parent, cls, template_decl,
-        function_type->getReturnType(), template_instantiation, argument_index);
+    auto return_arg = process_type_argument(location_decl, parent, cls,
+        template_decl, function_type->getReturnType(), template_instantiation,
+        argument_index);
 
     argument.add_template_param(return_arg);
 
@@ -1503,8 +1528,8 @@ template_builder<VisitorT>::try_as_function_prototype(
     else {
         for (const auto &param_type : function_type->param_types()) {
             argument.add_template_param(
-                process_type_argument(parent, cls, template_decl, param_type,
-                    template_instantiation, argument_index));
+                process_type_argument(location_decl, parent, cls, template_decl,
+                    param_type, template_instantiation, argument_index));
         }
     }
 
@@ -1570,6 +1595,7 @@ template_builder<VisitorT>::try_as_typedef_type(
 template <typename VisitorT>
 std::optional<template_parameter>
 template_builder<VisitorT>::try_as_template_specialization_type(
+    const clang::NamedDecl &location_decl,
     std::optional<clanguml::common::model::template_element *> &parent,
     const clang::NamedDecl *cls, const clang::TemplateDecl *template_decl,
     clang::QualType &type,
@@ -1616,8 +1642,8 @@ template_builder<VisitorT>::try_as_template_specialization_type(
         visitor_.create_element(nested_template_type->getTemplateName()
                                     .getAsTemplateDecl()
                                     ->getTemplatedDecl());
-    build_from_template_specialization_type(*nested_template_instantiation, cls,
-        *nested_template_type,
+    build_from_template_specialization_type(location_decl,
+        *nested_template_instantiation, cls, *nested_template_type,
         diagram().should_include(
             namespace_{template_decl->getQualifiedNameAsString()})
             ? std::make_optional(&template_instantiation)
@@ -1661,7 +1687,8 @@ template_builder<VisitorT>::try_as_template_specialization_type(
 
     if (diagram().should_include(
             namespace_{nested_template_instantiation_full_name})) {
-        visitor_.set_source_location(*cls, *nested_template_instantiation);
+        visitor_.set_source_location(
+            location_decl, *nested_template_instantiation);
         visitor_.add_diagram_element(std::move(nested_template_instantiation));
     }
 
@@ -1737,6 +1764,7 @@ std::optional<template_parameter> template_builder<VisitorT>::try_as_lambda(
 template <typename VisitorT>
 std::optional<template_parameter>
 template_builder<VisitorT>::try_as_record_type(
+    const clang::NamedDecl &location_decl,
     std::optional<clanguml::common::model::template_element *> &parent,
     const clang::NamedDecl * /*cls*/, const clang::TemplateDecl *template_decl,
     clang::QualType &type,
@@ -1787,7 +1815,8 @@ template_builder<VisitorT>::try_as_record_type(
                 if (parent.has_value())
                     parent.value()->add_relationship(
                         {relationship_t::kDependency, tag_argument->id()});
-                visitor_.set_source_location(*template_decl, *tag_argument);
+
+                visitor_.set_source_location(location_decl, *tag_argument);
                 visitor_.add_diagram_element(std::move(tag_argument));
             }
         }

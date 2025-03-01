@@ -181,11 +181,19 @@ filter_mode_t filter_visitor::mode() const { return mode_; }
 
 void filter_visitor::set_mode(filter_mode_t mode) { mode_ = mode; }
 
+void filter_visitor::reset() { }
+
 anyof_filter::anyof_filter(
     filter_t type, std::vector<std::unique_ptr<filter_visitor>> filters)
     : filter_visitor{type}
     , filters_{std::move(filters)}
 {
+}
+
+void anyof_filter::reset()
+{
+    for (auto &f : filters_)
+        f->reset();
 }
 
 tvl::value_t anyof_filter::match(
@@ -247,6 +255,11 @@ allof_filter::allof_filter(
     : filter_visitor{type}
     , filters_{std::move(filters)}
 {
+}
+void allof_filter::reset()
+{
+    for (auto &f : filters_)
+        f->reset();
 }
 
 tvl::value_t allof_filter::match(
@@ -978,8 +991,9 @@ void context_filter::initialize_effective_context_class_diagram(
             .find<class_diagram::model::class_>(context_cfg.pattern);
 
     for (const auto &maybe_match : context_matches) {
-        if (maybe_match)
+        if (maybe_match) {
             effective_context.emplace(maybe_match.value().id());
+        }
     }
 
     const auto &context_enum_matches =
@@ -1013,18 +1027,7 @@ void context_filter::initialize_effective_context_class_diagram(
         current_iteration_context.clear();
 
         // For each class in the model
-        find_elements_in_direct_relationship<class_diagram::model::class_,
-            class_diagram::model::diagram>(
-            d, context_cfg, effective_context, current_iteration_context);
-
-        // For each concept in the model
-        find_elements_in_direct_relationship<class_diagram::model::concept_,
-            class_diagram::model::diagram>(
-            d, context_cfg, effective_context, current_iteration_context);
-
-        // For each enum in the model
-        find_elements_in_direct_relationship<class_diagram::model::enum_,
-            class_diagram::model::diagram>(
+        find_elements_in_direct_relationship<class_diagram::model::diagram>(
             d, context_cfg, effective_context, current_iteration_context);
 
         for (auto id : current_iteration_context) {
@@ -1071,8 +1074,7 @@ void context_filter::initialize_effective_context_package_diagram(
         current_iteration_context.clear();
 
         // For each class in the model
-        find_elements_in_direct_relationship<common::model::package,
-            package_diagram::model::diagram>(
+        find_elements_in_direct_relationship<package_diagram::model::diagram>(
             d, context_cfg, effective_context, current_iteration_context);
 
         for (auto id : current_iteration_context) {
@@ -1385,6 +1387,15 @@ bool diagram_filter::should_include(
 filter_mode_t diagram_filter::mode() const { return mode_; }
 
 void diagram_filter::set_mode(filter_mode_t mode) { mode_ = mode; }
+
+void diagram_filter::reset()
+{
+    for (auto &f : inclusive_)
+        f->reset();
+
+    for (auto &f : exclusive_)
+        f->reset();
+}
 
 template <>
 bool diagram_filter::should_include<std::string>(const std::string &name) const

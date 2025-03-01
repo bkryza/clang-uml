@@ -166,6 +166,14 @@ public:
 
     virtual void apply_filter() { }
 
+protected:
+    /**
+     * Get diagram filter
+     *
+     * @return Reference to the diagrams element filter
+     */
+    diagram_filter &filter() { return *filter_; }
+
 private:
     std::string name_;
     std::unique_ptr<diagram_filter> filter_;

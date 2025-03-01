@@ -30,9 +30,10 @@ TEST_CASE("t00014")
         REQUIRE(IsClassTemplate(src, "A<T,std::string>"));
         REQUIRE(IsClassTemplate(src, "A<T,std::unique_ptr<std::string>>"));
         REQUIRE(IsClassTemplate(src, "A<double,T>"));
+        //
         // TODO: Figure out how to handle the same templates with different
-        // template
-        //       parameter names
+        //       template parameter names
+        //
         //    REQUIRE(puml, !IsClassTemplate("A", "long,U"));
         REQUIRE(IsClassTemplate(src, "A<long,T>"));
         REQUIRE(IsClassTemplate(src, "A<long,bool>"));

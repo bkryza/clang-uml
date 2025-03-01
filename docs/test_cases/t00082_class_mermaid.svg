@@ -55,11 +55,12 @@
     <g class="root">
       <g class="clusters"/>
       <g class="edgePaths">
-        <path marker-start="url(#my-svg_classDiagram-extensionStart)" style="fill:none" class="edge-pattern-solid relation" id="id_C_0015596320250571206658_C_0001635220505473283595_1" d="M65.281,83L65.281,84.167C65.281,85.333,65.281,87.667,65.281,93C65.281,98.333,65.281,106.667,65.281,110.833L65.281,115"/>
-        <path marker-start="url(#my-svg_classDiagram-extensionStart)" style="fill:none" class="edge-pattern-solid relation" id="id_C_0016760820400747278589_C_0015689724057597125831_2" d="M229.844,83L229.844,84.167C229.844,85.333,229.844,87.667,229.844,93C229.844,98.333,229.844,106.667,229.844,110.833L229.844,115"/>
-        <path marker-start="url(#my-svg_classDiagram-extensionStart)" style="fill:none" class="edge-pattern-solid relation" id="id_C_0015689724057597125831_C_0000600480210374819483_3" d="M229.844,190L229.844,191.167C229.844,192.333,229.844,194.667,229.844,200C229.844,205.333,229.844,213.667,229.844,217.833L229.844,222"/>
-        <path marker-start="url(#my-svg_classDiagram-extensionStart)" style="fill:none" class="edge-pattern-solid relation" id="id_C_0003338977750360426719_C_0016268840963729643490_4" d="M394.406,83L394.406,84.167C394.406,85.333,394.406,87.667,394.406,93C394.406,98.333,394.406,106.667,394.406,110.833L394.406,115"/>
-        <path marker-start="url(#my-svg_classDiagram-extensionStart)" style="fill:none" class="edge-pattern-solid relation" id="id_C_0016268840963729643490_C_0006275205058551246711_5" d="M394.406,190L394.406,191.167C394.406,192.333,394.406,194.667,394.406,200C394.406,205.333,394.406,213.667,394.406,217.833L394.406,222"/>
+        <path marker-start="url(#my-svg_classDiagram-extensionStart)" style="fill:none" class="edge-pattern-solid relation" id="id_C_0012142696412443839931_C_0015596320250571206658_1" d="M65.281,83L65.281,84.167C65.281,85.333,65.281,87.667,65.281,93C65.281,98.333,65.281,106.667,65.281,110.833L65.281,115"/>
+        <path marker-start="url(#my-svg_classDiagram-extensionStart)" style="fill:none" class="edge-pattern-solid relation" id="id_C_0015596320250571206658_C_0001635220505473283595_2" d="M65.281,190L65.281,191.167C65.281,192.333,65.281,194.667,65.281,200C65.281,205.333,65.281,213.667,65.281,217.833L65.281,222"/>
+        <path marker-start="url(#my-svg_classDiagram-extensionStart)" style="fill:none" class="edge-pattern-solid relation" id="id_C_0016760820400747278589_C_0015689724057597125831_3" d="M229.844,83L229.844,84.167C229.844,85.333,229.844,87.667,229.844,93C229.844,98.333,229.844,106.667,229.844,110.833L229.844,115"/>
+        <path marker-start="url(#my-svg_classDiagram-extensionStart)" style="fill:none" class="edge-pattern-solid relation" id="id_C_0015689724057597125831_C_0000600480210374819483_4" d="M229.844,190L229.844,191.167C229.844,192.333,229.844,194.667,229.844,200C229.844,205.333,229.844,213.667,229.844,217.833L229.844,222"/>
+        <path marker-start="url(#my-svg_classDiagram-extensionStart)" style="fill:none" class="edge-pattern-solid relation" id="id_C_0003338977750360426719_C_0016268840963729643490_5" d="M394.406,83L394.406,84.167C394.406,85.333,394.406,87.667,394.406,93C394.406,98.333,394.406,106.667,394.406,110.833L394.406,115"/>
+        <path marker-start="url(#my-svg_classDiagram-extensionStart)" style="fill:none" class="edge-pattern-solid relation" id="id_C_0016268840963729643490_C_0006275205058551246711_6" d="M394.406,190L394.406,191.167C394.406,192.333,394.406,194.667,394.406,200C394.406,205.333,394.406,213.667,394.406,217.833L394.406,222"/>
       </g>
       <g class="edgeLabels">
         <g transform="translate(undefined, NaN)" class="edgeLabel">
@@ -117,9 +118,37 @@
             </foreignObject>
           </g>
         </g>
+        <g transform="translate(undefined, NaN)" class="edgeLabel">
+          <g transform="translate(0, 0)" class="label">
+            <foreignObject height="0" width="0">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="edgeLabel">
+                  <span class="edgeLabel"/>
+                </span>
+              </div>
+            </foreignObject>
+          </g>
+        </g>
       </g>
       <g class="nodes">
-        <g transform="translate(65.28125, 36.5)" id="classId-C_0015596320250571206658-0" class="node default">
+        <g transform="translate(65.28125, 36.5)" id="classId-C_0012142696412443839931-0" class="node default">
+          <rect height="57" width="114.5625" y="-28.5" x="-57.28125" class="outer title-state" style=""/>
+          <line y2="1.5" y1="1.5" x2="57.28125" x1="-57.28125" class="divider"/>
+          <line y2="17.5" y1="17.5" x2="57.28125" x1="-57.28125" class="divider"/>
+          <g class="label">
+            <foreignObject height="0" width="0">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel"/>
+              </div>
+            </foreignObject>
+            <foreignObject transform="translate( -49.78125, -21)" height="18" width="99.5625" class="classTitle">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">ns1::nsA::A1</span>
+              </div>
+            </foreignObject>
+          </g>
+        </g>
+        <g transform="translate(65.28125, 143.5)" id="classId-C_0015596320250571206658-1" class="node default">
           <rect height="57" width="114.5625" y="-28.5" x="-57.28125" class="outer title-state" style=""/>
           <line y2="1.5" y1="1.5" x2="57.28125" x1="-57.28125" class="divider"/>
           <line y2="17.5" y1="17.5" x2="57.28125" x1="-57.28125" class="divider"/>
@@ -136,7 +165,7 @@
             </foreignObject>
           </g>
         </g>
-        <g transform="translate(65.28125, 143.5)" id="classId-C_0001635220505473283595-1" class="node default">
+        <g transform="translate(65.28125, 250.5)" id="classId-C_0001635220505473283595-2" class="node default">
           <rect height="57" width="114.5625" y="-28.5" x="-57.28125" class="outer title-state" style=""/>
           <line y2="1.5" y1="1.5" x2="57.28125" x1="-57.28125" class="divider"/>
           <line y2="17.5" y1="17.5" x2="57.28125" x1="-57.28125" class="divider"/>
@@ -153,7 +182,7 @@
             </foreignObject>
           </g>
         </g>
-        <g transform="translate(229.84375, 36.5)" id="classId-C_0016760820400747278589-2" class="node default">
+        <g transform="translate(229.84375, 36.5)" id="classId-C_0016760820400747278589-3" class="node default">
           <rect height="57" width="114.5625" y="-28.5" x="-57.28125" class="outer title-state" style=""/>
           <line y2="1.5" y1="1.5" x2="57.28125" x1="-57.28125" class="divider"/>
           <line y2="17.5" y1="17.5" x2="57.28125" x1="-57.28125" class="divider"/>
@@ -170,7 +199,7 @@
             </foreignObject>
           </g>
         </g>
-        <g transform="translate(229.84375, 143.5)" id="classId-C_0015689724057597125831-3" class="node default">
+        <g transform="translate(229.84375, 143.5)" id="classId-C_0015689724057597125831-4" class="node default">
           <rect height="57" width="114.5625" y="-28.5" x="-57.28125" class="outer title-state" style=""/>
           <line y2="1.5" y1="1.5" x2="57.28125" x1="-57.28125" class="divider"/>
           <line y2="17.5" y1="17.5" x2="57.28125" x1="-57.28125" class="divider"/>
@@ -187,7 +216,7 @@
             </foreignObject>
           </g>
         </g>
-        <g transform="translate(229.84375, 250.5)" id="classId-C_0000600480210374819483-4" class="node default">
+        <g transform="translate(229.84375, 250.5)" id="classId-C_0000600480210374819483-5" class="node default">
           <rect height="57" width="114.5625" y="-28.5" x="-57.28125" class="outer title-state" style=""/>
           <line y2="1.5" y1="1.5" x2="57.28125" x1="-57.28125" class="divider"/>
           <line y2="17.5" y1="17.5" x2="57.28125" x1="-57.28125" class="divider"/>
@@ -204,7 +233,7 @@
             </foreignObject>
           </g>
         </g>
-        <g transform="translate(394.40625, 36.5)" id="classId-C_0003338977750360426719-5" class="node default">
+        <g transform="translate(394.40625, 36.5)" id="classId-C_0003338977750360426719-6" class="node default">
           <rect height="57" width="114.5625" y="-28.5" x="-57.28125" class="outer title-state" style=""/>
           <line y2="1.5" y1="1.5" x2="57.28125" x1="-57.28125" class="divider"/>
           <line y2="17.5" y1="17.5" x2="57.28125" x1="-57.28125" class="divider"/>
@@ -221,7 +250,7 @@
             </foreignObject>
           </g>
         </g>
-        <g transform="translate(394.40625, 143.5)" id="classId-C_0016268840963729643490-6" class="node default">
+        <g transform="translate(394.40625, 143.5)" id="classId-C_0016268840963729643490-7" class="node default">
           <rect height="57" width="114.5625" y="-28.5" x="-57.28125" class="outer title-state" style=""/>
           <line y2="1.5" y1="1.5" x2="57.28125" x1="-57.28125" class="divider"/>
           <line y2="17.5" y1="17.5" x2="57.28125" x1="-57.28125" class="divider"/>
@@ -238,7 +267,7 @@
             </foreignObject>
           </g>
         </g>
-        <g transform="translate(394.40625, 250.5)" id="classId-C_0006275205058551246711-7" class="node default">
+        <g transform="translate(394.40625, 250.5)" id="classId-C_0006275205058551246711-8" class="node default">
           <rect height="57" width="114.5625" y="-28.5" x="-57.28125" class="outer title-state" style=""/>
           <line y2="1.5" y1="1.5" x2="57.28125" x1="-57.28125" class="divider"/>
           <line y2="17.5" y1="17.5" x2="57.28125" x1="-57.28125" class="divider"/>

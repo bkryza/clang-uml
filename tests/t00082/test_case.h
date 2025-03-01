@@ -25,7 +25,7 @@ TEST_CASE("t00082")
         CHECK_CLASS_MODEL("t00082", "t00082_class");
 
     CHECK_CLASS_DIAGRAM(*config, diagram, *model, [](const auto &src) {
-        REQUIRE(!IsClass(src, {"ns1::nsA", "A1"}));
+        REQUIRE(IsClass(src, {"ns1::nsA", "A1"}));
         REQUIRE(IsClass(src, {"ns1::nsA", "B1"}));
         REQUIRE(IsClass(src, {"ns1::nsA", "C1"}));
         REQUIRE(!IsClass(src, {"ns1::nsA", "D1"}));
