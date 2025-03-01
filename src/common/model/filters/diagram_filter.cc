@@ -991,8 +991,9 @@ void context_filter::initialize_effective_context_class_diagram(
             .find<class_diagram::model::class_>(context_cfg.pattern);
 
     for (const auto &maybe_match : context_matches) {
-        if (maybe_match)
+        if (maybe_match) {
             effective_context.emplace(maybe_match.value().id());
+        }
     }
 
     const auto &context_enum_matches =
@@ -1028,18 +1029,6 @@ void context_filter::initialize_effective_context_class_diagram(
         // For each class in the model
         find_elements_in_direct_relationship<class_diagram::model::diagram>(
             d, context_cfg, effective_context, current_iteration_context);
-        //
-        //        // For each concept in the model
-        //        find_elements_in_direct_relationship<class_diagram::model::concept_,
-        //            class_diagram::model::diagram>(
-        //            d, context_cfg, effective_context,
-        //            current_iteration_context);
-        //
-        //        // For each enum in the model
-        //        find_elements_in_direct_relationship<class_diagram::model::enum_,
-        //            class_diagram::model::diagram>(
-        //            d, context_cfg, effective_context,
-        //            current_iteration_context);
 
         for (auto id : current_iteration_context) {
             if (effective_context.count(id) == 0) {

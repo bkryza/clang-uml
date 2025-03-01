@@ -18,4 +18,4 @@ exclude:
 using_namespace:
   - clanguml
 from:
-  - function: "clanguml::common::visitor::template_builder<VisitorT>::build(common::model::template_element &,const clang::NamedDecl *,const clang::TemplateDecl *,const clang::ArrayRef<clang::TemplateArgument>,std::string,std::optional<common::model::template_element *>)"
+  - function: "clanguml::common::visitor::template_builder<VisitorT>::build(const clang::NamedDecl &,common::model::template_element &,const clang::NamedDecl *,const clang::TemplateDecl *,const clang::ArrayRef<clang::TemplateArgument>,std::string,std::optional<common::model::template_element *>)"

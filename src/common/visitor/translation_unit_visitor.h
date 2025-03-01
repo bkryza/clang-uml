@@ -121,8 +121,6 @@ public:
     void set_source_location(const clang::Decl &decl,
         clanguml::common::model::source_location &element)
     {
-        LOG_DBG("SETTING SOURCE LOCATION TO {}",
-            decl.getLocation().printToString(source_manager()));
         set_source_location(decl.getLocation(), element);
     }
 

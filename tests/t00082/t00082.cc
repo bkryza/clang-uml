@@ -4,7 +4,7 @@ namespace nsA {
 struct A1 { };
 struct B1 : public A1 { };
 struct C1 : public B1 { };
-struct D1 { };
+struct D1 : public C1 { };
 }
 }
 namespace ns2 {

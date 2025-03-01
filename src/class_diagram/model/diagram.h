@@ -222,10 +222,10 @@ public:
             parent_path.to_string());
 
         auto e = nested_trait_ns::get_and_remove<ElementT>(id);
-        if (!e)
-            return;
+        assert(e);
 
         element_view<ElementT>::remove({id});
+        added_elements_.erase(id);
 
         this->add<ElementT>(parent_path, std::move(e));
     }
@@ -279,6 +279,8 @@ public:
     void apply_filter() override;
 
 private:
+    std::set<eid_t> added_elements_;
+
     template <typename ElementT>
     bool add_with_namespace_path(std::unique_ptr<ElementT> &&e);
 
@@ -302,6 +304,11 @@ template <typename ElementT> bool diagram::contains(const ElementT &element)
 template <typename ElementT>
 bool diagram::add_with_namespace_path(std::unique_ptr<ElementT> &&e)
 {
+    if (added_elements_.count(e->id()) > 0)
+        return true;
+
+    added_elements_.emplace(e->id());
+
     const auto base_name = e->name();
     const auto full_name = e->full_name(false);
     const auto element_type = e->type_name();
@@ -355,6 +362,11 @@ template <typename ElementT>
 bool diagram::add_with_module_path(
     const common::model::path &parent_path, std::unique_ptr<ElementT> &&e)
 {
+    if (added_elements_.count(e->id()) > 0)
+        return true;
+
+    added_elements_.emplace(e->id());
+
     const auto element_type = e->type_name();
 
     // Make sure all parent modules are already packages in the
@@ -388,11 +400,11 @@ template <typename ElementT>
 bool diagram::add_with_filesystem_path(
     const common::model::path &parent_path, std::unique_ptr<ElementT> &&e)
 {
+    if (added_elements_.count(e->id()) > 0)
+        return false;
+
     LOG_DBG("Adding element {} at path {}", e->full_name(false),
         parent_path.to_string());
-
-    if(e->full_name(false) == "clanguml::t00014::A<char,std::string>")
-        LOG_DBG("AAAAA");
 
     const auto element_type = e->type_name();
 
@@ -418,6 +430,7 @@ bool diagram::add_with_filesystem_path(
     auto &e_ref = *e;
 
     if (add_element(parent_path, std::move(e))) {
+        added_elements_.emplace(e_ref.id());
         element_view<ElementT>::add(std::ref(e_ref));
         return true;
     }

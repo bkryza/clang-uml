@@ -401,7 +401,11 @@ struct edge_traversal_filter : public filter_visitor {
 
     ~edge_traversal_filter() override = default;
 
-    void reset() override { initialized_ = false, matching_elements_.clear(); };
+    void reset() override
+    {
+        initialized_ = false;
+        matching_elements_.clear();
+    };
 
     tvl::value_t match(const diagram &d, const MatchOverrideT &e) const override
     {
@@ -626,7 +630,8 @@ private:
     {
         if (d.type() == diagram_t::kClass) {
             for (const auto &p : nt) {
-                if (auto *pkg = dynamic_cast<package *>(p.get()); pkg) {
+                if (auto *pkg = dynamic_cast<package *>(p.get());
+                    pkg != nullptr) {
                     process_elements(d, *pkg, context_cfg, effective_context,
                         current_iteration_context);
                 }
@@ -779,14 +784,6 @@ private:
 
         process_elements(
             cd, cd, context_cfg, effective_context, current_iteration_context);
-
-        //        for (const auto &el : cd.template elements<ElementT>()) {
-        //            // First search all elements of type ElementT in the
-        //            diagram
-        //            // which have a relationship to any of the
-        //            effective_context
-        //            // elements
-        //        }
     }
 
     bool should_include(
