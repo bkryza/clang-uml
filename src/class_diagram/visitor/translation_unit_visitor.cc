@@ -1740,22 +1740,32 @@ bool translation_unit_visitor::find_relationships(const clang::Decl *decl,
     }
     // TODO: Objc support
     else if (type->isRecordType()) {
-        const auto *type_instantiation_decl =
+        const auto *type_instantiation_type =
             type->getAs<clang::TemplateSpecializationType>();
 
-        if (type_instantiation_decl != nullptr) {
+        if (type_instantiation_type != nullptr) {
+            const auto *type_instantiation_template_decl =
+                type_instantiation_type->getTemplateName().getAsTemplateDecl();
+
             // If this template should be included in the diagram
             // add it - and then process recursively its arguments
-            if (should_include(type_instantiation_decl->getTemplateName()
-                                   .getAsTemplateDecl())) {
+            if (should_include(type_instantiation_template_decl)) {
                 relationships.emplace_back(
-                    type_instantiation_decl->getTemplateName()
+                    type_instantiation_type->getTemplateName()
                         .getAsTemplateDecl()
                         ->getID(),
                     relationship_hint, decl);
             }
+
+            auto idx{0U};
             for (const auto &template_argument :
-                type_instantiation_decl->template_arguments()) {
+                type_instantiation_type->template_arguments()) {
+
+                auto [overridden_relationship_hint, overridden] =
+                    override_relationship_hint(type_instantiation_template_decl
+                                                   ->getQualifiedNameAsString(),
+                        idx, relationship_hint);
+
                 const auto template_argument_kind = template_argument.getKind();
                 if (template_argument_kind ==
                     clang::TemplateArgument::ArgKind::Integral) {
@@ -1795,8 +1805,9 @@ bool translation_unit_visitor::find_relationships(const clang::Decl *decl,
                     clang::TemplateArgument::ArgKind::Type) {
                     result =
                         find_relationships(decl, template_argument.getAsType(),
-                            relationships, relationship_hint);
+                            relationships, overridden_relationship_hint);
                 }
+                idx++;
             }
         }
         else if (type->getAsCXXRecordDecl() != nullptr) {
@@ -1813,6 +1824,8 @@ bool translation_unit_visitor::find_relationships(const clang::Decl *decl,
     else if (const auto *template_specialization_type =
                  type->getAs<clang::TemplateSpecializationType>();
              template_specialization_type != nullptr) {
+        const auto *type_instantiation_template_decl =
+            template_specialization_type->getTemplateName().getAsTemplateDecl();
         if (should_include(template_specialization_type->getTemplateName()
                                .getAsTemplateDecl())) {
             relationships.emplace_back(
@@ -1821,8 +1834,15 @@ bool translation_unit_visitor::find_relationships(const clang::Decl *decl,
                     ->getID(),
                 relationship_hint, decl);
         }
+        auto idx{0U};
         for (const auto &template_argument :
             template_specialization_type->template_arguments()) {
+
+            auto [overridden_relationship_hint, overridden] =
+                override_relationship_hint(type_instantiation_template_decl
+                                               ->getQualifiedNameAsString(),
+                    idx, relationship_hint);
+
             const auto template_argument_kind = template_argument.getKind();
             if (template_argument_kind ==
                 clang::TemplateArgument::ArgKind::Integral) {
@@ -1860,8 +1880,9 @@ bool translation_unit_visitor::find_relationships(const clang::Decl *decl,
             else if (template_argument_kind ==
                 clang::TemplateArgument::ArgKind::Type) {
                 result = find_relationships(decl, template_argument.getAsType(),
-                    relationships, relationship_hint);
+                    relationships, overridden_relationship_hint);
             }
+            idx++;
         }
     }
 
@@ -2041,6 +2062,27 @@ void translation_unit_visitor::add_relationships(
     }
 }
 
+std::pair<relationship_t, bool>
+translation_unit_visitor::override_relationship_hint(
+    const std::string &type_name, int index, relationship_t hint)
+{
+    bool overridden{false};
+
+    for (const auto &[pattern, rel_hint] : config().relationship_hints()) {
+        if (type_name.find(pattern) == 0) {
+            if (index == -1)
+                hint = rel_hint.default_hint;
+            else
+                hint = rel_hint.get(index, hint);
+
+            overridden = true;
+            break;
+        }
+    }
+
+    return {hint, overridden};
+}
+
 void translation_unit_visitor::process_static_field(
     const clang::VarDecl &field_declaration, class_ &c)
 {
@@ -2197,10 +2239,10 @@ void translation_unit_visitor::process_field(
         field_type = field_type.getNonReferenceType();
     }
 
-    if (type_name.find("std::shared_ptr") == 0)
-        relationship_hint = relationship_t::kAssociation;
-    if (type_name.find("std::weak_ptr") == 0)
-        relationship_hint = relationship_t::kAssociation;
+    auto [overridden_relationship_hint, overridden] =
+        override_relationship_hint(type_name, -1, relationship_hint);
+    if (overridden)
+        relationship_hint = overridden_relationship_hint;
 
     found_relationships_t relationships;
 
@@ -2268,20 +2310,29 @@ void translation_unit_visitor::process_field(
             // Try to find relationships to types nested in the template
             // instantiation
             found_relationships_t nested_relationships;
+            auto idx{0U};
             if (!template_instantiation_added_as_aggregation) {
                 for (const auto &template_argument :
                     template_specialization.template_params()) {
 
+                    auto template_argument_str = template_argument.to_string(
+                        config().using_namespace(), false);
+
                     LOG_DBG("Looking for nested relationships from {}::{} in "
                             "template argument {}",
-                        c, field_name,
-                        template_argument.to_string(
-                            config().using_namespace(), false));
+                        c, field_name, template_argument_str);
+
+                    auto [overridden_relationship_hint_param,
+                        overridden_param] =
+                        override_relationship_hint(
+                            template_specialization.full_name(false), idx,
+                            relationship_hint);
 
                     template_instantiation_added_as_aggregation =
                         template_argument.find_nested_relationships(
                             &field_declaration, nested_relationships,
-                            relationship_hint,
+                            overridden_relationship_hint_param,
+                            !overridden_param,
                             [&d = diagram()](const std::string &full_name) {
                                 if (full_name.empty())
                                     return false;
@@ -2294,6 +2345,8 @@ void translation_unit_visitor::process_field(
                 // unless the top level type has been added as aggregation
                 add_relationships(c, field, nested_relationships,
                     /* break on first aggregation */ false);
+
+                idx++;
             }
 
             // Add the template instantiation object to the diagram if it
@@ -2357,7 +2410,8 @@ void translation_unit_visitor::find_record_parent_id(const clang::TagDecl *decl,
             // regular class
             parent_id_opt = id_mapper().get_global_id(local_id);
 
-            // If not, check if the parent template declaration is in the model
+            // If not, check if the parent template declaration is in the
+            // model
             if (!parent_id_opt) {
                 if (parent_record_decl->getDescribedTemplate() != nullptr) {
                     local_id =
@@ -2414,9 +2468,9 @@ void translation_unit_visitor::resolve_local_to_global_ids()
                     const auto maybe_id =
                         id_mapper().get_global_id(rel.destination());
                     if (maybe_id) {
-                        LOG_TRACE(
-                            "= Resolved instantiation destination from local "
-                            "id {} to global id {}",
+                        LOG_TRACE("= Resolved instantiation destination "
+                                  "from local "
+                                  "id {} to global id {}",
                             rel.destination(), *maybe_id);
                         rel.set_destination(*maybe_id);
                     }

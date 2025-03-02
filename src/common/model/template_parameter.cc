@@ -492,7 +492,7 @@ std::string template_parameter::to_string(
 bool template_parameter::find_nested_relationships(const clang::Decl *decl,
     std::vector<std::tuple<eid_t, common::model::relationship_t,
         const clang::Decl *>> &nested_relationships,
-    common::model::relationship_t hint,
+    common::model::relationship_t hint, bool allow_hint_override,
     const std::function<bool(const std::string &full_name)> &should_include)
     const
 {
@@ -502,11 +502,11 @@ bool template_parameter::find_nested_relationships(const clang::Decl *decl,
     // just add it and skip recursion (e.g. this is a user defined type)
     const auto maybe_type = type();
 
-    if (is_function_template())
+    if (allow_hint_override && is_function_template())
         hint = common::model::relationship_t::kDependency;
 
     if (maybe_type && should_include(maybe_type.value())) {
-        if (is_association())
+        if (allow_hint_override && is_association())
             hint = common::model::relationship_t::kAssociation;
 
         const auto maybe_id = id();
@@ -525,8 +525,7 @@ bool template_parameter::find_nested_relationships(const clang::Decl *decl,
             const auto maybe_arg_type = template_argument.type();
 
             if (maybe_id && maybe_arg_type && should_include(*maybe_arg_type)) {
-
-                if (template_argument.is_association() &&
+                if (allow_hint_override && template_argument.is_association() &&
                     hint == common::model::relationship_t::kAggregation)
                     hint = common::model::relationship_t::kAssociation;
 
@@ -536,12 +535,14 @@ bool template_parameter::find_nested_relationships(const clang::Decl *decl,
                     (hint == common::model::relationship_t::kAggregation);
             }
             else {
-                if (template_argument.is_function_template())
+                if (allow_hint_override &&
+                    template_argument.is_function_template())
                     hint = common::model::relationship_t::kDependency;
 
                 added_aggregation_relationship =
-                    template_argument.find_nested_relationships(
-                        decl, nested_relationships, hint, should_include);
+                    template_argument.find_nested_relationships(decl,
+                        nested_relationships, hint, allow_hint_override,
+                        should_include);
             }
         }
     }

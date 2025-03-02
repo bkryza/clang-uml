@@ -488,6 +488,16 @@ private:
         bool break_on_first_aggregation = false);
 
     /**
+     * @brief Try to override relationship hint using configuration file
+     *
+     * @param type_name
+     * @param hint
+     * @return Maybe overridden relationship type hint
+     */
+    std::pair<relationship_t, bool> override_relationship_hint(
+        const std::string &type_name, int index, relationship_t hint);
+
+    /**
      * @brief Process record parent element (e.g. for nested classes)
      *
      * This method handles nested classes or structs.
