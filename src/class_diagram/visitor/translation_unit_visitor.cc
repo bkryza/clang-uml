@@ -1757,7 +1757,7 @@ bool translation_unit_visitor::find_relationships(const clang::Decl *decl,
                     relationship_hint, decl);
             }
 
-            auto idx{0U};
+            auto idx{0};
             for (const auto &template_argument :
                 type_instantiation_type->template_arguments()) {
 
@@ -1834,7 +1834,7 @@ bool translation_unit_visitor::find_relationships(const clang::Decl *decl,
                     ->getID(),
                 relationship_hint, decl);
         }
-        auto idx{0U};
+        auto idx{0};
         for (const auto &template_argument :
             template_specialization_type->template_arguments()) {
 
@@ -2310,7 +2310,7 @@ void translation_unit_visitor::process_field(
             // Try to find relationships to types nested in the template
             // instantiation
             found_relationships_t nested_relationships;
-            auto idx{0U};
+            auto idx{0};
             if (!template_instantiation_added_as_aggregation) {
                 for (const auto &template_argument :
                     template_specialization.template_params()) {
