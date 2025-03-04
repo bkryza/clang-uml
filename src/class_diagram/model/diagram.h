@@ -417,7 +417,7 @@ bool diagram::add_with_filesystem_path(
         auto package_path =
             common::model::path(parent_path.begin(), it, parent_path.type());
         pkg->set_namespace(package_path);
-        pkg->set_id(common::to_id(pkg->full_name(false)));
+        pkg->set_id(common::to_id("__directory__" + pkg->full_name(false)));
 
         LOG_DBG("Adding filesystem package {} at path {}", pkg->name(),
             package_path.to_string());

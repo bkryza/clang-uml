@@ -550,12 +550,13 @@ struct relationship_hint_t {
     {
     }
 
-    common::model::relationship_t get(unsigned int argument_index) const
+    common::model::relationship_t get(unsigned int argument_index,
+        std::optional<common::model::relationship_t> def = {}) const
     {
         if (argument_hints.count(argument_index) > 0)
             return argument_hints.at(argument_index);
 
-        return default_hint;
+        return def.has_value() ? *def : default_hint;
     }
 };
 

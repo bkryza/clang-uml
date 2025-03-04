@@ -270,6 +270,9 @@ test_cases:
     - name: t00091
       title: Declaration forwarding test case
       description:
+    - name: t00092
+      title: Test case for relationship_hints config option
+      description:
   Sequence diagrams:
     - name: t20001
       title: Basic sequence diagram test case

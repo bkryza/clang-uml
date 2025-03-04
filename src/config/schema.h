@@ -418,6 +418,7 @@ root:
     type_aliases: !optional map_t<string;string>
     filter_mode: !optional filter_mode_t
     include_system_headers: !optional bool
+    relationship_hints: !optional map_t<string;any>
 )";
 
 } // namespace clanguml::config

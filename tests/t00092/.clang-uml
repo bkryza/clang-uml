@@ -1,0 +1,21 @@
+diagrams:
+  t00092_class:
+    type: class
+    glob:
+      - t00092.cc
+    include:
+      namespaces:
+        - clanguml::t00092
+    exclude:
+      elements:
+        - r: "clanguml::t00092::OwningPtr.*"
+        - r: "clanguml::t00092::WeakPtr.*"
+        - r: "clanguml::t00092::Map.*"
+    relationship_hints:
+      clanguml::t00092::OwningPtr: aggregation
+      clanguml::t00092::WeakPtr: association
+      clanguml::t00092::Map:
+        default: association
+        0: dependency
+        1: aggregation
+    using_namespace: clanguml::t00092

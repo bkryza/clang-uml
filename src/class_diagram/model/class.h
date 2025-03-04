@@ -161,7 +161,6 @@ private:
     bool is_union_{false};
     std::vector<class_member> members_;
     std::vector<class_method> methods_;
-    std::string full_name_;
 };
 
 } // namespace clanguml::class_diagram::model
