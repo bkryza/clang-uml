@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" data-diagram-type="CLASS" height="284px" preserveAspectRatio="none" style="width:358px;height:284px;background:#FFFFFF;" version="1.1" viewBox="0 0 358 284" width="358px" zoomAndPan="magnify">
+  <defs>
+    <style type="text/css">a:hover { text-decoration: underline; }</style>
+  </defs>
+  <g>
+    <g id="elem_C_0003653897770067065487">
+      <rect codeLine="2" fill="#F1F1F1" height="86.1358" id="C_0003653897770067065487" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="115.5716" x="7" y="191"/>
+      <ellipse cx="41.8791" cy="207" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
+      <path d="M44.8479,212.6406 Q44.2697,212.9375 43.6291,213.0781 Q42.9885,213.2344 42.2854,213.2344 Q39.7854,213.2344 38.4572,211.5938 Q37.1447,209.9375 37.1447,206.8125 Q37.1447,203.6875 38.4572,202.0313 Q39.7854,200.375 42.2854,200.375 Q42.9885,200.375 43.6291,200.5313 Q44.2854,200.6875 44.8479,200.9844 L44.8479,203.7031 Q44.2229,203.125 43.6291,202.8594 Q43.0354,202.5781 42.4104,202.5781 Q41.0666,202.5781 40.3791,203.6563 Q39.6916,204.7188 39.6916,206.8125 Q39.6916,208.9063 40.3791,209.9844 Q41.0666,211.0469 42.4104,211.0469 Q43.0354,211.0469 43.6291,210.7813 Q44.2229,210.5 44.8479,209.9219 L44.8479,212.6406 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="39.3959" x="60.2967" y="212.432">String</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="8" x2="121.5716" y1="223" y2="223"/>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="8" x2="121.5716" y1="231" y2="231"/>
+      <ellipse cx="18" cy="246.034" fill="transparent" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="80.7657" x="27" y="249.9659">data : char *</text>
+      <ellipse cx="18" cy="265.1019" fill="transparent" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="89.5716" x="27" y="269.0339">length : size_t</text>
+    </g>
+    <g id="elem_C_0000611725202458589658">
+      <rect codeLine="8" fill="#F1F1F1" height="48" id="C_0000611725202458589658" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="40.946" x="158.5" y="210"/>
+      <ellipse cx="173.5" cy="226" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
+      <path d="M176.4688,231.6406 Q175.8906,231.9375 175.25,232.0781 Q174.6094,232.2344 173.9063,232.2344 Q171.4063,232.2344 170.0781,230.5938 Q168.7656,228.9375 168.7656,225.8125 Q168.7656,222.6875 170.0781,221.0313 Q171.4063,219.375 173.9063,219.375 Q174.6094,219.375 175.25,219.5313 Q175.9063,219.6875 176.4688,219.9844 L176.4688,222.7031 Q175.8438,222.125 175.25,221.8594 Q174.6563,221.5781 174.0313,221.5781 Q172.6875,221.5781 172,222.6563 Q171.3125,223.7188 171.3125,225.8125 Q171.3125,227.9063 172,228.9844 Q172.6875,230.0469 174.0313,230.0469 Q174.6563,230.0469 175.25,229.7813 Q175.8438,229.5 176.4688,228.9219 L176.4688,231.6406 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="8.946" x="187.5" y="231.432">A</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="159.5" x2="198.446" y1="242" y2="242"/>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="159.5" x2="198.446" y1="250" y2="250"/>
+    </g>
+    <g id="elem_C_0003521217614773889206">
+      <rect codeLine="12" fill="#F1F1F1" height="48" id="C_0003521217614773889206" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="41.1" x="234.5" y="210"/>
+      <ellipse cx="249.5" cy="226" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
+      <path d="M252.4688,231.6406 Q251.8906,231.9375 251.25,232.0781 Q250.6094,232.2344 249.9063,232.2344 Q247.4063,232.2344 246.0781,230.5938 Q244.7656,228.9375 244.7656,225.8125 Q244.7656,222.6875 246.0781,221.0313 Q247.4063,219.375 249.9063,219.375 Q250.6094,219.375 251.25,219.5313 Q251.9063,219.6875 252.4688,219.9844 L252.4688,222.7031 Q251.8438,222.125 251.25,221.8594 Q250.6563,221.5781 250.0313,221.5781 Q248.6875,221.5781 248,222.6563 Q247.3125,223.7188 247.3125,225.8125 Q247.3125,227.9063 248,228.9844 Q248.6875,230.0469 250.0313,230.0469 Q250.6563,230.0469 251.25,229.7813 Q251.8438,229.5 252.4688,228.9219 L252.4688,231.6406 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="9.1" x="263.5" y="231.432">B</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="235.5" x2="274.6" y1="242" y2="242"/>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="235.5" x2="274.6" y1="250" y2="250"/>
+    </g>
+    <g id="elem_C_0002783987908064225198">
+      <rect codeLine="16" fill="#F1F1F1" height="48" id="C_0002783987908064225198" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="40.848" x="310.5" y="210"/>
+      <ellipse cx="325.5" cy="226" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
+      <path d="M328.4688,231.6406 Q327.8906,231.9375 327.25,232.0781 Q326.6094,232.2344 325.9063,232.2344 Q323.4063,232.2344 322.0781,230.5938 Q320.7656,228.9375 320.7656,225.8125 Q320.7656,222.6875 322.0781,221.0313 Q323.4063,219.375 325.9063,219.375 Q326.6094,219.375 327.25,219.5313 Q327.9063,219.6875 328.4688,219.9844 L328.4688,222.7031 Q327.8438,222.125 327.25,221.8594 Q326.6563,221.5781 326.0313,221.5781 Q324.6875,221.5781 324,222.6563 Q323.3125,223.7188 323.3125,225.8125 Q323.3125,227.9063 324,228.9844 Q324.6875,230.0469 326.0313,230.0469 Q326.6563,230.0469 327.25,229.7813 Q327.8438,229.5 328.4688,228.9219 L328.4688,231.6406 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="8.848" x="339.5" y="231.432">C</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="311.5" x2="350.348" y1="242" y2="242"/>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="311.5" x2="350.348" y1="250" y2="250"/>
+    </g>
+    <g id="elem_C_0003366051692360576668">
+      <rect codeLine="20" fill="#F1F1F1" height="105.2038" id="C_0003366051692360576668" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="147.2955" x="143.5" y="7"/>
+      <ellipse cx="208.5438" cy="23" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
+      <path d="M211.5125,28.6406 Q210.9344,28.9375 210.2938,29.0781 Q209.6532,29.2344 208.95,29.2344 Q206.45,29.2344 205.1219,27.5938 Q203.8094,25.9375 203.8094,22.8125 Q203.8094,19.6875 205.1219,18.0313 Q206.45,16.375 208.95,16.375 Q209.6532,16.375 210.2938,16.5313 Q210.95,16.6875 211.5125,16.9844 L211.5125,19.7031 Q210.8875,19.125 210.2938,18.8594 Q209.7,18.5781 209.075,18.5781 Q207.7313,18.5781 207.0438,19.6563 Q206.3563,20.7188 206.3563,22.8125 Q206.3563,24.9063 207.0438,25.9844 Q207.7313,27.0469 209.075,27.0469 Q209.7,27.0469 210.2938,26.7813 Q210.8875,26.5 211.5125,25.9219 L211.5125,28.6406 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="8.708" x="229.0438" y="28.432">R</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="144.5" x2="289.7955" y1="39" y2="39"/>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="144.5" x2="289.7955" y1="47" y2="47"/>
+      <ellipse cx="154.5" cy="62.034" fill="transparent" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="114.6176" x="163.5" y="65.9659">a : OwningPtr&lt;A&gt;</text>
+      <ellipse cx="154.5" cy="81.1019" fill="transparent" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="100.3096" x="163.5" y="85.0339">b : WeakPtr&lt;B&gt;</text>
+      <ellipse cx="154.5" cy="100.1698" fill="transparent" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="121.2955" x="163.5" y="104.1018">m : Map&lt;String,C&gt;</text>
+    </g>
+    <g id="link_C_0003366051692360576668_C_0000611725202458589658">
+      <path codeLine="26" d="M200.1991,123.7441 C197.6991,133.6341 198.15,132.3 196,142 C190.92,164.91 186.1,191.28 182.9,209.72 " fill="transparent" id="C_0003366051692360576668-backto-C_0000611725202458589658" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="transparent" points="203.14,112.11,197.7915,116.9467,200.1991,123.7441,205.5476,118.9073,203.14,112.11" style="stroke:#181818;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="14.729" x="197" y="156.897">+a</text>
+    </g>
+    <g id="link_C_0003366051692360576668_C_0003521217614773889206">
+      <path codeLine="27" d="M228.4,112.26 C235.53,144.61 243.0689,178.8506 248.5489,203.7206 " fill="transparent" id="C_0003366051692360576668-to-C_0003521217614773889206" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="#181818" points="249.84,209.58,251.8096,199.9301,248.7641,204.6971,243.9971,201.6516,249.84,209.58" style="stroke:#181818;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="15.431" x="240" y="156.897">+b</text>
+    </g>
+    <g id="link_C_0003366051692360576668_C_0003653897770067065487">
+      <path codeLine="28" d="M171.39,112.26 C149.27,137.36 126.9963,162.638 106.1163,186.338 " fill="transparent" id="C_0003366051692360576668-to-C_0003653897770067065487" style="stroke:#181818;stroke-width:1;stroke-dasharray:7.0,7.0;"/>
+      <polygon fill="#181818" points="102.15,190.84,111.1009,186.7312,105.4553,187.0883,105.0982,181.4427,102.15,190.84" style="stroke:#181818;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="19.591" x="142" y="156.897">+m</text>
+    </g>
+    <g id="link_C_0003366051692360576668_C_0002783987908064225198">
+      <path codeLine="29" d="M257.8164,122.2712 C279.1964,154.6212 299.09,184.71 315.52,209.58 " fill="transparent" id="C_0003366051692360576668-backto-C_0002783987908064225198" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="transparent" points="251.2,112.26,251.1711,119.471,257.8164,122.2712,257.8452,115.0601,251.2,112.26" style="stroke:#181818;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="19.591" x="281" y="156.897">+m</text>
+    </g>
+  </g>
+</svg>
