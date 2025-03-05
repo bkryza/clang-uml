@@ -1,5 +1,10 @@
 # CHANGELOG
 
+### 0.6.1
+  * Fix handling of relationship_hints option (#394)
+  * Fixed handling of source location for template instantiation obtained from
+    types (#392)
+  * Fixed forward declarations in class diagrams with directory packages (#390)
   * Fixed handling of forward declarations in class diagrams (#388)
   * Added support for coroutines in sequence diagrams (#376)
   * Fixed supported for compile_flags.txt (#381)

@@ -37,24 +37,24 @@ sudo apt install clang-uml
 
 ```bash
 # Bookworm
-wget https://github.com/bkryza/clang-uml/releases/download/0.6.0/clang-uml_0.6.0-1_amd64.deb
-sudo apt install ./clang-uml_0.6.0-1_amd64.deb
+wget https://github.com/bkryza/clang-uml/releases/download/0.6.1/clang-uml_0.6.1-1_amd64.deb
+sudo apt install ./clang-uml_0.6.1-1_amd64.deb
 ```
 
 #### Fedora
 
 ```bash
 # Fedora 39
-wget https://github.com/bkryza/clang-uml/releases/download/0.6.0/clang-uml-0.6.0-1.fc39.x86_64.rpm
-sudo dnf install ./clang-uml-0.6.0-1.fc39.x86_64.rpm
+wget https://github.com/bkryza/clang-uml/releases/download/0.6.1/clang-uml-0.6.1-1.fc39.x86_64.rpm
+sudo dnf install ./clang-uml-0.6.1-1.fc39.x86_64.rpm
 
 # Fedora 40
-wget https://github.com/bkryza/clang-uml/releases/download/0.6.0/clang-uml-0.6.0-1.fc40.x86_64.rpm
-sudo dnf install ./clang-uml-0.6.0-1.fc40.x86_64.rpm
+wget https://github.com/bkryza/clang-uml/releases/download/0.6.1/clang-uml-0.6.1-1.fc40.x86_64.rpm
+sudo dnf install ./clang-uml-0.6.1-1.fc40.x86_64.rpm
 
 # Fedora 41
-wget https://github.com/bkryza/clang-uml/releases/download/0.6.0/clang-uml-0.6.0-1.fc41.x86_64.rpm
-sudo dnf install ./clang-uml-0.6.0-1.fc41.x86_64.rpm
+wget https://github.com/bkryza/clang-uml/releases/download/0.6.1/clang-uml-0.6.1-1.fc41.x86_64.rpm
+sudo dnf install ./clang-uml-0.6.1-1.fc41.x86_64.rpm
 ```
 
 #### Arch Linux
@@ -248,7 +248,7 @@ bin\clang-uml.exe --version
 ```
 It should produce something like:
 ```bash
-clang-uml 0.6.0
+clang-uml 0.6.1
 Copyright (C) 2021-2025 Bartek Kryza <bkryza@gmail.com>
 Linux x86_64 6.5.0-21-generic
 Built against LLVM/Clang libraries version: 18.1.8
