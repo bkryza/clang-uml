@@ -506,7 +506,7 @@ bool template_parameter::find_nested_relationships(const clang::Decl *decl,
         hint = common::model::relationship_t::kDependency;
 
     if (maybe_type && should_include(maybe_type.value())) {
-        if (allow_hint_override && is_association())
+        if (is_association())
             hint = common::model::relationship_t::kAssociation;
 
         const auto maybe_id = id();
