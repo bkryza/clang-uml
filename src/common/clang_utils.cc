@@ -1114,7 +1114,7 @@ void set_source_location(clang::SourceManager &source_manager,
         file_path = fs::absolute(file_path);
     }
 
-    file_path = file_path.lexically_normal();
+    file_path = weakly_canonical(file_path);
 
     file = file_path.string();
 

@@ -106,9 +106,9 @@ void to_json(inja::json &ctx, const diagram_context<source_location> &jc)
 #else
             if (file.is_absolute() && ctx.contains("git")) {
 #endif
-                git_relative_path =
-                    std::filesystem::relative(file, ctx["git"]["toplevel"])
-                        .string();
+                git_relative_path = std::filesystem::relative(
+                    weakly_canonical(file), ctx["git"]["toplevel"])
+                                        .string();
                 ctx["source"]["path"] = util::path_to_url(git_relative_path);
             }
             else {
@@ -139,9 +139,10 @@ void to_json(inja::json &ctx, const element_context<source_location> &jc)
 #else
             if (file.is_absolute() && ctx.contains("git")) {
 #endif
-                git_relative_path =
-                    std::filesystem::relative(file, ctx["git"]["toplevel"])
-                        .string();
+                git_relative_path = std::filesystem::relative(
+                    weakly_canonical(file), ctx["git"]["toplevel"])
+                                        .string();
+
                 ctx["element"]["source"]["path"] =
                     util::path_to_url(git_relative_path);
             }
