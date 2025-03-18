@@ -171,7 +171,7 @@ void translation_unit_visitor::include_visitor::process_internal_header(
 
     include_file.set_type(common::model::source_file_t::kHeader);
     include_file.set_file(
-        std::filesystem::absolute(include_path).lexically_normal().string());
+        weakly_canonical(std::filesystem::absolute(include_path)).string());
     include_file.set_line(0);
     include_file.set_system_header(is_system);
 
@@ -232,7 +232,7 @@ translation_unit_visitor::include_visitor::process_source_file(
         file_path = config().base_directory() / file_path;
     }
 
-    file_path = file_path.lexically_normal();
+    file_path = weakly_canonical(file_path);
 
     if (diagram().should_include(source_file{file_path})) {
         LOG_DBG("Processing source file {}", file.string());

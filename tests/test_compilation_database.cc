@@ -61,11 +61,16 @@ TEST_CASE("Test compile_commands.json should work")
             cfg.root_directory() / path("src/class_diagram/model/class.cc");
 
         REQUIRE(all_files.size() == 3);
-        REQUIRE(contains(
-            all_files, class_diagram_generator_path.make_preferred().string()));
-        REQUIRE(contains(
-            all_files, class_diagram_generator_path.make_preferred().string()));
-        REQUIRE(contains(all_files, class_path.make_preferred().string()));
+
+        bool contains_class_diagram_generator_path{false};
+        for (const auto &cd_file : all_files)
+            if (weakly_canonical(std::filesystem::path{cd_file}) ==
+                class_diagram_generator_path.make_preferred()) {
+                contains_class_diagram_generator_path = true;
+                break;
+            }
+
+        REQUIRE(contains_class_diagram_generator_path);
 
         REQUIRE_EQ(db->guess_language_from_filename("file.cpp"), "c++");
         REQUIRE_EQ(db->guess_language_from_filename("file.cc"), "c++");

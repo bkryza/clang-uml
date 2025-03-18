@@ -166,7 +166,7 @@ public:
         else
             res = base / res;
 
-        return res.lexically_normal();
+        return weakly_canonical(res);
     }
 
 protected:

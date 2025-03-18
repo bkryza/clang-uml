@@ -375,6 +375,15 @@ std::vector<std::string> diagram::glob_translation_units(
         return compilation_database_paths;
     }
 
+    // Create also a canonical database paths set
+    std::vector<std::string> canonical_compilation_database_paths;
+    canonical_compilation_database_paths.reserve(
+        compilation_database_paths.size());
+    for (const auto &cdp : compilation_database_paths) {
+        auto canonical_p = weakly_canonical(std::filesystem::path{cdp});
+        canonical_compilation_database_paths.emplace_back(canonical_p.string());
+    }
+
     // Otherwise, get all translation units matching the glob from diagram
     // configuration
     std::vector<std::string> glob_matches{};
@@ -472,6 +481,7 @@ std::vector<std::string> diagram::glob_translation_units(
         std::filesystem::path gm_path{gm};
         gm_path.make_preferred();
         if (is_fixed || util::contains(compilation_database_paths, gm_path) ||
+            util::contains(canonical_compilation_database_paths, gm_path) ||
             util::contains(compilation_database_files, gm)) {
             result.emplace_back(gm_path.string());
         }
