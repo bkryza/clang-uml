@@ -32,14 +32,6 @@ set(CLANG_UML_INSTALL_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
 set(CLANG_UML_INSTALL_BIN_DIR ${PROJECT_SOURCE_DIR}/bin)
 set(UML_HEADERS_DIR ${PROJECT_SOURCE_DIR}/src/uml)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
-if(APPLE)
-    if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "arm" OR "${CMAKE_SYSTEM_PROCESSOR}"
-                                                     STREQUAL "arm64")
-        set(HOMEBREW_PREFIX "/opt/homebrew")
-    else()
-        set(HOMEBREW_PREFIX "/usr/local")
-    endif()
-endif(APPLE)
 
 #
 # CMake build options
@@ -123,16 +115,6 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
             ${CUSTOM_COMPILE_OPTIONS}
             -Wno-missing-template-arg-list-after-template-kw)
     endif()
-    if(APPLE)
-        if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "arm"
-           OR "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "arm64")
-            # Use LLVM bundled unwind on Apple Silicon to fix segfaults on
-            # exception throw
-            set(CMAKE_EXE_LINKER_FLAGS
-                "${CMAKE_EXE_LINKER_FLAGS} -L${HOMEBREW_PREFIX}/opt/llvm/lib/unwind -lunwind"
-            )
-        endif()
-    endif(APPLE)
 endif()
 
 link_directories(${LLVM_LIBRARY_DIR})
@@ -140,6 +122,11 @@ link_directories(${LLVM_LIBRARY_DIR})
 #
 # Setup threads library
 #
+if(APPLE)
+  set(THREADS_PREFER_PTHREAD_FLAG ON)
+  set(CMAKE_THREAD_LIBS_INIT "-lpthread")
+  set(CMAKE_HAVE_LIBC_PTHREAD 1)
+endif(APPLE)
 find_package(Threads REQUIRED)
 
 #
@@ -158,6 +145,9 @@ message(STATUS "Found yaml-cpp at: ${YAML_CPP_INCLUDE_DIR}, library: ${YAML_CPP_
 #
 # Setup backward-cpp, libdw and libunwind
 #
+if(APPLE)
+    include(LibUnwindSetup)
+endif(APPLE)
 if(CMAKE_BUILD_TYPE MATCHES Debug)
     set(CLANG_UML_ENABLE_BACKTRACE_DEFAULT ON)
 else()
@@ -165,7 +155,6 @@ else()
 endif()
 option(CLANG_UML_ENABLE_BACKTRACE "Enable backtrace on segfault"
        ${CLANG_UML_ENABLE_BACKTRACE_DEFAULT})
-
 if(LINUX AND CLANG_UML_ENABLE_BACKTRACE)
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(DW REQUIRED IMPORTED_TARGET libdw)
