@@ -10,7 +10,8 @@ declare -a llvm_configs=("llvm-config-12"
                          "llvm-config-16"
                          "llvm-config-17"
                          "llvm-config-18"
-                         "llvm-config-19")
+                         "llvm-config-19"
+                         "llvm-config-20")
 
 # Test with GCC and different LLVM versions
 for config_path in ${llvm_configs[@]}; do
@@ -28,4 +29,6 @@ make clean
 CC=/usr/bin/clang-18 CXX=/usr/bin/clang++-18 LLVM_VERSION=18 NUMPROC=16 CMAKE_GENERATOR=Ninja ENABLE_CXX_MODULES_TEST_CASES=ON ENABLE_CUDA_TEST_CASES=ON make test
 make clean
 CC=/usr/bin/clang-19 CXX=/usr/bin/clang++-19 LLVM_VERSION=19 NUMPROC=16 CMAKE_GENERATOR=Ninja ENABLE_CXX_MODULES_TEST_CASES=ON ENABLE_CUDA_TEST_CASES=ON make test
+make clean
+CC=/usr/bin/clang-20 CXX=/usr/bin/clang++-20 LLVM_VERSION=20 NUMPROC=16 CMAKE_GENERATOR=Ninja ENABLE_CXX_MODULES_TEST_CASES=ON ENABLE_CUDA_TEST_CASES=ON make test
 make clean

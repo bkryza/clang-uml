@@ -115,6 +115,14 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
             ${CUSTOM_COMPILE_OPTIONS}
             -Wno-missing-template-arg-list-after-template-kw)
     endif()
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 20)
+        set(CMAKE_CXX_STANDARD 20)
+        set(CUSTOM_COMPILE_OPTIONS ${CUSTOM_COMPILE_OPTIONS}
+                                   -DFMT_USE_CONSTEXPR=0
+                                   -DFMT_USE_CONSTEVAL=0
+                                   -Wno-invalid-constexpr
+                                   -Wno-deprecated-anon-enum-enum-conversion)
+    endif()
 endif()
 
 link_directories(${LLVM_LIBRARY_DIR})

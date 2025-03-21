@@ -221,6 +221,11 @@
 #  define FMT_UNICODE !FMT_MSC_VERSION
 #endif
 
+#if !defined(FMT_USE_CONSTEVAL)
+#define FMT_USE_CONSTEVAL 1
+#endif
+
+#if FMT_USE_CONSTEVAL
 #ifndef FMT_CONSTEVAL
 #  if ((FMT_GCC_VERSION >= 1000 || FMT_CLANG_VERSION >= 1101) && \
        (!defined(__apple_build_version__) ||                     \
@@ -235,6 +240,9 @@
 #  else
 #    define FMT_CONSTEVAL
 #  endif
+#endif
+#else
+#define FMT_CONSTEVAL
 #endif
 
 #ifndef FMT_USE_NONTYPE_TEMPLATE_ARGS
