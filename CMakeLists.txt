@@ -147,6 +147,7 @@ message(STATUS "Found yaml-cpp at: ${YAML_CPP_INCLUDE_DIR}, library: ${YAML_CPP_
 #
 if(APPLE)
     include(LibUnwindSetup)
+    set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 endif(APPLE)
 if(CMAKE_BUILD_TYPE MATCHES Debug)
     set(CLANG_UML_ENABLE_BACKTRACE_DEFAULT ON)
