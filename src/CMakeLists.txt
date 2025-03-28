@@ -72,6 +72,7 @@ target_link_libraries(
     ${LIBTOOLING_LIBS}
     ${MSVC_LIBRARIES}
     ${BACKWARD_CPP_LIBRARIES}
+    ${LIBUNWIND_LIBRARY}
     clang-umllib
     Threads::Threads)
 
