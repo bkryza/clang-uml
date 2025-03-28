@@ -571,6 +571,11 @@ private:
 
     void add_callers_to_activities();
 
+    void ensure_activity_exists(const model::message &m);
+
+    void process_function_parameters(const clang::FunctionDecl &declaration,
+        model::function &method_model) const;
+
     call_expression_context call_expression_context_;
 
     /**
@@ -607,6 +612,5 @@ private:
         processed_comments_by_caller_id_;
 
     template_builder_t template_builder_;
-    void ensure_activity_exists(const model::message &m);
 };
 } // namespace clanguml::sequence_diagram::visitor

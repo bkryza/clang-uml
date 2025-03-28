@@ -645,6 +645,8 @@ struct inheritable_diagram_options {
     option<struct graphml> graphml{"graphml", option_inherit_mode::kAppend};
     option<method_arguments> generate_method_arguments{
         "generate_method_arguments", method_arguments::full};
+    option<bool> generate_method_argument_names{
+        "generate_method_argument_names", false};
     option<bool> generate_concept_requirements{
         "generate_concept_requirements", true};
     option<bool> group_methods{"group_methods", true};

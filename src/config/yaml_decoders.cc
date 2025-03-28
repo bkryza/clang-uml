@@ -860,6 +860,7 @@ template <> struct convert<sequence_diagram> {
         get_option(node, rhs.generate_condition_statements);
         get_option(node, rhs.participants_order);
         get_option(node, rhs.generate_method_arguments);
+        get_option(node, rhs.generate_method_argument_names);
         get_option(node, rhs.generate_message_comments);
         get_option(node, rhs.fold_repeated_activities);
         get_option(node, rhs.message_comment_width);
@@ -1053,6 +1054,7 @@ template <> struct convert<config> {
         get_option(node, rhs.mermaid);
         get_option(node, rhs.graphml);
         get_option(node, rhs.generate_method_arguments);
+        get_option(node, rhs.generate_method_argument_names);
         get_option(node, rhs.generate_concept_requirements);
         get_option(node, rhs.generate_packages);
         get_option(node, rhs.package_type);

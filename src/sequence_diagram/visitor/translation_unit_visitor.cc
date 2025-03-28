@@ -2623,10 +2623,9 @@ translation_unit_visitor::build_function_template(
         common::to_string(declaration.getAsFunction()->getReturnType(),
             declaration.getASTContext()));
 
-    for (const auto *param : declaration.getTemplatedDecl()->parameters()) {
-        function_template_model_ptr->add_parameter(
-            simplify_system_template(common::to_string(
-                param->getType(), declaration.getASTContext(), false)));
+    if (declaration.getAsFunction() != nullptr) {
+        process_function_parameters(
+            *declaration.getAsFunction(), *function_template_model_ptr);
     }
 
     return function_template_model_ptr;
@@ -2634,24 +2633,20 @@ translation_unit_visitor::build_function_template(
 
 std::unique_ptr<model::function_template>
 translation_unit_visitor::build_function_template_instantiation(
-    const clang::FunctionDecl &decl)
+    const clang::FunctionDecl &declaration)
 {
     auto template_instantiation_ptr =
         std::make_unique<model::function_template>(config().using_namespace());
     auto &template_instantiation = *template_instantiation_ptr;
 
-    set_qualified_name(decl, template_instantiation);
+    set_qualified_name(declaration, template_instantiation);
 
-    tbuilder().build(decl, template_instantiation, &decl,
-        decl.getPrimaryTemplate(),
-        decl.getTemplateSpecializationArgs()->asArray(),
-        common::to_string(&decl));
+    tbuilder().build(declaration, template_instantiation, &declaration,
+        declaration.getPrimaryTemplate(),
+        declaration.getTemplateSpecializationArgs()->asArray(),
+        common::to_string(&declaration));
 
-    // Handle function parameters
-    for (const auto *param : decl.parameters()) {
-        template_instantiation_ptr->add_parameter(
-            common::to_string(param->getType(), decl.getASTContext()));
-    }
+    process_function_parameters(declaration, *template_instantiation_ptr);
 
     return template_instantiation_ptr;
 }
@@ -2671,11 +2666,7 @@ std::unique_ptr<model::function> translation_unit_visitor::build_function_model(
     function_model_ptr->return_type(common::to_string(
         declaration.getReturnType(), declaration.getASTContext()));
 
-    for (const auto *param : declaration.parameters()) {
-        function_model_ptr->add_parameter(
-            simplify_system_template(common::to_string(
-                param->getType(), declaration.getASTContext(), false)));
-    }
+    process_function_parameters(declaration, *function_model_ptr);
 
     if (declaration.isVariadic()) {
         function_model_ptr->add_parameter("...");
@@ -3092,14 +3083,7 @@ translation_unit_visitor::create_lambda_method_model(
     method_model_ptr->return_type(common::to_string(
         declaration->getReturnType(), declaration->getASTContext()));
 
-    for (const auto *param : declaration->parameters()) {
-        auto parameter_type =
-            common::to_string(param->getType(), param->getASTContext());
-        common::ensure_lambda_type_is_relative(config(), parameter_type);
-        parameter_type = simplify_system_template(parameter_type);
-        method_model_ptr->add_parameter(config().using_namespace().relative(
-            simplify_system_template(parameter_type)));
-    }
+    process_function_parameters(*declaration, *method_model_ptr);
 
     return method_model_ptr;
 }
@@ -3160,6 +3144,12 @@ translation_unit_visitor::create_objc_method_model(
             common::to_string(param->getType(), param->getASTContext());
         common::ensure_lambda_type_is_relative(config(), parameter_type);
         parameter_type = simplify_system_template(parameter_type);
+
+        std::string parameter_str = parameter_type;
+        if (config().generate_method_argument_names()) {
+            parameter_str += " " + param->getNameAsString();
+        }
+
         method_model_ptr->add_parameter(parameter_type);
     }
 
@@ -3223,16 +3213,28 @@ translation_unit_visitor::create_method_model(clang::CXXMethodDecl *declaration)
     method_model_ptr->return_type(common::to_string(
         declaration->getReturnType(), declaration->getASTContext()));
 
-    for (const auto *param : declaration->parameters()) {
+    process_function_parameters(*declaration, *method_model_ptr);
+
+    return method_model_ptr;
+}
+
+void translation_unit_visitor::process_function_parameters(
+    const clang::FunctionDecl &declaration, model::function &method_model) const
+{
+    for (const auto *param : declaration.parameters()) {
         auto parameter_type =
             common::to_string(param->getType(), param->getASTContext());
         common::ensure_lambda_type_is_relative(config(), parameter_type);
         parameter_type = simplify_system_template(parameter_type);
-        method_model_ptr->add_parameter(config().using_namespace().relative(
-            simplify_system_template(parameter_type)));
-    }
 
-    return method_model_ptr;
+        std::string parameter_str = config().using_namespace().relative(
+            simplify_system_template(parameter_type));
+        if (config().generate_method_argument_names()) {
+            parameter_str += " " + param->getNameAsString();
+        }
+
+        method_model.add_parameter(parameter_str);
+    }
 }
 
 bool translation_unit_visitor::should_include(const clang::TagDecl *decl) const

@@ -456,6 +456,7 @@ YAML::Emitter &operator<<(
         out << c.inline_lambda_messages;
         out << c.generate_condition_statements;
         out << c.generate_method_arguments;
+        out << c.generate_method_argument_names;
         out << c.generate_return_types;
         out << c.generate_return_values;
         out << c.participants_order;
