@@ -3,22 +3,22 @@
     <style type="text/css">a:hover { text-decoration: underline; }</style>
   </defs>
   <g>
-    <g id="elem_C_0016468256462265534638">
-      <rect codeLine="2" fill="#F1F1F1" height="48" id="C_0016468256462265534638" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="97.7858" x="111" y="288"/>
+    <g class="entity" data-entity="C_0016468256462265534638" data-source-line="1" data-uid="ent0002" id="entity_C_0016468256462265534638">
+      <rect fill="#F1F1F1" height="48" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="97.7858" x="111" y="288"/>
       <ellipse cx="126" cy="304" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
       <path d="M128.9688,309.6406 Q128.3906,309.9375 127.75,310.0781 Q127.1094,310.2344 126.4063,310.2344 Q123.9063,310.2344 122.5781,308.5938 Q121.2656,306.9375 121.2656,303.8125 Q121.2656,300.6875 122.5781,299.0313 Q123.9063,297.375 126.4063,297.375 Q127.1094,297.375 127.75,297.5313 Q128.4063,297.6875 128.9688,297.9844 L128.9688,300.7031 Q128.3438,300.125 127.75,299.8594 Q127.1563,299.5781 126.5313,299.5781 Q125.1875,299.5781 124.5,300.6563 Q123.8125,301.7188 123.8125,303.8125 Q123.8125,305.9063 124.5,306.9844 Q125.1875,308.0469 126.5313,308.0469 Q127.1563,308.0469 127.75,307.7813 Q128.3438,307.5 128.9688,306.9219 L128.9688,309.6406 Z " fill="#000000"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="65.7858" x="140" y="309.432">CULogger</text>
       <line style="stroke:#181818;stroke-width:0.5;" x1="112" x2="207.7858" y1="320" y2="320"/>
       <line style="stroke:#181818;stroke-width:0.5;" x1="112" x2="207.7858" y1="328" y2="328"/>
     </g>
-    <g id="elem_GMN3">
-      <path d="M6,34.5 L6,79.912 A0,0 0 0 0 6,79.912 L156,79.912 L160,287.66 L164,79.912 L314.3652,79.912 A0,0 0 0 0 314.3652,79.912 L314.3652,44.5 L304.3652,34.5 L6,34.5 A0,0 0 0 0 6,34.5 " fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;"/>
-      <path d="M304.3652,34.5 L304.3652,44.5 L314.3652,44.5 L304.3652,34.5 " fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;"/>
+    <g class="entity" data-entity="GMN3" data-source-line="6" data-uid="ent0004" id="entity_GMN3">
+      <path d="M6,34.5 L6,79.912 A0,0 0 0 0 6,79.912 L156,79.912 L160,287.66 L164,79.912 L314.3652,79.912 A0,0 0 0 0 314.3652,79.912 L314.3652,44.5 L304.3652,34.5 L6,34.5 A0,0 0 0 0 6,34.5" fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;"/>
+      <path d="M304.3652,34.5 L304.3652,44.5 L314.3652,44.5 L304.3652,34.5" fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;"/>
       <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="287.3652" x="12" y="53.397">Somehow it's ok to have a C struct and an ObjC</text>
       <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="188.6822" x="12" y="71.103">interface with  the same name.</text>
     </g>
-    <g id="elem_C_0017158401775138309712">
-      <rect codeLine="10" fill="#F1F1F1" height="80.4799" id="C_0017158401775138309712" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="112.6726" x="244.5" y="272"/>
+    <g class="entity" data-entity="C_0017158401775138309712" data-source-line="9" data-uid="ent0006" id="entity_C_0017158401775138309712">
+      <rect fill="#F1F1F1" height="80.4799" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="112.6726" x="244.5" y="272"/>
       <ellipse cx="259.5" cy="294.706" fill="#F1F1F1" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
       <path d="M259.2969,290.3779 L259.2969,294.0029 L260.2969,294.0029 Q261.5,294.0029 261.9844,293.5966 Q262.4688,293.1904 262.4688,292.1904 Q262.4688,291.1904 261.9844,290.7841 Q261.5,290.3779 260.2969,290.3779 L259.2969,290.3779 Z M256.8438,288.3154 L260.2031,288.3154 Q262.7656,288.3154 263.8906,289.2373 Q265.0156,290.1435 265.0156,292.1904 Q265.0156,294.2373 263.8906,295.1591 Q262.7656,296.0654 260.2031,296.0654 L259.2969,296.0654 L259.2969,300.706 L256.8438,300.706 L256.8438,288.3154 Z " fill="#000000"/>
       <text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="84.6726" x="271.5" y="289.8281">«ObjC Protocol»</text>
@@ -28,8 +28,8 @@
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="72.3097" x="264.5" y="336.378">add() : void</text>
       <line style="stroke:#181818;stroke-width:0.5;" x1="245.5" x2="356.1726" y1="344.4799" y2="344.4799"/>
     </g>
-    <g id="elem_C_0000676331440279833610">
-      <rect codeLine="15" fill="#F1F1F1" height="80.4799" id="C_0000676331440279833610" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="127.6676" x="393" y="272"/>
+    <g class="entity" data-entity="C_0000676331440279833610" data-source-line="14" data-uid="ent0007" id="entity_C_0000676331440279833610">
+      <rect fill="#F1F1F1" height="80.4799" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="127.6676" x="393" y="272"/>
       <ellipse cx="414.7478" cy="294.706" fill="#F1F1F1" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
       <path d="M414.5446,290.3779 L414.5446,294.0029 L415.5446,294.0029 Q416.7478,294.0029 417.2321,293.5966 Q417.7165,293.1904 417.7165,292.1904 Q417.7165,291.1904 417.2321,290.7841 Q416.7478,290.3779 415.5446,290.3779 L414.5446,290.3779 Z M412.0915,288.3154 L415.4509,288.3154 Q418.0134,288.3154 419.1384,289.2373 Q420.2634,290.1435 420.2634,292.1904 Q420.2634,294.2373 419.1384,295.1591 Q418.0134,296.0654 415.4509,296.0654 L414.5446,296.0654 L414.5446,300.706 L412.0915,300.706 L412.0915,288.3154 Z " fill="#000000"/>
       <text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="84.6726" x="428.2473" y="289.8281">«ObjC Protocol»</text>
@@ -39,8 +39,8 @@
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="101.6676" x="413" y="336.378">subtract() : void</text>
       <line style="stroke:#181818;stroke-width:0.5;" x1="394" x2="519.6676" y1="344.4799" y2="344.4799"/>
     </g>
-    <g id="elem_C_0014823865282534129355">
-      <rect codeLine="20" fill="#F1F1F1" height="61.412" id="C_0014823865282534129355" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="115.9486" x="556" y="281.5"/>
+    <g class="entity" data-entity="C_0014823865282534129355" data-source-line="19" data-uid="ent0008" id="entity_C_0014823865282534129355">
+      <rect fill="#F1F1F1" height="61.412" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="115.9486" x="556" y="281.5"/>
       <ellipse cx="571" cy="304.206" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
       <path d="M573.9688,309.8466 Q573.3906,310.1435 572.75,310.2841 Q572.1094,310.4404 571.4063,310.4404 Q568.9063,310.4404 567.5781,308.7998 Q566.2656,307.1435 566.2656,304.0185 Q566.2656,300.8935 567.5781,299.2373 Q568.9063,297.581 571.4063,297.581 Q572.1094,297.581 572.75,297.7373 Q573.4063,297.8935 573.9688,298.1904 L573.9688,300.9091 Q573.3438,300.331 572.75,300.0654 Q572.1563,299.7841 571.5313,299.7841 Q570.1875,299.7841 569.5,300.8623 Q568.8125,301.9248 568.8125,304.0185 Q568.8125,306.1123 569.5,307.1904 Q570.1875,308.2529 571.5313,308.2529 Q572.1563,308.2529 572.75,307.9873 Q573.3438,307.706 573.9688,307.1279 L573.9688,309.8466 Z " fill="#000000"/>
       <text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="87.9486" x="583" y="299.3281">«ObjC Interface»</text>
@@ -48,37 +48,37 @@
       <line style="stroke:#181818;stroke-width:0.5;" x1="557" x2="670.9486" y1="326.912" y2="326.912"/>
       <line style="stroke:#181818;stroke-width:0.5;" x1="557" x2="670.9486" y1="334.912" y2="334.912"/>
     </g>
-    <g id="elem_C_0011019244785995400036">
-      <rect codeLine="24" fill="#F1F1F1" height="80.4799" id="C_0011019244785995400036" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="157.1515" x="535.5" y="17"/>
+    <g class="entity" data-entity="C_0011019244785995400036" data-source-line="23" data-uid="ent0009" id="entity_C_0011019244785995400036">
+      <rect fill="#F1F1F1" height="80.4799" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="157.1515" x="535.5" y="17"/>
       <ellipse cx="567.4433" cy="39.706" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
       <path d="M570.4121,45.3466 Q569.834,45.6435 569.1933,45.7841 Q568.5527,45.9404 567.8496,45.9404 Q565.3496,45.9404 564.0215,44.2998 Q562.709,42.6435 562.709,39.5185 Q562.709,36.3935 564.0215,34.7373 Q565.3496,33.081 567.8496,33.081 Q568.5527,33.081 569.1933,33.2373 Q569.8496,33.3935 570.4121,33.6904 L570.4121,36.4091 Q569.7871,35.831 569.1933,35.5654 Q568.5996,35.2841 567.9746,35.2841 Q566.6308,35.2841 565.9433,36.3623 Q565.2558,37.4248 565.2558,39.5185 Q565.2558,41.6123 565.9433,42.6904 Q566.6308,43.7529 567.9746,43.7529 Q568.5996,43.7529 569.1933,43.4873 Q569.7871,43.206 570.4121,42.6279 L570.4121,45.3466 Z " fill="#000000"/>
       <text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="87.9486" x="584.984" y="34.8281">«ObjC Interface»</text>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="87.4997" x="585.2085" y="53.31">CUArithmetic</text>
       <line style="stroke:#181818;stroke-width:0.5;" x1="536.5" x2="691.6515" y1="62.412" y2="62.412"/>
       <line style="stroke:#181818;stroke-width:0.5;" x1="536.5" x2="691.6515" y1="70.412" y2="70.412"/>
-      <polygon fill="transparent" points="546.5,80.446,550.5,84.446,546.5,88.446,542.5,84.446" style="stroke:#B38D22;stroke-width:1;"/>
+      <polygon fill="none" points="546.5,80.446,550.5,84.446,546.5,88.446,542.5,84.446" style="stroke:#B38D22;stroke-width:1;"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="131.1515" x="555.5" y="89.378">logger : CULogger *</text>
     </g>
-    <g id="elem_C_0018440565303595988344">
-      <rect codeLine="29" fill="#F1F1F1" height="67.0679" id="C_0018440565303595988344" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="92.0517" x="670" y="517"/>
+    <g class="entity" data-entity="C_0018440565303595988344" data-source-line="28" data-uid="ent0010" id="entity_C_0018440565303595988344">
+      <rect fill="#F1F1F1" height="67.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="92.0517" x="670" y="517"/>
       <ellipse cx="693.7408" cy="533" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
       <path d="M696.7095,538.6406 Q696.1314,538.9375 695.4908,539.0781 Q694.8501,539.2344 694.147,539.2344 Q691.647,539.2344 690.3189,537.5938 Q689.0064,535.9375 689.0064,532.8125 Q689.0064,529.6875 690.3189,528.0313 Q691.647,526.375 694.147,526.375 Q694.8501,526.375 695.4908,526.5313 Q696.147,526.6875 696.7095,526.9844 L696.7095,529.7031 Q696.0845,529.125 695.4908,528.8594 Q694.897,528.5781 694.272,528.5781 Q692.9283,528.5781 692.2408,529.6563 Q691.5533,530.7188 691.5533,532.8125 Q691.5533,534.9063 692.2408,535.9844 Q692.9283,537.0469 694.272,537.0469 Q694.897,537.0469 695.4908,536.7813 Q696.0845,536.5 696.7095,535.9219 L696.7095,538.6406 Z " fill="#000000"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="40.6278" x="709.6831" y="538.432">Result</text>
       <line style="stroke:#181818;stroke-width:0.5;" x1="671" x2="761.0517" y1="549" y2="549"/>
       <line style="stroke:#181818;stroke-width:0.5;" x1="671" x2="761.0517" y1="557" y2="557"/>
-      <ellipse cx="681" cy="572.034" fill="transparent" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <ellipse cx="681" cy="572.034" fill="none" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="66.0517" x="690" y="575.9659">result : int</text>
     </g>
-    <g id="elem_C_0004286815225100151567">
-      <rect codeLine="34" fill="#F1F1F1" height="48" id="C_0004286815225100151567" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="92.3118" x="797" y="526.5"/>
+    <g class="entity" data-entity="C_0004286815225100151567" data-source-line="33" data-uid="ent0011" id="entity_C_0004286815225100151567">
+      <rect fill="#F1F1F1" height="48" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="92.3118" x="797" y="526.5"/>
       <ellipse cx="812" cy="542.5" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
       <path d="M814.9688,548.1406 Q814.3906,548.4375 813.75,548.5781 Q813.1094,548.7344 812.4063,548.7344 Q809.9063,548.7344 808.5781,547.0938 Q807.2656,545.4375 807.2656,542.3125 Q807.2656,539.1875 808.5781,537.5313 Q809.9063,535.875 812.4063,535.875 Q813.1094,535.875 813.75,536.0313 Q814.4063,536.1875 814.9688,536.4844 L814.9688,539.2031 Q814.3438,538.625 813.75,538.3594 Q813.1563,538.0781 812.5313,538.0781 Q811.1875,538.0781 810.5,539.1563 Q809.8125,540.2188 809.8125,542.3125 Q809.8125,544.4063 810.5,545.4844 Q811.1875,546.5469 812.5313,546.5469 Q813.1563,546.5469 813.75,546.2813 Q814.3438,546 814.9688,545.4219 L814.9688,548.1406 Z " fill="#000000"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="60.3118" x="826" y="547.932">Serializer</text>
       <line style="stroke:#181818;stroke-width:0.5;" x1="798" x2="888.3118" y1="558.5" y2="558.5"/>
       <line style="stroke:#181818;stroke-width:0.5;" x1="798" x2="888.3118" y1="566.5" y2="566.5"/>
     </g>
-    <g id="elem_C_0010781908225073246261">
-      <rect codeLine="38" fill="#F1F1F1" height="252.0912" id="C_0010781908225073246261" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="181.6794" x="707" y="186"/>
+    <g class="entity" data-entity="C_0010781908225073246261" data-source-line="37" data-uid="ent0012" id="entity_C_0010781908225073246261">
+      <rect fill="#F1F1F1" height="252.0912" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="181.6794" x="707" y="186"/>
       <ellipse cx="741.6775" cy="208.706" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
       <path d="M744.6463,214.3466 Q744.0681,214.6435 743.4275,214.7841 Q742.7869,214.9404 742.0838,214.9404 Q739.5838,214.9404 738.2556,213.2998 Q736.9431,211.6435 736.9431,208.5185 Q736.9431,205.3935 738.2556,203.7373 Q739.5838,202.081 742.0838,202.081 Q742.7869,202.081 743.4275,202.2373 Q744.0838,202.3935 744.6463,202.6904 L744.6463,205.4091 Q744.0213,204.831 743.4275,204.5654 Q742.8338,204.2841 742.2088,204.2841 Q740.865,204.2841 740.1775,205.3623 Q739.49,206.4248 739.49,208.5185 Q739.49,210.6123 740.1775,211.6904 Q740.865,212.7529 742.2088,212.7529 Q742.8338,212.7529 743.4275,212.4873 Q744.0213,212.206 744.6463,211.6279 L744.6463,214.3466 Z " fill="#000000"/>
       <text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="87.9486" x="769.0518" y="203.8281">«ObjC Interface»</text>
@@ -97,38 +97,38 @@
       <ellipse cx="718" cy="341.7856" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="109.3116" x="727" y="345.7176">setB:(int b) : void</text>
       <line style="stroke:#181818;stroke-width:0.5;" x1="708" x2="887.6794" y1="353.8195" y2="353.8195"/>
-      <polygon fill="transparent" points="718,363.8535,722,367.8535,718,371.8535,714,367.8535" style="stroke:#B38D22;stroke-width:1;"/>
+      <polygon fill="none" points="718,363.8535,722,367.8535,718,371.8535,714,367.8535" style="stroke:#B38D22;stroke-width:1;"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="36.2039" x="727" y="372.7855">a : int</text>
-      <polygon fill="transparent" points="718,382.9214,722,386.9214,718,390.9214,714,386.9214" style="stroke:#B38D22;stroke-width:1;"/>
+      <polygon fill="none" points="718,382.9214,722,386.9214,718,390.9214,714,386.9214" style="stroke:#B38D22;stroke-width:1;"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="36.9599" x="727" y="391.8534">b : int</text>
-      <polygon fill="transparent" points="718,401.9893,722,405.9893,718,409.9893,714,405.9893" style="stroke:#B38D22;stroke-width:1;"/>
+      <polygon fill="none" points="718,401.9893,722,405.9893,718,409.9893,714,405.9893" style="stroke:#B38D22;stroke-width:1;"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="130.9695" x="727" y="410.9213">result : struct Result</text>
-      <polygon fill="transparent" points="718,421.0572,722,425.0572,718,429.0572,714,425.0572" style="stroke:#B38D22;stroke-width:1;"/>
+      <polygon fill="none" points="718,421.0572,722,425.0572,718,429.0572,714,425.0572" style="stroke:#B38D22;stroke-width:1;"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="155.6794" x="727" y="429.9892">s18n : struct Serializer *</text>
     </g>
-    <g id="elem_C_0014445756289022328108">
-      <rect codeLine="52" fill="#F1F1F1" height="67.0679" id="C_0014445756289022328108" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="89.4757" x="969.5" y="517"/>
+    <g class="entity" data-entity="C_0014445756289022328108" data-source-line="51" data-uid="ent0013" id="entity_C_0014445756289022328108">
+      <rect fill="#F1F1F1" height="67.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="89.4757" x="969.5" y="517"/>
       <ellipse cx="993.9779" cy="533" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
       <path d="M996.9466,538.6406 Q996.3685,538.9375 995.7279,539.0781 Q995.0872,539.2344 994.3841,539.2344 Q991.8841,539.2344 990.556,537.5938 Q989.2435,535.9375 989.2435,532.8125 Q989.2435,529.6875 990.556,528.0313 Q991.8841,526.375 994.3841,526.375 Q995.0872,526.375 995.7279,526.5313 Q996.3841,526.6875 996.9466,526.9844 L996.9466,529.7031 Q996.3216,529.125 995.7279,528.8594 Q995.1341,528.5781 994.5091,528.5781 Q993.1654,528.5781 992.4779,529.6563 Q991.7904,530.7188 991.7904,532.8125 Q991.7904,534.9063 992.4779,535.9844 Q993.1654,537.0469 994.5091,537.0469 Q995.1341,537.0469 995.7279,536.7813 Q996.3216,536.5 996.9466,535.9219 L996.9466,538.6406 Z " fill="#000000"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="36.4138" x="1010.084" y="538.432">Value</text>
       <line style="stroke:#181818;stroke-width:0.5;" x1="970.5" x2="1057.9757" y1="549" y2="549"/>
       <line style="stroke:#181818;stroke-width:0.5;" x1="970.5" x2="1057.9757" y1="557" y2="557"/>
-      <ellipse cx="980.5" cy="572.034" fill="transparent" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <ellipse cx="980.5" cy="572.034" fill="none" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="63.4757" x="989.5" y="575.9659">value : int</text>
     </g>
-    <g id="elem_C_0001791467923800353512">
-      <rect codeLine="57" fill="#F1F1F1" height="80.4799" id="C_0001791467923800353512" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="178.8654" x="924.5" y="272"/>
+    <g class="entity" data-entity="C_0001791467923800353512" data-source-line="56" data-uid="ent0014" id="entity_C_0001791467923800353512">
+      <rect fill="#F1F1F1" height="80.4799" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="178.8654" x="924.5" y="272"/>
       <ellipse cx="947.132" cy="294.706" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
       <path d="M950.1007,300.3466 Q949.5226,300.6435 948.882,300.7841 Q948.2413,300.9404 947.5382,300.9404 Q945.0382,300.9404 943.7101,299.2998 Q942.3976,297.6435 942.3976,294.5185 Q942.3976,291.3935 943.7101,289.7373 Q945.0382,288.081 947.5382,288.081 Q948.2413,288.081 948.882,288.2373 Q949.5382,288.3935 950.1007,288.6904 L950.1007,291.4091 Q949.4757,290.831 948.882,290.5654 Q948.2882,290.2841 947.6632,290.2841 Q946.3195,290.2841 945.632,291.3623 Q944.9445,292.4248 944.9445,294.5185 Q944.9445,296.6123 945.632,297.6904 Q946.3195,298.7529 947.6632,298.7529 Q948.2882,298.7529 948.882,298.4873 Q949.4757,298.206 950.1007,297.6279 L950.1007,300.3466 Z " fill="#000000"/>
       <text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="87.9486" x="983.8064" y="289.8281">«ObjC Interface»</text>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="129.9055" x="962.828" y="308.31">CUMatrixArithmetic</text>
       <line style="stroke:#181818;stroke-width:0.5;" x1="925.5" x2="1102.3654" y1="317.412" y2="317.412"/>
       <line style="stroke:#181818;stroke-width:0.5;" x1="925.5" x2="1102.3654" y1="325.412" y2="325.412"/>
-      <polygon fill="transparent" points="935.5,335.446,939.5,339.446,935.5,343.446,931.5,339.446" style="stroke:#B38D22;stroke-width:1;"/>
+      <polygon fill="none" points="935.5,335.446,939.5,339.446,935.5,343.446,931.5,339.446" style="stroke:#B38D22;stroke-width:1;"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="152.8654" x="944.5" y="344.378">data : struct Value[4][4]</text>
     </g>
-    <g id="elem_C_0004313316082397644277">
-      <rect codeLine="62" fill="#F1F1F1" height="80.4799" id="C_0004313316082397644277" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="170.3055" x="761" y="17"/>
+    <g class="entity" data-entity="C_0004313316082397644277" data-source-line="61" data-uid="ent0015" id="entity_C_0004313316082397644277">
+      <rect fill="#F1F1F1" height="80.4799" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="170.3055" x="761" y="17"/>
       <ellipse cx="776" cy="39.706" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
       <path d="M778.9688,45.3466 Q778.3906,45.6435 777.75,45.7841 Q777.1094,45.9404 776.4063,45.9404 Q773.9063,45.9404 772.5781,44.2998 Q771.2656,42.6435 771.2656,39.5185 Q771.2656,36.3935 772.5781,34.7373 Q773.9063,33.081 776.4063,33.081 Q777.1094,33.081 777.75,33.2373 Q778.4063,33.3935 778.9688,33.6904 L778.9688,36.4091 Q778.3438,35.831 777.75,35.5654 Q777.1563,35.2841 776.5313,35.2841 Q775.1875,35.2841 774.5,36.3623 Q773.8125,37.4248 773.8125,39.5185 Q773.8125,41.6123 774.5,42.6904 Q775.1875,43.7529 776.5313,43.7529 Q777.1563,43.7529 777.75,43.4873 Q778.3438,43.206 778.9688,42.6279 L778.9688,45.3466 Z " fill="#000000"/>
       <text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="88.2246" x="815.0404" y="34.8281">«ObjC Category»</text>
@@ -138,8 +138,8 @@
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="96.8936" x="781" y="81.378">destroy() : void</text>
       <line style="stroke:#181818;stroke-width:0.5;" x1="762" x2="930.3055" y1="89.4799" y2="89.4799"/>
     </g>
-    <g id="elem_C_0010356097521022098570">
-      <rect codeLine="67" fill="#F1F1F1" height="99.5479" id="C_0010356097521022098570" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="238.9612" x="966.5" y="7"/>
+    <g class="entity" data-entity="C_0010356097521022098570" data-source-line="66" data-uid="ent0016" id="entity_C_0010356097521022098570">
+      <rect fill="#F1F1F1" height="99.5479" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="238.9612" x="966.5" y="7"/>
       <ellipse cx="981.5" cy="29.706" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
       <path d="M984.4688,35.3466 Q983.8906,35.6435 983.25,35.7841 Q982.6094,35.9404 981.9063,35.9404 Q979.4063,35.9404 978.0781,34.2998 Q976.7656,32.6435 976.7656,29.5185 Q976.7656,26.3935 978.0781,24.7373 Q979.4063,23.081 981.9063,23.081 Q982.6094,23.081 983.25,23.2373 Q983.9063,23.3935 984.4688,23.6904 L984.4688,26.4091 Q983.8438,25.831 983.25,25.5654 Q982.6563,25.2841 982.0313,25.2841 Q980.6875,25.2841 980,26.3623 Q979.3125,27.4248 979.3125,29.5185 Q979.3125,31.6123 980,32.6904 Q980.6875,33.7529 982.0313,33.7529 Q982.6563,33.7529 983.25,33.4873 Q983.8438,33.206 984.4688,32.6279 L984.4688,35.3466 Z " fill="#000000"/>
       <text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="88.2246" x="1054.8683" y="24.8281">«ObjC Category»</text>
@@ -151,54 +151,54 @@
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="112.9656" x="986.5" y="90.4459">transpose() : void</text>
       <line style="stroke:#181818;stroke-width:0.5;" x1="967.5" x2="1204.4612" y1="98.5479" y2="98.5479"/>
     </g>
-    <g id="link_C_0011019244785995400036_C_0014823865282534129355">
-      <path codeLine="72" d="M614,109.25 C614,160.05 614,235.45 614,281.16 " fill="transparent" id="C_0011019244785995400036-backto-C_0014823865282534129355" style="stroke:#181818;stroke-width:1;"/>
-      <polygon fill="transparent" points="614,97.25,610,103.25,614,109.25,618,103.25,614,97.25" style="stroke:#181818;stroke-width:1;"/>
-      <polygon fill="transparent" points="620,142.353,624,146.353,620,150.353,616,146.353" style="stroke:#B38D22;stroke-width:1;"/>
+    <g class="link" data-entity-1="C_0011019244785995400036" data-entity-2="C_0014823865282534129355" data-source-line="72" data-uid="lnk17" id="link_C_0011019244785995400036_C_0014823865282534129355">
+      <path codeLine="72" d="M614,109.25 C614,160.05 614,235.45 614,281.16" fill="none" id="C_0011019244785995400036-backto-C_0014823865282534129355" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="none" points="614,97.25,610,103.25,614,109.25,618,103.25,614,97.25" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="none" points="620,142.353,624,146.353,620,150.353,616,146.353" style="stroke:#B38D22;stroke-width:1;"/>
       <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="39.91" x="627" y="151.897">logger</text>
     </g>
-    <g id="link_C_0011019244785995400036_C_0017158401775138309712">
-      <path codeLine="73" d="M535.32,87.17 C485.08,108.73 420.97,141.96 375,186 C349.69,210.25 337.7645,228.7569 325.0945,255.4669 " fill="transparent" id="C_0011019244785995400036-to-C_0017158401775138309712" style="stroke:#181818;stroke-width:1;stroke-dasharray:7.0,7.0;"/>
-      <polygon fill="transparent" points="317.38,271.73,330.5155,258.0384,319.6734,252.8955,317.38,271.73" style="stroke:#181818;stroke-width:1;"/>
+    <g class="link" data-entity-1="C_0011019244785995400036" data-entity-2="C_0017158401775138309712" data-source-line="73" data-uid="lnk18" id="link_C_0011019244785995400036_C_0017158401775138309712">
+      <path codeLine="73" d="M535.32,87.17 C485.08,108.73 420.97,141.96 375,186 C349.69,210.25 337.7645,228.7569 325.0945,255.4669" fill="none" id="C_0011019244785995400036-to-C_0017158401775138309712" style="stroke:#181818;stroke-width:1;stroke-dasharray:7.0,7.0;"/>
+      <polygon fill="none" points="317.38,271.73,330.5155,258.0384,319.6734,252.8955,317.38,271.73" style="stroke:#181818;stroke-width:1;"/>
     </g>
-    <g id="link_C_0011019244785995400036_C_0000676331440279833610">
-      <path codeLine="74" d="M589.64,97.25 C560.18,144.72 520.3919,208.8561 490.9119,256.3561 " fill="transparent" id="C_0011019244785995400036-to-C_0000676331440279833610" style="stroke:#181818;stroke-width:1;stroke-dasharray:7.0,7.0;"/>
-      <polygon fill="transparent" points="481.42,271.65,496.0099,259.52,485.8139,253.1921,481.42,271.65" style="stroke:#181818;stroke-width:1;"/>
+    <g class="link" data-entity-1="C_0011019244785995400036" data-entity-2="C_0000676331440279833610" data-source-line="74" data-uid="lnk19" id="link_C_0011019244785995400036_C_0000676331440279833610">
+      <path codeLine="74" d="M589.64,97.25 C560.18,144.72 520.3919,208.8561 490.9119,256.3561" fill="none" id="C_0011019244785995400036-to-C_0000676331440279833610" style="stroke:#181818;stroke-width:1;stroke-dasharray:7.0,7.0;"/>
+      <polygon fill="none" points="481.42,271.65,496.0099,259.52,485.8139,253.1921,481.42,271.65" style="stroke:#181818;stroke-width:1;"/>
     </g>
-    <g id="link_C_0010781908225073246261_C_0018440565303595988344">
-      <path codeLine="75" d="M750.6661,449.5169 C740.5961,478.5369 734.66,495.68 727.42,516.56 " fill="transparent" id="C_0010781908225073246261-backto-C_0018440565303595988344" style="stroke:#181818;stroke-width:1;"/>
-      <polygon fill="transparent" points="754.6,438.18,748.8541,442.5371,750.6661,449.5169,756.412,445.1597,754.6,438.18" style="stroke:#181818;stroke-width:1;"/>
-      <polygon fill="transparent" points="749,473.353,753,477.353,749,481.353,745,477.353" style="stroke:#B38D22;stroke-width:1;"/>
+    <g class="link" data-entity-1="C_0010781908225073246261" data-entity-2="C_0018440565303595988344" data-source-line="75" data-uid="lnk20" id="link_C_0010781908225073246261_C_0018440565303595988344">
+      <path codeLine="75" d="M750.6661,449.5169 C740.5961,478.5369 734.66,495.68 727.42,516.56" fill="none" id="C_0010781908225073246261-backto-C_0018440565303595988344" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="none" points="754.6,438.18,748.8541,442.5371,750.6661,449.5169,756.412,445.1597,754.6,438.18" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="none" points="749,473.353,753,477.353,749,481.353,745,477.353" style="stroke:#B38D22;stroke-width:1;"/>
       <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="35.009" x="756" y="482.897">result</text>
     </g>
-    <g id="link_C_0010781908225073246261_C_0004286815225100151567">
-      <path codeLine="76" d="M821.82,438.18 C828.27,472.08 833.4585,499.3257 837.4885,520.5057 " fill="transparent" id="C_0010781908225073246261-to-C_0004286815225100151567" style="stroke:#181818;stroke-width:1;"/>
+    <g class="link" data-entity-1="C_0010781908225073246261" data-entity-2="C_0004286815225100151567" data-source-line="76" data-uid="lnk21" id="link_C_0010781908225073246261_C_0004286815225100151567">
+      <path codeLine="76" d="M821.82,438.18 C828.27,472.08 833.4585,499.3257 837.4885,520.5057" fill="none" id="C_0010781908225073246261-to-C_0004286815225100151567" style="stroke:#181818;stroke-width:1;"/>
       <polygon fill="#181818" points="838.61,526.4,840.8572,516.8109,837.6754,521.4881,832.9982,518.3063,838.61,526.4" style="stroke:#181818;stroke-width:1;"/>
-      <polygon fill="transparent" points="837,473.353,841,477.353,837,481.353,833,477.353" style="stroke:#B38D22;stroke-width:1;"/>
+      <polygon fill="none" points="837,473.353,841,477.353,837,481.353,833,477.353" style="stroke:#B38D22;stroke-width:1;"/>
       <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="29.133" x="844" y="482.897">s18n</text>
     </g>
-    <g id="link_C_0011019244785995400036_C_0010781908225073246261">
-      <path codeLine="77" d="M655.755,111.3662 C665.535,124.0062 665.32,123.9 675,137 C686.54,152.62 698.52,169.15 710.28,185.56 " fill="transparent" id="C_0011019244785995400036-backto-C_0010781908225073246261" style="stroke:#181818;stroke-width:1;"/>
-      <polygon fill="transparent" points="644.74,97.13,651.0096,115.0379,660.5004,107.6945,644.74,97.13" style="stroke:#181818;stroke-width:1;"/>
+    <g class="link" data-entity-1="C_0011019244785995400036" data-entity-2="C_0010781908225073246261" data-source-line="77" data-uid="lnk22" id="link_C_0011019244785995400036_C_0010781908225073246261">
+      <path codeLine="77" d="M655.755,111.3662 C665.535,124.0062 665.32,123.9 675,137 C686.54,152.62 698.52,169.15 710.28,185.56" fill="none" id="C_0011019244785995400036-backto-C_0010781908225073246261" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="none" points="644.74,97.13,651.0096,115.0379,660.5004,107.6945,644.74,97.13" style="stroke:#181818;stroke-width:1;"/>
     </g>
-    <g id="link_C_0001791467923800353512_C_0014445756289022328108">
-      <path codeLine="78" d="M1014,364.05 C1014,410.1 1014,473.81 1014,516.87 " fill="transparent" id="C_0001791467923800353512-backto-C_0014445756289022328108" style="stroke:#181818;stroke-width:1;"/>
-      <polygon fill="transparent" points="1014,352.05,1010,358.05,1014,364.05,1018,358.05,1014,352.05" style="stroke:#181818;stroke-width:1;"/>
-      <polygon fill="transparent" points="1020,473.353,1024,477.353,1020,481.353,1016,477.353" style="stroke:#B38D22;stroke-width:1;"/>
+    <g class="link" data-entity-1="C_0001791467923800353512" data-entity-2="C_0014445756289022328108" data-source-line="78" data-uid="lnk23" id="link_C_0001791467923800353512_C_0014445756289022328108">
+      <path codeLine="78" d="M1014,364.05 C1014,410.1 1014,473.81 1014,516.87" fill="none" id="C_0001791467923800353512-backto-C_0014445756289022328108" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="none" points="1014,352.05,1010,358.05,1014,364.05,1018,358.05,1014,352.05" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="none" points="1020,473.353,1024,477.353,1020,481.353,1016,477.353" style="stroke:#B38D22;stroke-width:1;"/>
       <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="27.274" x="1027" y="482.897">data</text>
       <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="14.872" x="998.5971" y="505.1435">16</text>
     </g>
-    <g id="link_C_0011019244785995400036_C_0001791467923800353512">
-      <path codeLine="79" d="M709.5124,94.5091 C783.2924,123.3791 870.59,159.87 906,186 C938.31,209.84 967.58,244.99 987.47,271.95 " fill="transparent" id="C_0011019244785995400036-backto-C_0001791467923800353512" style="stroke:#181818;stroke-width:1;"/>
-      <polygon fill="transparent" points="692.75,87.95,707.326,100.0966,711.6988,88.9216,692.75,87.95" style="stroke:#181818;stroke-width:1;"/>
+    <g class="link" data-entity-1="C_0011019244785995400036" data-entity-2="C_0001791467923800353512" data-source-line="79" data-uid="lnk24" id="link_C_0011019244785995400036_C_0001791467923800353512">
+      <path codeLine="79" d="M709.5124,94.5091 C783.2924,123.3791 870.59,159.87 906,186 C938.31,209.84 967.58,244.99 987.47,271.95" fill="none" id="C_0011019244785995400036-backto-C_0001791467923800353512" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="none" points="692.75,87.95,707.326,100.0966,711.6988,88.9216,692.75,87.95" style="stroke:#181818;stroke-width:1;"/>
     </g>
-    <g id="link_C_0004313316082397644277_C_0001791467923800353512">
-      <path codeLine="80" d="M872.07,97.25 C903.59,144.72 946.3731,209.1547 977.9131,256.6547 " fill="transparent" id="C_0004313316082397644277-to-C_0001791467923800353512" style="stroke:#181818;stroke-width:1;stroke-dasharray:7.0,7.0;"/>
-      <polygon fill="transparent" points="987.87,271.65,982.9115,253.3357,972.9147,259.9736,987.87,271.65" style="stroke:#181818;stroke-width:1;"/>
+    <g class="link" data-entity-1="C_0004313316082397644277" data-entity-2="C_0001791467923800353512" data-source-line="80" data-uid="lnk25" id="link_C_0004313316082397644277_C_0001791467923800353512">
+      <path codeLine="80" d="M872.07,97.25 C903.59,144.72 946.3731,209.1547 977.9131,256.6547" fill="none" id="C_0004313316082397644277-to-C_0001791467923800353512" style="stroke:#181818;stroke-width:1;stroke-dasharray:7.0,7.0;"/>
+      <polygon fill="none" points="987.87,271.65,982.9115,253.3357,972.9147,259.9736,987.87,271.65" style="stroke:#181818;stroke-width:1;"/>
     </g>
-    <g id="link_C_0010356097521022098570_C_0001791467923800353512">
-      <path codeLine="81" d="M1072.03,107.08 C1058.33,155.22 1042.6474,210.3476 1030.0274,254.6876 " fill="transparent" id="C_0010356097521022098570-to-C_0001791467923800353512" style="stroke:#181818;stroke-width:1;stroke-dasharray:7.0,7.0;"/>
-      <polygon fill="transparent" points="1025.1,272,1035.7983,256.33,1024.2566,253.0451,1025.1,272" style="stroke:#181818;stroke-width:1;"/>
+    <g class="link" data-entity-1="C_0010356097521022098570" data-entity-2="C_0001791467923800353512" data-source-line="81" data-uid="lnk26" id="link_C_0010356097521022098570_C_0001791467923800353512">
+      <path codeLine="81" d="M1072.03,107.08 C1058.33,155.22 1042.6474,210.3476 1030.0274,254.6876" fill="none" id="C_0010356097521022098570-to-C_0001791467923800353512" style="stroke:#181818;stroke-width:1;stroke-dasharray:7.0,7.0;"/>
+      <polygon fill="none" points="1025.1,272,1035.7983,256.33,1024.2566,253.0451,1025.1,272" style="stroke:#181818;stroke-width:1;"/>
     </g>
   </g>
 </svg>

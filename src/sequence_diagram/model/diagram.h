@@ -325,6 +325,9 @@ public:
      */
     void inline_lambda_operator_calls();
 
+    void handle_invalid_from_condition(const config::source_location &sf) const;
+    void handle_invalid_to_condition(const config::source_location &sf) const;
+
 private:
     bool inline_lambda_operator_call(
         eid_t id, model::activity &new_activity, const model::message &m);

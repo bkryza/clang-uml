@@ -297,6 +297,8 @@ void inheritable_diagram_options::inherit(
     mermaid.override(parent.mermaid);
     graphml.override(parent.graphml);
     generate_method_arguments.override(parent.generate_method_arguments);
+    generate_method_argument_names.override(
+        parent.generate_method_argument_names);
     fold_repeated_activities.override(parent.fold_repeated_activities);
     message_comment_width.override(parent.message_comment_width);
     message_name_width.override(parent.message_name_width);

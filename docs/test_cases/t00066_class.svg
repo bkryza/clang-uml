@@ -3,29 +3,29 @@
     <style type="text/css">a:hover { text-decoration: underline; }</style>
   </defs>
   <g>
-    <g id="elem_C_0015199658254065871481">
-      <rect codeLine="2" fill="#F1F1F1" height="620.0375" id="C_0015199658254065871481" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="361.3408" x="7" y="7"/>
+    <g class="entity" data-entity="C_0015199658254065871481" data-source-line="1" data-uid="ent0002" id="entity_C_0015199658254065871481">
+      <rect fill="#F1F1F1" height="620.0375" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="361.3408" x="7" y="7"/>
       <ellipse cx="178.9474" cy="23" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
       <path d="M181.9161,28.6406 Q181.338,28.9375 180.6974,29.0781 Q180.0568,29.2344 179.3536,29.2344 Q176.8536,29.2344 175.5255,27.5938 Q174.213,25.9375 174.213,22.8125 Q174.213,19.6875 175.5255,18.0313 Q176.8536,16.375 179.3536,16.375 Q180.0568,16.375 180.6974,16.5313 Q181.3536,16.6875 181.9161,16.9844 L181.9161,19.7031 Q181.2911,19.125 180.6974,18.8594 Q180.1036,18.5781 179.4786,18.5781 Q178.1349,18.5781 177.4474,19.6563 Q176.7599,20.7188 176.7599,22.8125 Q176.7599,24.9063 177.4474,25.9844 Q178.1349,27.0469 179.4786,27.0469 Q180.1036,27.0469 180.6974,26.7813 Q181.2911,26.5 181.9161,25.9219 L181.9161,28.6406 Z " fill="#000000"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="8.946" x="199.4474" y="28.432">A</text>
       <line style="stroke:#181818;stroke-width:0.5;" x1="8" x2="367.3408" y1="39" y2="39"/>
-      <ellipse cx="18" cy="54.034" fill="transparent" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <ellipse cx="18" cy="54.034" fill="none" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="130.7455" x="27" y="57.9659">public_member : int</text>
-      <polygon fill="transparent" points="18,68.1019,22,72.1019,18,76.1019,14,72.1019" style="stroke:#B38D22;stroke-width:1;"/>
+      <polygon fill="none" points="18,68.1019,22,72.1019,18,76.1019,14,72.1019" style="stroke:#B38D22;stroke-width:1;"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="155.0214" x="27" y="77.0339">protected_member : int</text>
-      <rect fill="transparent" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="15" y="89.1698"/>
+      <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="15" y="89.1698"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="136.8495" x="27" y="96.1018">private_member : int</text>
-      <rect fill="transparent" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="15" y="108.2377"/>
+      <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="15" y="108.2377"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="42.4198" x="27" y="115.1697">a_ : int</text>
-      <rect fill="transparent" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="15" y="127.3056"/>
+      <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="15" y="127.3056"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="43.1758" x="27" y="134.2376">b_ : int</text>
-      <rect fill="transparent" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="15" y="146.3735"/>
+      <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="15" y="146.3735"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="41.2858" x="27" y="153.3055">c_ : int</text>
-      <ellipse cx="18" cy="168.4415" fill="transparent" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <ellipse cx="18" cy="168.4415" fill="none" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" text-decoration="underline" textLength="86.8837" x="27" y="172.3734">static_int : int</text>
-      <ellipse cx="18" cy="187.5094" fill="transparent" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <ellipse cx="18" cy="187.5094" fill="none" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" text-decoration="underline" textLength="167.9434" x="27" y="191.4414">static_const_int : const int</text>
-      <ellipse cx="18" cy="206.5773" fill="transparent" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <ellipse cx="18" cy="206.5773" fill="none" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" text-decoration="underline" textLength="237.2571" x="27" y="210.5093">auto_member : const unsigned long</text>
       <line style="stroke:#181818;stroke-width:0.5;" x1="8" x2="367.3408" y1="218.6113" y2="218.6113"/>
       <ellipse cx="18" cy="233.6452" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>

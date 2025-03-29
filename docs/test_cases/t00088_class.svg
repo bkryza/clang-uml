@@ -3,8 +3,8 @@
     <style type="text/css">a:hover { text-decoration: underline; }</style>
   </defs>
   <g>
-    <g id="elem_C_0013875468327584959141">
-      <rect codeLine="2" fill="#F1F1F1" height="118.6158" id="C_0013875468327584959141" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="138.7836" x="7" y="7"/>
+    <g class="entity" data-entity="C_0013875468327584959141" data-source-line="1" data-uid="ent0002" id="entity_C_0013875468327584959141">
+      <rect fill="#F1F1F1" height="118.6158" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="138.7836" x="7" y="7"/>
       <ellipse cx="32.2757" cy="29.706" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
       <path d="M35.2445,35.3466 Q34.6664,35.6435 34.0257,35.7841 Q33.3851,35.9404 32.682,35.9404 Q30.182,35.9404 28.8539,34.2998 Q27.5414,32.6435 27.5414,29.5185 Q27.5414,26.3935 28.8539,24.7373 Q30.182,23.081 32.682,23.081 Q33.3851,23.081 34.0257,23.2373 Q34.682,23.3935 35.2445,23.6904 L35.2445,26.4091 Q34.6195,25.831 34.0257,25.5654 Q33.432,25.2841 32.807,25.2841 Q31.4632,25.2841 30.7757,26.3623 Q30.0882,27.4248 30.0882,29.5185 Q30.0882,31.6123 30.7757,32.6904 Q31.4632,33.7529 32.807,33.7529 Q33.432,33.7529 34.0257,33.4873 Q34.6195,33.206 35.2445,32.6279 L35.2445,35.3466 Z " fill="#000000"/>
       <text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="87.9486" x="46.5592" y="24.8281">«ObjC Interface»</text>
@@ -13,9 +13,9 @@
       <ellipse cx="18" cy="67.446" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" text-decoration="underline" textLength="68.9917" x="27" y="71.378">foo() : void</text>
       <line style="stroke:#181818;stroke-width:0.5;" x1="8" x2="144.7836" y1="79.4799" y2="79.4799"/>
-      <polygon fill="transparent" points="18,89.5139,22,93.5139,18,97.5139,14,93.5139" style="stroke:#B38D22;stroke-width:1;"/>
+      <polygon fill="none" points="18,89.5139,22,93.5139,18,97.5139,14,93.5139" style="stroke:#B38D22;stroke-width:1;"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="112.7836" x="27" y="98.4459">_barMember : int</text>
-      <polygon fill="transparent" points="18,108.5818,22,112.5818,18,116.5818,14,112.5818" style="stroke:#B38D22;stroke-width:1;"/>
+      <polygon fill="none" points="18,108.5818,22,112.5818,18,116.5818,14,112.5818" style="stroke:#B38D22;stroke-width:1;"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="112.2936" x="27" y="117.5138">_fooMember : int</text>
     </g>
   </g>

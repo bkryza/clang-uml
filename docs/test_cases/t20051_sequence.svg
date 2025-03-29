@@ -13,24 +13,32 @@
     </g>
     <g>
       <title>tmain()</title>
-      <rect fill="transparent" height="64" width="8" x="31.3309" y="58.1358"/>
+      <rect fill="#000000" fill-opacity="0.00000" height="64" width="8" x="31.3309" y="58.1358"/>
       <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="35" x2="35" y1="58.1358" y2="122.1358"/>
     </g>
     <g>
       <title>&lt;&lt; CUDA Kernel &gt;&gt;</title>
-      <rect fill="transparent" height="64" width="8" x="220.9083" y="58.1358"/>
+      <rect fill="#000000" fill-opacity="0.00000" height="64" width="8" x="220.9083" y="58.1358"/>
       <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="224.6618" x2="224.6618" y1="58.1358" y2="122.1358"/>
     </g>
-    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="60.6618" x="5" y="24.0679"/>
-    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="46.6618" x="12" y="46.0339">tmain()</text>
-    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="60.6618" x="5" y="121.1358"/>
-    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="46.6618" x="12" y="143.1018">tmain()</text>
-    <rect fill="#E2E2F0" height="52.1358" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="298.4929" x="75.6618" y="5"/>
-    <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="91.0277" x="179.3944" y="26.9659">«CUDA Kernel»</text>
-    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="284.4929" x="82.6618" y="46.0339">vector_square_add(float *,float *,float *,int)</text>
-    <rect fill="#E2E2F0" height="52.1358" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="298.4929" x="75.6618" y="121.1358"/>
-    <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="91.0277" x="179.3944" y="143.1018">«CUDA Kernel»</text>
-    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="284.4929" x="82.6618" y="162.1697">vector_square_add(float *,float *,float *,int)</text>
+    <g class="participant participant-head" data-participant="C_0000264033748622970437">
+      <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="60.6618" x="5" y="24.0679"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="46.6618" x="12" y="46.0339">tmain()</text>
+    </g>
+    <g class="participant participant-tail" data-participant="C_0000264033748622970437">
+      <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="60.6618" x="5" y="121.1358"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="46.6618" x="12" y="143.1018">tmain()</text>
+    </g>
+    <g class="participant participant-head" data-participant="C_0015777908100258569834">
+      <rect fill="#E2E2F0" height="52.1358" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="298.4929" x="75.6618" y="5"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="91.0277" x="179.3944" y="26.9659">«CUDA Kernel»</text>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="284.4929" x="82.6618" y="46.0339">vector_square_add(float *,float *,float *,int)</text>
+    </g>
+    <g class="participant participant-tail" data-participant="C_0015777908100258569834">
+      <rect fill="#E2E2F0" height="52.1358" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="298.4929" x="75.6618" y="121.1358"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="91.0277" x="179.3944" y="143.1018">«CUDA Kernel»</text>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="284.4929" x="82.6618" y="162.1697">vector_square_add(float *,float *,float *,int)</text>
+    </g>
     <g>
       <title>tmain()</title>
       <rect fill="#FFFFFF" height="36" style="stroke:#181818;stroke-width:1;" width="10" x="30.3309" y="68.1358"/>
@@ -39,7 +47,9 @@
       <title>&lt;&lt; CUDA Kernel &gt;&gt;</title>
       <rect fill="#FFFFFF" height="30" style="stroke:#181818;stroke-width:1;" width="10" x="219.9083" y="74.1358"/>
     </g>
-    <polygon fill="#181818" points="207.9083,70.1358,217.9083,74.1358,207.9083,78.1358,211.9083,74.1358" style="stroke:#181818;stroke-width:1;"/>
-    <line style="stroke:#181818;stroke-width:1;" x1="40.3309" x2="213.9083" y1="74.1358" y2="74.1358"/>
+    <g class="message" data-participant-1="C_0000264033748622970437" data-participant-2="C_0015777908100258569834">
+      <polygon fill="#181818" points="207.9083,70.1358,217.9083,74.1358,207.9083,78.1358,211.9083,74.1358" style="stroke:#181818;stroke-width:1;"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="40.3309" x2="213.9083" y1="74.1358" y2="74.1358"/>
+    </g>
   </g>
 </svg>

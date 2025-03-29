@@ -490,6 +490,9 @@ test_cases:
     - name: t20072
       title: Test case for sequence diagram with local classes defined in function bodies
       description:
+    - name: t20073
+      title: Test case for sequence diagram with argument names in message signatures
+      description:
   Package diagrams:
     - name: t30001
       title: Basic package diagram test case

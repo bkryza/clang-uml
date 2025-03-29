@@ -17,31 +17,43 @@
     </g>
     <g>
       <title>tmain()</title>
-      <rect fill="transparent" height="92" width="8" x="31.3309" y="39.0679"/>
+      <rect fill="#000000" fill-opacity="0.00000" height="92" width="8" x="31.3309" y="39.0679"/>
       <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="35" x2="35" y1="39.0679" y2="131.0679"/>
     </g>
     <g>
       <title>is_empty(const std::string &amp;)</title>
-      <rect fill="transparent" height="92" width="8" x="171.7335" y="39.0679"/>
+      <rect fill="#000000" fill-opacity="0.00000" height="92" width="8" x="171.7335" y="39.0679"/>
       <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="175.6618" x2="175.6618" y1="39.0679" y2="131.0679"/>
     </g>
     <g>
       <title>log()</title>
-      <rect fill="transparent" height="92" width="8" x="303.3511" y="39.0679"/>
+      <rect fill="#000000" fill-opacity="0.00000" height="92" width="8" x="303.3511" y="39.0679"/>
       <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="306.8051" x2="306.8051" y1="39.0679" y2="131.0679"/>
     </g>
-    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="60.6618" x="5" y="5"/>
-    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="46.6618" x="12" y="26.9659">tmain()</text>
-    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="60.6618" x="5" y="130.0679"/>
-    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="46.6618" x="12" y="152.0339">tmain()</text>
-    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="200.1433" x="75.6618" y="5"/>
-    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="186.1433" x="82.6618" y="26.9659">is_empty(const std::string &amp;)</text>
-    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="200.1433" x="75.6618" y="130.0679"/>
-    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="186.1433" x="82.6618" y="152.0339">is_empty(const std::string &amp;)</text>
-    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="43.0919" x="285.8051" y="5"/>
-    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="29.0919" x="292.8051" y="26.9659">log()</text>
-    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="43.0919" x="285.8051" y="130.0679"/>
-    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="29.0919" x="292.8051" y="152.0339">log()</text>
+    <g class="participant participant-head" data-participant="C_0006272144118974387772">
+      <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="60.6618" x="5" y="5"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="46.6618" x="12" y="26.9659">tmain()</text>
+    </g>
+    <g class="participant participant-tail" data-participant="C_0006272144118974387772">
+      <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="60.6618" x="5" y="130.0679"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="46.6618" x="12" y="152.0339">tmain()</text>
+    </g>
+    <g class="participant participant-head" data-participant="C_0014984935264988568640">
+      <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="200.1433" x="75.6618" y="5"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="186.1433" x="82.6618" y="26.9659">is_empty(const std::string &amp;)</text>
+    </g>
+    <g class="participant participant-tail" data-participant="C_0014984935264988568640">
+      <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="200.1433" x="75.6618" y="130.0679"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="186.1433" x="82.6618" y="152.0339">is_empty(const std::string &amp;)</text>
+    </g>
+    <g class="participant participant-head" data-participant="C_0003525343840309440075">
+      <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="43.0919" x="285.8051" y="5"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="29.0919" x="292.8051" y="26.9659">log()</text>
+    </g>
+    <g class="participant participant-tail" data-participant="C_0003525343840309440075">
+      <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="43.0919" x="285.8051" y="130.0679"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="29.0919" x="292.8051" y="152.0339">log()</text>
+    </g>
     <g>
       <title>tmain()</title>
       <rect fill="#FFFFFF" height="64" style="stroke:#181818;stroke-width:1;" width="10" x="30.3309" y="49.0679"/>
@@ -54,11 +66,17 @@
       <title>log()</title>
       <rect fill="#FFFFFF" height="30" style="stroke:#181818;stroke-width:1;" width="10" x="302.3511" y="83.0679"/>
     </g>
-    <polygon fill="#181818" points="158.7335,51.0679,168.7335,55.0679,158.7335,59.0679,162.7335,55.0679" style="stroke:#181818;stroke-width:1;"/>
-    <line style="stroke:#181818;stroke-width:1;" x1="40.3309" x2="164.7335" y1="55.0679" y2="55.0679"/>
-    <polygon fill="#181818" points="51.3309,65.0679,41.3309,69.0679,51.3309,73.0679,47.3309,69.0679" style="stroke:#181818;stroke-width:1;"/>
-    <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="45.3309" x2="174.7335" y1="69.0679" y2="69.0679"/>
-    <polygon fill="#181818" points="290.3511,79.0679,300.3511,83.0679,290.3511,87.0679,294.3511,83.0679" style="stroke:#181818;stroke-width:1;"/>
-    <line style="stroke:#181818;stroke-width:1;" x1="40.3309" x2="296.3511" y1="83.0679" y2="83.0679"/>
+    <g class="message" data-participant-1="C_0006272144118974387772" data-participant-2="C_0014984935264988568640">
+      <polygon fill="#181818" points="158.7335,51.0679,168.7335,55.0679,158.7335,59.0679,162.7335,55.0679" style="stroke:#181818;stroke-width:1;"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="40.3309" x2="164.7335" y1="55.0679" y2="55.0679"/>
+    </g>
+    <g class="message" data-participant-1="C_0014984935264988568640" data-participant-2="C_0006272144118974387772">
+      <polygon fill="#181818" points="51.3309,65.0679,41.3309,69.0679,51.3309,73.0679,47.3309,69.0679" style="stroke:#181818;stroke-width:1;"/>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="45.3309" x2="174.7335" y1="69.0679" y2="69.0679"/>
+    </g>
+    <g class="message" data-participant-1="C_0006272144118974387772" data-participant-2="C_0003525343840309440075">
+      <polygon fill="#181818" points="290.3511,79.0679,300.3511,83.0679,290.3511,87.0679,294.3511,83.0679" style="stroke:#181818;stroke-width:1;"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="40.3309" x2="296.3511" y1="83.0679" y2="83.0679"/>
+    </g>
   </g>
 </svg>

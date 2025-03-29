@@ -261,6 +261,7 @@ types:
         # Sequence diagram specific options
         #
         generate_method_arguments: !optional generate_method_arguments_t
+        generate_method_argument_names: !optional bool
         combine_free_functions_into_file_participants: !optional bool
         inline_lambda_messages: !optional bool
         generate_return_types: !optional bool

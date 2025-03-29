@@ -3,8 +3,8 @@
     <style type="text/css">a:hover { text-decoration: underline; }</style>
   </defs>
   <g>
-    <g id="elem_C_0012590792276569553107">
-      <rect codeLine="2" fill="#F1F1F1" height="86.1358" id="C_0012590792276569553107" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="94.3337" x="7" y="304"/>
+    <g class="entity" data-entity="C_0012590792276569553107" data-source-line="1" data-uid="ent0002" id="entity_C_0012590792276569553107">
+      <rect fill="#F1F1F1" height="86.1358" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="94.3337" x="7" y="304"/>
       <ellipse cx="27.1057" cy="320" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
       <path d="M30.0744,325.6406 Q29.4963,325.9375 28.8557,326.0781 Q28.215,326.2344 27.5119,326.2344 Q25.0119,326.2344 23.6838,324.5938 Q22.3713,322.9375 22.3713,319.8125 Q22.3713,316.6875 23.6838,315.0313 Q25.0119,313.375 27.5119,313.375 Q28.215,313.375 28.8557,313.5313 Q29.5119,313.6875 30.0744,313.9844 L30.0744,316.7031 Q29.4494,316.125 28.8557,315.8594 Q28.2619,315.5781 27.6369,315.5781 Q26.2932,315.5781 25.6057,316.6563 Q24.9182,317.7188 24.9182,319.8125 Q24.9182,321.9063 25.6057,322.9844 Q26.2932,324.0469 27.6369,324.0469 Q28.2619,324.0469 28.8557,323.7813 Q29.4494,323.5 30.0744,322.9219 L30.0744,325.6406 Z " fill="#000000"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="50.9878" x="42.2403" y="325.432">Target1</text>
@@ -15,8 +15,8 @@
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="68.3337" x="27" y="374.0339">m2() : void</text>
       <line style="stroke:#181818;stroke-width:0.5;" x1="8" x2="100.3337" y1="382.1358" y2="382.1358"/>
     </g>
-    <g id="elem_C_0006015171275694677358">
-      <rect codeLine="8" fill="#F1F1F1" height="86.1358" id="C_0006015171275694677358" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="94.3337" x="449" y="304"/>
+    <g class="entity" data-entity="C_0006015171275694677358" data-source-line="7" data-uid="ent0003" id="entity_C_0006015171275694677358">
+      <rect fill="#F1F1F1" height="86.1358" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="94.3337" x="449" y="304"/>
       <ellipse cx="469.1057" cy="320" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
       <path d="M472.0744,325.6406 Q471.4963,325.9375 470.8557,326.0781 Q470.215,326.2344 469.5119,326.2344 Q467.0119,326.2344 465.6838,324.5938 Q464.3713,322.9375 464.3713,319.8125 Q464.3713,316.6875 465.6838,315.0313 Q467.0119,313.375 469.5119,313.375 Q470.215,313.375 470.8557,313.5313 Q471.5119,313.6875 472.0744,313.9844 L472.0744,316.7031 Q471.4494,316.125 470.8557,315.8594 Q470.2619,315.5781 469.6369,315.5781 Q468.2932,315.5781 467.6057,316.6563 Q466.9182,317.7188 466.9182,319.8125 Q466.9182,321.9063 467.6057,322.9844 Q468.2932,324.0469 469.6369,324.0469 Q470.2619,324.0469 470.8557,323.7813 Q471.4494,323.5 472.0744,322.9219 L472.0744,325.6406 Z " fill="#000000"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="50.9878" x="484.2403" y="325.432">Target2</text>
@@ -27,8 +27,8 @@
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="68.3337" x="469" y="374.0339">m2() : void</text>
       <line style="stroke:#181818;stroke-width:0.5;" x1="450" x2="542.3337" y1="382.1358" y2="382.1358"/>
     </g>
-    <g id="elem_C_0011866826404291240710">
-      <rect codeLine="14" fill="#F1F1F1" height="132.2717" id="C_0011866826404291240710" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="277.2291" x="136.5" y="281"/>
+    <g class="entity" data-entity="C_0011866826404291240710" data-source-line="13" data-uid="ent0004" id="entity_C_0011866826404291240710">
+      <rect fill="#F1F1F1" height="132.2717" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="277.2291" x="136.5" y="281"/>
       <ellipse cx="247.2246" cy="297" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
       <path d="M250.1933,302.6406 Q249.6152,302.9375 248.9746,303.0781 Q248.334,303.2344 247.6308,303.2344 Q245.1308,303.2344 243.8027,301.5938 Q242.4902,299.9375 242.4902,296.8125 Q242.4902,293.6875 243.8027,292.0313 Q245.1308,290.375 247.6308,290.375 Q248.334,290.375 248.9746,290.5313 Q249.6308,290.6875 250.1933,290.9844 L250.1933,293.7031 Q249.5683,293.125 248.9746,292.8594 Q248.3808,292.5781 247.7558,292.5781 Q246.4121,292.5781 245.7246,293.6563 Q245.0371,294.7188 245.0371,296.8125 Q245.0371,298.9063 245.7246,299.9844 Q246.4121,301.0469 247.7558,301.0469 Q248.3808,301.0469 248.9746,300.7813 Q249.5683,300.5 250.1933,299.9219 L250.1933,302.6406 Z " fill="#000000"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="37.2679" x="267.7246" y="302.432">Proxy</text>
@@ -43,11 +43,11 @@
       <ellipse cx="147.5" cy="374.1698" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="68.3337" x="156.5" y="378.1018">m2() : void</text>
       <line style="stroke:#181818;stroke-width:0.5;" x1="137.5" x2="412.7291" y1="386.2038" y2="386.2038"/>
-      <rect fill="transparent" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="144.5" y="398.2377"/>
+      <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="144.5" y="398.2377"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="193.4233" x="156.5" y="405.1697">m_target : std::shared_ptr&lt;T&gt;</text>
     </g>
-    <g id="elem_C_0013159734742705115399">
-      <rect codeLine="23" fill="#F1F1F1" height="48" id="C_0013159734742705115399" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="114.4041" x="144" y="172"/>
+    <g class="entity" data-entity="C_0013159734742705115399" data-source-line="22" data-uid="ent0005" id="entity_C_0013159734742705115399">
+      <rect fill="#F1F1F1" height="48" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="114.4041" x="144" y="172"/>
       <ellipse cx="159" cy="188" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
       <path d="M161.9688,193.6406 Q161.3906,193.9375 160.75,194.0781 Q160.1094,194.2344 159.4063,194.2344 Q156.9063,194.2344 155.5781,192.5938 Q154.2656,190.9375 154.2656,187.8125 Q154.2656,184.6875 155.5781,183.0313 Q156.9063,181.375 159.4063,181.375 Q160.1094,181.375 160.75,181.5313 Q161.4063,181.6875 161.9688,181.9844 L161.9688,184.7031 Q161.3438,184.125 160.75,183.8594 Q160.1563,183.5781 159.5313,183.5781 Q158.1875,183.5781 157.5,184.6563 Q156.8125,185.7188 156.8125,187.8125 Q156.8125,189.9063 157.5,190.9844 Q158.1875,192.0469 159.5313,192.0469 Q160.1563,192.0469 160.75,191.7813 Q161.3438,191.5 161.9688,190.9219 L161.9688,193.6406 Z " fill="#000000"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="37.2679" x="173" y="193.432">Proxy</text>
@@ -56,8 +56,8 @@
       <line style="stroke:#181818;stroke-width:0.5;" x1="145" x2="257.4041" y1="204" y2="204"/>
       <line style="stroke:#181818;stroke-width:0.5;" x1="145" x2="257.4041" y1="212" y2="212"/>
     </g>
-    <g id="elem_C_0009520824801890390106">
-      <rect codeLine="27" fill="#F1F1F1" height="48" id="C_0009520824801890390106" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="114.4041" x="293" y="172"/>
+    <g class="entity" data-entity="C_0009520824801890390106" data-source-line="26" data-uid="ent0006" id="entity_C_0009520824801890390106">
+      <rect fill="#F1F1F1" height="48" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="114.4041" x="293" y="172"/>
       <ellipse cx="308" cy="188" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
       <path d="M310.9688,193.6406 Q310.3906,193.9375 309.75,194.0781 Q309.1094,194.2344 308.4063,194.2344 Q305.9063,194.2344 304.5781,192.5938 Q303.2656,190.9375 303.2656,187.8125 Q303.2656,184.6875 304.5781,183.0313 Q305.9063,181.375 308.4063,181.375 Q309.1094,181.375 309.75,181.5313 Q310.4063,181.6875 310.9688,181.9844 L310.9688,184.7031 Q310.3438,184.125 309.75,183.8594 Q309.1563,183.5781 308.5313,183.5781 Q307.1875,183.5781 306.5,184.6563 Q305.8125,185.7188 305.8125,187.8125 Q305.8125,189.9063 306.5,190.9844 Q307.1875,192.0469 308.5313,192.0469 Q309.1563,192.0469 309.75,191.7813 Q310.3438,191.5 310.9688,190.9219 L310.9688,193.6406 Z " fill="#000000"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="37.2679" x="322" y="193.432">Proxy</text>
@@ -66,44 +66,44 @@
       <line style="stroke:#181818;stroke-width:0.5;" x1="294" x2="406.4041" y1="204" y2="204"/>
       <line style="stroke:#181818;stroke-width:0.5;" x1="294" x2="406.4041" y1="212" y2="212"/>
     </g>
-    <g id="elem_C_0015250538431605181984">
-      <rect codeLine="31" fill="#F1F1F1" height="86.1358" id="C_0015250538431605181984" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="186.7194" x="181.5" y="7"/>
+    <g class="entity" data-entity="C_0015250538431605181984" data-source-line="30" data-uid="ent0007" id="entity_C_0015250538431605181984">
+      <rect fill="#F1F1F1" height="86.1358" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="186.7194" x="181.5" y="7"/>
       <ellipse cx="229.6038" cy="23" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
       <path d="M232.5726,28.6406 Q231.9945,28.9375 231.3538,29.0781 Q230.7132,29.2344 230.0101,29.2344 Q227.5101,29.2344 226.182,27.5938 Q224.8695,25.9375 224.8695,22.8125 Q224.8695,19.6875 226.182,18.0313 Q227.5101,16.375 230.0101,16.375 Q230.7132,16.375 231.3538,16.5313 Q232.0101,16.6875 232.5726,16.9844 L232.5726,19.7031 Q231.9476,19.125 231.3538,18.8594 Q230.7601,18.5781 230.1351,18.5781 Q228.7913,18.5781 228.1038,19.6563 Q227.4163,20.7188 227.4163,22.8125 Q227.4163,24.9063 228.1038,25.9844 Q228.7913,27.0469 230.1351,27.0469 Q230.7601,27.0469 231.3538,26.7813 Q231.9476,26.5 232.5726,25.9219 L232.5726,28.6406 Z " fill="#000000"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="82.0117" x="250.1038" y="28.432">ProxyHolder</text>
       <line style="stroke:#181818;stroke-width:0.5;" x1="182.5" x2="367.2194" y1="39" y2="39"/>
       <line style="stroke:#181818;stroke-width:0.5;" x1="182.5" x2="367.2194" y1="47" y2="47"/>
-      <ellipse cx="192.5" cy="62.034" fill="transparent" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <ellipse cx="192.5" cy="62.034" fill="none" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="160.7194" x="201.5" y="65.9659">proxy1 : Proxy&lt;Target1&gt;</text>
-      <ellipse cx="192.5" cy="81.1019" fill="transparent" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <ellipse cx="192.5" cy="81.1019" fill="none" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="160.7194" x="201.5" y="85.0339">proxy2 : Proxy&lt;Target2&gt;</text>
     </g>
-    <g id="link_C_0013159734742705115399_C_0012590792276569553107">
-      <path codeLine="36" d="M178.03,220.28 C155.99,242.63 126.4034,272.6083 99.6534,299.7283 " fill="transparent" id="C_0013159734742705115399-to-C_0012590792276569553107" style="stroke:#181818;stroke-width:1;stroke-dasharray:7.0,7.0;"/>
+    <g class="link" data-entity-1="C_0013159734742705115399" data-entity-2="C_0012590792276569553107" data-source-line="36" data-uid="lnk8" id="link_C_0013159734742705115399_C_0012590792276569553107">
+      <path codeLine="36" d="M178.03,220.28 C155.99,242.63 126.4034,272.6083 99.6534,299.7283" fill="none" id="C_0013159734742705115399-to-C_0012590792276569553107" style="stroke:#181818;stroke-width:1;stroke-dasharray:7.0,7.0;"/>
       <polygon fill="#181818" points="95.44,304,104.6079,300.4014,98.9512,300.4403,98.9123,294.7835,95.44,304" style="stroke:#181818;stroke-width:1;"/>
     </g>
-    <g id="link_C_0013159734742705115399_C_0011866826404291240710">
-      <path codeLine="37" d="M212.56,220.28 C220.65,236.57 223.8821,243.0694 234.5921,264.6294 " fill="transparent" id="C_0013159734742705115399-to-C_0011866826404291240710" style="stroke:#181818;stroke-width:1;stroke-dasharray:7.0,7.0;"/>
-      <polygon fill="transparent" points="242.6,280.75,239.9656,261.9601,229.2185,267.2987,242.6,280.75" style="stroke:#181818;stroke-width:1;"/>
+    <g class="link" data-entity-1="C_0013159734742705115399" data-entity-2="C_0011866826404291240710" data-source-line="37" data-uid="lnk9" id="link_C_0013159734742705115399_C_0011866826404291240710">
+      <path codeLine="37" d="M212.56,220.28 C220.65,236.57 223.8821,243.0694 234.5921,264.6294" fill="none" id="C_0013159734742705115399-to-C_0011866826404291240710" style="stroke:#181818;stroke-width:1;stroke-dasharray:7.0,7.0;"/>
+      <polygon fill="none" points="242.6,280.75,239.9656,261.9601,229.2185,267.2987,242.6,280.75" style="stroke:#181818;stroke-width:1;"/>
     </g>
-    <g id="link_C_0009520824801890390106_C_0006015171275694677358">
-      <path codeLine="38" d="M372.81,220.28 C394.71,242.63 424.081,272.5941 450.651,299.7141 " fill="transparent" id="C_0009520824801890390106-to-C_0006015171275694677358" style="stroke:#181818;stroke-width:1;stroke-dasharray:7.0,7.0;"/>
+    <g class="link" data-entity-1="C_0009520824801890390106" data-entity-2="C_0006015171275694677358" data-source-line="38" data-uid="lnk10" id="link_C_0009520824801890390106_C_0006015171275694677358">
+      <path codeLine="38" d="M372.81,220.28 C394.71,242.63 424.081,272.5941 450.651,299.7141" fill="none" id="C_0009520824801890390106-to-C_0006015171275694677358" style="stroke:#181818;stroke-width:1;stroke-dasharray:7.0,7.0;"/>
       <polygon fill="#181818" points="454.85,304,451.4088,294.7719,451.3509,300.4284,445.6943,300.3705,454.85,304" style="stroke:#181818;stroke-width:1;"/>
     </g>
-    <g id="link_C_0009520824801890390106_C_0011866826404291240710">
-      <path codeLine="39" d="M338.28,220.28 C330.08,236.57 326.7975,243.1142 315.9375,264.6742 " fill="transparent" id="C_0009520824801890390106-to-C_0011866826404291240710" style="stroke:#181818;stroke-width:1;stroke-dasharray:7.0,7.0;"/>
-      <polygon fill="transparent" points="307.84,280.75,321.2961,267.3734,310.5789,261.9751,307.84,280.75" style="stroke:#181818;stroke-width:1;"/>
+    <g class="link" data-entity-1="C_0009520824801890390106" data-entity-2="C_0011866826404291240710" data-source-line="39" data-uid="lnk11" id="link_C_0009520824801890390106_C_0011866826404291240710">
+      <path codeLine="39" d="M338.28,220.28 C330.08,236.57 326.7975,243.1142 315.9375,264.6742" fill="none" id="C_0009520824801890390106-to-C_0011866826404291240710" style="stroke:#181818;stroke-width:1;stroke-dasharray:7.0,7.0;"/>
+      <polygon fill="none" points="307.84,280.75,321.2961,267.3734,310.5789,261.9751,307.84,280.75" style="stroke:#181818;stroke-width:1;"/>
     </g>
-    <g id="link_C_0015250538431605181984_C_0013159734742705115399">
-      <path codeLine="40" d="M246.9443,103.7955 C241.7943,113.5655 241.97,113.32 237,123 C228.63,139.28 219.4,157.76 212.38,171.91 " fill="transparent" id="C_0015250538431605181984-backto-C_0013159734742705115399" style="stroke:#181818;stroke-width:1;"/>
-      <polygon fill="transparent" points="252.54,93.18,246.2037,96.6225,246.9443,103.7955,253.2807,100.353,252.54,93.18" style="stroke:#181818;stroke-width:1;"/>
-      <ellipse cx="243" cy="133.353" fill="transparent" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+    <g class="link" data-entity-1="C_0015250538431605181984" data-entity-2="C_0013159734742705115399" data-source-line="40" data-uid="lnk12" id="link_C_0015250538431605181984_C_0013159734742705115399">
+      <path codeLine="40" d="M246.9443,103.7955 C241.7943,113.5655 241.97,113.32 237,123 C228.63,139.28 219.4,157.76 212.38,171.91" fill="none" id="C_0015250538431605181984-backto-C_0013159734742705115399" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="none" points="252.54,93.18,246.2037,96.6225,246.9443,103.7955,253.2807,100.353,252.54,93.18" style="stroke:#181818;stroke-width:1;"/>
+      <ellipse cx="243" cy="133.353" fill="none" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
       <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="42.172" x="250" y="137.897">proxy1</text>
     </g>
-    <g id="link_C_0015250538431605181984_C_0009520824801890390106">
-      <path codeLine="41" d="M302.4361,103.6815 C315.8461,129.4115 326.94,150.72 337.98,171.93 " fill="transparent" id="C_0015250538431605181984-backto-C_0009520824801890390106" style="stroke:#181818;stroke-width:1;"/>
-      <polygon fill="transparent" points="296.89,93.04,296.1159,100.2094,302.4361,103.6815,303.2102,96.512,296.89,93.04" style="stroke:#181818;stroke-width:1;"/>
-      <ellipse cx="327" cy="133.353" fill="transparent" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+    <g class="link" data-entity-1="C_0015250538431605181984" data-entity-2="C_0009520824801890390106" data-source-line="41" data-uid="lnk13" id="link_C_0015250538431605181984_C_0009520824801890390106">
+      <path codeLine="41" d="M302.4361,103.6815 C315.8461,129.4115 326.94,150.72 337.98,171.93" fill="none" id="C_0015250538431605181984-backto-C_0009520824801890390106" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="none" points="296.89,93.04,296.1159,100.2094,302.4361,103.6815,303.2102,96.512,296.89,93.04" style="stroke:#181818;stroke-width:1;"/>
+      <ellipse cx="327" cy="133.353" fill="none" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
       <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="42.172" x="334" y="137.897">proxy2</text>
     </g>
   </g>

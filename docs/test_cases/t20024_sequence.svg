@@ -47,35 +47,47 @@
       <title>B</title>
       <rect fill="#FFFFFF" height="28" style="stroke:#181818;stroke-width:1;" width="10" x="250.929" y="907.3952"/>
     </g>
-    <rect fill="transparent" height="430.4576" style="stroke:#000000;stroke-width:1.5;" width="240.929" x="10" y="87.7739"/>
-    <rect fill="transparent" height="386.4576" style="stroke:#000000;stroke-width:1.5;" width="125.3941" x="229.379" y="563.9376"/>
+    <rect fill="none" height="430.4576" style="stroke:#000000;stroke-width:1.5;" width="240.929" x="10" y="87.7739"/>
+    <rect fill="none" height="386.4576" style="stroke:#000000;stroke-width:1.5;" width="125.3941" x="229.379" y="563.9376"/>
     <g>
       <title>tmain()</title>
-      <rect fill="transparent" height="928.3273" width="8" x="46.3309" y="39.0679"/>
+      <rect fill="#000000" fill-opacity="0.00000" height="928.3273" width="8" x="46.3309" y="39.0679"/>
       <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="50" x2="50" y1="39.0679" y2="967.3952"/>
     </g>
     <g>
       <title>A</title>
-      <rect fill="transparent" height="928.3273" width="8" x="166.929" y="39.0679"/>
+      <rect fill="#000000" fill-opacity="0.00000" height="928.3273" width="8" x="166.929" y="39.0679"/>
       <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="170.456" x2="170.456" y1="39.0679" y2="967.3952"/>
     </g>
     <g>
       <title>B</title>
-      <rect fill="transparent" height="928.3273" width="8" x="246.929" y="39.0679"/>
+      <rect fill="#000000" fill-opacity="0.00000" height="928.3273" width="8" x="246.929" y="39.0679"/>
       <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="250.379" x2="250.379" y1="39.0679" y2="967.3952"/>
     </g>
-    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="60.6618" x="20" y="5"/>
-    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="46.6618" x="27" y="26.9659">tmain()</text>
-    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="60.6618" x="20" y="966.3952"/>
-    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="46.6618" x="27" y="988.3612">tmain()</text>
-    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="22.946" x="159.456" y="5"/>
-    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="8.946" x="166.456" y="26.9659">A</text>
-    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="22.946" x="159.456" y="966.3952"/>
-    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="8.946" x="166.456" y="988.3612">A</text>
-    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="23.1" x="239.379" y="5"/>
-    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="9.1" x="246.379" y="26.9659">B</text>
-    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="23.1" x="239.379" y="966.3952"/>
-    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="9.1" x="246.379" y="988.3612">B</text>
+    <g class="participant participant-head" data-participant="C_0015357715529807864116">
+      <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="60.6618" x="20" y="5"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="46.6618" x="27" y="26.9659">tmain()</text>
+    </g>
+    <g class="participant participant-tail" data-participant="C_0015357715529807864116">
+      <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="60.6618" x="20" y="966.3952"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="46.6618" x="27" y="988.3612">tmain()</text>
+    </g>
+    <g class="participant participant-head" data-participant="C_0000326295358685670625">
+      <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="22.946" x="159.456" y="5"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="8.946" x="166.456" y="26.9659">A</text>
+    </g>
+    <g class="participant participant-tail" data-participant="C_0000326295358685670625">
+      <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="22.946" x="159.456" y="966.3952"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="8.946" x="166.456" y="988.3612">A</text>
+    </g>
+    <g class="participant participant-head" data-participant="C_0007466296117011526976">
+      <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="23.1" x="239.379" y="5"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="9.1" x="246.379" y="26.9659">B</text>
+    </g>
+    <g class="participant participant-tail" data-participant="C_0007466296117011526976">
+      <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="23.1" x="239.379" y="966.3952"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="9.1" x="246.379" y="988.3612">B</text>
+    </g>
     <g>
       <title>tmain()</title>
       <rect fill="#FFFFFF" height="908.3273" style="stroke:#181818;stroke-width:1;" width="10" x="45.3309" y="49.0679"/>
@@ -120,97 +132,133 @@
       <title>B</title>
       <rect fill="#FFFFFF" height="28" style="stroke:#181818;stroke-width:1;" width="10" x="250.929" y="907.3952"/>
     </g>
-    <polygon fill="#181818" points="153.929,68.7739,163.929,72.7739,153.929,76.7739,157.929,72.7739" style="stroke:#181818;stroke-width:1;"/>
-    <line style="stroke:#181818;stroke-width:1;" x1="55.3309" x2="159.929" y1="72.7739" y2="72.7739"/>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="91.5981" x="62.3309" y="66.9649">select(enum_a)</text>
-    <path d="M10,87.7739 L97.419,87.7739 L97.419,97.4799 L87.419,107.4799 L10,107.4799 L10,87.7739 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/>
-    <rect fill="transparent" height="430.4576" style="stroke:#000000;stroke-width:1.5;" width="240.929" x="10" y="87.7739"/>
+    <g class="message" data-participant-1="C_0015357715529807864116" data-participant-2="C_0000326295358685670625">
+      <polygon fill="#181818" points="153.929,68.7739,163.929,72.7739,153.929,76.7739,157.929,72.7739" style="stroke:#181818;stroke-width:1;"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="55.3309" x2="159.929" y1="72.7739" y2="72.7739"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="91.5981" x="62.3309" y="66.9649">select(enum_a)</text>
+    </g>
+    <path d="M10,87.7739 L97.419,87.7739 L97.419,97.4799 L87.419,107.4799 L10,107.4799 L10,87.7739" fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/>
+    <rect fill="none" height="430.4576" style="stroke:#000000;stroke-width:1.5;" width="240.929" x="10" y="87.7739"/>
     <text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="42.419" x="25" y="102.6709">switch</text>
     <line style="stroke:#000000;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="10" x2="250.929" y1="108.4799" y2="108.4799"/>
     <text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="30.9538" x="15" y="120.2389">[zero]</text>
-    <line style="stroke:#181818;stroke-width:1;" x1="175.929" x2="222.929" y1="143.1679" y2="143.1679"/>
-    <line style="stroke:#181818;stroke-width:1;" x1="222.929" x2="222.929" y1="143.1679" y2="156.1679"/>
-    <line style="stroke:#181818;stroke-width:1;" x1="181.929" x2="222.929" y1="156.1679" y2="156.1679"/>
-    <polygon fill="#181818" points="191.929,152.1679,181.929,156.1679,191.929,160.1679,187.929,156.1679" style="stroke:#181818;stroke-width:1;"/>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="22.529" x="187.929" y="137.3589">a0()</text>
-    <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="180.929" x2="222.929" y1="180.1679" y2="180.1679"/>
-    <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="222.929" x2="222.929" y1="180.1679" y2="193.1679"/>
-    <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="175.929" x2="222.929" y1="193.1679" y2="193.1679"/>
-    <polygon fill="#181818" points="185.929,189.1679,175.929,193.1679,185.929,197.1679,181.929,193.1679" style="stroke:#181818;stroke-width:1;"/>
-    <polygon fill="#181818" points="66.3309,198.1679,56.3309,202.1679,66.3309,206.1679,62.3309,202.1679" style="stroke:#181818;stroke-width:1;"/>
-    <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="60.3309" x2="164.929" y1="202.1679" y2="202.1679"/>
+    <g class="message" data-participant-1="C_0000326295358685670625" data-participant-2="C_0000326295358685670625">
+      <line style="stroke:#181818;stroke-width:1;" x1="175.929" x2="222.929" y1="143.1679" y2="143.1679"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="222.929" x2="222.929" y1="143.1679" y2="156.1679"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="181.929" x2="222.929" y1="156.1679" y2="156.1679"/>
+      <polygon fill="#181818" points="191.929,152.1679,181.929,156.1679,191.929,160.1679,187.929,156.1679" style="stroke:#181818;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="22.529" x="187.929" y="137.3589">a0()</text>
+    </g>
+    <g class="message" data-participant-1="C_0000326295358685670625" data-participant-2="C_0000326295358685670625">
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="180.929" x2="222.929" y1="180.1679" y2="180.1679"/>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="222.929" x2="222.929" y1="180.1679" y2="193.1679"/>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="175.929" x2="222.929" y1="193.1679" y2="193.1679"/>
+      <polygon fill="#181818" points="185.929,189.1679,175.929,193.1679,185.929,197.1679,181.929,193.1679" style="stroke:#181818;stroke-width:1;"/>
+    </g>
+    <g class="message" data-participant-1="C_0000326295358685670625" data-participant-2="C_0015357715529807864116">
+      <polygon fill="#181818" points="66.3309,198.1679,56.3309,202.1679,66.3309,206.1679,62.3309,202.1679" style="stroke:#181818;stroke-width:1;"/>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="60.3309" x2="164.929" y1="202.1679" y2="202.1679"/>
+    </g>
     <line style="stroke:#000000;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="10" x2="250.929" y1="211.1679" y2="211.1679"/>
     <text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="27.8188" x="15" y="222.9268">[one]</text>
-    <line style="stroke:#181818;stroke-width:1;" x1="175.929" x2="222.929" y1="245.8558" y2="245.8558"/>
-    <line style="stroke:#181818;stroke-width:1;" x1="222.929" x2="222.929" y1="245.8558" y2="258.8558"/>
-    <line style="stroke:#181818;stroke-width:1;" x1="181.929" x2="222.929" y1="258.8558" y2="258.8558"/>
-    <polygon fill="#181818" points="191.929,254.8558,181.929,258.8558,191.929,262.8558,187.929,258.8558" style="stroke:#181818;stroke-width:1;"/>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="22.529" x="187.929" y="240.0468">a1()</text>
-    <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="180.929" x2="222.929" y1="282.8558" y2="282.8558"/>
-    <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="222.929" x2="222.929" y1="282.8558" y2="295.8558"/>
-    <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="175.929" x2="222.929" y1="295.8558" y2="295.8558"/>
-    <polygon fill="#181818" points="185.929,291.8558,175.929,295.8558,185.929,299.8558,181.929,295.8558" style="stroke:#181818;stroke-width:1;"/>
-    <polygon fill="#181818" points="66.3309,300.8558,56.3309,304.8558,66.3309,308.8558,62.3309,304.8558" style="stroke:#181818;stroke-width:1;"/>
-    <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="60.3309" x2="164.929" y1="304.8558" y2="304.8558"/>
+    <g class="message" data-participant-1="C_0000326295358685670625" data-participant-2="C_0000326295358685670625">
+      <line style="stroke:#181818;stroke-width:1;" x1="175.929" x2="222.929" y1="245.8558" y2="245.8558"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="222.929" x2="222.929" y1="245.8558" y2="258.8558"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="181.929" x2="222.929" y1="258.8558" y2="258.8558"/>
+      <polygon fill="#181818" points="191.929,254.8558,181.929,258.8558,191.929,262.8558,187.929,258.8558" style="stroke:#181818;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="22.529" x="187.929" y="240.0468">a1()</text>
+    </g>
+    <g class="message" data-participant-1="C_0000326295358685670625" data-participant-2="C_0000326295358685670625">
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="180.929" x2="222.929" y1="282.8558" y2="282.8558"/>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="222.929" x2="222.929" y1="282.8558" y2="295.8558"/>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="175.929" x2="222.929" y1="295.8558" y2="295.8558"/>
+      <polygon fill="#181818" points="185.929,291.8558,175.929,295.8558,185.929,299.8558,181.929,295.8558" style="stroke:#181818;stroke-width:1;"/>
+    </g>
+    <g class="message" data-participant-1="C_0000326295358685670625" data-participant-2="C_0015357715529807864116">
+      <polygon fill="#181818" points="66.3309,300.8558,56.3309,304.8558,66.3309,308.8558,62.3309,304.8558" style="stroke:#181818;stroke-width:1;"/>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="60.3309" x2="164.929" y1="304.8558" y2="304.8558"/>
+    </g>
     <line style="stroke:#000000;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="10" x2="250.929" y1="313.8558" y2="313.8558"/>
     <text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="28.2808" x="15" y="325.6147">[two]</text>
-    <line style="stroke:#181818;stroke-width:1;" x1="175.929" x2="222.929" y1="348.5437" y2="348.5437"/>
-    <line style="stroke:#181818;stroke-width:1;" x1="222.929" x2="222.929" y1="348.5437" y2="361.5437"/>
-    <line style="stroke:#181818;stroke-width:1;" x1="181.929" x2="222.929" y1="361.5437" y2="361.5437"/>
-    <polygon fill="#181818" points="191.929,357.5437,181.929,361.5437,191.929,365.5437,187.929,361.5437" style="stroke:#181818;stroke-width:1;"/>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="22.529" x="187.929" y="342.7347">a2()</text>
-    <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="180.929" x2="222.929" y1="385.5437" y2="385.5437"/>
-    <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="222.929" x2="222.929" y1="385.5437" y2="398.5437"/>
-    <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="175.929" x2="222.929" y1="398.5437" y2="398.5437"/>
-    <polygon fill="#181818" points="185.929,394.5437,175.929,398.5437,185.929,402.5437,181.929,398.5437" style="stroke:#181818;stroke-width:1;"/>
-    <polygon fill="#181818" points="66.3309,403.5437,56.3309,407.5437,66.3309,411.5437,62.3309,407.5437" style="stroke:#181818;stroke-width:1;"/>
-    <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="60.3309" x2="164.929" y1="407.5437" y2="407.5437"/>
+    <g class="message" data-participant-1="C_0000326295358685670625" data-participant-2="C_0000326295358685670625">
+      <line style="stroke:#181818;stroke-width:1;" x1="175.929" x2="222.929" y1="348.5437" y2="348.5437"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="222.929" x2="222.929" y1="348.5437" y2="361.5437"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="181.929" x2="222.929" y1="361.5437" y2="361.5437"/>
+      <polygon fill="#181818" points="191.929,357.5437,181.929,361.5437,191.929,365.5437,187.929,361.5437" style="stroke:#181818;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="22.529" x="187.929" y="342.7347">a2()</text>
+    </g>
+    <g class="message" data-participant-1="C_0000326295358685670625" data-participant-2="C_0000326295358685670625">
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="180.929" x2="222.929" y1="385.5437" y2="385.5437"/>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="222.929" x2="222.929" y1="385.5437" y2="398.5437"/>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="175.929" x2="222.929" y1="398.5437" y2="398.5437"/>
+      <polygon fill="#181818" points="185.929,394.5437,175.929,398.5437,185.929,402.5437,181.929,398.5437" style="stroke:#181818;stroke-width:1;"/>
+    </g>
+    <g class="message" data-participant-1="C_0000326295358685670625" data-participant-2="C_0015357715529807864116">
+      <polygon fill="#181818" points="66.3309,403.5437,56.3309,407.5437,66.3309,411.5437,62.3309,407.5437" style="stroke:#181818;stroke-width:1;"/>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="60.3309" x2="164.929" y1="407.5437" y2="407.5437"/>
+    </g>
     <line style="stroke:#000000;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="10" x2="250.929" y1="416.5437" y2="416.5437"/>
     <text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="47.0027" x="15" y="428.3026">[default]</text>
-    <line style="stroke:#181818;stroke-width:1;" x1="175.929" x2="222.929" y1="451.2316" y2="451.2316"/>
-    <line style="stroke:#181818;stroke-width:1;" x1="222.929" x2="222.929" y1="451.2316" y2="464.2316"/>
-    <line style="stroke:#181818;stroke-width:1;" x1="181.929" x2="222.929" y1="464.2316" y2="464.2316"/>
-    <polygon fill="#181818" points="191.929,460.2316,181.929,464.2316,191.929,468.2316,187.929,464.2316" style="stroke:#181818;stroke-width:1;"/>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="22.529" x="187.929" y="445.4226">a3()</text>
-    <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="180.929" x2="222.929" y1="488.2316" y2="488.2316"/>
-    <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="222.929" x2="222.929" y1="488.2316" y2="501.2316"/>
-    <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="175.929" x2="222.929" y1="501.2316" y2="501.2316"/>
-    <polygon fill="#181818" points="185.929,497.2316,175.929,501.2316,185.929,505.2316,181.929,501.2316" style="stroke:#181818;stroke-width:1;"/>
-    <polygon fill="#181818" points="66.3309,506.2316,56.3309,510.2316,66.3309,514.2316,62.3309,510.2316" style="stroke:#181818;stroke-width:1;"/>
-    <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="60.3309" x2="164.929" y1="510.2316" y2="510.2316"/>
-    <polygon fill="#181818" points="233.929,544.9376,243.929,548.9376,233.929,552.9376,237.929,548.9376" style="stroke:#181818;stroke-width:1;"/>
-    <line style="stroke:#181818;stroke-width:1;" x1="55.3309" x2="239.929" y1="548.9376" y2="548.9376"/>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="79.8981" x="62.3309" y="543.1286">select(colors)</text>
-    <path d="M229.379,563.9376 L316.798,563.9376 L316.798,573.6436 L306.798,583.6436 L229.379,583.6436 L229.379,563.9376 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/>
-    <rect fill="transparent" height="386.4576" style="stroke:#000000;stroke-width:1.5;" width="125.3941" x="229.379" y="563.9376"/>
+    <g class="message" data-participant-1="C_0000326295358685670625" data-participant-2="C_0000326295358685670625">
+      <line style="stroke:#181818;stroke-width:1;" x1="175.929" x2="222.929" y1="451.2316" y2="451.2316"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="222.929" x2="222.929" y1="451.2316" y2="464.2316"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="181.929" x2="222.929" y1="464.2316" y2="464.2316"/>
+      <polygon fill="#181818" points="191.929,460.2316,181.929,464.2316,191.929,468.2316,187.929,464.2316" style="stroke:#181818;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="22.529" x="187.929" y="445.4226">a3()</text>
+    </g>
+    <g class="message" data-participant-1="C_0000326295358685670625" data-participant-2="C_0000326295358685670625">
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="180.929" x2="222.929" y1="488.2316" y2="488.2316"/>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="222.929" x2="222.929" y1="488.2316" y2="501.2316"/>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="175.929" x2="222.929" y1="501.2316" y2="501.2316"/>
+      <polygon fill="#181818" points="185.929,497.2316,175.929,501.2316,185.929,505.2316,181.929,501.2316" style="stroke:#181818;stroke-width:1;"/>
+    </g>
+    <g class="message" data-participant-1="C_0000326295358685670625" data-participant-2="C_0015357715529807864116">
+      <polygon fill="#181818" points="66.3309,506.2316,56.3309,510.2316,66.3309,514.2316,62.3309,510.2316" style="stroke:#181818;stroke-width:1;"/>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="60.3309" x2="164.929" y1="510.2316" y2="510.2316"/>
+    </g>
+    <g class="message" data-participant-1="C_0015357715529807864116" data-participant-2="C_0007466296117011526976">
+      <polygon fill="#181818" points="233.929,544.9376,243.929,548.9376,233.929,552.9376,237.929,548.9376" style="stroke:#181818;stroke-width:1;"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="55.3309" x2="239.929" y1="548.9376" y2="548.9376"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="79.8981" x="62.3309" y="543.1286">select(colors)</text>
+    </g>
+    <path d="M229.379,563.9376 L316.798,563.9376 L316.798,573.6436 L306.798,583.6436 L229.379,583.6436 L229.379,563.9376" fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/>
+    <rect fill="none" height="386.4576" style="stroke:#000000;stroke-width:1.5;" width="125.3941" x="229.379" y="563.9376"/>
     <text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="42.419" x="244.379" y="578.8346">switch</text>
     <line style="stroke:#000000;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="229.379" x2="354.7731" y1="584.6436" y2="584.6436"/>
     <text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="99.7143" x="234.379" y="596.4025">[enum colors::red]</text>
-    <line style="stroke:#181818;stroke-width:1;" x1="260.929" x2="302.929" y1="624.3315" y2="624.3315"/>
-    <line style="stroke:#181818;stroke-width:1;" x1="302.929" x2="302.929" y1="624.3315" y2="637.3315"/>
-    <line style="stroke:#181818;stroke-width:1;" x1="261.929" x2="302.929" y1="637.3315" y2="637.3315"/>
-    <polygon fill="#181818" points="271.929,633.3315,261.929,637.3315,271.929,641.3315,267.929,637.3315" style="stroke:#181818;stroke-width:1;"/>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="28.496" x="267.929" y="618.5225">red()</text>
+    <g class="message" data-participant-1="C_0007466296117011526976" data-participant-2="C_0007466296117011526976">
+      <line style="stroke:#181818;stroke-width:1;" x1="260.929" x2="302.929" y1="624.3315" y2="624.3315"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="302.929" x2="302.929" y1="624.3315" y2="637.3315"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="261.929" x2="302.929" y1="637.3315" y2="637.3315"/>
+      <polygon fill="#181818" points="271.929,633.3315,261.929,637.3315,271.929,641.3315,267.929,637.3315" style="stroke:#181818;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="28.496" x="267.929" y="618.5225">red()</text>
+    </g>
     <line style="stroke:#000000;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="229.379" x2="354.7731" y1="676.3315" y2="676.3315"/>
     <text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="120.3941" x="234.379" y="688.0904">[enum colors::orange]</text>
-    <line style="stroke:#181818;stroke-width:1;" x1="260.929" x2="302.929" y1="716.0194" y2="716.0194"/>
-    <line style="stroke:#181818;stroke-width:1;" x1="302.929" x2="302.929" y1="716.0194" y2="729.0194"/>
-    <line style="stroke:#181818;stroke-width:1;" x1="261.929" x2="302.929" y1="729.0194" y2="729.0194"/>
-    <polygon fill="#181818" points="271.929,725.0194,261.929,729.0194,271.929,733.0194,267.929,729.0194" style="stroke:#181818;stroke-width:1;"/>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="51.688" x="267.929" y="710.2104">orange()</text>
+    <g class="message" data-participant-1="C_0007466296117011526976" data-participant-2="C_0007466296117011526976">
+      <line style="stroke:#181818;stroke-width:1;" x1="260.929" x2="302.929" y1="716.0194" y2="716.0194"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="302.929" x2="302.929" y1="716.0194" y2="729.0194"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="261.929" x2="302.929" y1="729.0194" y2="729.0194"/>
+      <polygon fill="#181818" points="271.929,725.0194,261.929,729.0194,271.929,733.0194,267.929,729.0194" style="stroke:#181818;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="51.688" x="267.929" y="710.2104">orange()</text>
+    </g>
     <line style="stroke:#000000;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="229.379" x2="354.7731" y1="768.0194" y2="768.0194"/>
     <text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="113.4422" x="234.379" y="779.7783">[enum colors::green]</text>
-    <line style="stroke:#181818;stroke-width:1;" x1="260.929" x2="302.929" y1="807.7073" y2="807.7073"/>
-    <line style="stroke:#181818;stroke-width:1;" x1="302.929" x2="302.929" y1="807.7073" y2="820.7073"/>
-    <line style="stroke:#181818;stroke-width:1;" x1="261.929" x2="302.929" y1="820.7073" y2="820.7073"/>
-    <polygon fill="#181818" points="271.929,816.7073,261.929,820.7073,271.929,824.7073,267.929,820.7073" style="stroke:#181818;stroke-width:1;"/>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="43.862" x="267.929" y="801.8983">green()</text>
+    <g class="message" data-participant-1="C_0007466296117011526976" data-participant-2="C_0007466296117011526976">
+      <line style="stroke:#181818;stroke-width:1;" x1="260.929" x2="302.929" y1="807.7073" y2="807.7073"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="302.929" x2="302.929" y1="807.7073" y2="820.7073"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="261.929" x2="302.929" y1="820.7073" y2="820.7073"/>
+      <polygon fill="#181818" points="271.929,816.7073,261.929,820.7073,271.929,824.7073,267.929,820.7073" style="stroke:#181818;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="43.862" x="267.929" y="801.8983">green()</text>
+    </g>
     <line style="stroke:#000000;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="229.379" x2="354.7731" y1="859.7073" y2="859.7073"/>
     <text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="47.0027" x="234.379" y="871.4662">[default]</text>
-    <line style="stroke:#181818;stroke-width:1;" x1="260.929" x2="302.929" y1="899.3952" y2="899.3952"/>
-    <line style="stroke:#181818;stroke-width:1;" x1="302.929" x2="302.929" y1="899.3952" y2="912.3952"/>
-    <line style="stroke:#181818;stroke-width:1;" x1="261.929" x2="302.929" y1="912.3952" y2="912.3952"/>
-    <polygon fill="#181818" points="271.929,908.3952,261.929,912.3952,271.929,916.3952,267.929,912.3952" style="stroke:#181818;stroke-width:1;"/>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="35.126" x="267.929" y="893.5862">grey()</text>
+    <g class="message" data-participant-1="C_0007466296117011526976" data-participant-2="C_0007466296117011526976">
+      <line style="stroke:#181818;stroke-width:1;" x1="260.929" x2="302.929" y1="899.3952" y2="899.3952"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="302.929" x2="302.929" y1="899.3952" y2="912.3952"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="261.929" x2="302.929" y1="912.3952" y2="912.3952"/>
+      <polygon fill="#181818" points="271.929,908.3952,261.929,912.3952,271.929,916.3952,267.929,912.3952" style="stroke:#181818;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="35.126" x="267.929" y="893.5862">grey()</text>
+    </g>
   </g>
 </svg>

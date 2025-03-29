@@ -1,0 +1,13 @@
+diagrams:
+  t20073_sequence:
+    type: sequence
+    glob:
+      - t20073.cc
+    include:
+      namespaces:
+        - clanguml::t20073
+    generate_method_arguments: full
+    generate_method_argument_names: true
+    using_namespace: clanguml::t20073
+    from:
+      - function: "clanguml::t20073::tmain(std::vector<std::string> args)"

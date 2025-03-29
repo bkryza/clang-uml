@@ -19,6 +19,8 @@
 #include "diagram.h"
 
 #include "common/model/filters/diagram_filter.h"
+#include "util/error.h"
+#include "util/levenshtein.h"
 
 #include <functional>
 #include <memory>
@@ -743,6 +745,68 @@ void diagram::finalize()
             act.add_message(m);
         }
     }
+}
+
+void diagram::handle_invalid_from_condition(
+    const config::source_location &sf) const
+{
+    std::string error_message =
+        fmt::format("Failed to find participant matching '{}' for "
+                    "'from' condition.",
+            sf.location.to_string());
+
+    if (!sf.location.is_regex()) {
+        std::vector<std::string> from_participants;
+        for (const auto &[k, v] : sequences()) {
+            if (participants().count(v.from()) == 0)
+                continue;
+
+            const auto &caller = *participants().at(v.from());
+            from_participants.emplace_back(caller.full_name(false));
+        }
+
+        auto possible_matches = util::get_approximate_matches(
+            from_participants, sf.location.to_string());
+
+        if (!possible_matches.empty()) {
+            error_message +=
+                fmt::format(" Did you mean: '{}'?", possible_matches.at(0));
+        }
+    }
+
+    throw error::invalid_sequence_from_condition(type(), name(), error_message);
+}
+
+void diagram::handle_invalid_to_condition(
+    const config::source_location &to_location) const
+{
+    std::string error_message =
+        fmt::format("Failed to find participant matching '{}' for "
+                    "'to' condition.",
+            to_location.location.to_string());
+
+    if (!to_location.location.is_regex()) {
+        std::vector<std::string> to_participants;
+        for (const auto &[k, v] : sequences()) {
+            for (const auto &m : v.messages()) {
+                if (m.type() != common::model::message_t::kCall)
+                    continue;
+
+                const auto &callee = *participants().at(m.to());
+                to_participants.emplace_back(callee.full_name(false));
+            }
+        }
+
+        auto possible_matches = util::get_approximate_matches(
+            to_participants, to_location.location.to_string());
+
+        if (!possible_matches.empty()) {
+            error_message +=
+                fmt::format(" Did you mean: '{}'?", possible_matches.at(0));
+        }
+    }
+
+    throw error::invalid_sequence_to_condition(type(), name(), error_message);
 }
 } // namespace clanguml::sequence_diagram::model
 

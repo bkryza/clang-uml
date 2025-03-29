@@ -12,6 +12,7 @@
 * [Folding repeated activities](#folding-repeated-activities)
 * [Injecting call expressions manually through comments](#injecting-call-expressions-manually-through-comments)
 * [Including comments in sequence diagrams](#including-comments-in-sequence-diagrams)
+* [Controlling message rendering](#controlling-message-rendering)
 
 <!-- tocstop -->
 
@@ -456,3 +457,20 @@ In case only selected messages should have some specific comments, instead
 of enabling the `generate_message_comments` option, it is possible to use
 `\\uml{note TEXT}` directive in the comment above the expression, see
 [t20001](test_cases/t20001_sequence.svg).
+
+## Controlling message rendering
+
+Rendering of messages, which are either function or method signatures or return
+types, can be controlled by several configuration options:
+
+* `generate_method_arguments` - this enum controls how the message arguments are
+  render, possible values are `none`, `abbrev` or `full`
+* `generate_method_argument_names` - in addition to argument type, also render
+  the argument name
+* `generate_return_types` - in return messages, render return type as message
+  name
+* `generate_return_values` - in return messages, render return expression as
+  written in the code
+
+> When `generate_method_argument_names`, the `from` and `to` conditions in the
+> sequence diagram definition must also have the same names as in the code.
