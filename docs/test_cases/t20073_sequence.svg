@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" data-diagram-type="SEQUENCE" height="214px" preserveAspectRatio="none" style="width:923px;height:214px;background:#FFFFFF;" version="1.1" viewBox="0 0 923 214" width="923px" zoomAndPan="magnify">
+  <defs>
+    <style type="text/css">a:hover { text-decoration: underline; }</style>
+  </defs>
+  <g>
+    <g>
+      <title>tmain(std::vector&lt;std::string&gt; args)</title>
+      <rect fill="#FFFFFF" height="109.706" style="stroke:#181818;stroke-width:1;" width="10" x="122.2336" y="49.0679"/>
+    </g>
+    <g>
+      <title>add(int x,float y,std::optional&lt;double&gt; z)</title>
+      <rect fill="#FFFFFF" height="42" style="stroke:#181818;stroke-width:1;" width="10" x="393.5776" y="55.0679"/>
+    </g>
+    <g>
+      <title>maybe&lt;double&gt;(const std::optional&lt;double&gt; &amp; v)</title>
+      <rect fill="#FFFFFF" height="14" style="stroke:#181818;stroke-width:1;" width="10" x="711.0935" y="69.0679"/>
+    </g>
+    <g>
+      <title>A</title>
+      <rect fill="#FFFFFF" height="30" style="stroke:#181818;stroke-width:1;" width="10" x="900.9719" y="128.7739"/>
+    </g>
+    <g>
+      <title>tmain(std::vector&lt;std::string&gt; args)</title>
+      <rect fill="#000000" fill-opacity="0.00000" height="137.706" width="8" x="123.2336" y="39.0679"/>
+      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="127" x2="127" y1="39.0679" y2="176.7739"/>
+    </g>
+    <g>
+      <title>add(int x,float y,std::optional&lt;double&gt; z)</title>
+      <rect fill="#000000" fill-opacity="0.00000" height="137.706" width="8" x="394.5776" y="39.0679"/>
+      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="398.4671" x2="398.4671" y1="39.0679" y2="176.7739"/>
+    </g>
+    <g>
+      <title>maybe&lt;double&gt;(const std::optional&lt;double&gt; &amp; v)</title>
+      <rect fill="#000000" fill-opacity="0.00000" height="137.706" width="8" x="712.0935" y="39.0679"/>
+      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="715.6881" x2="715.6881" y1="39.0679" y2="176.7739"/>
+    </g>
+    <g>
+      <title>A</title>
+      <rect fill="#000000" fill-opacity="0.00000" height="137.706" width="8" x="901.9719" y="39.0679"/>
+      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="905.4989" x2="905.4989" y1="39.0679" y2="176.7739"/>
+    </g>
+    <g class="participant participant-head" data-participant="C_0010795144028736992056">
+      <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="244.4671" x="5" y="5"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="230.4671" x="12" y="26.9659">tmain(std::vector&lt;std::string&gt; args)</text>
+    </g>
+    <g class="participant participant-tail" data-participant="C_0010795144028736992056">
+      <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="244.4671" x="5" y="175.7739"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="230.4671" x="12" y="197.7399">tmain(std::vector&lt;std::string&gt; args)</text>
+    </g>
+    <g class="participant participant-head" data-participant="C_0014899411901108493275">
+      <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="278.221" x="259.4671" y="5"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="264.221" x="266.4671" y="26.9659">add(int x,float y,std::optional&lt;double&gt; z)</text>
+    </g>
+    <g class="participant participant-tail" data-participant="C_0014899411901108493275">
+      <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="278.221" x="259.4671" y="175.7739"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="264.221" x="266.4671" y="197.7399">add(int x,float y,std::optional&lt;double&gt; z)</text>
+    </g>
+    <g class="participant participant-head" data-participant="C_0003294490702487026275">
+      <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="336.8108" x="547.6881" y="5"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="322.8108" x="554.6881" y="26.9659">maybe&lt;double&gt;(const std::optional&lt;double&gt; &amp; v)</text>
+    </g>
+    <g class="participant participant-tail" data-participant="C_0003294490702487026275">
+      <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="336.8108" x="547.6881" y="175.7739"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="322.8108" x="554.6881" y="197.7399">maybe&lt;double&gt;(const std::optional&lt;double&gt; &amp; v)</text>
+    </g>
+    <g class="participant participant-head" data-participant="C_0012322974894231904392">
+      <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="22.946" x="894.4989" y="5"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="8.946" x="901.4989" y="26.9659">A</text>
+    </g>
+    <g class="participant participant-tail" data-participant="C_0012322974894231904392">
+      <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="22.946" x="894.4989" y="175.7739"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="8.946" x="901.4989" y="197.7399">A</text>
+    </g>
+    <g>
+      <title>tmain(std::vector&lt;std::string&gt; args)</title>
+      <rect fill="#FFFFFF" height="109.706" style="stroke:#181818;stroke-width:1;" width="10" x="122.2336" y="49.0679"/>
+    </g>
+    <g>
+      <title>add(int x,float y,std::optional&lt;double&gt; z)</title>
+      <rect fill="#FFFFFF" height="42" style="stroke:#181818;stroke-width:1;" width="10" x="393.5776" y="55.0679"/>
+    </g>
+    <g>
+      <title>maybe&lt;double&gt;(const std::optional&lt;double&gt; &amp; v)</title>
+      <rect fill="#FFFFFF" height="14" style="stroke:#181818;stroke-width:1;" width="10" x="711.0935" y="69.0679"/>
+    </g>
+    <g>
+      <title>A</title>
+      <rect fill="#FFFFFF" height="30" style="stroke:#181818;stroke-width:1;" width="10" x="900.9719" y="128.7739"/>
+    </g>
+    <g class="message" data-participant-1="C_0010795144028736992056" data-participant-2="C_0014899411901108493275">
+      <polygon fill="#181818" points="381.5776,51.0679,391.5776,55.0679,381.5776,59.0679,385.5776,55.0679" style="stroke:#181818;stroke-width:1;"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="132.2336" x2="387.5776" y1="55.0679" y2="55.0679"/>
+    </g>
+    <g class="message" data-participant-1="C_0014899411901108493275" data-participant-2="C_0003294490702487026275">
+      <polygon fill="#181818" points="699.0935,65.0679,709.0935,69.0679,699.0935,73.0679,703.0935,69.0679" style="stroke:#181818;stroke-width:1;"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="403.5776" x2="705.0935" y1="69.0679" y2="69.0679"/>
+    </g>
+    <g class="message" data-participant-1="C_0003294490702487026275" data-participant-2="C_0014899411901108493275">
+      <polygon fill="#181818" points="414.5776,79.0679,404.5776,83.0679,414.5776,87.0679,410.5776,83.0679" style="stroke:#181818;stroke-width:1;"/>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="408.5776" x2="715.0935" y1="83.0679" y2="83.0679"/>
+    </g>
+    <g class="message" data-participant-1="C_0014899411901108493275" data-participant-2="C_0010795144028736992056">
+      <polygon fill="#181818" points="143.2336,93.0679,133.2336,97.0679,143.2336,101.0679,139.2336,97.0679" style="stroke:#181818;stroke-width:1;"/>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="137.2336" x2="397.5776" y1="97.0679" y2="97.0679"/>
+    </g>
+    <g class="message" data-participant-1="C_0010795144028736992056" data-participant-2="C_0012322974894231904392">
+      <polygon fill="#181818" points="888.9719,124.7739,898.9719,128.7739,888.9719,132.7739,892.9719,128.7739" style="stroke:#181818;stroke-width:1;"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="132.2336" x2="894.9719" y1="128.7739" y2="128.7739"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78.6111" x="139.2336" y="122.9649">set(double v)</text>
+    </g>
+  </g>
+</svg>

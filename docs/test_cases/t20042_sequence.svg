@@ -25,31 +25,43 @@
     </g>
     <g>
       <title>tmain()</title>
-      <rect fill="transparent" height="232.8241" width="8" x="31.3309" y="39.0679"/>
+      <rect fill="#000000" fill-opacity="0.00000" height="232.8241" width="8" x="31.3309" y="39.0679"/>
       <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="35" x2="35" y1="39.0679" y2="271.892"/>
     </g>
     <g>
       <title>AHandler</title>
-      <rect fill="transparent" height="232.8241" width="8" x="187.354" y="39.0679"/>
+      <rect fill="#000000" fill-opacity="0.00000" height="232.8241" width="8" x="187.354" y="39.0679"/>
       <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="190.4912" x2="190.4912" y1="39.0679" y2="271.892"/>
     </g>
     <g>
       <title>BHandler</title>
-      <rect fill="transparent" height="232.8241" width="8" x="328.8382" y="39.0679"/>
+      <rect fill="#000000" fill-opacity="0.00000" height="232.8241" width="8" x="328.8382" y="39.0679"/>
       <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="331.8983" x2="331.8983" y1="39.0679" y2="271.892"/>
     </g>
-    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="60.6618" x="5" y="5"/>
-    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="46.6618" x="12" y="26.9659">tmain()</text>
-    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="60.6618" x="5" y="270.892"/>
-    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="46.6618" x="12" y="292.8579">tmain()</text>
-    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="75.7258" x="153.4912" y="5"/>
-    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="61.7258" x="160.4912" y="26.9659">AHandler</text>
-    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="75.7258" x="153.4912" y="270.892"/>
-    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="61.7258" x="160.4912" y="292.8579">AHandler</text>
-    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="75.8798" x="294.8983" y="5"/>
-    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="61.8798" x="301.8983" y="26.9659">BHandler</text>
-    <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="75.8798" x="294.8983" y="270.892"/>
-    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="61.8798" x="301.8983" y="292.8579">BHandler</text>
+    <g class="participant participant-head" data-participant="C_0004872095787380026130">
+      <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="60.6618" x="5" y="5"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="46.6618" x="12" y="26.9659">tmain()</text>
+    </g>
+    <g class="participant participant-tail" data-participant="C_0004872095787380026130">
+      <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="60.6618" x="5" y="270.892"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="46.6618" x="12" y="292.8579">tmain()</text>
+    </g>
+    <g class="participant participant-head" data-participant="C_0001352237670003855986">
+      <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="75.7258" x="153.4912" y="5"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="61.7258" x="160.4912" y="26.9659">AHandler</text>
+    </g>
+    <g class="participant participant-tail" data-participant="C_0001352237670003855986">
+      <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="75.7258" x="153.4912" y="270.892"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="61.7258" x="160.4912" y="292.8579">AHandler</text>
+    </g>
+    <g class="participant participant-head" data-participant="C_0015753265830872864301">
+      <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="75.8798" x="294.8983" y="5"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="61.8798" x="301.8983" y="26.9659">BHandler</text>
+    </g>
+    <g class="participant participant-tail" data-participant="C_0015753265830872864301">
+      <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="75.8798" x="294.8983" y="270.892"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="61.8798" x="301.8983" y="292.8579">BHandler</text>
+    </g>
     <g>
       <title>tmain()</title>
       <rect fill="#FFFFFF" height="197.8241" style="stroke:#181818;stroke-width:1;" width="10" x="30.3309" y="49.0679"/>
@@ -70,21 +82,29 @@
       <title>BHandler</title>
       <rect fill="#FFFFFF" height="28" style="stroke:#181818;stroke-width:1;" width="10" x="332.8382" y="218.892"/>
     </g>
-    <polygon fill="#181818" points="174.354,68.7739,184.354,72.7739,174.354,76.7739,178.354,72.7739" style="stroke:#181818;stroke-width:1;"/>
-    <line style="stroke:#181818;stroke-width:1;" x1="40.3309" x2="180.354" y1="72.7739" y2="72.7739"/>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="127.0231" x="47.3309" y="66.9649">operator()(A &amp;) const</text>
-    <line style="stroke:#181818;stroke-width:1;" x1="201.354" x2="243.354" y1="104.4799" y2="104.4799"/>
-    <line style="stroke:#181818;stroke-width:1;" x1="243.354" x2="243.354" y1="104.4799" y2="117.4799"/>
-    <line style="stroke:#181818;stroke-width:1;" x1="202.354" x2="243.354" y1="117.4799" y2="117.4799"/>
-    <polygon fill="#181818" points="212.354,113.4799,202.354,117.4799,212.354,121.4799,208.354,117.4799" style="stroke:#181818;stroke-width:1;"/>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="107.4841" x="208.354" y="98.6709">handle(A &amp;) const</text>
-    <polygon fill="#181818" points="315.8382,175.186,325.8382,179.186,315.8382,183.186,319.8382,179.186" style="stroke:#181818;stroke-width:1;"/>
-    <line style="stroke:#181818;stroke-width:1;" x1="40.3309" x2="321.8382" y1="179.186" y2="179.186"/>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="127.1661" x="47.3309" y="173.377">operator()(B &amp;) const</text>
-    <line style="stroke:#181818;stroke-width:1;" x1="342.8382" x2="384.8382" y1="210.892" y2="210.892"/>
-    <line style="stroke:#181818;stroke-width:1;" x1="384.8382" x2="384.8382" y1="210.892" y2="223.892"/>
-    <line style="stroke:#181818;stroke-width:1;" x1="343.8382" x2="384.8382" y1="223.892" y2="223.892"/>
-    <polygon fill="#181818" points="353.8382,219.892,343.8382,223.892,353.8382,227.892,349.8382,223.892" style="stroke:#181818;stroke-width:1;"/>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="107.6271" x="349.8382" y="205.083">handle(B &amp;) const</text>
+    <g class="message" data-participant-1="C_0004872095787380026130" data-participant-2="C_0001352237670003855986">
+      <polygon fill="#181818" points="174.354,68.7739,184.354,72.7739,174.354,76.7739,178.354,72.7739" style="stroke:#181818;stroke-width:1;"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="40.3309" x2="180.354" y1="72.7739" y2="72.7739"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="127.0231" x="47.3309" y="66.9649">operator()(A &amp;) const</text>
+    </g>
+    <g class="message" data-participant-1="C_0001352237670003855986" data-participant-2="C_0001352237670003855986">
+      <line style="stroke:#181818;stroke-width:1;" x1="201.354" x2="243.354" y1="104.4799" y2="104.4799"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="243.354" x2="243.354" y1="104.4799" y2="117.4799"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="202.354" x2="243.354" y1="117.4799" y2="117.4799"/>
+      <polygon fill="#181818" points="212.354,113.4799,202.354,117.4799,212.354,121.4799,208.354,117.4799" style="stroke:#181818;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="107.4841" x="208.354" y="98.6709">handle(A &amp;) const</text>
+    </g>
+    <g class="message" data-participant-1="C_0004872095787380026130" data-participant-2="C_0015753265830872864301">
+      <polygon fill="#181818" points="315.8382,175.186,325.8382,179.186,315.8382,183.186,319.8382,179.186" style="stroke:#181818;stroke-width:1;"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="40.3309" x2="321.8382" y1="179.186" y2="179.186"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="127.1661" x="47.3309" y="173.377">operator()(B &amp;) const</text>
+    </g>
+    <g class="message" data-participant-1="C_0015753265830872864301" data-participant-2="C_0015753265830872864301">
+      <line style="stroke:#181818;stroke-width:1;" x1="342.8382" x2="384.8382" y1="210.892" y2="210.892"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="384.8382" x2="384.8382" y1="210.892" y2="223.892"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="343.8382" x2="384.8382" y1="223.892" y2="223.892"/>
+      <polygon fill="#181818" points="353.8382,219.892,343.8382,223.892,353.8382,227.892,349.8382,223.892" style="stroke:#181818;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="107.6271" x="349.8382" y="205.083">handle(B &amp;) const</text>
+    </g>
   </g>
 </svg>

@@ -1,121 +1,61 @@
-<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" aria-roledescription="sequence" role="graphics-document document" viewBox="-50 -10 2295 251" style="max-width: 2295px; background-color: white;" width="2295" id="my-svg">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" aria-roledescription="sequence" role="graphics-document document" viewBox="-50 -10 1274 257" style="max-width: 1274px; background-color: white;" width="1274" id="my-svg">
   <g>
-    <rect class="actor actor-bottom" ry="3" rx="3" name="C_0009515419718316191441" height="65" width="150" stroke="#666" fill="#eaeaea" y="165" x="2045"/>
-    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="197.5" x="2120">
-      <tspan dy="0" x="2120">print&lt;int&gt;(int)</tspan>
+    <rect class="actor actor-bottom" ry="3" rx="3" name="C_0012322974894231904392" height="65" width="150" stroke="#666" fill="#eaeaea" y="171" x="1024"/>
+    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="203.5" x="1099">
+      <tspan dy="0" x="1099">A</tspan>
     </text>
   </g>
   <g>
-    <rect class="actor actor-bottom" ry="3" rx="3" name="C_0015071931466831638243" height="65" width="249" stroke="#666" fill="#eaeaea" y="165" x="1746"/>
-    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="197.5" x="1870.5">
-      <tspan dy="0" x="1870.5">print&lt;std::string,int&gt;(std::string,int)</tspan>
+    <rect class="actor actor-bottom" ry="3" rx="3" name="C_0003294490702487026275" height="65" width="343" stroke="#666" fill="#eaeaea" y="171" x="631"/>
+    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="203.5" x="802.5">
+      <tspan dy="0" x="802.5">maybe&lt;double&gt;(const std::optional&lt;double&gt; &amp; v)</tspan>
     </text>
   </g>
   <g>
-    <rect class="actor actor-bottom" ry="3" rx="3" name="C_0014169635637322842038" height="65" width="293" stroke="#666" fill="#eaeaea" y="165" x="1403"/>
-    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="197.5" x="1549.5">
-      <tspan dy="0" x="1549.5">doublePrint&lt;std::string,int&gt;(std::string,int)</tspan>
+    <rect class="actor actor-bottom" ry="3" rx="3" name="C_0014899411901108493275" height="65" width="284" stroke="#666" fill="#eaeaea" y="171" x="297"/>
+    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="203.5" x="439">
+      <tspan dy="0" x="439">add(int x,float y,std::optional&lt;double&gt; z)</tspan>
     </text>
   </g>
   <g>
-    <rect class="actor actor-bottom" ry="3" rx="3" name="C_0001963347511152581998" height="65" width="150" stroke="#666" fill="#eaeaea" y="165" x="1203"/>
-    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="197.5" x="1278">
-      <tspan dy="0" x="1278">print()</tspan>
+    <rect class="actor actor-bottom" ry="3" rx="3" name="C_0010795144028736992056" height="65" width="247" stroke="#666" fill="#eaeaea" y="171" x="0"/>
+    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="203.5" x="123.5">
+      <tspan dy="0" x="123.5">tmain(std::vector&lt;std::string&gt; args)</tspan>
     </text>
   </g>
   <g>
-    <rect class="actor actor-bottom" ry="3" rx="3" name="C_0007631446682124985359" height="65" width="207" stroke="#666" fill="#eaeaea" y="165" x="946"/>
-    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="197.5" x="1049.5">
-      <tspan dy="0" x="1049.5">print&lt;std::string&gt;(std::string)</tspan>
-    </text>
-  </g>
-  <g>
-    <rect class="actor actor-bottom" ry="3" rx="3" name="C_0015866132119849058914" height="65" width="302" stroke="#666" fill="#eaeaea" y="165" x="594"/>
-    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="197.5" x="745">
-      <tspan dy="0" x="745">print&lt;double,std::string&gt;(double,std::string)</tspan>
-    </text>
-  </g>
-  <g>
-    <rect class="actor actor-bottom" ry="3" rx="3" name="C_0015319823812730202792" height="65" width="344" stroke="#666" fill="#eaeaea" y="165" x="200"/>
-    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="197.5" x="372">
-      <tspan dy="0" x="372">print&lt;int,double,std::string&gt;(int,double,std::string)</tspan>
-    </text>
-  </g>
-  <g>
-    <rect class="actor actor-bottom" ry="3" rx="3" name="C_0007988980481179677306" height="65" width="150" stroke="#666" fill="#eaeaea" y="165" x="0"/>
-    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="197.5" x="75">
-      <tspan dy="0" x="75">tmain()</tspan>
-    </text>
-  </g>
-  <g>
-    <line name="C_0009515419718316191441" stroke="#999" stroke-width="0.5px" class="actor-line 200" y2="165" x2="2120" y1="65" x1="2120" id="actor7"/>
-    <g id="root-7">
-      <rect class="actor actor-top" ry="3" rx="3" name="C_0009515419718316191441" height="65" width="150" stroke="#666" fill="#eaeaea" y="0" x="2045"/>
-      <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="32.5" x="2120">
-        <tspan dy="0" x="2120">print&lt;int&gt;(int)</tspan>
-      </text>
-    </g>
-  </g>
-  <g>
-    <line name="C_0015071931466831638243" stroke="#999" stroke-width="0.5px" class="actor-line 200" y2="165" x2="1870.5" y1="65" x1="1870.5" id="actor6"/>
-    <g id="root-6">
-      <rect class="actor actor-top" ry="3" rx="3" name="C_0015071931466831638243" height="65" width="249" stroke="#666" fill="#eaeaea" y="0" x="1746"/>
-      <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="32.5" x="1870.5">
-        <tspan dy="0" x="1870.5">print&lt;std::string,int&gt;(std::string,int)</tspan>
-      </text>
-    </g>
-  </g>
-  <g>
-    <line name="C_0014169635637322842038" stroke="#999" stroke-width="0.5px" class="actor-line 200" y2="165" x2="1549.5" y1="65" x1="1549.5" id="actor5"/>
-    <g id="root-5">
-      <rect class="actor actor-top" ry="3" rx="3" name="C_0014169635637322842038" height="65" width="293" stroke="#666" fill="#eaeaea" y="0" x="1403"/>
-      <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="32.5" x="1549.5">
-        <tspan dy="0" x="1549.5">doublePrint&lt;std::string,int&gt;(std::string,int)</tspan>
-      </text>
-    </g>
-  </g>
-  <g>
-    <line name="C_0001963347511152581998" stroke="#999" stroke-width="0.5px" class="actor-line 200" y2="165" x2="1278" y1="65" x1="1278" id="actor4"/>
-    <g id="root-4">
-      <rect class="actor actor-top" ry="3" rx="3" name="C_0001963347511152581998" height="65" width="150" stroke="#666" fill="#eaeaea" y="0" x="1203"/>
-      <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="32.5" x="1278">
-        <tspan dy="0" x="1278">print()</tspan>
-      </text>
-    </g>
-  </g>
-  <g>
-    <line name="C_0007631446682124985359" stroke="#999" stroke-width="0.5px" class="actor-line 200" y2="165" x2="1049.5" y1="65" x1="1049.5" id="actor3"/>
+    <line name="C_0012322974894231904392" stroke="#999" stroke-width="0.5px" class="actor-line 200" y2="171" x2="1099" y1="65" x1="1099" id="actor3"/>
     <g id="root-3">
-      <rect class="actor actor-top" ry="3" rx="3" name="C_0007631446682124985359" height="65" width="207" stroke="#666" fill="#eaeaea" y="0" x="946"/>
-      <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="32.5" x="1049.5">
-        <tspan dy="0" x="1049.5">print&lt;std::string&gt;(std::string)</tspan>
+      <rect class="actor actor-top" ry="3" rx="3" name="C_0012322974894231904392" height="65" width="150" stroke="#666" fill="#eaeaea" y="0" x="1024"/>
+      <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="32.5" x="1099">
+        <tspan dy="0" x="1099">A</tspan>
       </text>
     </g>
   </g>
   <g>
-    <line name="C_0015866132119849058914" stroke="#999" stroke-width="0.5px" class="actor-line 200" y2="165" x2="745" y1="65" x1="745" id="actor2"/>
+    <line name="C_0003294490702487026275" stroke="#999" stroke-width="0.5px" class="actor-line 200" y2="171" x2="802.5" y1="65" x1="802.5" id="actor2"/>
     <g id="root-2">
-      <rect class="actor actor-top" ry="3" rx="3" name="C_0015866132119849058914" height="65" width="302" stroke="#666" fill="#eaeaea" y="0" x="594"/>
-      <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="32.5" x="745">
-        <tspan dy="0" x="745">print&lt;double,std::string&gt;(double,std::string)</tspan>
+      <rect class="actor actor-top" ry="3" rx="3" name="C_0003294490702487026275" height="65" width="343" stroke="#666" fill="#eaeaea" y="0" x="631"/>
+      <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="32.5" x="802.5">
+        <tspan dy="0" x="802.5">maybe&lt;double&gt;(const std::optional&lt;double&gt; &amp; v)</tspan>
       </text>
     </g>
   </g>
   <g>
-    <line name="C_0015319823812730202792" stroke="#999" stroke-width="0.5px" class="actor-line 200" y2="165" x2="372" y1="65" x1="372" id="actor1"/>
+    <line name="C_0014899411901108493275" stroke="#999" stroke-width="0.5px" class="actor-line 200" y2="171" x2="439" y1="65" x1="439" id="actor1"/>
     <g id="root-1">
-      <rect class="actor actor-top" ry="3" rx="3" name="C_0015319823812730202792" height="65" width="344" stroke="#666" fill="#eaeaea" y="0" x="200"/>
-      <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="32.5" x="372">
-        <tspan dy="0" x="372">print&lt;int,double,std::string&gt;(int,double,std::string)</tspan>
+      <rect class="actor actor-top" ry="3" rx="3" name="C_0014899411901108493275" height="65" width="284" stroke="#666" fill="#eaeaea" y="0" x="297"/>
+      <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="32.5" x="439">
+        <tspan dy="0" x="439">add(int x,float y,std::optional&lt;double&gt; z)</tspan>
       </text>
     </g>
   </g>
   <g>
-    <line name="C_0007988980481179677306" stroke="#999" stroke-width="0.5px" class="actor-line 200" y2="165" x2="75" y1="65" x1="75" id="actor0"/>
+    <line name="C_0010795144028736992056" stroke="#999" stroke-width="0.5px" class="actor-line 200" y2="171" x2="123.5" y1="65" x1="123.5" id="actor0"/>
     <g id="root-0">
-      <rect class="actor actor-top" ry="3" rx="3" name="C_0007988980481179677306" height="65" width="150" stroke="#666" fill="#eaeaea" y="0" x="0"/>
-      <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="32.5" x="75">
-        <tspan dy="0" x="75">tmain()</tspan>
+      <rect class="actor actor-top" ry="3" rx="3" name="C_0010795144028736992056" height="65" width="247" stroke="#666" fill="#eaeaea" y="0" x="0"/>
+      <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="32.5" x="123.5">
+        <tspan dy="0" x="123.5">tmain(std::vector&lt;std::string&gt; args)</tspan>
       </text>
     </g>
   </g>
@@ -158,46 +98,25 @@
     </marker>
   </defs>
   <g>
-    <rect class="activation0" height="80" width="10" stroke="#666" fill="#EDF2AE" y="65" x="70"/>
+    <rect class="activation0" height="86" width="10" stroke="#666" fill="#EDF2AE" y="65" x="118.5"/>
   </g>
   <g>
-    <rect class="activation0" height="28" width="10" stroke="#666" fill="#EDF2AE" y="77" x="367"/>
+    <rect class="activation0" height="28" width="10" stroke="#666" fill="#EDF2AE" y="77" x="434"/>
   </g>
   <g>
-    <rect class="activation0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="87" x="740"/>
+    <rect class="activation0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="89" x="797.5"/>
   </g>
   <g>
-    <rect class="activation0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="99" x="1044.5"/>
+    <rect class="activation0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="145" x="1094"/>
   </g>
-  <g>
-    <rect class="activation0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="99" x="1273"/>
-  </g>
-  <g>
-    <rect class="activation0" height="28" width="10" stroke="#666" fill="#EDF2AE" y="117" x="1544.5"/>
-  </g>
-  <g>
-    <rect class="activation0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="127" x="1865.5"/>
-  </g>
-  <g>
-    <rect class="activation0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="139" x="2115"/>
-  </g>
-  <g>
-    <rect class="activation0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="139" x="1273"/>
-  </g>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="80" x="224">​</text>
-  <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="75" x2="368" y1="75" x1="80"/>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="90" x="559">​</text>
-  <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="85" x2="741" y1="85" x1="377"/>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="100" x="898">​</text>
-  <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="95" x2="1045.5" y1="95" x1="750"/>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="110" x="1164">​</text>
-  <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="105" x2="1274" y1="105" x1="1054.5"/>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="120" x="813">​</text>
-  <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="115" x2="1545.5" y1="115" x1="80"/>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="130" x="1711">​</text>
-  <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="125" x2="1866.5" y1="125" x1="1554.5"/>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="140" x="1996">​</text>
-  <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="135" x2="2116" y1="135" x1="1875.5"/>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="150" x="1699">​</text>
-  <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="145" x2="1282" y1="145" x1="2115"/>
+  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="80" x="282">​</text>
+  <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="75" x2="435" y1="75" x1="128.5"/>
+  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="90" x="621">​</text>
+  <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="85" x2="798.5" y1="85" x1="444"/>
+  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="100" x="622">​</text>
+  <line style="stroke-dasharray: 3, 3; fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine1" y2="95" x2="447" y1="95" x1="797.5"/>
+  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="110" x="283">​</text>
+  <line style="stroke-dasharray: 3, 3; fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine1" y2="105" x2="131.5" y1="105" x1="434"/>
+  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="120" x="612">set(double v)</text>
+  <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="151" x2="1095" y1="151" x1="128.5"/>
 </svg>
