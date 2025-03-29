@@ -27,10 +27,11 @@ TEST_CASE("t20073")
     CHECK_SEQUENCE_DIAGRAM(*config, diagram, *model, [](const auto &src) {
         REQUIRE(MessageOrder(src,
             {//
-                {"tmain()", "add(int x,float y,std::optional<double> z)",
-                    ""}, //
+                {"tmain(std::vector<std::string> args)",
+                    "add(int x,float y,std::optional<double> z)", ""}, //
                 {"add(int x,float y,std::optional<double> z)",
                     "maybe<double>(const std::optional<double> & v)", ""}, //
-                {"tmain()", "A", "set(double v)"}}));
+                {"tmain(std::vector<std::string> args)", "A",
+                    "set(double v)"}}));
     });
 }

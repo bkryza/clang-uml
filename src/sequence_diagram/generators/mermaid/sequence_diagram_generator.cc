@@ -691,9 +691,7 @@ std::vector<model::message_chain_t> generator::find_to_message_chains() const
         auto to_activity_ids = model().get_to_activity_ids(to_location);
 
         if (to_activity_ids.empty()) {
-            LOG_WARN("Failed to find participant matching '{}' for "
-                     "'to' condition: ",
-                to_location.location.to_string());
+            model().handle_invalid_to_condition(to_location);
         }
 
         for (const auto &to_activity_id : to_activity_ids) {
@@ -754,19 +752,11 @@ void generator::generate_from_to_sequences(
         auto to_activity_ids = model().get_to_activity_ids(to_location);
 
         if (from_activity_ids.empty()) {
-            throw error::invalid_sequence_from_condition(model().type(),
-                model().name(),
-                fmt::format("Failed to find participant matching '{}' for "
-                            "'from' condition: ",
-                    from_location.location.to_string()));
+            model().handle_invalid_from_condition(from_location);
         }
 
         if (from_activity_ids.empty() || to_activity_ids.empty()) {
-            throw error::invalid_sequence_to_condition(model().type(),
-                model().name(),
-                fmt::format("Failed to find participant matching '{}' for "
-                            "'to' condition: ",
-                    to_location.location.to_string()));
+            model().handle_invalid_to_condition(to_location);
         }
 
         for (const auto from_activity_id : from_activity_ids) {
@@ -830,12 +820,9 @@ std::vector<eid_t> generator::find_from_activities() const
                 }
             }
 
-            if (!found)
-                throw error::invalid_sequence_from_condition(model().type(),
-                    model().name(),
-                    fmt::format("Failed to find participant matching '{}' for "
-                                "'from' condition: ",
-                        sf.location.to_string()));
+            if (!found) {
+                model().handle_invalid_from_condition(sf);
+            }
         }
     }
 

@@ -1,4 +1,6 @@
 #include <optional>
+#include <string>
+#include <vector>
 
 namespace clanguml::t20073 {
 
@@ -15,7 +17,7 @@ struct A {
     double a;
 };
 
-int tmain()
+int tmain(std::vector<std::string> args)
 {
     A a;
 

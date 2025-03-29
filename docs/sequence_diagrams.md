@@ -471,3 +471,6 @@ types, can be controlled by several configuration options:
   name
 * `generate_return_values` - in return messages, render return expression as
   written in the code
+
+> When `generate_method_argument_names`, the `from` and `to` conditions in the
+> sequence diagram definition must also have the same names as in the code.

@@ -10,4 +10,4 @@ diagrams:
     generate_method_argument_names: true
     using_namespace: clanguml::t20073
     from:
-      - function: "clanguml::t20073::tmain()"
+      - function: "clanguml::t20073::tmain(std::vector<std::string> args)"
