@@ -141,7 +141,7 @@ find_package(Threads REQUIRED)
 # Setup yaml-cpp
 #
 message(STATUS "Checking for yaml-cpp...")
-find_package(yaml-cpp)
+find_package(yaml-cpp REQUIRED)
 if(MSVC)
     add_definitions(-DYAML_CPP_STATIC_DEFINE)
 endif(MSVC)
