@@ -150,6 +150,9 @@ CMAKE_PREFIX=/usr/lib/llvm-18/lib/cmake/llvm make release
 # By default clang-uml is linked against shared LLVM libraries, this can be changed using:
 LLVM_SHARED=OFF LLVM_VERSION=18 make release
 
+# When using CMake 4 or higher, CMAKE_OSX_SYSROOT must be provided manually when building tests, e.g.:
+LLVM_VERSION=18 CMAKE_OSX_SYSROOT=macosx make tests
+
 # Optionally, to install in default prefix
 make install
 # or to install in custom prefix
