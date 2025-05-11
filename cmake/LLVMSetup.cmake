@@ -43,6 +43,10 @@ message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
 message(STATUS "Using LLVMConfig.cmake from: ${LLVM_CMAKE_DIR}")
 message(STATUS "LLVM library dir: ${LLVM_LIBRARY_DIR}")
 
+if(NOT LLVM IN_LIST LLVM_AVAILABLE_LIBS)
+    set(LINK_LLVM_SHARED NO)
+endif()
+
 if(MSVC)
     # LLVM_BUILD_LLVM_DYLIB is not available on Windows
     set(LINK_LLVM_SHARED NO)
