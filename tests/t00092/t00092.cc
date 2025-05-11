@@ -1,3 +1,4 @@
+#include <cstddef>
 #include <map>
 
 namespace clanguml::t00092 {
