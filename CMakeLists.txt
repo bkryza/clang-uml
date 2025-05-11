@@ -148,6 +148,9 @@ endif(MSVC)
 if(APPLE)
     set(YAML_CPP_LIBRARIES yaml-cpp::yaml-cpp)
 endif(APPLE)
+if(LINUX)
+    set(YAML_CPP_LIBRARIES yaml-cpp)
+endif(LINUX)
 message(STATUS "Found yaml-cpp at: ${YAML_CPP_INCLUDE_DIR}, library: ${YAML_CPP_LIBRARIES}")
 
 #
