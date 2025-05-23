@@ -1,4 +1,4 @@
-<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" aria-roledescription="classDiagram" role="graphics-document document" viewBox="0 0 1254.796875 664" style="max-width: 1254.8px; background-color: white;" width="1254.796875" id="my-svg">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" aria-roledescription="classDiagram" role="graphics-document document" viewBox="0 0 1237.015625 664" style="max-width: 1237.02px; background-color: white;" width="1237.015625" id="my-svg">
   <style>#my-svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#333;}#my-svg .error-icon{fill:#552222;}#my-svg .error-text{fill:#552222;stroke:#552222;}#my-svg .edge-thickness-normal{stroke-width:1px;}#my-svg .edge-thickness-thick{stroke-width:3.5px;}#my-svg .edge-pattern-solid{stroke-dasharray:0;}#my-svg .edge-thickness-invisible{stroke-width:0;fill:none;}#my-svg .edge-pattern-dashed{stroke-dasharray:3;}#my-svg .edge-pattern-dotted{stroke-dasharray:2;}#my-svg .marker{fill:#333333;stroke:#333333;}#my-svg .marker.cross{stroke:#333333;}#my-svg svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#my-svg p{margin:0;}#my-svg g.classGroup text{fill:#9370DB;stroke:none;font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:10px;}#my-svg g.classGroup text .title{font-weight:bolder;}#my-svg .nodeLabel,#my-svg .edgeLabel{color:#131300;}#my-svg .edgeLabel .label rect{fill:#ECECFF;}#my-svg .label text{fill:#131300;}#my-svg .edgeLabel .label span{background:#ECECFF;}#my-svg .classTitle{font-weight:bolder;}#my-svg .node rect,#my-svg .node circle,#my-svg .node ellipse,#my-svg .node polygon,#my-svg .node path{fill:#ECECFF;stroke:#9370DB;stroke-width:1px;}#my-svg .divider{stroke:#9370DB;stroke-width:1;}#my-svg g.clickable{cursor:pointer;}#my-svg g.classGroup rect{fill:#ECECFF;stroke:#9370DB;}#my-svg g.classGroup line{stroke:#9370DB;stroke-width:1;}#my-svg .classLabel .box{stroke:none;stroke-width:0;fill:#ECECFF;opacity:0.5;}#my-svg .classLabel .label{fill:#9370DB;font-size:10px;}#my-svg .relation{stroke:#333333;stroke-width:1;fill:none;}#my-svg .dashed-line{stroke-dasharray:3;}#my-svg .dotted-line{stroke-dasharray:1 2;}#my-svg #compositionStart,#my-svg .composition{fill:#333333!important;stroke:#333333!important;stroke-width:1;}#my-svg #compositionEnd,#my-svg .composition{fill:#333333!important;stroke:#333333!important;stroke-width:1;}#my-svg #dependencyStart,#my-svg .dependency{fill:#333333!important;stroke:#333333!important;stroke-width:1;}#my-svg #dependencyStart,#my-svg .dependency{fill:#333333!important;stroke:#333333!important;stroke-width:1;}#my-svg #extensionStart,#my-svg .extension{fill:transparent!important;stroke:#333333!important;stroke-width:1;}#my-svg #extensionEnd,#my-svg .extension{fill:transparent!important;stroke:#333333!important;stroke-width:1;}#my-svg #aggregationStart,#my-svg .aggregation{fill:transparent!important;stroke:#333333!important;stroke-width:1;}#my-svg #aggregationEnd,#my-svg .aggregation{fill:transparent!important;stroke:#333333!important;stroke-width:1;}#my-svg #lollipopStart,#my-svg .lollipop{fill:#ECECFF!important;stroke:#333333!important;stroke-width:1;}#my-svg #lollipopEnd,#my-svg .lollipop{fill:#ECECFF!important;stroke:#333333!important;stroke-width:1;}#my-svg .edgeTerminals{font-size:11px;line-height:initial;}#my-svg .classTitleText{text-anchor:middle;font-size:18px;fill:#333;}#my-svg :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style>
   <g>
     <defs>
@@ -55,8 +55,8 @@
     <g class="root">
       <g class="clusters"/>
       <g class="edgePaths">
-        <path marker-end="url(#my-svg_classDiagram-extensionEnd)" style="fill:none" class="edge-pattern-dashed relation" id="id_C_0013825978819641664869_C_0016988093069955139133_1" d="M558.676,75.47L517.046,85.225C475.417,94.98,392.158,114.49,350.528,125.412C308.898,136.333,308.898,138.667,308.898,139.833L308.898,141"/>
-        <path marker-start="url(#my-svg_classDiagram-extensionStart)" style="fill:none" class="edge-pattern-solid relation" id="id_C_0013825978819641664869_C_0012380559137179420140_2" d="M721.045,79.577L759.753,88.648C798.462,97.718,875.88,115.859,914.588,129.096C953.297,142.333,953.297,150.667,953.297,154.833L953.297,159"/>
+        <path marker-end="url(#my-svg_classDiagram-extensionEnd)" style="fill:none" class="edge-pattern-dashed relation" id="id_C_0013825978819641664869_C_0016988093069955139133_1" d="M549.785,75.708L508.896,85.423C468.008,95.139,386.23,114.569,345.342,125.451C304.453,136.333,304.453,138.667,304.453,139.833L304.453,141"/>
+        <path marker-start="url(#my-svg_classDiagram-extensionStart)" style="fill:none" class="edge-pattern-solid relation" id="id_C_0013825978819641664869_C_0012380559137179420140_2" d="M712.141,79.869L750.111,88.891C788.081,97.913,864.021,115.956,901.991,129.145C939.961,142.333,939.961,150.667,939.961,154.833L939.961,159"/>
       </g>
       <g class="edgeLabels">
         <g transform="translate(undefined, NaN)" class="edgeLabel">
@@ -83,7 +83,7 @@
         </g>
       </g>
       <g class="nodes">
-        <g transform="translate(631.09765625, 58.5)" id="classId-C_0013825978819641664869-0" class="node default">
+        <g transform="translate(622.20703125, 58.5)" id="classId-C_0013825978819641664869-0" class="node default">
           <rect height="101" width="144.84375" y="-50.5" x="-72.421875" class="outer title-state" style=""/>
           <line y2="1.5" y1="1.5" x2="72.421875" x1="-72.421875" class="divider"/>
           <line y2="39.5" y1="39.5" x2="72.421875" x1="-72.421875" class="divider"/>
@@ -105,10 +105,10 @@
             </foreignObject>
           </g>
         </g>
-        <g transform="translate(308.8984375, 407.5)" id="classId-C_0016988093069955139133-1" class="node default">
-          <rect height="497" width="601.796875" y="-248.5" x="-300.8984375" class="outer title-state" style=""/>
-          <line y2="-196.5" y1="-196.5" x2="300.8984375" x1="-300.8984375" class="divider"/>
-          <line y2="-180.5" y1="-180.5" x2="300.8984375" x1="-300.8984375" class="divider"/>
+        <g transform="translate(304.453125, 407.5)" id="classId-C_0016988093069955139133-1" class="node default">
+          <rect height="497" width="592.90625" y="-248.5" x="-296.453125" class="outer title-state" style=""/>
+          <line y2="-196.5" y1="-196.5" x2="296.453125" x1="-296.453125" class="divider"/>
+          <line y2="-180.5" y1="-180.5" x2="296.453125" x1="-296.453125" class="divider"/>
           <g class="label">
             <foreignObject transform="translate( -63.140625, -241)" height="18" width="126.28125">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
@@ -120,107 +120,107 @@
                 <span class="nodeLabel">NSObject</span>
               </div>
             </foreignObject>
-            <foreignObject transform="translate( -293.3984375, -173)" height="18" width="138.296875">
+            <foreignObject transform="translate( -288.953125, -173)" height="18" width="129.40625">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="nodeLabel">+autorelease() : : id</span>
+                <span class="nodeLabel">+autorelease() : id</span>
               </div>
             </foreignObject>
-            <foreignObject transform="translate( -293.3984375, -151)" height="18" width="118.6875">
+            <foreignObject transform="translate( -288.953125, -151)" height="18" width="109.796875">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="nodeLabel">+class() : : Class</span>
+                <span class="nodeLabel">+class() : Class</span>
               </div>
             </foreignObject>
-            <foreignObject transform="translate( -293.3984375, -129)" height="18" width="373.9375">
+            <foreignObject transform="translate( -288.953125, -129)" height="18" width="365.046875">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="nodeLabel">+conformsToProtocol:(Protocol * aProtocol) : : BOOL</span>
+                <span class="nodeLabel">+conformsToProtocol:(Protocol * aProtocol) : BOOL</span>
               </div>
             </foreignObject>
-            <foreignObject transform="translate( -293.3984375, -107)" height="18" width="183.625">
+            <foreignObject transform="translate( -288.953125, -107)" height="18" width="174.734375">
               <div xmlns="http://www.w3.org/1999/xhtml" style="font-style: italic; display: inline-block; white-space: nowrap;">
-                <span class="nodeLabel" style="font-style:italic;">+description() : : NSString</span>
+                <span class="nodeLabel" style="font-style:italic;">+description() : NSString</span>
               </div>
             </foreignObject>
-            <foreignObject transform="translate( -293.3984375, -85)" height="18" width="160.515625">
+            <foreignObject transform="translate( -288.953125, -85)" height="18" width="151.625">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="nodeLabel">+hash() : : NSUInteger</span>
+                <span class="nodeLabel">+hash() : NSUInteger</span>
               </div>
             </foreignObject>
-            <foreignObject transform="translate( -293.3984375, -63)" height="18" width="224.546875">
+            <foreignObject transform="translate( -288.953125, -63)" height="18" width="215.65625">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="nodeLabel">+isEqual:(id anObject) : : BOOL</span>
+                <span class="nodeLabel">+isEqual:(id anObject) : BOOL</span>
               </div>
             </foreignObject>
-            <foreignObject transform="translate( -293.3984375, -41)" height="18" width="284.96875">
+            <foreignObject transform="translate( -288.953125, -41)" height="18" width="276.078125">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="nodeLabel">+isKindOfClass:(Class aClass) : : BOOL</span>
+                <span class="nodeLabel">+isKindOfClass:(Class aClass) : BOOL</span>
               </div>
             </foreignObject>
-            <foreignObject transform="translate( -293.3984375, -19)" height="18" width="311.625">
+            <foreignObject transform="translate( -288.953125, -19)" height="18" width="302.734375">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="nodeLabel">+isMemberOfClass:(Class aClass) : : BOOL</span>
+                <span class="nodeLabel">+isMemberOfClass:(Class aClass) : BOOL</span>
               </div>
             </foreignObject>
-            <foreignObject transform="translate( -293.3984375, 3)" height="18" width="139.140625">
+            <foreignObject transform="translate( -288.953125, 3)" height="18" width="130.25">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="nodeLabel">+isProxy() : : BOOL</span>
+                <span class="nodeLabel">+isProxy() : BOOL</span>
               </div>
             </foreignObject>
-            <foreignObject transform="translate( -293.3984375, 25)" height="18" width="274.640625">
+            <foreignObject transform="translate( -288.953125, 25)" height="18" width="265.75">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="nodeLabel">+performSelector:(SEL aSelector) : : id</span>
+                <span class="nodeLabel">+performSelector:(SEL aSelector) : id</span>
               </div>
             </foreignObject>
-            <foreignObject transform="translate( -293.3984375, 47)" height="18" width="442.71875">
+            <foreignObject transform="translate( -288.953125, 47)" height="18" width="433.828125">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="nodeLabel">+performSelector:withObject:(SEL aSelector, id anObject) : : id</span>
+                <span class="nodeLabel">+performSelector:withObject:(SEL aSelector, id anObject) : id</span>
               </div>
             </foreignObject>
-            <foreignObject transform="translate( -293.3984375, 69)" height="18" width="586.796875">
+            <foreignObject transform="translate( -288.953125, 69)" height="18" width="577.90625">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="nodeLabel">+performSelector:withObject:withObject:(SEL aSelector, id object1, id object2) : : id</span>
+                <span class="nodeLabel">+performSelector:withObject:withObject:(SEL aSelector, id object1, id object2) : id</span>
               </div>
             </foreignObject>
-            <foreignObject transform="translate( -293.3984375, 91)" height="18" width="124.0625">
+            <foreignObject transform="translate( -288.953125, 91)" height="18" width="115.171875">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="nodeLabel">+release() : : void</span>
+                <span class="nodeLabel">+release() : void</span>
               </div>
             </foreignObject>
-            <foreignObject transform="translate( -293.3984375, 113)" height="18" width="334.234375">
+            <foreignObject transform="translate( -288.953125, 113)" height="18" width="325.34375">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="nodeLabel">+respondsToSelector:(SEL aSelector) : : BOOL</span>
+                <span class="nodeLabel">+respondsToSelector:(SEL aSelector) : BOOL</span>
               </div>
             </foreignObject>
-            <foreignObject transform="translate( -293.3984375, 135)" height="18" width="94.703125">
+            <foreignObject transform="translate( -288.953125, 135)" height="18" width="85.8125">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="nodeLabel">+retain() : : id</span>
+                <span class="nodeLabel">+retain() : id</span>
               </div>
             </foreignObject>
-            <foreignObject transform="translate( -293.3984375, 157)" height="18" width="208.546875">
+            <foreignObject transform="translate( -288.953125, 157)" height="18" width="199.65625">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="nodeLabel">+retainCount() : : NSUInteger</span>
+                <span class="nodeLabel">+retainCount() : NSUInteger</span>
               </div>
             </foreignObject>
-            <foreignObject transform="translate( -293.3984375, 179)" height="18" width="79.578125">
+            <foreignObject transform="translate( -288.953125, 179)" height="18" width="70.6875">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="nodeLabel">+self() : : id</span>
+                <span class="nodeLabel">+self() : id</span>
               </div>
             </foreignObject>
-            <foreignObject transform="translate( -293.3984375, 201)" height="18" width="158.71875">
+            <foreignObject transform="translate( -288.953125, 201)" height="18" width="149.828125">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="nodeLabel">+superclass() : : Class</span>
+                <span class="nodeLabel">+superclass() : Class</span>
               </div>
             </foreignObject>
-            <foreignObject transform="translate( -293.3984375, 223)" height="18" width="135.625">
+            <foreignObject transform="translate( -288.953125, 223)" height="18" width="126.734375">
               <div xmlns="http://www.w3.org/1999/xhtml" style="font-style: italic; display: inline-block; white-space: nowrap;">
-                <span class="nodeLabel" style="font-style:italic;">+zone() : : NSZone</span>
+                <span class="nodeLabel" style="font-style:italic;">+zone() : NSZone</span>
               </div>
             </foreignObject>
           </g>
         </g>
-        <g transform="translate(953.296875, 407.5)" id="classId-C_0012380559137179420140-2" class="node default">
-          <rect height="497" width="587" y="-248.5" x="-293.5" class="outer title-state" style=""/>
-          <line y2="-196.5" y1="-196.5" x2="293.5" x1="-293.5" class="divider"/>
-          <line y2="-92.5" y1="-92.5" x2="293.5" x1="-293.5" class="divider"/>
+        <g transform="translate(939.9609375, 407.5)" id="classId-C_0012380559137179420140-2" class="node default">
+          <rect height="497" width="578.109375" y="-248.5" x="-289.0546875" class="outer title-state" style=""/>
+          <line y2="-196.5" y1="-196.5" x2="289.0546875" x1="-289.0546875" class="divider"/>
+          <line y2="-92.5" y1="-92.5" x2="289.0546875" x1="-289.0546875" class="divider"/>
           <g class="label">
             <foreignObject transform="translate( -64.921875, -241)" height="18" width="129.84375">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
@@ -232,99 +232,99 @@
                 <span class="nodeLabel">It00085</span>
               </div>
             </foreignObject>
-            <foreignObject transform="translate( -286, -185)" height="18" width="154.75">
+            <foreignObject transform="translate( -281.5546875, -185)" height="18" width="154.75">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
                 <span class="nodeLabel">#_defaultMember : int</span>
               </div>
             </foreignObject>
-            <foreignObject transform="translate( -286, -163)" height="18" width="198.296875">
+            <foreignObject transform="translate( -281.5546875, -163)" height="18" width="198.296875">
               <div xmlns="http://www.w3.org/1999/xhtml" style="font-style: italic; display: inline-block; white-space: nowrap;">
                 <span class="nodeLabel" style="font-style:italic;">-_privateMember : NSString</span>
               </div>
             </foreignObject>
-            <foreignObject transform="translate( -286, -141)" height="18" width="220.546875">
+            <foreignObject transform="translate( -281.5546875, -141)" height="18" width="220.546875">
               <div xmlns="http://www.w3.org/1999/xhtml" style="font-style: italic; display: inline-block; white-space: nowrap;">
                 <span class="nodeLabel" style="font-style:italic;">#_protectedMember : NSString</span>
               </div>
             </foreignObject>
-            <foreignObject transform="translate( -286, -119)" height="18" width="196.09375">
+            <foreignObject transform="translate( -281.5546875, -119)" height="18" width="196.09375">
               <div xmlns="http://www.w3.org/1999/xhtml" style="font-style: italic; display: inline-block; white-space: nowrap;">
                 <span class="nodeLabel" style="font-style:italic;">+_publicMember : NSString</span>
               </div>
             </foreignObject>
-            <foreignObject transform="translate( -286, -85)" height="18" width="337.828125">
+            <foreignObject transform="translate( -281.5546875, -85)" height="18" width="328.9375">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="nodeLabel">+addValue:(NSInteger otherValue) : : NSInteger</span>
+                <span class="nodeLabel">+addValue:(NSInteger otherValue) : NSInteger</span>
               </div>
             </foreignObject>
-            <foreignObject transform="translate( -286, -63)" height="18" width="272.578125">
+            <foreignObject transform="translate( -281.5546875, -63)" height="18" width="263.6875">
               <div xmlns="http://www.w3.org/1999/xhtml" style="text-decoration: underline; display: inline-block; white-space: nowrap;">
-                <span class="nodeLabel" style="text-decoration:underline;">+currentSharedCounter() : : NSInteger</span>
+                <span class="nodeLabel" style="text-decoration:underline;">+currentSharedCounter() : NSInteger</span>
               </div>
             </foreignObject>
-            <foreignObject transform="translate( -286, -41)" height="18" width="170.296875">
+            <foreignObject transform="translate( -281.5546875, -41)" height="18" width="161.40625">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="nodeLabel">+displayDetails() : : void</span>
+                <span class="nodeLabel">+displayDetails() : void</span>
               </div>
             </foreignObject>
-            <foreignObject transform="translate( -286, -19)" height="18" width="250.34375">
+            <foreignObject transform="translate( -281.5546875, -19)" height="18" width="241.453125">
               <div xmlns="http://www.w3.org/1999/xhtml" style="text-decoration: underline; display: inline-block; white-space: nowrap;">
-                <span class="nodeLabel" style="text-decoration:underline;">+incrementSharedCounter() : : void</span>
+                <span class="nodeLabel" style="text-decoration:underline;">+incrementSharedCounter() : void</span>
               </div>
             </foreignObject>
-            <foreignObject transform="translate( -286, 3)" height="18" width="517.125">
+            <foreignObject transform="translate( -281.5546875, 3)" height="18" width="508.234375">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="nodeLabel">+initWithName:value:(NSString * name, NSInteger value) : : instancetype</span>
+                <span class="nodeLabel">+initWithName:value:(NSString * name, NSInteger value) : instancetype</span>
               </div>
             </foreignObject>
-            <foreignObject transform="translate( -286, 25)" height="18" width="572">
+            <foreignObject transform="translate( -281.5546875, 25)" height="18" width="563.109375">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="nodeLabel">+multiplyValueBy:andAdd:(NSInteger multiplier, NSInteger addition) : : NSInteger</span>
+                <span class="nodeLabel">+multiplyValueBy:andAdd:(NSInteger multiplier, NSInteger addition) : NSInteger</span>
               </div>
             </foreignObject>
-            <foreignObject transform="translate( -286, 47)" height="18" width="146.28125">
+            <foreignObject transform="translate( -281.5546875, 47)" height="18" width="137.390625">
               <div xmlns="http://www.w3.org/1999/xhtml" style="font-style: italic; display: inline-block; white-space: nowrap;">
-                <span class="nodeLabel" style="font-style:italic;">+name() : : NSString</span>
+                <span class="nodeLabel" style="font-style:italic;">+name() : NSString</span>
               </div>
             </foreignObject>
-            <foreignObject transform="translate( -286, 69)" height="18" width="449">
+            <foreignObject transform="translate( -281.5546875, 69)" height="18" width="440.109375">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="nodeLabel">+performOperationWithBlock:(void (^)(NSInteger) block) : : void</span>
+                <span class="nodeLabel">+performOperationWithBlock:(void (^)(NSInteger) block) : void</span>
               </div>
             </foreignObject>
-            <foreignObject transform="translate( -286, 91)" height="18" width="146.890625">
+            <foreignObject transform="translate( -281.5546875, 91)" height="18" width="138">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="nodeLabel">+resetValue() : : void</span>
+                <span class="nodeLabel">+resetValue() : void</span>
               </div>
             </foreignObject>
-            <foreignObject transform="translate( -286, 113)" height="18" width="259.21875">
+            <foreignObject transform="translate( -281.5546875, 113)" height="18" width="250.328125">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="nodeLabel">+setName:(NSString * name) : : void</span>
+                <span class="nodeLabel">+setName:(NSString * name) : void</span>
               </div>
             </foreignObject>
-            <foreignObject transform="translate( -286, 135)" height="18" width="388.21875">
+            <foreignObject transform="translate( -281.5546875, 135)" height="18" width="379.328125">
               <div xmlns="http://www.w3.org/1999/xhtml" style="text-decoration: underline; display: inline-block; white-space: nowrap;">
-                <span class="nodeLabel" style="text-decoration:underline;">+setSharedCounter:(NSInteger sharedCounter) : : void</span>
+                <span class="nodeLabel" style="text-decoration:underline;">+setSharedCounter:(NSInteger sharedCounter) : void</span>
               </div>
             </foreignObject>
-            <foreignObject transform="translate( -286, 157)" height="18" width="251.84375">
+            <foreignObject transform="translate( -281.5546875, 157)" height="18" width="242.953125">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="nodeLabel">+setValue:(NSInteger value) : : void</span>
+                <span class="nodeLabel">+setValue:(NSInteger value) : void</span>
               </div>
             </foreignObject>
-            <foreignObject transform="translate( -286, 179)" height="18" width="220.109375">
+            <foreignObject transform="translate( -281.5546875, 179)" height="18" width="211.21875">
               <div xmlns="http://www.w3.org/1999/xhtml" style="text-decoration: underline; display: inline-block; white-space: nowrap;">
-                <span class="nodeLabel" style="text-decoration:underline;">+sharedCounter() : : NSInteger</span>
+                <span class="nodeLabel" style="text-decoration:underline;">+sharedCounter() : NSInteger</span>
               </div>
             </foreignObject>
-            <foreignObject transform="translate( -286, 201)" height="18" width="241.46875">
+            <foreignObject transform="translate( -281.5546875, 201)" height="18" width="232.578125">
               <div xmlns="http://www.w3.org/1999/xhtml" style="text-decoration: underline; display: inline-block; white-space: nowrap;">
-                <span class="nodeLabel" style="text-decoration:underline;">+sharedInstance() : : instancetype</span>
+                <span class="nodeLabel" style="text-decoration:underline;">+sharedInstance() : instancetype</span>
               </div>
             </foreignObject>
-            <foreignObject transform="translate( -286, 223)" height="18" width="152.515625">
+            <foreignObject transform="translate( -281.5546875, 223)" height="18" width="143.625">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="nodeLabel">+value() : : NSInteger</span>
+                <span class="nodeLabel">+value() : NSInteger</span>
               </div>
             </foreignObject>
           </g>

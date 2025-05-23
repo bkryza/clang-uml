@@ -614,19 +614,19 @@
                 <span class="nodeLabel">type_group_pair_it&lt;It,type_list&lt;First...&gt;,type_list&lt;Second...&gt;&gt;</span>
               </div>
             </foreignObject>
-            <foreignObject transform="translate( -233.859375, -8)" height="18" width="384.65625">
+            <foreignObject transform="translate( -233.859375, -8)" height="18" width="375.765625">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="nodeLabel">+find(const value_type &amp; v) : : [constexpr] unsigned int</span>
+                <span class="nodeLabel">+find(const value_type &amp; v) : [constexpr] unsigned int</span>
               </div>
             </foreignObject>
-            <foreignObject transform="translate( -233.859375, 14)" height="18" width="190.78125">
+            <foreignObject transform="translate( -233.859375, 14)" height="18" width="181.890625">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="nodeLabel">+get(unsigned int i) : : ref_t</span>
+                <span class="nodeLabel">+get(unsigned int i) : ref_t</span>
               </div>
             </foreignObject>
-            <foreignObject transform="translate( -233.859375, 36)" height="18" width="287.734375">
+            <foreignObject transform="translate( -233.859375, 36)" height="18" width="278.84375">
               <div xmlns="http://www.w3.org/1999/xhtml" style="font-style: italic; display: inline-block; white-space: nowrap;">
-                <span class="nodeLabel" style="font-style:italic;">+getp(unsigned int i) : : const value_type</span>
+                <span class="nodeLabel" style="font-style:italic;">+getp(unsigned int i) : const value_type</span>
               </div>
             </foreignObject>
           </g>

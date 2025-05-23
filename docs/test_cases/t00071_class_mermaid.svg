@@ -55,12 +55,12 @@
     <g class="root">
       <g class="clusters"/>
       <g class="edgePaths">
-        <path marker-end="url(#my-svg_classDiagram-dependencyEnd)" style="fill:none" class="edge-pattern-solid relation" id="id_C_0013039548962878986617_C_0017680040592425112949_1" d="M736.891,86.705L716.703,99.754C696.516,112.804,656.141,138.902,635.953,156.618C615.766,174.333,615.766,183.667,615.766,188.333L615.766,193"/>
+        <path marker-end="url(#my-svg_classDiagram-dependencyEnd)" style="fill:none" class="edge-pattern-solid relation" id="id_C_0013039548962878986617_C_0017680040592425112949_1" d="M736.891,87.239L717.444,100.199C697.997,113.159,659.104,139.08,639.658,156.706C620.211,174.333,620.211,183.667,620.211,188.333L620.211,193"/>
         <path marker-end="url(#my-svg_classDiagram-dependencyEnd)" style="fill:none" class="edge-pattern-solid relation" id="id_C_0013039548962878986617_C_0010558900082015743999_2" d="M738.855,131L736.584,136.667C734.313,142.333,729.77,153.667,727.498,167.667C725.227,181.667,725.227,198.333,725.227,206.667L725.227,215"/>
         <path marker-end="url(#my-svg_classDiagram-dependencyEnd)" style="fill:none" class="edge-pattern-solid relation" id="id_C_0013039548962878986617_C_0013579711934180829394_3" d="M788.16,131L790.432,136.667C792.703,142.333,797.246,153.667,799.518,167.667C801.789,181.667,801.789,198.333,801.789,206.667L801.789,215"/>
       </g>
       <g class="edgeLabels">
-        <g transform="translate(615.765625, 165)" class="edgeLabel">
+        <g transform="translate(620.2109375, 165)" class="edgeLabel">
           <g transform="translate(-7.1171875, -9)" class="label">
             <foreignObject height="18" width="14.234375">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
@@ -261,10 +261,10 @@
             </foreignObject>
           </g>
         </g>
-        <g transform="translate(615.765625, 249.5)" id="classId-C_0017680040592425112949-8" class="node default">
-          <rect height="101" width="92.359375" y="-50.5" x="-46.1796875" class="outer title-state" style=""/>
-          <line y2="-20.5" y1="-20.5" x2="46.1796875" x1="-46.1796875" class="divider"/>
-          <line y2="17.5" y1="17.5" x2="46.1796875" x1="-46.1796875" class="divider"/>
+        <g transform="translate(620.2109375, 249.5)" id="classId-C_0017680040592425112949-8" class="node default">
+          <rect height="101" width="83.46875" y="-50.5" x="-41.734375" class="outer title-state" style=""/>
+          <line y2="-20.5" y1="-20.5" x2="41.734375" x1="-41.734375" class="divider"/>
+          <line y2="17.5" y1="17.5" x2="41.734375" x1="-41.734375" class="divider"/>
           <g class="label">
             <foreignObject height="0" width="0">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
@@ -276,14 +276,14 @@
                 <span class="nodeLabel">A</span>
               </div>
             </foreignObject>
-            <foreignObject transform="translate( -38.6796875, -9)" height="18" width="44.46875">
+            <foreignObject transform="translate( -34.234375, -9)" height="18" width="44.46875">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
                 <span class="nodeLabel">-a : int</span>
               </div>
             </foreignObject>
-            <foreignObject transform="translate( -38.6796875, 25)" height="18" width="77.359375">
+            <foreignObject transform="translate( -34.234375, 25)" height="18" width="68.46875">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="nodeLabel">-get() : : int</span>
+                <span class="nodeLabel">-get() : int</span>
               </div>
             </foreignObject>
           </g>
