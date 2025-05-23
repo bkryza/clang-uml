@@ -1029,7 +1029,7 @@ bool IsMethod(const mermaid_t &d, std::string const &cls,
     if constexpr (has_type<Coroutine, Ts...>())
         method_mods.push_back("coroutine");
 
-    pattern += " : ";
+    pattern += " ";
 
     if (!method_mods.empty()) {
         pattern += fmt::format("[{}] ", fmt::join(method_mods, ","));
