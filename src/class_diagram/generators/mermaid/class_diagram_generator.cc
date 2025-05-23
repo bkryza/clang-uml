@@ -198,7 +198,7 @@ void generator::generate_method(
     }
     ostr << ")";
 
-    ostr << " : ";
+    ostr << " ";
 
     std::vector<std::string> method_mods;
     if (m.is_defaulted()) {
@@ -264,7 +264,7 @@ void generator::generate_method(
     }
     ostr << ")";
 
-    ostr << " : ";
+    ostr << " ";
 
     std::vector<std::string> method_mods;
     if (m.is_optional()) {

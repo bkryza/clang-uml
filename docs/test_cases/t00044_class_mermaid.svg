@@ -192,14 +192,14 @@
                 <span class="nodeLabel" style="font-style:italic;">-signal : signal_t</span>
               </div>
             </foreignObject>
-            <foreignObject transform="translate( -142.2734375, 14)" height="18" width="191.640625">
+            <foreignObject transform="translate( -142.2734375, 14)" height="18" width="182.75">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="nodeLabel">+sink(signal_t &amp; sh) : : void</span>
+                <span class="nodeLabel">+sink(signal_t &amp; sh) : void</span>
               </div>
             </foreignObject>
-            <foreignObject transform="translate( -142.2734375, 36)" height="18" width="165.28125">
+            <foreignObject transform="translate( -142.2734375, 36)" height="18" width="156.390625">
               <div xmlns="http://www.w3.org/1999/xhtml" style="font-style: italic; display: inline-block; white-space: nowrap;">
-                <span class="nodeLabel" style="font-style:italic;">+get_signal() : : CastTo</span>
+                <span class="nodeLabel" style="font-style:italic;">+get_signal() : CastTo</span>
               </div>
             </foreignObject>
           </g>

@@ -1,4 +1,4 @@
-<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" aria-roledescription="classDiagram" role="graphics-document document" viewBox="0 0 290.296875 161" style="max-width: 290.297px; background-color: white;" width="290.296875" id="my-svg">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" aria-roledescription="classDiagram" role="graphics-document document" viewBox="0 0 281.40625 161" style="max-width: 281.406px; background-color: white;" width="281.40625" id="my-svg">
   <style>#my-svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#333;}#my-svg .error-icon{fill:#552222;}#my-svg .error-text{fill:#552222;stroke:#552222;}#my-svg .edge-thickness-normal{stroke-width:1px;}#my-svg .edge-thickness-thick{stroke-width:3.5px;}#my-svg .edge-pattern-solid{stroke-dasharray:0;}#my-svg .edge-thickness-invisible{stroke-width:0;fill:none;}#my-svg .edge-pattern-dashed{stroke-dasharray:3;}#my-svg .edge-pattern-dotted{stroke-dasharray:2;}#my-svg .marker{fill:#333333;stroke:#333333;}#my-svg .marker.cross{stroke:#333333;}#my-svg svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#my-svg p{margin:0;}#my-svg g.classGroup text{fill:#9370DB;stroke:none;font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:10px;}#my-svg g.classGroup text .title{font-weight:bolder;}#my-svg .nodeLabel,#my-svg .edgeLabel{color:#131300;}#my-svg .edgeLabel .label rect{fill:#ECECFF;}#my-svg .label text{fill:#131300;}#my-svg .edgeLabel .label span{background:#ECECFF;}#my-svg .classTitle{font-weight:bolder;}#my-svg .node rect,#my-svg .node circle,#my-svg .node ellipse,#my-svg .node polygon,#my-svg .node path{fill:#ECECFF;stroke:#9370DB;stroke-width:1px;}#my-svg .divider{stroke:#9370DB;stroke-width:1;}#my-svg g.clickable{cursor:pointer;}#my-svg g.classGroup rect{fill:#ECECFF;stroke:#9370DB;}#my-svg g.classGroup line{stroke:#9370DB;stroke-width:1;}#my-svg .classLabel .box{stroke:none;stroke-width:0;fill:#ECECFF;opacity:0.5;}#my-svg .classLabel .label{fill:#9370DB;font-size:10px;}#my-svg .relation{stroke:#333333;stroke-width:1;fill:none;}#my-svg .dashed-line{stroke-dasharray:3;}#my-svg .dotted-line{stroke-dasharray:1 2;}#my-svg #compositionStart,#my-svg .composition{fill:#333333!important;stroke:#333333!important;stroke-width:1;}#my-svg #compositionEnd,#my-svg .composition{fill:#333333!important;stroke:#333333!important;stroke-width:1;}#my-svg #dependencyStart,#my-svg .dependency{fill:#333333!important;stroke:#333333!important;stroke-width:1;}#my-svg #dependencyStart,#my-svg .dependency{fill:#333333!important;stroke:#333333!important;stroke-width:1;}#my-svg #extensionStart,#my-svg .extension{fill:transparent!important;stroke:#333333!important;stroke-width:1;}#my-svg #extensionEnd,#my-svg .extension{fill:transparent!important;stroke:#333333!important;stroke-width:1;}#my-svg #aggregationStart,#my-svg .aggregation{fill:transparent!important;stroke:#333333!important;stroke-width:1;}#my-svg #aggregationEnd,#my-svg .aggregation{fill:transparent!important;stroke:#333333!important;stroke-width:1;}#my-svg #lollipopStart,#my-svg .lollipop{fill:#ECECFF!important;stroke:#333333!important;stroke-width:1;}#my-svg #lollipopEnd,#my-svg .lollipop{fill:#ECECFF!important;stroke:#333333!important;stroke-width:1;}#my-svg .edgeTerminals{font-size:11px;line-height:initial;}#my-svg .classTitleText{text-anchor:middle;font-size:18px;fill:#333;}#my-svg :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style>
   <g>
     <defs>
@@ -57,10 +57,10 @@
       <g class="edgePaths"/>
       <g class="edgeLabels"/>
       <g class="nodes">
-        <g transform="translate(85.078125, 80.5)" id="classId-C_0011109277548113978055-0" class="node default">
-          <rect height="145" width="154.15625" y="-72.5" x="-77.078125" class="outer title-state" style=""/>
-          <line y2="-42.5" y1="-42.5" x2="77.078125" x1="-77.078125" class="divider"/>
-          <line y2="-4.5" y1="-4.5" x2="77.078125" x1="-77.078125" class="divider"/>
+        <g transform="translate(80.6328125, 80.5)" id="classId-C_0011109277548113978055-0" class="node default">
+          <rect height="145" width="145.265625" y="-72.5" x="-72.6328125" class="outer title-state" style=""/>
+          <line y2="-42.5" y1="-42.5" x2="72.6328125" x1="-72.6328125" class="divider"/>
+          <line y2="-4.5" y1="-4.5" x2="72.6328125" x1="-72.6328125" class="divider"/>
           <g class="label">
             <foreignObject height="0" width="0">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
@@ -72,29 +72,29 @@
                 <span class="nodeLabel">FooClass</span>
               </div>
             </foreignObject>
-            <foreignObject transform="translate( -69.578125, -31)" height="18" width="66.703125">
+            <foreignObject transform="translate( -65.1328125, -31)" height="18" width="66.703125">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
                 <span class="nodeLabel">-foo_ : int</span>
               </div>
             </foreignObject>
-            <foreignObject transform="translate( -69.578125, 3)" height="18" width="139.15625">
+            <foreignObject transform="translate( -65.1328125, 3)" height="18" width="130.265625">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="nodeLabel">+FooClass() : : void</span>
+                <span class="nodeLabel">+FooClass() : void</span>
               </div>
             </foreignObject>
-            <foreignObject transform="translate( -69.578125, 25)" height="18" width="94.703125">
+            <foreignObject transform="translate( -65.1328125, 25)" height="18" width="85.8125">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="nodeLabel">+bar() : : void</span>
+                <span class="nodeLabel">+bar() : void</span>
               </div>
             </foreignObject>
-            <foreignObject transform="translate( -69.578125, 47)" height="18" width="93.828125">
+            <foreignObject transform="translate( -65.1328125, 47)" height="18" width="84.9375">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="nodeLabel">+foo() : : void</span>
+                <span class="nodeLabel">+foo() : void</span>
               </div>
             </foreignObject>
           </g>
         </g>
-        <g transform="translate(247.2265625, 80.5)" id="classId-C_0011116714444290790658-1" class="node default">
+        <g transform="translate(238.3359375, 80.5)" id="classId-C_0011116714444290790658-1" class="node default">
           <rect height="79" width="70.140625" y="-39.5" x="-35.0703125" class="outer title-state" style=""/>
           <line y2="-9.5" y1="-9.5" x2="35.0703125" x1="-35.0703125" class="divider"/>
           <line y2="28.5" y1="28.5" x2="35.0703125" x1="-35.0703125" class="divider"/>
