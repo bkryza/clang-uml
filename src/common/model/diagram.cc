@@ -138,4 +138,57 @@ bool diagram::should_include(const common::model::source_file &f) const
     return filter_->should_include(f);
 }
 
+void diagram::add_relationship(relationship &&cr)
+{
+    if ((cr.type() == relationship_t::kInstantiation) &&
+        (cr.destination() == id())) {
+        LOG_DBG("Skipping self instantiation relationship for {}",
+            cr.destination());
+        return;
+    }
+
+    if (!util::contains(relationships_, cr)) {
+        LOG_DBG("Adding relationship from: '{}' ({}) - {} - '{}'", id(),
+            full_name(true), to_string(cr.type()), cr.destination());
+
+        relationships_.emplace_back(std::move(cr));
+    }
+}
+
+std::vector<relationship> &diagram::relationships()
+{
+    return relationships_;
+}
+
+const std::vector<relationship> &diagram::relationships() const
+{
+    return relationships_;
+}
+
+void diagram::remove_duplicate_relationships()
+{
+    std::vector<relationship> unique_relationships;
+
+    for (auto &r : relationships_) {
+        if (!util::contains(unique_relationships, r)) {
+            unique_relationships.emplace_back(r);
+        }
+    }
+
+    std::swap(relationships_, unique_relationships);
+}
+
+void diagram::apply_filter(
+    const diagram_filter &filter, const std::set<eid_t> &removed)
+{
+    common::model::apply_filter(relationships(), filter);
+
+    auto &rels = relationships();
+    rels.erase(std::remove_if(std::begin(rels), std::end(rels),
+                   [&removed](auto &&r) {
+                       return removed.count(r.destination()) > 0;
+                   }),
+        std::end(rels));
+}
+
 } // namespace clanguml::common::model

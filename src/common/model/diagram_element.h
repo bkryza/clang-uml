@@ -149,27 +149,6 @@ public:
     }
 
     /**
-     * Return all relationships outgoing from this element.
-     *
-     * @return List of relationships.
-     */
-    std::vector<relationship> &relationships();
-
-    /**
-     * Return all relationships outgoing from this element.
-     *
-     * @return List of relationships.
-     */
-    const std::vector<relationship> &relationships() const;
-
-    /**
-     * Add relationships, whose source is this element.
-     *
-     * @param cr Relationship to another diagram element.
-     */
-    void add_relationship(relationship &&cr);
-
-    /**
      * Add element to the diagram.
      *
      * @param e Diagram element.
@@ -209,13 +188,6 @@ public:
      */
     void complete(bool completed);
 
-    /**
-     * Due to the fact that a relationship to the same element can be added
-     * once with local TU id and other time with global id, the relationship
-     * set can contain duplicates.
-     */
-    void remove_duplicate_relationships();
-
     virtual void apply_filter(
         const diagram_filter &filter, const std::set<eid_t> &removed);
 
@@ -229,7 +201,7 @@ private:
     eid_t id_{};
     std::optional<eid_t> parent_element_id_{};
     std::string name_;
-    std::vector<relationship> relationships_;
+
     bool nested_{false};
     bool complete_{false};
 };

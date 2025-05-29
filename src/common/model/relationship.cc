@@ -22,10 +22,12 @@
 
 namespace clanguml::common::model {
 
-relationship::relationship(relationship_t type, eid_t destination,
+relationship::relationship(relationship_t type, eid_t source, eid_t destination,
     access_t access, std::string label, std::string multiplicity_source,
     std::string multiplicity_destination)
     : type_{type}
+    , source_{source}
+    ,
     , destination_{destination}
     , multiplicity_source_{std::move(multiplicity_source)}
     , multiplicity_destination_{std::move(multiplicity_destination)}
@@ -35,8 +37,9 @@ relationship::relationship(relationship_t type, eid_t destination,
 {
 }
 
-relationship::relationship(eid_t destination, access_t access, bool is_virtual)
-    : relationship{relationship_t::kExtension, destination, access}
+relationship::relationship(
+    eid_t source, eid_t destination, access_t access, bool is_virtual)
+    : relationship{relationship_t::kExtension, source, destination, access}
 {
     set_virtual(is_virtual);
 }
@@ -51,6 +54,10 @@ void relationship::set_destination(eid_t destination)
 }
 
 eid_t relationship::destination() const { return destination_; }
+
+void relationship::set_source(eid_t source) { source_ = source; }
+
+eid_t relationship::source() const { return source_; }
 
 void relationship::set_multiplicity_source(
     const std::string &multiplicity_source)

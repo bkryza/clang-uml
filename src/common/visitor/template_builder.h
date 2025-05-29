@@ -673,11 +673,14 @@ void template_builder<VisitorT>::build_from_template_declaration(
                                 named_concept->getQualifiedNameAsString());
                             if (templated_element &&
                                 visitor_.should_include(named_concept)) {
-                                templated_element.value().add_relationship(
-                                    {relationship_t::kConstraint,
-                                        id_mapper()
+
+                                auto target = id_mapper()
                                             .get_global_id(
-                                                eid_t{named_concept->getID()})
+                                                eid_t{named_concept->getID()};
+
+                                diagram().add_relationship(
+                                    {relationship_t::kConstraint,
+                                        target)
                                             .value(),
                                         model::access_t::kNone,
                                         ct.name().value()});
