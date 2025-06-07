@@ -30,9 +30,9 @@ TEST_CASE("t20048")
                 {"tmain()", "a3(int)", ""}, //
                 {"tmain()", "a2(int)", ""}, //
                 {"tmain()", "a1(int)", ""}, //
-                {"tmain()", "tmain()::(lambda t20048.cc:26:11)",
+                {"tmain()", "tmain()::(lambda t20048.cc:28:11)",
                     "operator()(auto &&) const"},                     //
-                {"tmain()::(lambda t20048.cc:26:11)", "a4(int)", ""}, //
+                {"tmain()::(lambda t20048.cc:28:11)", "a4(int)", ""}, //
                 {"tmain()", "a6(int)", ""},                           //
                 {"tmain()", "a5(int)", ""},                           //
                 {"tmain()", "a7(int)", ""},                           //
@@ -44,11 +44,11 @@ TEST_CASE("t20048")
         REQUIRE(HasMessageComment(src, "tmain()",
             "This lambda calls a4() which\\n"
             "adds `4` to it's argument"));
-        REQUIRE(
-            HasMessageComment(src, "tmain()", "a6() adds `1` to its argument"));
         REQUIRE(HasMessageComment(src, "tmain()",
             "a5() adds `1` to the result\\n"
             "of a6()"));
+        REQUIRE(
+            HasMessageComment(src, "tmain()", "a6() adds `1` to its argument"));
         REQUIRE(HasMessageComment(
             src, "tmain()", "a7() is called via add std::async"));
     });

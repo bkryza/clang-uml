@@ -17,6 +17,8 @@ int a6(int x) { return x + 6; }
 
 int a7(int x) { return x + 7; }
 
+#define a6(x) a6(x)
+
 int tmain()
 {
     // a1() adds `1` to the result of a2()
@@ -27,7 +29,7 @@ int tmain()
 
     // a5() adds `1` to the result of a6()
     res = a5(
-        // a6() adds `1` to its argument
+        /* a6() adds `1` to its argument */
         a6(0));
 
     // a7() is called via add std::async
