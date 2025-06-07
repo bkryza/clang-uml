@@ -1010,18 +1010,18 @@ clang::RawComment *get_declaration_raw_comment(const clang::SourceManager &sm,
 clang::RawComment *get_raw_comment(const clang::SourceManager &sm,
     const clang::ASTContext &context, const clang::SourceRange &source_range)
 {
-    auto expr_begin = source_range.getBegin();
-    const auto expr_begin_line = sm.getSpellingLineNumber(expr_begin);
-
-    std::string file_Path = sm.getFilename(expr_begin).str();
+    auto expr_begin = sm.getExpansionLoc(source_range.getBegin());
+    const auto expr_begin_line = sm.getExpansionLineNumber(expr_begin);
 
     auto file_id = sm.getFileID(expr_begin);
 
-    if (!context.Comments.empty() &&
-        context.Comments.getCommentsInFile(file_id) != nullptr) {
+    const auto has_comments = !context.Comments.empty();
+    const auto *comments = context.Comments.getCommentsInFile(file_id);
+
+    if (has_comments && comments != nullptr) {
         for (const auto [offset, raw_comment] :
             *context.Comments.getCommentsInFile(sm.getFileID(expr_begin))) {
-            const auto comment_end_line = sm.getSpellingLineNumber(
+            const auto comment_end_line = sm.getExpansionLineNumber(
                 raw_comment->getSourceRange().getEnd());
 
             if (expr_begin_line == comment_end_line ||
