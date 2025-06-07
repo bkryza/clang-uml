@@ -42,7 +42,7 @@ types:
         tooltip: !optional [string, map_t<string;string>]
     git_t:
         branch: string
-        revision: [string, int]
+        revision: [string, int, scalar]
         commit: string
         toplevel: string
     layout_hint_key: !variant
