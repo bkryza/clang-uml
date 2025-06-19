@@ -1385,13 +1385,17 @@ template_builder<VisitorT>::try_as_member_pointer(
 
         argument.add_template_param(std::move(pointee_arg));
 
+#if LLVM_VERSION_MAJOR < 21
         const auto *member_class_type = mp_type->getClass();
+#else
+        const auto *member_class_type = mp_type->getQualifier()->getAsType();
+#endif
 
         if (member_class_type == nullptr)
             return {};
 
         auto class_type_arg = process_type_argument(location_decl, parent, cls,
-            template_decl, mp_type->getClass()->getCanonicalTypeUnqualified(),
+            template_decl, member_class_type->getCanonicalTypeUnqualified(),
             template_instantiation, argument_index);
 
         argument.add_template_param(std::move(class_type_arg));
@@ -1413,13 +1417,17 @@ template_builder<VisitorT>::try_as_member_pointer(
         // Add return type argument
         argument.add_template_param(std::move(return_type_arg));
 
+#if LLVM_VERSION_MAJOR < 21
         const auto *member_class_type = mp_type->getClass();
+#else
+        const auto *member_class_type = mp_type->getQualifier()->getAsType();
+#endif
 
         if (member_class_type == nullptr)
             return {};
 
         auto class_type_arg = process_type_argument(location_decl, parent, cls,
-            template_decl, mp_type->getClass()->getCanonicalTypeUnqualified(),
+            template_decl, member_class_type->getCanonicalTypeUnqualified(),
             template_instantiation, argument_index);
 
         // Add class type argument

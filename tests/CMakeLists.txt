@@ -164,20 +164,19 @@ foreach(TEST_NAME ${TEST_NAMES})
             # We need to link the objective test cases sources to a separate
             # ObjC library than the rest of C++ test cases
             add_library(test_cases_objc)
-            if(APPLE)
-                target_compile_options(
-                    test_cases_objc
-                    PRIVATE
-                        "SHELL:-isystem ${LLVM_INCLUDE_DIR}/c++/v1"
-                        "SHELL:-isystem ${LLVM_LIBRARY_DIR}/clang/${LLVM_VERSION_MAJOR}/include"
-                )
-            else(APPLE)
+            target_compile_options(
+                test_cases_objc
+                PRIVATE
+                    "SHELL:-isystem ${LLVM_INCLUDE_DIR}/c++/v1"
+                    "SHELL:-isystem ${LLVM_LIBRARY_DIR}/clang/${LLVM_VERSION_MAJOR}/include"
+            )
+            if(NOT APPLE)
                 target_compile_options(test_cases_objc
                                        PRIVATE ${GNUSTEP_CFLAGS})
                 target_link_libraries(
                     test_cases_objc PRIVATE ${GNUSTEP_LDFLAGS}
                                             ${FETCHED_LIBOBJC2_NAME})
-            endif(APPLE)
+            endif(NOT APPLE)
             target_sources(test_cases_objc PUBLIC ${TEST_CASES_OBJC_SOURCES})
         endif(ENABLE_OBJECTIVE_C_TEST_CASES)
         target_sources(${TEST_NAME} PUBLIC ${TEST_NAME}.cc

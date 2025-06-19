@@ -189,7 +189,11 @@ std::string to_string(const clang::QualType &type, const clang::ASTContext &ctx,
 
     clang::PrintingPolicy print_policy(ctx.getLangOpts());
     print_policy.SuppressScope = 0;
+#if LLVM_VERSION_MAJOR < 21
     print_policy.PrintCanonicalTypes = 0;
+#else
+    print_policy.PrintAsCanonical = 0;
+#endif
 
     std::string result;
 
