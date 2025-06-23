@@ -1,6 +1,6 @@
 # This script assumes that all clang-uml dependencies are instaled in C:\clang-uml
 
-param ($Prefix="C:\clang-uml-llvm19", $BuildType="Release")
+param ($Prefix="C:\clang-uml-llvm20", $BuildType="Release")
 
 mkdir _BUILD
 
