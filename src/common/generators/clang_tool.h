@@ -103,7 +103,11 @@ private:
     ArgumentsAdjuster args_adjuster_;
 
     std::unique_ptr<diagnostic_consumer> diag_consumer_;
+#if LLVM_VERSION_MAJOR < 21
     llvm::IntrusiveRefCntPtr<clang::DiagnosticOptions> diag_opts_;
+#else
+    std::unique_ptr<clang::DiagnosticOptions> diag_opts_;
+#endif
 };
 } // namespace clanguml::generators
 

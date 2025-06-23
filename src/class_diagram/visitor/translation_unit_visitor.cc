@@ -321,14 +321,26 @@ bool translation_unit_visitor::VisitClassTemplateDecl(
     id_mapper().add(cls->getID(), id);
 
     constexpr auto kMaxConstraintCount = 24U;
+
+#if LLVM_VERSION_MAJOR < 21
     llvm::SmallVector<const clang::Expr *, kMaxConstraintCount> constraints{};
     if (cls->hasAssociatedConstraints()) {
         cls->getAssociatedConstraints(constraints);
     }
-
     for (const auto *expr : constraints) {
         find_relationships_in_constraint_expression(*c_ptr, expr);
     }
+#else
+    llvm::SmallVector<clang::AssociatedConstraint, kMaxConstraintCount>
+        constraints{};
+    if (cls->hasAssociatedConstraints()) {
+        cls->getAssociatedConstraints(constraints);
+    }
+    for (const auto &constraint : constraints) {
+        find_relationships_in_constraint_expression(
+            *c_ptr, constraint.ConstraintExpr);
+    }
+#endif
 
     return add_or_update(cls->getTemplatedDecl(), std::move(c_ptr));
 }
@@ -500,6 +512,8 @@ bool translation_unit_visitor::TraverseConceptDecl(clang::ConceptDecl *cpt)
     tbuilder().build_from_template_declaration(*concept_model, *cpt);
 
     constexpr auto kMaxConstraintCount = 24U;
+
+#if LLVM_VERSION_MAJOR < 21
     llvm::SmallVector<const clang::Expr *, kMaxConstraintCount> constraints{};
     if (cpt->hasAssociatedConstraints()) {
         cpt->getAssociatedConstraints(constraints);
@@ -508,6 +522,17 @@ bool translation_unit_visitor::TraverseConceptDecl(clang::ConceptDecl *cpt)
     for (const auto *expr : constraints) {
         find_relationships_in_constraint_expression(*concept_model, expr);
     }
+#else
+    llvm::SmallVector<clang::AssociatedConstraint, kMaxConstraintCount>
+        constraints{};
+    if (cpt->hasAssociatedConstraints()) {
+        cpt->getAssociatedConstraints(constraints);
+    }
+    for (const auto &constraint : constraints) {
+        find_relationships_in_constraint_expression(
+            *concept_model, constraint.ConstraintExpr);
+    }
+#endif
 
     if (cpt->getConstraintExpr() != nullptr) {
         process_constraint_requirements(

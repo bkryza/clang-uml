@@ -216,7 +216,7 @@ Build and install `yaml-cpp`:
 ```bash
 git clone https://github.com/jbeder/yaml-cpp
 cd yaml-cpp
-git checkout yaml-cpp-0.8.0
+git checkout 0.8.0
 cd ..
 cmake -S .\yaml-cpp\ -B .\yaml-cpp-build\ -DYAML_BUILD_SHARED_LIBS=OFF -DCMAKE_INSTALL_PREFIX="C:\clang-uml" -Thost=x64
 cd yaml-cpp-build
@@ -228,7 +228,7 @@ Build and install `LLVM`:
 ```bash
 pip install psutil
 # Update the LLVM branch if necessary
-git clone --branch llvmorg-19.1.3 --depth 1 https://github.com/llvm/llvm-project.git llvm
+git clone --branch llvmorg-20.1.7 --depth 1 https://github.com/llvm/llvm-project.git llvm
 cmake -S .\llvm\llvm -B llvm-build -DLLVM_ENABLE_PROJECTS=clang -DCMAKE_INSTALL_PREFIX="C:\clang-uml" -DCMAKE_BUILD_TYPE=Release -DLLVM_TARGETS_TO_BUILD=X86 -Thost=x64
 cd llvm-build
 msbuild .\INSTALL.vcxproj -maxcpucount /p:Configuration=Release
