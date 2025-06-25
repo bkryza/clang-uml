@@ -465,7 +465,7 @@ void generator::generate_participant(
     eid_t participant_id{};
 
     if (!force) {
-        for (const auto pid : model().active_participants()) {
+        for (const auto &pid : model().active_participants()) {
             if (pid == id) {
                 participant_id = pid;
                 break;
@@ -643,7 +643,7 @@ void generator::generate_from_sequences(std::ostream &ostr) const
 
     // Use this to break out of recurrent loops
     std::vector<eid_t> visited_participants;
-    for (const auto from_id : start_from) {
+    for (const auto &from_id : start_from) {
         if (model().participants().count(from_id) == 0)
             continue;
 
@@ -759,11 +759,11 @@ void generator::generate_from_to_sequences(
             model().handle_invalid_to_condition(to_location);
         }
 
-        for (const auto from_activity_id : from_activity_ids) {
+        for (const auto &from_activity_id : from_activity_ids) {
             if (model().participants().count(from_activity_id) == 0)
                 continue;
 
-            for (const auto to_activity_id : to_activity_ids) {
+            for (const auto &to_activity_id : to_activity_ids) {
                 if (model().participants().count(to_activity_id) == 0)
                     continue;
 
