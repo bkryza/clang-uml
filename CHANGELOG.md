@@ -1,5 +1,13 @@
 # CHANGELOG
 
+### 0.6.2
+  * Added support for LLVM 21 (#419)
+  * Added generate_method_argument_names options for sequence diagrams (#404)
+  * Add fuzzy matching for sequence diagram start condition error message (#405)
+  * Fix mermaid double colon before member type (#397)
+  * Fixed message comments in sequence diagrams (#417)
+  * Added support for LLVM 20 (#398)
+
 ### 0.6.1
   * Fix handling of relationship_hints option (#394)
   * Fixed handling of source location for template instantiation obtained from

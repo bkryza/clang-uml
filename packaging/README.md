@@ -11,6 +11,7 @@ make DIST=focal deb
 make DIST=jammy deb
 make DIST=noble deb
 make DIST=oracular deb
+make DIST=plucky deb
 
 cd _BUILD/ubuntu/focal
 dput ppa:bkryza/clang-uml *.changes
@@ -22,6 +23,9 @@ cd _BUILD/ubuntu/noble
 dput ppa:bkryza/clang-uml *.changes
 
 cd _BUILD/ubuntu/oracular
+dput ppa:bkryza/clang-uml *.changes
+
+cd _BUILD/ubuntu/plucky
 dput ppa:bkryza/clang-uml *.changes
 ```
 
@@ -41,9 +45,8 @@ make OS=debian DIST=bookworm debian
 
 ```bash
 cd clang-uml
-make fedora/39
-make fedora/40
 make fedora/41
+make fedora/42
 find packaging/_BUILD/fedora
 ```
 
@@ -65,5 +68,5 @@ to the [documentation](../docs/installation.md#visual-studio-native-build).
 ```bash
 cd packaging
 .\make_installer.ps1
-ls .\_BUILD\windows\clang-uml-0.6.0-win64.exe
+ls .\_BUILD\windows\clang-uml-0.6.2-win64.exe
 ```
