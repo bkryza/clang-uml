@@ -14,11 +14,14 @@ public:
     void set_memory(int memory_gb) { memory_gb_ = memory_gb; }
     void set_storage(const std::string &storage) { storage_ = storage; }
     void set_graphics_card(const std::string &gpu) { graphics_card_ = gpu; }
-    void set_motherboard(const std::string &motherboard) { motherboard_ = motherboard; }
+    void set_motherboard(const std::string &motherboard)
+    {
+        motherboard_ = motherboard;
+    }
     void add_port(const std::string &port) { ports_.push_back(port); }
     void set_power_supply(int watts) { power_supply_watts_ = watts; }
     void set_case_type(const std::string &case_type) { case_type_ = case_type; }
-    
+
     const std::string &get_cpu() const { return cpu_; }
     int get_memory() const { return memory_gb_; }
     const std::string &get_storage() const { return storage_; }
@@ -27,7 +30,7 @@ public:
     const std::vector<std::string> &get_ports() const { return ports_; }
     int get_power_supply() const { return power_supply_watts_; }
     const std::string &get_case_type() const { return case_type_; }
-    
+
     void display_specs() const { }
 
 private:
@@ -45,7 +48,7 @@ private:
 class ComputerBuilder {
 public:
     virtual ~ComputerBuilder() = default;
-    
+
     virtual void build_cpu() = 0;
     virtual void build_memory() = 0;
     virtual void build_storage() = 0;
@@ -54,7 +57,7 @@ public:
     virtual void build_ports() = 0;
     virtual void build_power_supply() = 0;
     virtual void build_case() = 0;
-    
+
     virtual std::unique_ptr<Computer> get_computer() = 0;
     virtual void reset() = 0;
 
@@ -66,32 +69,23 @@ protected:
 class GamingComputerBuilder : public ComputerBuilder {
 public:
     GamingComputerBuilder() { reset(); }
-    
-    void build_cpu() override
-    {
-        computer_->set_cpu("Intel Core i9-13900K");
-    }
-    
-    void build_memory() override
-    {
-        computer_->set_memory(32);
-    }
-    
-    void build_storage() override
-    {
-        computer_->set_storage("1TB NVMe SSD");
-    }
-    
+
+    void build_cpu() override { computer_->set_cpu("Intel Core i9-13900K"); }
+
+    void build_memory() override { computer_->set_memory(32); }
+
+    void build_storage() override { computer_->set_storage("1TB NVMe SSD"); }
+
     void build_graphics_card() override
     {
         computer_->set_graphics_card("NVIDIA RTX 4080");
     }
-    
+
     void build_motherboard() override
     {
         computer_->set_motherboard("ASUS ROG Maximus Z790");
     }
-    
+
     void build_ports() override
     {
         computer_->add_port("USB 3.2");
@@ -101,60 +95,42 @@ public:
         computer_->add_port("Ethernet");
         computer_->add_port("Audio Jack");
     }
-    
-    void build_power_supply() override
-    {
-        computer_->set_power_supply(850);
-    }
-    
-    void build_case() override
-    {
-        computer_->set_case_type("Full Tower RGB");
-    }
-    
+
+    void build_power_supply() override { computer_->set_power_supply(850); }
+
+    void build_case() override { computer_->set_case_type("Full Tower RGB"); }
+
     std::unique_ptr<Computer> get_computer() override
     {
         auto result = std::move(computer_);
         reset();
         return result;
     }
-    
-    void reset() override
-    {
-        computer_ = std::make_unique<Computer>();
-    }
+
+    void reset() override { computer_ = std::make_unique<Computer>(); }
 };
 
 // Concrete Builder for Office Computer
 class OfficeComputerBuilder : public ComputerBuilder {
 public:
     OfficeComputerBuilder() { reset(); }
-    
-    void build_cpu() override
-    {
-        computer_->set_cpu("Intel Core i5-13400");
-    }
-    
-    void build_memory() override
-    {
-        computer_->set_memory(16);
-    }
-    
-    void build_storage() override
-    {
-        computer_->set_storage("512GB SSD");
-    }
-    
+
+    void build_cpu() override { computer_->set_cpu("Intel Core i5-13400"); }
+
+    void build_memory() override { computer_->set_memory(16); }
+
+    void build_storage() override { computer_->set_storage("512GB SSD"); }
+
     void build_graphics_card() override
     {
         computer_->set_graphics_card("Integrated Graphics");
     }
-    
+
     void build_motherboard() override
     {
         computer_->set_motherboard("MSI Pro B760M");
     }
-    
+
     void build_ports() override
     {
         computer_->add_port("USB 3.0");
@@ -164,28 +140,19 @@ public:
         computer_->add_port("Ethernet");
         computer_->add_port("Audio Jack");
     }
-    
-    void build_power_supply() override
-    {
-        computer_->set_power_supply(450);
-    }
-    
-    void build_case() override
-    {
-        computer_->set_case_type("Mini Tower");
-    }
-    
+
+    void build_power_supply() override { computer_->set_power_supply(450); }
+
+    void build_case() override { computer_->set_case_type("Mini Tower"); }
+
     std::unique_ptr<Computer> get_computer() override
     {
         auto result = std::move(computer_);
         reset();
         return result;
     }
-    
-    void reset() override
-    {
-        computer_ = std::make_unique<Computer>();
-    }
+
+    void reset() override { computer_ = std::make_unique<Computer>(); }
 };
 
 // Director - orchestrates the building process
@@ -195,12 +162,12 @@ public:
         : builder_(std::move(builder))
     {
     }
-    
+
     void set_builder(std::unique_ptr<ComputerBuilder> builder)
     {
         builder_ = std::move(builder);
     }
-    
+
     std::unique_ptr<Computer> construct_basic_computer()
     {
         builder_->reset();
@@ -212,7 +179,7 @@ public:
         builder_->build_case();
         return builder_->get_computer();
     }
-    
+
     std::unique_ptr<Computer> construct_full_computer()
     {
         builder_->reset();
@@ -226,7 +193,7 @@ public:
         builder_->build_case();
         return builder_->get_computer();
     }
-    
+
     std::unique_ptr<Computer> construct_custom_computer()
     {
         builder_->reset();
@@ -251,15 +218,16 @@ public:
         ComputerDirector director(std::move(builder));
         return director.construct_full_computer();
     }
-    
+
     std::unique_ptr<Computer> order_office_computer()
     {
         auto builder = std::make_unique<OfficeComputerBuilder>();
         ComputerDirector director(std::move(builder));
         return director.construct_full_computer();
     }
-    
-    std::unique_ptr<Computer> order_custom_computer(std::unique_ptr<ComputerBuilder> builder)
+
+    std::unique_ptr<Computer> order_custom_computer(
+        std::unique_ptr<ComputerBuilder> builder)
     {
         ComputerDirector director(std::move(builder));
         return director.construct_custom_computer();
