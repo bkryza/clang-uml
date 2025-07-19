@@ -273,6 +273,9 @@ test_cases:
     - name: t00092
       title: Test case for relationship_hints config option
       description:
+    - name: t00093
+      title: Test case for bridge design pattern
+      description:
   Sequence diagrams:
     - name: t20001
       title: Basic sequence diagram test case
