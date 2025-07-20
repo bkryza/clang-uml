@@ -1,0 +1,10 @@
+diagrams:
+  t00097_class:
+    type: class
+    title: Decorator design pattern
+    glob:
+      - t00097.cc
+    using_namespace: clanguml::t00097
+    include:
+      namespaces:
+        - clanguml::t00097
