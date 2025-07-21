@@ -1,0 +1,10 @@
+diagrams:
+  t00098_class:
+    type: class
+    title: Decorator design pattern with templates and concepts
+    glob:
+      - t00098.cc
+    using_namespace: clanguml::t00098
+    include:
+      namespaces:
+        - clanguml::t00098

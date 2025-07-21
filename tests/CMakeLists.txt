@@ -14,6 +14,8 @@ set(TEST_CASES_REQUIRING_CXX20
     t00074
     t00075
     t00090
+    t00096
+    t00098
     t20064
     t20070
     t20071)

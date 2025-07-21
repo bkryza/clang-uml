@@ -283,10 +283,13 @@ test_cases:
       title: Test case for prototype design pattern
       description:
     - name: t00096
-      title: Test case for prototype design pattern using static inheritance
+      title: Test case for prototype design pattern using static polymorphism
       description:
     - name: t00097
       title: Test case for decorator design pattern
+      description:
+    - name: t00098
+      title: Test case for decorator design pattern using static polymorphism
       description:
   Sequence diagrams:
     - name: t20001
