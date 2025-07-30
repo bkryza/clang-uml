@@ -1706,7 +1706,7 @@ template_builder<VisitorT>::try_as_template_specialization_type(
 template <typename VisitorT>
 std::optional<template_parameter>
 template_builder<VisitorT>::try_as_template_parm_type(
-    const clang::NamedDecl *cls, const clang::TemplateDecl * /*template_decl*/,
+    const clang::NamedDecl *cls, const clang::TemplateDecl *template_decl,
     clang::QualType &type)
 {
     auto is_variadic{false};
@@ -1737,6 +1737,15 @@ template_builder<VisitorT>::try_as_template_parm_type(
     auto type_parameter_name = common::to_string(type, cls->getASTContext());
     if (type_parameter_name.empty())
         type_parameter_name = "typename";
+
+    const auto *type_concept_constraint =
+        get_template_parameter_concept_constraint(
+            type_parameter, template_decl);
+
+    if (type_concept_constraint != nullptr) {
+        argument.set_concept_constraint(
+            type_concept_constraint->getQualifiedNameAsString());
+    }
 
     argument.set_name(map_type_parameter_to_template_parameter_name(
         cls, type_parameter_name));

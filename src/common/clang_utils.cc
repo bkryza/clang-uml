@@ -1172,6 +1172,29 @@ const clang::EnumDecl *get_typedef_enum_decl(const clang::TypedefDecl *decl)
     return nullptr;
 }
 
+const clang::ConceptDecl *get_template_parameter_concept_constraint(
+    const clang::TemplateTypeParmType *type_parameter,
+    const clang::TemplateDecl *template_decl)
+{
+    clang::TemplateTypeParmDecl *template_type_parameter{nullptr};
+
+    if (type_parameter->getDecl() != nullptr) {
+        template_type_parameter = type_parameter->getDecl();
+    }
+    else if (template_decl->getTemplateParameters()->size() >
+        type_parameter->getIndex()) {
+        template_type_parameter = clang::dyn_cast<clang::TemplateTypeParmDecl>(
+            template_decl->getTemplateParameters()->getParam(
+                type_parameter->getIndex()));
+    }
+
+    if (template_type_parameter == nullptr ||
+        template_type_parameter->getTypeConstraint() == nullptr)
+        return nullptr;
+
+    return template_type_parameter->getTypeConstraint()->getNamedConcept();
+}
+
 bool is_lambda_call(const clang::Expr *expr)
 {
     const auto *call_expr = clang::dyn_cast<clang::CallExpr>(expr);
