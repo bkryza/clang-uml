@@ -275,7 +275,7 @@ void generator::generate_method(
     ostr << plantuml_common::to_plantuml(m.access()) << m.name();
 
     if (!m.template_params().empty()) {
-        m.render_template_params(ostr, config().using_namespace(), false);
+        m.render_template_params(ostr, config().using_namespace(), true);
     }
 
     ostr << "(";

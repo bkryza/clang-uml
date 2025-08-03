@@ -176,7 +176,7 @@ void generator::generate_method(
     ostr << indent(2) << mermaid_common::to_mermaid(m.access()) << m.name();
 
     if (!m.template_params().empty()) {
-        m.render_template_params(ostr, config().using_namespace(), false);
+        m.render_template_params(ostr, config().using_namespace(), true);
     }
 
     ostr << "(";
