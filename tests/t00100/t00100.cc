@@ -46,7 +46,7 @@ private:
 };
 
 // C++20 concept for Builder interface using static polymorphism
-template<typename T>
+template <typename T>
 concept ComputerBuilderConcept = requires(T t, Computer &computer) {
     { t.build_cpu(computer) } -> std::same_as<void>;
     { t.build_memory(computer) } -> std::same_as<void>;
@@ -59,10 +59,10 @@ concept ComputerBuilderConcept = requires(T t, Computer &computer) {
 };
 
 // Template base for concrete builders
-template<typename Derived>
-class ComputerBuilderBase {
+template <typename Derived> class ComputerBuilderBase {
 public:
-    std::unique_ptr<Computer> get_computer() {
+    std::unique_ptr<Computer> get_computer()
+    {
         auto result = std::move(computer_);
         reset();
         return result;
@@ -76,31 +76,36 @@ protected:
     std::unique_ptr<Computer> computer_;
 
     ComputerBuilderBase() { reset(); }
-
 };
 
 // Concrete Builder for Gaming Computer using static polymorphism
-class GamingComputerBuilder : public ComputerBuilderBase<GamingComputerBuilder> {
+class GamingComputerBuilder
+    : public ComputerBuilderBase<GamingComputerBuilder> {
 public:
-    void build_cpu(Computer &computer) {
+    void build_cpu(Computer &computer)
+    {
         computer.set_cpu("Intel Core i9-13900K");
     }
 
     void build_memory(Computer &computer) { computer.set_memory(32); }
 
-    void build_storage(Computer &computer) {
+    void build_storage(Computer &computer)
+    {
         computer.set_storage("1TB NVMe SSD");
     }
 
-    void build_graphics_card(Computer &computer) {
+    void build_graphics_card(Computer &computer)
+    {
         computer.set_graphics_card("NVIDIA RTX 4080");
     }
 
-    void build_motherboard(Computer &computer) {
+    void build_motherboard(Computer &computer)
+    {
         computer.set_motherboard("ASUS ROG Maximus Z790");
     }
 
-    void build_ports(Computer &computer) {
+    void build_ports(Computer &computer)
+    {
         computer.add_port("USB 3.2");
         computer.add_port("USB-C");
         computer.add_port("HDMI 2.1");
@@ -109,35 +114,45 @@ public:
         computer.add_port("Audio Jack");
     }
 
-    void build_power_supply(Computer &computer) {
+    void build_power_supply(Computer &computer)
+    {
         computer.set_power_supply(850);
     }
 
-    void build_case(Computer &computer) {
+    void build_case(Computer &computer)
+    {
         computer.set_case_type("Full Tower RGB");
     }
 };
 
 // Concrete Builder for Office Computer using static polymorphism
-class OfficeComputerBuilder : public ComputerBuilderBase<OfficeComputerBuilder> {
+class OfficeComputerBuilder
+    : public ComputerBuilderBase<OfficeComputerBuilder> {
 public:
-    void build_cpu(Computer &computer) {
+    void build_cpu(Computer &computer)
+    {
         computer.set_cpu("Intel Core i5-13400");
     }
 
     void build_memory(Computer &computer) { computer.set_memory(16); }
 
-    void build_storage(Computer &computer) { computer.set_storage("512GB SSD"); }
+    void build_storage(Computer &computer)
+    {
+        computer.set_storage("512GB SSD");
+    }
 
-    void build_graphics_card(Computer &computer) {
+    void build_graphics_card(Computer &computer)
+    {
         computer.set_graphics_card("Integrated Graphics");
     }
 
-    void build_motherboard(Computer &computer) {
+    void build_motherboard(Computer &computer)
+    {
         computer.set_motherboard("MSI Pro B760M");
     }
 
-    void build_ports(Computer &computer) {
+    void build_ports(Computer &computer)
+    {
         computer.add_port("USB 3.0");
         computer.add_port("USB 2.0");
         computer.add_port("HDMI");
@@ -146,22 +161,27 @@ public:
         computer.add_port("Audio Jack");
     }
 
-    void build_power_supply(Computer &computer) {
+    void build_power_supply(Computer &computer)
+    {
         computer.set_power_supply(450);
     }
 
-    void build_case(Computer &computer) {
+    void build_case(Computer &computer)
+    {
         computer.set_case_type("Mini Tower");
     }
 };
 
 // Director template using static polymorphism and C++20 concepts
-template<ComputerBuilderConcept BuilderType>
-class ComputerDirector {
+template <ComputerBuilderConcept BuilderType> class ComputerDirector {
 public:
-    explicit ComputerDirector(BuilderType &builder) : builder_(builder) {}
+    explicit ComputerDirector(BuilderType &builder)
+        : builder_(builder)
+    {
+    }
 
-    std::unique_ptr<Computer> construct_basic_computer() {
+    std::unique_ptr<Computer> construct_basic_computer()
+    {
         builder_.reset();
         auto &computer = builder_.get_computer_ref();
         builder_.build_cpu(computer);
@@ -173,7 +193,8 @@ public:
         return builder_.get_computer();
     }
 
-    std::unique_ptr<Computer> construct_full_computer() {
+    std::unique_ptr<Computer> construct_full_computer()
+    {
         builder_.reset();
         auto &computer = builder_.get_computer_ref();
         builder_.build_cpu(computer);
@@ -187,7 +208,8 @@ public:
         return builder_.get_computer();
     }
 
-    std::unique_ptr<Computer> construct_custom_computer() {
+    std::unique_ptr<Computer> construct_custom_computer()
+    {
         builder_.reset();
         auto &computer = builder_.get_computer_ref();
         builder_.build_cpu(computer);
@@ -205,20 +227,23 @@ private:
 // Client code demonstrating the Builder pattern with static polymorphism
 class ComputerStore {
 public:
-    std::unique_ptr<Computer> order_gaming_computer() {
+    std::unique_ptr<Computer> order_gaming_computer()
+    {
         GamingComputerBuilder builder;
         ComputerDirector director(builder);
         return director.construct_full_computer();
     }
 
-    std::unique_ptr<Computer> order_office_computer() {
+    std::unique_ptr<Computer> order_office_computer()
+    {
         OfficeComputerBuilder builder;
         ComputerDirector director(builder);
         return director.construct_full_computer();
     }
 
-    template<ComputerBuilderConcept BuilderType>
-    std::unique_ptr<Computer> order_custom_computer(BuilderType &builder) {
+    template <ComputerBuilderConcept BuilderType>
+    std::unique_ptr<Computer> order_custom_computer(BuilderType &builder)
+    {
         ComputerDirector director(builder);
         return director.construct_custom_computer();
     }
