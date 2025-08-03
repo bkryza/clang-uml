@@ -1,0 +1,182 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" data-diagram-type="CLASS" height="540px" preserveAspectRatio="none" style="width:2018px;height:540px;background:#FFFFFF;" version="1.1" viewBox="0 0 2018 540" width="2018px" zoomAndPan="magnify">
+  <defs>
+    <style type="text/css">a:hover { text-decoration: underline; }</style>
+  </defs>
+  <g>
+    <g class="entity" data-entity="C_0017415094877193714719" data-source-line="1" data-uid="ent0002" id="entity_C_0017415094877193714719">
+      <rect fill="#F1F1F1" height="118.6158" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="296.619" x="32.5" y="240.016"/>
+      <ellipse cx="80.1688" cy="262.722" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
+      <path d="M83.1376,268.3627 Q82.5594,268.6595 81.9188,268.8002 Q81.2782,268.9564 80.5751,268.9564 Q78.0751,268.9564 76.7469,267.3158 Q75.4344,265.6595 75.4344,262.5345 Q75.4344,259.4095 76.7469,257.7533 Q78.0751,256.097 80.5751,256.097 Q81.2782,256.097 81.9188,256.2533 Q82.5751,256.4095 83.1376,256.7064 L83.1376,259.4252 Q82.5126,258.847 81.9188,258.5814 Q81.3251,258.3002 80.7001,258.3002 Q79.3563,258.3002 78.6688,259.3783 Q77.9813,260.4408 77.9813,262.5345 Q77.9813,264.6283 78.6688,265.7064 Q79.3563,266.7689 80.7001,266.7689 Q81.3251,266.7689 81.9188,266.5033 Q82.5126,266.222 83.1376,265.6439 L83.1376,268.3627 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="52.9444" x="165.5813" y="257.8441">«concept»</text>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="182.7693" x="100.6688" y="276.3261">FormattingStrategyConcept</text>
+      <rect fill="#FFFFFF" height="18.3441" style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" width="8.012" x="324.1069" y="237.016"/>
+      <text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="6.012" x="325.1069" y="250.8441">T</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="33.5" x2="328.119" y1="285.4281" y2="285.4281"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="177.0993" x="38.5" y="304.394">(T t,const std::string &amp; text)</text>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:1.0,2.0;" x1="33.5" x2="328.119" y1="312.496" y2="312.496"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="284.619" x="38.5" y="331.4619">{t.format(text)} -&gt; std::same_as&lt;std::string&gt;</text>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="279.4109" x="38.5" y="350.5298">{t.get_name()} -&gt; std::same_as&lt;std::string&gt;</text>
+    </g>
+    <g class="entity" data-entity="C_0014112435091745763149" data-source-line="8" data-uid="ent0003" id="entity_C_0014112435091745763149">
+      <rect fill="#F1F1F1" height="113.2038" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="305.257" x="770.5" y="420.016"/>
+      <ellipse cx="816.6387" cy="436.016" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
+      <path d="M819.6074,441.6566 Q819.0293,441.9535 818.3887,442.0941 Q817.748,442.2504 817.0449,442.2504 Q814.5449,442.2504 813.2168,440.6098 Q811.9043,438.9535 811.9043,435.8285 Q811.9043,432.7035 813.2168,431.0473 Q814.5449,429.391 817.0449,429.391 Q817.748,429.391 818.3887,429.5473 Q819.0449,429.7035 819.6074,430.0004 L819.6074,432.7191 Q818.9824,432.141 818.3887,431.8754 Q817.7949,431.5941 817.1699,431.5941 Q815.8262,431.5941 815.1387,432.6723 Q814.4512,433.7348 814.4512,435.8285 Q814.4512,437.9223 815.1387,439.0004 Q815.8262,440.0629 817.1699,440.0629 Q817.7949,440.0629 818.3887,439.7973 Q818.9824,439.516 819.6074,438.9379 L819.6074,441.6566 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="160.0754" x="837.1387" y="441.448">FormattingStrategyBase</text>
+      <rect fill="#FFFFFF" height="18.3441" style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" width="42.4043" x="1036.3528" y="417.016"/>
+      <text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="40.4043" x="1037.3528" y="430.8441">Derived</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="771.5" x2="1074.757" y1="452.016" y2="452.016"/>
+      <polygon fill="#FFFF44" points="781.5,462.05,785.5,466.05,781.5,470.05,777.5,466.05" style="stroke:#B38D22;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="269.093" x="790.5" y="470.982">FormattingStrategyBase() = default : void</text>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:1.0,2.0;" x1="771.5" x2="1074.757" y1="479.0839" y2="479.0839"/>
+      <ellipse cx="781.5" cy="494.1179" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="279.257" x="790.5" y="498.0499">format(const std::string &amp; text) : std::string</text>
+      <ellipse cx="781.5" cy="513.1858" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="150.9894" x="790.5" y="517.1178">get_name() : std::string</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="771.5" x2="1074.757" y1="525.2198" y2="525.2198"/>
+    </g>
+    <g class="entity" data-entity="C_0003017018330506343241" data-source-line="16" data-uid="ent0004" id="entity_C_0003017018330506343241">
+      <rect fill="#F1F1F1" height="48" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="288.776" x="364.5" y="275.516"/>
+      <ellipse cx="379.5" cy="291.516" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
+      <path d="M382.4688,297.1566 Q381.8906,297.4535 381.25,297.5941 Q380.6094,297.7504 379.9063,297.7504 Q377.4063,297.7504 376.0781,296.1098 Q374.7656,294.4535 374.7656,291.3285 Q374.7656,288.2035 376.0781,286.5473 Q377.4063,284.891 379.9063,284.891 Q380.6094,284.891 381.25,285.0473 Q381.9063,285.2035 382.4688,285.5004 L382.4688,288.2191 Q381.8438,287.641 381.25,287.3754 Q380.6563,287.0941 380.0313,287.0941 Q378.6875,287.0941 378,288.1723 Q377.3125,289.2348 377.3125,291.3285 Q377.3125,293.4223 378,294.5004 Q378.6875,295.5629 380.0313,295.5629 Q380.6563,295.5629 381.25,295.2973 Q381.8438,295.016 382.4688,294.4379 L382.4688,297.1566 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="160.0754" x="393.5" y="296.948">FormattingStrategyBase</text>
+      <rect fill="#FFFFFF" height="18.3441" style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" width="94.7006" x="561.5754" y="272.516"/>
+      <text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="92.7006" x="562.5754" y="286.3441">PlainTextStrategy</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="365.5" x2="652.276" y1="307.516" y2="307.516"/>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="365.5" x2="652.276" y1="315.516" y2="315.516"/>
+    </g>
+    <g class="entity" data-entity="C_0005704419823270881204" data-source-line="20" data-uid="ent0005" id="entity_C_0005704419823270881204">
+      <rect fill="#F1F1F1" height="86.1358" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="340.3969" x="339" y="433.516"/>
+      <ellipse cx="447.2406" cy="449.516" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
+      <path d="M450.2094,455.1566 Q449.6313,455.4535 448.9906,455.5941 Q448.35,455.7504 447.6469,455.7504 Q445.1469,455.7504 443.8188,454.1098 Q442.5063,452.4535 442.5063,449.3285 Q442.5063,446.2035 443.8188,444.5473 Q445.1469,442.891 447.6469,442.891 Q448.35,442.891 448.9906,443.0473 Q449.6469,443.2035 450.2094,443.5004 L450.2094,446.2191 Q449.5844,445.641 448.9906,445.3754 Q448.3969,445.0941 447.7719,445.0941 Q446.4281,445.0941 445.7406,446.1723 Q445.0531,447.2348 445.0531,449.3285 Q445.0531,451.4223 445.7406,452.5004 Q446.4281,453.5629 447.7719,453.5629 Q448.3969,453.5629 448.9906,453.2973 Q449.5844,453.016 450.2094,452.4379 L450.2094,455.1566 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="115.4156" x="467.7406" y="454.948">PlainTextStrategy</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="340" x2="678.3969" y1="465.516" y2="465.516"/>
+      <ellipse cx="350" cy="480.55" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="314.3969" x="359" y="484.482">format_impl(const std::string &amp; text) : std::string</text>
+      <ellipse cx="350" cy="499.6179" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="186.1293" x="359" y="503.5499">get_name_impl() : std::string</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="340" x2="678.3969" y1="511.6519" y2="511.6519"/>
+    </g>
+    <g class="entity" data-entity="C_0007699995325586521439" data-source-line="26" data-uid="ent0006" id="entity_C_0007699995325586521439">
+      <rect fill="#F1F1F1" height="48" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="297.1881" x="1188.5" y="275.516"/>
+      <ellipse cx="1203.5" cy="291.516" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
+      <path d="M1206.4688,297.1566 Q1205.8906,297.4535 1205.25,297.5941 Q1204.6094,297.7504 1203.9063,297.7504 Q1201.4063,297.7504 1200.0781,296.1098 Q1198.7656,294.4535 1198.7656,291.3285 Q1198.7656,288.2035 1200.0781,286.5473 Q1201.4063,284.891 1203.9063,284.891 Q1204.6094,284.891 1205.25,285.0473 Q1205.9063,285.2035 1206.4688,285.5004 L1206.4688,288.2191 Q1205.8438,287.641 1205.25,287.3754 Q1204.6563,287.0941 1204.0313,287.0941 Q1202.6875,287.0941 1202,288.1723 Q1201.3125,289.2348 1201.3125,291.3285 Q1201.3125,293.4223 1202,294.5004 Q1202.6875,295.5629 1204.0313,295.5629 Q1204.6563,295.5629 1205.25,295.2973 Q1205.8438,295.016 1206.4688,294.4379 L1206.4688,297.1566 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="160.0754" x="1217.5" y="296.948">FormattingStrategyBase</text>
+      <rect fill="#FFFFFF" height="18.3441" style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" width="103.1127" x="1385.5754" y="272.516"/>
+      <text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="101.1127" x="1386.5754" y="286.3441">MarkdownStrategy</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="1189.5" x2="1484.6881" y1="307.516" y2="307.516"/>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="1189.5" x2="1484.6881" y1="315.516" y2="315.516"/>
+    </g>
+    <g class="entity" data-entity="C_0000807604561818921537" data-source-line="30" data-uid="ent0007" id="entity_C_0000807604561818921537">
+      <rect fill="#F1F1F1" height="86.1358" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="340.3969" x="1167" y="433.516"/>
+      <ellipse cx="1270.1377" cy="449.516" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
+      <path d="M1273.1064,455.1566 Q1272.5283,455.4535 1271.8877,455.5941 Q1271.247,455.7504 1270.5439,455.7504 Q1268.0439,455.7504 1266.7158,454.1098 Q1265.4033,452.4535 1265.4033,449.3285 Q1265.4033,446.2035 1266.7158,444.5473 Q1268.0439,442.891 1270.5439,442.891 Q1271.247,442.891 1271.8877,443.0473 Q1272.5439,443.2035 1273.1064,443.5004 L1273.1064,446.2191 Q1272.4814,445.641 1271.8877,445.3754 Q1271.2939,445.0941 1270.6689,445.0941 Q1269.3252,445.0941 1268.6377,446.1723 Q1267.9502,447.2348 1267.9502,449.3285 Q1267.9502,451.4223 1268.6377,452.5004 Q1269.3252,453.5629 1270.6689,453.5629 Q1271.2939,453.5629 1271.8877,453.2973 Q1272.4814,453.016 1273.1064,452.4379 L1273.1064,455.1566 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="125.6215" x="1290.6377" y="454.948">MarkdownStrategy</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="1168" x2="1506.3969" y1="465.516" y2="465.516"/>
+      <ellipse cx="1178" cy="480.55" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="314.3969" x="1187" y="484.482">format_impl(const std::string &amp; text) : std::string</text>
+      <ellipse cx="1178" cy="499.6179" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="186.1293" x="1187" y="503.5499">get_name_impl() : std::string</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="1168" x2="1506.3969" y1="511.6519" y2="511.6519"/>
+    </g>
+    <g class="entity" data-entity="C_0011974992586374228230" data-source-line="36" data-uid="ent0008" id="entity_C_0011974992586374228230">
+      <rect fill="#F1F1F1" height="151.3396" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="347.7711" x="7" y="10.016"/>
+      <ellipse cx="22" cy="26.016" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
+      <path d="M24.9688,31.6566 Q24.3906,31.9535 23.75,32.0941 Q23.1094,32.2504 22.4063,32.2504 Q19.9063,32.2504 18.5781,30.6098 Q17.2656,28.9535 17.2656,25.8285 Q17.2656,22.7035 18.5781,21.0473 Q19.9063,19.391 22.4063,19.391 Q23.1094,19.391 23.75,19.5473 Q24.4063,19.7035 24.9688,20.0004 L24.9688,22.7191 Q24.3438,22.141 23.75,21.8754 Q23.1563,21.5941 22.5313,21.5941 Q21.1875,21.5941 20.5,22.6723 Q19.8125,23.7348 19.8125,25.8285 Q19.8125,27.9223 20.5,29.0004 Q21.1875,30.0629 22.5313,30.0629 Q23.1563,30.0629 23.75,29.7973 Q24.3438,29.516 24.9688,28.9379 L24.9688,31.6566 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="93.1417" x="36" y="31.448">TextProcessor</text>
+      <rect fill="#FFFFFF" height="18.3441" style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" width="220.6295" x="137.1417" y="7.016"/>
+      <text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="218.6295" x="138.1417" y="20.8441">FormattingStrategyConcept StrategyType</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="8" x2="353.7711" y1="42.016" y2="42.016"/>
+      <ellipse cx="18" cy="57.05" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="298.5069" x="27" y="60.982">TextProcessor(StrategyType &amp; strategy) : void</text>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:1.0,2.0;" x1="8" x2="353.7711" y1="69.0839" y2="69.0839"/>
+      <ellipse cx="18" cy="84.1179" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="211.3012" x="27" y="88.0499">get_strategy_name() : std::string</text>
+      <ellipse cx="18" cy="103.1858" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="316.7068" x="27" y="107.1178">process_text(const std::string &amp; text) : std::string</text>
+      <ellipse cx="18" cy="122.2537" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="319.1008" x="27" y="126.1857">set_strategy(StrategyType &amp; new_strategy) : void</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="8" x2="353.7711" y1="134.2877" y2="134.2877"/>
+      <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="15" y="146.3217"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="171.7374" x="27" y="153.2536">strategy_ : StrategyType &amp;</text>
+    </g>
+    <g class="entity" data-entity="C_0005538239167729960401" data-source-line="46" data-uid="ent0009" id="entity_C_0005538239167729960401">
+      <rect fill="#F1F1F1" height="105.2038" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="940.3791" x="1071" y="33.016"/>
+      <ellipse cx="1470.0618" cy="49.016" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
+      <path d="M1473.0305,54.6566 Q1472.4524,54.9535 1471.8118,55.0941 Q1471.1712,55.2504 1470.468,55.2504 Q1467.968,55.2504 1466.6399,53.6098 Q1465.3274,51.9535 1465.3274,48.8285 Q1465.3274,45.7035 1466.6399,44.0473 Q1467.968,42.391 1470.468,42.391 Q1471.1712,42.391 1471.8118,42.5473 Q1472.468,42.7035 1473.0305,43.0004 L1473.0305,45.7191 Q1472.4055,45.141 1471.8118,44.8754 Q1471.218,44.5941 1470.593,44.5941 Q1469.2493,44.5941 1468.5618,45.6723 Q1467.8743,46.7348 1467.8743,48.8285 Q1467.8743,50.9223 1468.5618,52.0004 Q1469.2493,53.0629 1470.593,53.0629 Q1471.218,53.0629 1471.8118,52.7973 Q1472.4055,52.516 1473.0305,51.9379 L1473.0305,54.6566 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="133.7555" x="1490.5618" y="54.448">DocumentProcessor</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="1072" x2="2010.3791" y1="65.016" y2="65.016"/>
+      <ellipse cx="1082" cy="80.05" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="408.0984" x="1091" y="83.982">process_as_markdown(const std::string &amp; content) : std::string</text>
+      <ellipse cx="1082" cy="99.1179" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="401.1265" x="1091" y="103.0499">process_as_plain_text(const std::string &amp; content) : std::string</text>
+      <ellipse cx="1082" cy="118.1858" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="914.3791" x="1091" y="122.1178">process_with_custom_strategy&lt;FormattingStrategyConcept StrategyType&gt;(const std::string &amp; content, StrategyType &amp; strategy) : std::string</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="1072" x2="2010.3791" y1="130.2198" y2="130.2198"/>
+    </g>
+    <g class="entity" data-entity="C_0012978743466082846464" data-source-line="53" data-uid="ent0010" id="entity_C_0012978743466082846464">
+      <rect fill="#F1F1F1" height="86.1358" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="465.3464" x="688.5" y="256.516"/>
+      <ellipse cx="865.2424" cy="272.516" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
+      <path d="M868.2111,278.1566 Q867.633,278.4535 866.9924,278.5941 Q866.3518,278.7504 865.6486,278.7504 Q863.1486,278.7504 861.8205,277.1098 Q860.508,275.4535 860.508,272.3285 Q860.508,269.2035 861.8205,267.5473 Q863.1486,265.891 865.6486,265.891 Q866.3518,265.891 866.9924,266.0473 Q867.6486,266.2035 868.2111,266.5004 L868.2111,269.2191 Q867.5861,268.641 866.9924,268.3754 Q866.3986,268.0941 865.7736,268.0941 Q864.4299,268.0941 863.7424,269.1723 Q863.0549,270.2348 863.0549,272.3285 Q863.0549,274.4223 863.7424,275.5004 Q864.4299,276.5629 865.7736,276.5629 Q866.3986,276.5629 866.9924,276.2973 Q867.5861,276.016 868.2111,275.4379 L868.2111,278.1566 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="103.3616" x="885.7424" y="277.948">StrategyFactory</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="689.5" x2="1152.8464" y1="288.516" y2="288.516"/>
+      <ellipse cx="699.5" cy="303.55" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" text-decoration="underline" textLength="439.3464" x="708.5" y="307.482">create_markdown_strategy() : std::unique_ptr&lt;MarkdownStrategy&gt;</text>
+      <ellipse cx="699.5" cy="322.6179" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" text-decoration="underline" textLength="422.1684" x="708.5" y="326.5499">create_plain_text_strategy() : std::unique_ptr&lt;PlainTextStrategy&gt;</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="689.5" x2="1152.8464" y1="334.6519" y2="334.6519"/>
+    </g>
+    <g class="entity" data-entity="C_0005068471644211142180" data-source-line="59" data-uid="ent0011" id="entity_C_0005068471644211142180">
+      <rect fill="#F1F1F1" height="86.1358" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="229.3713" x="806.5" y="42.516"/>
+      <ellipse cx="821.5" cy="58.516" fill="#EB937F" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
+      <path d="M825.6094,64.516 L817.8906,64.516 L817.8906,52.1254 L825.6094,52.1254 L825.6094,54.2816 L820.3438,54.2816 L820.3438,56.9535 L825.1094,56.9535 L825.1094,59.1098 L820.3438,59.1098 L820.3438,62.3598 L825.6094,62.3598 L825.6094,64.516 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="197.3713" x="835.5" y="63.948">StrategyFactory::StrategyType</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="807.5" x2="1034.8713" y1="74.516" y2="74.516"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="60.3398" x="812.5" y="93.482">PlainText</text>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="70.5457" x="812.5" y="112.5499">Markdown</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="807.5" x2="1034.8713" y1="120.6519" y2="120.6519"/>
+    </g>
+    <g class="link" data-entity-1="C_0003017018330506343241" data-entity-2="C_0005704419823270881204" data-source-line="64" data-uid="lnk12" id="link_C_0003017018330506343241_C_0005704419823270881204">
+      <path codeLine="64" d="M500.01,323.756 C495.84,351.646 494.6584,392.9754 497.4284,427.3754" fill="none" id="C_0003017018330506343241-to-C_0005704419823270881204" style="stroke:#181818;stroke-width:1;stroke-dasharray:7.0,7.0;"/>
+      <polygon fill="#181818" points="497.91,433.356,501.1747,424.064,497.5087,428.3722,493.2005,424.7061,497.91,433.356" style="stroke:#181818;stroke-width:1;"/>
+    </g>
+    <g class="link" data-entity-1="C_0003017018330506343241" data-entity-2="C_0005704419823270881204" data-source-line="66" data-uid="lnk14" id="link_C_0003017018330506343241_C_0005704419823270881204">
+      <path codeLine="66" d="M521.3375,341.5342 C525.7575,369.4242 523.68,398.956 520.74,433.356" fill="none" id="C_0003017018330506343241-backto-C_0005704419823270881204" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="none" points="518.52,323.756,515.4114,342.4733,527.2635,340.595,518.52,323.756" style="stroke:#181818;stroke-width:1;"/>
+    </g>
+    <g class="link" data-entity-1="C_0003017018330506343241" data-entity-2="C_0014112435091745763149" data-source-line="65" data-uid="lnk13" id="link_C_0003017018330506343241_C_0014112435091745763149">
+      <path codeLine="65" d="M563.55,323.576 C621.3,347.986 697.9801,380.3984 775.0401,412.9684" fill="none" id="C_0003017018330506343241-to-C_0014112435091745763149" style="stroke:#181818;stroke-width:1;stroke-dasharray:7.0,7.0;"/>
+      <polygon fill="none" points="791.62,419.976,777.376,407.4418,772.7042,418.495,791.62,419.976" style="stroke:#181818;stroke-width:1;"/>
+    </g>
+    <g class="link" data-entity-1="C_0007699995325586521439" data-entity-2="C_0000807604561818921537" data-source-line="67" data-uid="lnk15" id="link_C_0007699995325586521439_C_0000807604561818921537">
+      <path codeLine="67" d="M1328.01,323.756 C1323.84,351.646 1322.6584,392.9754 1325.4284,427.3754" fill="none" id="C_0007699995325586521439-to-C_0000807604561818921537" style="stroke:#181818;stroke-width:1;stroke-dasharray:7.0,7.0;"/>
+      <polygon fill="#181818" points="1325.91,433.356,1329.1747,424.064,1325.5087,428.3722,1321.2005,424.7061,1325.91,433.356" style="stroke:#181818;stroke-width:1;"/>
+    </g>
+    <g class="link" data-entity-1="C_0007699995325586521439" data-entity-2="C_0000807604561818921537" data-source-line="69" data-uid="lnk17" id="link_C_0007699995325586521439_C_0000807604561818921537">
+      <path codeLine="69" d="M1349.3375,341.5342 C1353.7575,369.4242 1351.68,398.956 1348.74,433.356" fill="none" id="C_0007699995325586521439-backto-C_0000807604561818921537" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="none" points="1346.52,323.756,1343.4114,342.4733,1355.2635,340.595,1346.52,323.756" style="stroke:#181818;stroke-width:1;"/>
+    </g>
+    <g class="link" data-entity-1="C_0007699995325586521439" data-entity-2="C_0014112435091745763149" data-source-line="68" data-uid="lnk16" id="link_C_0007699995325586521439_C_0014112435091745763149">
+      <path codeLine="68" d="M1282.45,323.576 C1224.7,347.986 1148.0199,380.3984 1070.9599,412.9684" fill="none" id="C_0007699995325586521439-to-C_0014112435091745763149" style="stroke:#181818;stroke-width:1;stroke-dasharray:7.0,7.0;"/>
+      <polygon fill="none" points="1054.38,419.976,1073.2958,418.495,1068.624,407.4418,1054.38,419.976" style="stroke:#181818;stroke-width:1;"/>
+    </g>
+    <g class="link" data-entity-1="C_0011974992586374228230" data-entity-2="C_0017415094877193714719" data-source-line="70" data-uid="lnk18" id="link_C_0011974992586374228230_C_0017415094877193714719">
+      <path codeLine="70" d="M181,161.256 C181,187.006 181,209.456 181,233.756" fill="none" id="C_0011974992586374228230-to-C_0017415094877193714719" style="stroke:#181818;stroke-width:1;stroke-dasharray:7.0,7.0;"/>
+      <polygon fill="#181818" points="181,239.756,185,230.756,181,234.756,177,230.756,181,239.756" style="stroke:#181818;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="80.3271" x="182" y="205.913">StrategyType</text>
+    </g>
+    <g class="link" data-entity-1="C_0012978743466082846464" data-entity-2="C_0005704419823270881204" data-source-line="71" data-uid="lnk19" id="link_C_0012978743466082846464_C_0005704419823270881204">
+      <path codeLine="71" d="M822.05,342.546 C757.3,370.046 678.5124,403.5102 613.7024,431.0402" fill="none" id="C_0012978743466082846464-to-C_0005704419823270881204" style="stroke:#181818;stroke-width:1;stroke-dasharray:7.0,7.0;"/>
+      <polygon fill="#181818" points="608.18,433.386,618.0275,433.5489,612.782,431.4312,614.8998,426.1857,608.18,433.386" style="stroke:#181818;stroke-width:1;"/>
+    </g>
+    <g class="link" data-entity-1="C_0012978743466082846464" data-entity-2="C_0000807604561818921537" data-source-line="72" data-uid="lnk20" id="link_C_0012978743466082846464_C_0000807604561818921537">
+      <path codeLine="72" d="M1020.91,342.546 C1086.29,370.046 1165.8896,403.5291 1231.3196,431.0591" fill="none" id="C_0012978743466082846464-to-C_0000807604561818921537" style="stroke:#181818;stroke-width:1;stroke-dasharray:7.0,7.0;"/>
+      <polygon fill="#181818" points="1236.85,433.386,1230.1057,426.2087,1232.2413,431.4469,1227.0031,433.5825,1236.85,433.386" style="stroke:#181818;stroke-width:1;"/>
+    </g>
+    <g class="link" data-entity-1="C_0005068471644211142180" data-entity-2="C_0012978743466082846464" data-source-line="73" data-uid="lnk21" id="link_C_0005068471644211142180_C_0012978743466082846464">
+      <path codeLine="73" d="M921,128.656 C921,165.726 921,203.406 921,240.456" fill="none" id="C_0005068471644211142180-to-C_0012978743466082846464" style="stroke:#181818;stroke-width:1;"/>
+      <ellipse cx="921" cy="248.456" fill="#FFFFFF" rx="8" ry="8" style="stroke:#181818;stroke-width:1;"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="921" x2="921" y1="240.456" y2="256.456"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="929" x2="913" y1="248.456" y2="248.456"/>
+    </g>
+  </g>
+</svg>

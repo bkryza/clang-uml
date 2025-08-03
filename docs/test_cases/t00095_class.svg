@@ -1,0 +1,269 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" data-diagram-type="CLASS" height="1480px" preserveAspectRatio="none" style="width:1693px;height:1480px;background:#FFFFFF;" version="1.1" viewBox="0 0 1693 1480" width="1693px" zoomAndPan="magnify">
+  <defs>
+    <style type="text/css">a:hover { text-decoration: underline; }</style>
+  </defs>
+  <g>
+    <g class="entity" data-entity="C_0005221504587205040302" data-source-line="1" data-uid="ent0002" id="entity_C_0005221504587205040302">
+      <rect fill="#F1F1F1" height="246.6792" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="326.2009" x="655.5" y="747"/>
+      <ellipse cx="782.5215" cy="763" fill="#A9DCDF" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
+      <path d="M782.6309,758.3438 L781.4747,763.4219 L783.8028,763.4219 L782.6309,758.3438 Z M781.1465,756.1094 L784.1309,756.1094 L787.4903,768.5 L785.0372,768.5 L784.2715,765.4375 L780.9903,765.4375 L780.2403,768.5 L777.8028,768.5 L781.1465,756.1094 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="63.6578" x="803.0215" y="768.432">Document</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="656.5" x2="980.7009" y1="779" y2="779"/>
+      <ellipse cx="666.5" cy="794.034" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="254.715" x="675.5" y="797.9659">~Document() constexpr = default : void</text>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:1.0,2.0;" x1="656.5" x2="980.7009" y1="806.0679" y2="806.0679"/>
+      <ellipse cx="666.5" cy="821.1019" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="284.1009" x="675.5" y="825.0339">clone() const = 0 : std::unique_ptr&lt;Document&gt;</text>
+      <ellipse cx="666.5" cy="840.1698" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="148.7634" x="675.5" y="844.1018">display() const = 0 : void</text>
+      <ellipse cx="666.5" cy="859.2377" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="212.7012" x="675.5" y="863.1697">get_content() const = 0 : std::string</text>
+      <ellipse cx="666.5" cy="878.3056" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="189.4893" x="675.5" y="882.2376">get_title() const = 0 : std::string</text>
+      <ellipse cx="666.5" cy="897.3735" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="192.2613" x="675.5" y="901.3055">get_type() const = 0 : std::string</text>
+      <ellipse cx="666.5" cy="916.4415" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="300.2009" x="675.5" y="920.3734">set_content(const std::string &amp; content) = 0 : void</text>
+      <ellipse cx="666.5" cy="935.5094" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="253.777" x="675.5" y="939.4414">set_title(const std::string &amp; title) = 0 : void</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="656.5" x2="980.7009" y1="947.5433" y2="947.5433"/>
+      <polygon fill="none" points="666.5,957.5773,670.5,961.5773,666.5,965.5773,662.5,961.5773" style="stroke:#B38D22;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="134.0355" x="675.5" y="966.5093">content_ : std::string</text>
+      <polygon fill="none" points="666.5,976.6452,670.5,980.6452,666.5,984.6452,662.5,980.6452" style="stroke:#B38D22;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="108.7656" x="675.5" y="985.5772">title_ : std::string</text>
+    </g>
+    <g class="entity" data-entity="C_0014533967972277992259" data-source-line="16" data-uid="ent0003" id="entity_C_0014533967972277992259">
+      <rect fill="#F1F1F1" height="361.0867" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="499.3663" x="7" y="1083.5"/>
+      <ellipse cx="203.9863" cy="1099.5" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
+      <path d="M206.9551,1105.1406 Q206.377,1105.4375 205.7363,1105.5781 Q205.0957,1105.7344 204.3926,1105.7344 Q201.8926,1105.7344 200.5645,1104.0938 Q199.252,1102.4375 199.252,1099.3125 Q199.252,1096.1875 200.5645,1094.5313 Q201.8926,1092.875 204.3926,1092.875 Q205.0957,1092.875 205.7363,1093.0313 Q206.3926,1093.1875 206.9551,1093.4844 L206.9551,1096.2031 Q206.3301,1095.625 205.7363,1095.3594 Q205.1426,1095.0781 204.5176,1095.0781 Q203.1738,1095.0781 202.4863,1096.1563 Q201.7988,1097.2188 201.7988,1099.3125 Q201.7988,1101.4063 202.4863,1102.4844 Q203.1738,1103.5469 204.5176,1103.5469 Q205.1426,1103.5469 205.7363,1103.2813 Q206.3301,1103 206.9551,1102.4219 L206.9551,1105.1406 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="96.8936" x="224.4863" y="1104.932">TextDocument</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="8" x2="505.3663" y1="1115.5" y2="1115.5"/>
+      <ellipse cx="18" cy="1130.534" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="205.9112" x="27" y="1134.4659">TextDocument() = default : void</text>
+      <ellipse cx="18" cy="1149.6019" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="473.3663" x="27" y="1153.5339">TextDocument(const std::string &amp; title, const std::string &amp; content) : void</text>
+      <ellipse cx="18" cy="1168.6698" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="333.6467" x="27" y="1172.6018">TextDocument(const TextDocument &amp; other) : void</text>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:1.0,2.0;" x1="8" x2="505.3663" y1="1180.7038" y2="1180.7038"/>
+      <ellipse cx="18" cy="1195.7377" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="278.4029" x="27" y="1199.6697">clone() const : std::unique_ptr&lt;Document&gt;</text>
+      <ellipse cx="18" cy="1214.8056" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="132.6215" x="27" y="1218.7376">display() const : void</text>
+      <ellipse cx="18" cy="1233.8735" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="203.2372" x="27" y="1237.8055">get_content() const : std::string</text>
+      <ellipse cx="18" cy="1252.9415" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="226.0711" x="27" y="1256.8734">get_font_family() const : std::string</text>
+      <ellipse cx="18" cy="1272.0094" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="161.7694" x="27" y="1275.9414">get_font_size() const : int</text>
+      <ellipse cx="18" cy="1291.0773" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="177.9673" x="27" y="1295.0093">get_title() const : std::string</text>
+      <ellipse cx="18" cy="1310.1452" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="181.4393" x="27" y="1314.0772">get_type() const : std::string</text>
+      <ellipse cx="18" cy="1329.2131" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="297.1629" x="27" y="1333.1451">set_content(const std::string &amp; content) : void</text>
+      <ellipse cx="18" cy="1348.281" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="296.4909" x="27" y="1352.213">set_font_family(const std::string &amp; font) : void</text>
+      <ellipse cx="18" cy="1367.349" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="176.8613" x="27" y="1371.2809">set_font_size(int size) : void</text>
+      <ellipse cx="18" cy="1386.4169" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="246.6231" x="27" y="1390.3489">set_title(const std::string &amp; title) : void</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="8" x2="505.3663" y1="1398.4508" y2="1398.4508"/>
+      <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="15" y="1410.4848"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="156.8694" x="27" y="1417.4168">font_family_ : std::string</text>
+      <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="15" y="1429.5527"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="92.5676" x="27" y="1436.4847">font_size_ : int</text>
+    </g>
+    <g class="entity" data-entity="C_0002305114085068683126" data-source-line="37" data-uid="ent0004" id="entity_C_0002305114085068683126">
+      <rect fill="#F1F1F1" height="399.2225" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="553.868" x="541.5" y="1064.5"/>
+      <ellipse cx="738.4863" cy="1080.5" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
+      <path d="M741.4551,1086.1406 Q740.8769,1086.4375 740.2363,1086.5781 Q739.5957,1086.7344 738.8926,1086.7344 Q736.3926,1086.7344 735.0644,1085.0938 Q733.7519,1083.4375 733.7519,1080.3125 Q733.7519,1077.1875 735.0644,1075.5313 Q736.3926,1073.875 738.8926,1073.875 Q739.5957,1073.875 740.2363,1074.0313 Q740.8926,1074.1875 741.4551,1074.4844 L741.4551,1077.2031 Q740.8301,1076.625 740.2363,1076.3594 Q739.6426,1076.0781 739.0176,1076.0781 Q737.6738,1076.0781 736.9863,1077.1563 Q736.2988,1078.2188 736.2988,1080.3125 Q736.2988,1082.4063 736.9863,1083.4844 Q737.6738,1084.5469 739.0176,1084.5469 Q739.6426,1084.5469 740.2363,1084.2813 Q740.8301,1084 741.4551,1083.4219 L741.4551,1086.1406 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="151.3954" x="758.9863" y="1085.932">SpreadsheetDocument</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="542.5" x2="1094.368" y1="1096.5" y2="1096.5"/>
+      <ellipse cx="552.5" cy="1111.534" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="260.413" x="561.5" y="1115.4659">SpreadsheetDocument() = default : void</text>
+      <ellipse cx="552.5" cy="1130.6019" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="527.868" x="561.5" y="1134.5339">SpreadsheetDocument(const std::string &amp; title, const std::string &amp; content) : void</text>
+      <ellipse cx="552.5" cy="1149.6698" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="442.6503" x="561.5" y="1153.6018">SpreadsheetDocument(const SpreadsheetDocument &amp; other) : void</text>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:1.0,2.0;" x1="542.5" x2="1094.368" y1="1161.7038" y2="1161.7038"/>
+      <ellipse cx="552.5" cy="1176.7377" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="458.4283" x="561.5" y="1180.6697">add_formula(const std::string &amp; cell, const std::string &amp; formula) : void</text>
+      <ellipse cx="552.5" cy="1195.8056" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="278.4029" x="561.5" y="1199.7376">clone() const : std::unique_ptr&lt;Document&gt;</text>
+      <ellipse cx="552.5" cy="1214.8735" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="132.6215" x="561.5" y="1218.8055">display() const : void</text>
+      <ellipse cx="552.5" cy="1233.9415" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="159.6694" x="561.5" y="1237.8734">get_columns() const : int</text>
+      <ellipse cx="552.5" cy="1253.0094" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="203.2372" x="561.5" y="1256.9414">get_content() const : std::string</text>
+      <ellipse cx="552.5" cy="1272.0773" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="484.9021" x="561.5" y="1276.0093">get_formulas() const : const std::unordered_map&lt;std::string,std::string&gt; &amp;</text>
+      <ellipse cx="552.5" cy="1291.1452" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="135.7295" x="561.5" y="1295.0772">get_rows() const : int</text>
+      <ellipse cx="552.5" cy="1310.2131" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="177.9673" x="561.5" y="1314.1451">get_title() const : std::string</text>
+      <ellipse cx="552.5" cy="1329.281" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="181.4393" x="561.5" y="1333.213">get_type() const : std::string</text>
+      <ellipse cx="552.5" cy="1348.349" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="297.1629" x="561.5" y="1352.2809">set_content(const std::string &amp; content) : void</text>
+      <ellipse cx="552.5" cy="1367.4169" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="286.2849" x="561.5" y="1371.3489">set_dimensions(int rows, int columns) : void</text>
+      <ellipse cx="552.5" cy="1386.4848" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="246.6231" x="561.5" y="1390.4168">set_title(const std::string &amp; title) : void</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="542.5" x2="1094.368" y1="1398.5188" y2="1398.5188"/>
+      <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="549.5" y="1410.5527"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="90.4676" x="561.5" y="1417.4847">columns_ : int</text>
+      <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="549.5" y="1429.6206"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="362.5707" x="561.5" y="1436.5526">formulas_ : std::unordered_map&lt;std::string,std::string&gt;</text>
+      <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="549.5" y="1448.6885"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="66.5277" x="561.5" y="1455.6205">rows_ : int</text>
+    </g>
+    <g class="entity" data-entity="C_0000611556097111014333" data-source-line="60" data-uid="ent0005" id="entity_C_0000611556097111014333">
+      <rect fill="#F1F1F1" height="418.2904" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="555.324" x="1131" y="1055"/>
+      <ellipse cx="1327.9863" cy="1071" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
+      <path d="M1330.9551,1076.6406 Q1330.3769,1076.9375 1329.7363,1077.0781 Q1329.0957,1077.2344 1328.3926,1077.2344 Q1325.8926,1077.2344 1324.5644,1075.5938 Q1323.2519,1073.9375 1323.2519,1070.8125 Q1323.2519,1067.6875 1324.5644,1066.0313 Q1325.8926,1064.375 1328.3926,1064.375 Q1329.0957,1064.375 1329.7363,1064.5313 Q1330.3926,1064.6875 1330.9551,1064.9844 L1330.9551,1067.7031 Q1330.3301,1067.125 1329.7363,1066.8594 Q1329.1426,1066.5781 1328.5176,1066.5781 Q1327.1738,1066.5781 1326.4863,1067.6563 Q1325.7988,1068.7188 1325.7988,1070.8125 Q1325.7988,1072.9063 1326.4863,1073.9844 Q1327.1738,1075.0469 1328.5176,1075.0469 Q1329.1426,1075.0469 1329.7363,1074.7813 Q1330.3301,1074.5 1330.9551,1073.9219 L1330.9551,1076.6406 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="152.8514" x="1348.4863" y="1076.432">PresentationDocument</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="1132" x2="1685.324" y1="1087" y2="1087"/>
+      <ellipse cx="1142" cy="1102.034" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="261.869" x="1151" y="1105.9659">PresentationDocument() = default : void</text>
+      <ellipse cx="1142" cy="1121.1019" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="529.324" x="1151" y="1125.0339">PresentationDocument(const std::string &amp; title, const std::string &amp; content) : void</text>
+      <ellipse cx="1142" cy="1140.1698" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="445.5623" x="1151" y="1144.1018">PresentationDocument(const PresentationDocument &amp; other) : void</text>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:1.0,2.0;" x1="1132" x2="1685.324" y1="1152.2038" y2="1152.2038"/>
+      <ellipse cx="1142" cy="1167.2377" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="288.6929" x="1151" y="1171.1697">add_slide_title(const std::string &amp; title) : void</text>
+      <ellipse cx="1142" cy="1186.3056" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="278.4029" x="1151" y="1190.2376">clone() const : std::unique_ptr&lt;Document&gt;</text>
+      <ellipse cx="1142" cy="1205.3735" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="132.6215" x="1151" y="1209.3055">display() const : void</text>
+      <ellipse cx="1142" cy="1224.4415" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="203.2372" x="1151" y="1228.3734">get_content() const : std::string</text>
+      <ellipse cx="1142" cy="1243.5094" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="177.9673" x="1151" y="1247.4414">get_slide_count() const : int</text>
+      <ellipse cx="1142" cy="1262.5773" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="359.3786" x="1151" y="1266.5093">get_slide_titles() const : const std::vector&lt;std::string&gt; &amp;</text>
+      <ellipse cx="1142" cy="1281.6452" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="195.3273" x="1151" y="1285.5772">get_theme() const : std::string</text>
+      <ellipse cx="1142" cy="1300.7131" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="177.9673" x="1151" y="1304.6451">get_title() const : std::string</text>
+      <ellipse cx="1142" cy="1319.781" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="181.4393" x="1151" y="1323.713">get_type() const : std::string</text>
+      <ellipse cx="1142" cy="1338.849" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="297.1629" x="1151" y="1342.7809">set_content(const std::string &amp; content) : void</text>
+      <ellipse cx="1142" cy="1357.9169" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="205.8132" x="1151" y="1361.8489">set_slide_count(int count) : void</text>
+      <ellipse cx="1142" cy="1376.9848" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="281.343" x="1151" y="1380.9168">set_theme(const std::string &amp; theme) : void</text>
+      <ellipse cx="1142" cy="1396.0527" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="246.6231" x="1151" y="1399.9847">set_title(const std::string &amp; title) : void</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="1132" x2="1685.324" y1="1408.0867" y2="1408.0867"/>
+      <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="1139" y="1420.1206"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="108.7656" x="1151" y="1427.0526">slide_count_ : int</text>
+      <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="1139" y="1439.1885"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="237.0471" x="1151" y="1446.1205">slide_titles_ : std::vector&lt;std::string&gt;</text>
+      <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="1139" y="1458.2565"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="126.1255" x="1151" y="1465.1884">theme_ : std::string</text>
+    </g>
+    <g class="entity" data-entity="C_0008710558658600266601" data-source-line="84" data-uid="ent0006" id="entity_C_0008710558658600266601">
+      <rect fill="#F1F1F1" height="143.3396" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="608.1319" x="871.5" y="525"/>
+      <ellipse cx="1110.1852" cy="541" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
+      <path d="M1113.1539,546.6406 Q1112.5758,546.9375 1111.9352,547.0781 Q1111.2946,547.2344 1110.5914,547.2344 Q1108.0914,547.2344 1106.7633,545.5938 Q1105.4508,543.9375 1105.4508,540.8125 Q1105.4508,537.6875 1106.7633,536.0313 Q1108.0914,534.375 1110.5914,534.375 Q1111.2946,534.375 1111.9352,534.5313 Q1112.5914,534.6875 1113.1539,534.9844 L1113.1539,537.7031 Q1112.5289,537.125 1111.9352,536.8594 Q1111.3414,536.5781 1110.7164,536.5781 Q1109.3727,536.5781 1108.6852,537.6563 Q1107.9977,538.7188 1107.9977,540.8125 Q1107.9977,542.9063 1108.6852,543.9844 Q1109.3727,545.0469 1110.7164,545.0469 Q1111.3414,545.0469 1111.9352,544.7813 Q1112.5289,544.5 1113.1539,543.9219 L1113.1539,546.6406 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="122.2615" x="1130.6852" y="546.432">DocumentRegistry</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="872.5" x2="1478.6319" y1="557" y2="557"/>
+      <ellipse cx="882.5" cy="572.034" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="509.3741" x="891.5" y="575.9659">create_document(const std::string &amp; type) const : std::unique_ptr&lt;Document&gt;</text>
+      <ellipse cx="882.5" cy="591.1019" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="347.1287" x="891.5" y="595.0339">get_registered_types() const : std::vector&lt;std::string&gt;</text>
+      <ellipse cx="882.5" cy="610.1698" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="358.8887" x="891.5" y="614.1018">is_type_registered(const std::string &amp; type) const : bool</text>
+      <ellipse cx="882.5" cy="629.2377" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="582.1319" x="891.5" y="633.1697">register_prototype(const std::string &amp; type, std::unique_ptr&lt;Document&gt; prototype) : void</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="872.5" x2="1478.6319" y1="641.2717" y2="641.2717"/>
+      <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="879.5" y="653.3056"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="493.4702" x="891.5" y="660.2376">prototypes_ : std::unordered_map&lt;std::string,std::unique_ptr&lt;Document&gt;&gt;</text>
+    </g>
+    <g class="entity" data-entity="C_0005358168373881656558" data-source-line="93" data-uid="ent0007" id="entity_C_0005358168373881656558">
+      <rect fill="#F1F1F1" height="208.5433" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="663.0396" x="800" y="237"/>
+      <ellipse cx="1068.75" cy="253" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
+      <path d="M1071.7188,258.6406 Q1071.1407,258.9375 1070.5,259.0781 Q1069.8594,259.2344 1069.1563,259.2344 Q1066.6563,259.2344 1065.3282,257.5938 Q1064.0157,255.9375 1064.0157,252.8125 Q1064.0157,249.6875 1065.3282,248.0313 Q1066.6563,246.375 1069.1563,246.375 Q1069.8594,246.375 1070.5,246.5313 Q1071.1563,246.6875 1071.7188,246.9844 L1071.7188,249.7031 Q1071.0938,249.125 1070.5,248.8594 Q1069.9063,248.5781 1069.2813,248.5781 Q1067.9375,248.5781 1067.25,249.6563 Q1066.5625,250.7188 1066.5625,252.8125 Q1066.5625,254.9063 1067.25,255.9844 Q1067.9375,257.0469 1069.2813,257.0469 Q1069.9063,257.0469 1070.5,256.7813 Q1071.0938,256.5 1071.7188,255.9219 L1071.7188,258.6406 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="117.0396" x="1089.25" y="258.432">DocumentFactory</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="801" x2="1462.0396" y1="269" y2="269"/>
+      <ellipse cx="811" cy="284.034" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="164.2754" x="820" y="287.9659">DocumentFactory() : void</text>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:1.0,2.0;" x1="801" x2="1462.0396" y1="296.0679" y2="296.0679"/>
+      <ellipse cx="811" cy="311.1019" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="527.014" x="820" y="315.0339">create_document_by_type(const std::string &amp; type) : std::unique_ptr&lt;Document&gt;</text>
+      <ellipse cx="811" cy="330.1698" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="408.8265" x="820" y="334.1018">create_presentation_document() : std::unique_ptr&lt;Document&gt;</text>
+      <ellipse cx="811" cy="349.2377" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="406.2505" x="820" y="353.1697">create_spreadsheet_document() : std::unique_ptr&lt;Document&gt;</text>
+      <ellipse cx="811" cy="368.3056" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="349.9987" x="820" y="372.2376">create_text_document() : std::unique_ptr&lt;Document&gt;</text>
+      <ellipse cx="811" cy="387.3735" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="337.3008" x="820" y="391.3055">get_available_types() const : std::vector&lt;std::string&gt;</text>
+      <ellipse cx="811" cy="406.4415" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="637.0396" x="820" y="410.3734">register_custom_prototype(const std::string &amp; type, std::unique_ptr&lt;Document&gt; prototype) : void</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="801" x2="1462.0396" y1="418.4754" y2="418.4754"/>
+      <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="808" y="430.5094"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="190.0913" x="820" y="437.4414">registry_ : DocumentRegistry</text>
+    </g>
+    <g class="entity" data-entity="C_0004798182382714279225" data-source-line="106" data-uid="ent0008" id="entity_C_0004798182382714279225">
+      <rect fill="#F1F1F1" height="151.3396" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="698.1235" x="427.5" y="7"/>
+      <ellipse cx="701.059" cy="23" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
+      <path d="M704.0278,28.6406 Q703.4496,28.9375 702.809,29.0781 Q702.1684,29.2344 701.4653,29.2344 Q698.9653,29.2344 697.6371,27.5938 Q696.3246,25.9375 696.3246,22.8125 Q696.3246,19.6875 697.6371,18.0313 Q698.9653,16.375 701.4653,16.375 Q702.1684,16.375 702.809,16.5313 Q703.4653,16.6875 704.0278,16.9844 L704.0278,19.7031 Q703.4028,19.125 702.809,18.8594 Q702.2153,18.5781 701.5903,18.5781 Q700.2465,18.5781 699.559,19.6563 Q698.8715,20.7188 698.8715,22.8125 Q698.8715,24.9063 699.559,25.9844 Q700.2465,27.0469 701.5903,27.0469 Q702.2153,27.0469 702.809,26.7813 Q703.4028,26.5 704.0278,25.9219 L704.0278,28.6406 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="142.5054" x="721.559" y="28.432">DocumentApplication</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="428.5" x2="1124.6235" y1="39" y2="39"/>
+      <ellipse cx="438.5" cy="54.034" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="189.7413" x="447.5" y="57.9659">DocumentApplication() : void</text>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:1.0,2.0;" x1="428.5" x2="1124.6235" y1="66.0679" y2="66.0679"/>
+      <ellipse cx="438.5" cy="81.1019" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="672.1235" x="447.5" y="85.0339">create_document_template(const std::string &amp; name, std::unique_ptr&lt;Document&gt; template_doc) : void</text>
+      <ellipse cx="438.5" cy="100.1698" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="503.9001" x="447.5" y="104.1018">create_new_document(const std::string &amp; type) : std::unique_ptr&lt;Document&gt;</text>
+      <ellipse cx="438.5" cy="119.2377" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="513.5181" x="447.5" y="123.1697">duplicate_document(const Document &amp; original) : std::unique_ptr&lt;Document&gt;</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="428.5" x2="1124.6235" y1="131.2717" y2="131.2717"/>
+      <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="435.5" y="143.3056"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="295.7489" x="447.5" y="150.2376">factory_ : std::unique_ptr&lt;DocumentFactory&gt;</text>
+    </g>
+    <g class="link" data-entity-1="C_0005221504587205040302" data-entity-2="C_0014533967972277992259" data-source-line="116" data-uid="lnk9" id="link_C_0005221504587205040302_C_0014533967972277992259">
+      <path codeLine="116" d="M640.0877,978.2306 C596.6377,1005.2706 565.42,1025.75 523.5,1055 C510.49,1064.08 497.25,1073.55 483.98,1083.24" fill="none" id="C_0005221504587205040302-backto-C_0014533967972277992259" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="none" points="655.37,968.72,636.9175,973.1365,643.2579,983.3247,655.37,968.72" style="stroke:#181818;stroke-width:1;"/>
+    </g>
+    <g class="link" data-entity-1="C_0005221504587205040302" data-entity-2="C_0002305114085068683126" data-source-line="117" data-uid="lnk10" id="link_C_0005221504587205040302_C_0002305114085068683126">
+      <path codeLine="117" d="M818.5,1012.03 C818.5,1034.46 818.5,1040.39 818.5,1064.38" fill="none" id="C_0005221504587205040302-backto-C_0002305114085068683126" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="none" points="818.5,994.03,812.5,1012.03,824.5,1012.03,818.5,994.03" style="stroke:#181818;stroke-width:1;"/>
+    </g>
+    <g class="link" data-entity-1="C_0005221504587205040302" data-entity-2="C_0000611556097111014333" data-source-line="118" data-uid="lnk11" id="link_C_0005221504587205040302_C_0000611556097111014333">
+      <path codeLine="118" d="M997.1515,980.3019 C1040.2715,1007.1419 1071.27,1027.01 1113.5,1055 C1119.25,1058.81 1125.04,1062.67 1130.88,1066.58" fill="none" id="C_0005221504587205040302-backto-C_0000611556097111014333" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="none" points="981.87,970.79,993.9808,985.3958,1000.3221,975.2081,981.87,970.79" style="stroke:#181818;stroke-width:1;"/>
+    </g>
+    <g class="link" data-entity-1="C_0008710558658600266601" data-entity-2="C_0005221504587205040302" data-source-line="119" data-uid="lnk12" id="link_C_0008710558658600266601_C_0005221504587205040302">
+      <path codeLine="119" d="M1073.0868,675.5252 C1041.4868,699.6152 1014.72,720 979.35,746.95" fill="none" id="C_0008710558658600266601-backto-C_0005221504587205040302" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="none" points="1082.63,668.25,1075.4334,668.7065,1073.0868,675.5252,1080.2835,675.0686,1082.63,668.25" style="stroke:#181818;stroke-width:1;"/>
+      <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="1041.5" y="705.353"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="72.4361" x="1051.5" y="712.897">prototypes_</text>
+    </g>
+    <g class="link" data-entity-1="C_0005358168373881656558" data-entity-2="C_0005221504587205040302" data-source-line="120" data-uid="lnk13" id="link_C_0005358168373881656558_C_0005221504587205040302">
+      <path codeLine="120" d="M926.64,446.05 C898.44,468.48 872.9,494.74 854.5,525 C814.44,590.9 805.3905,671.2407 806.4305,740.9907" fill="none" id="C_0005358168373881656558-to-C_0005221504587205040302" style="stroke:#181818;stroke-width:1;stroke-dasharray:7.0,7.0;"/>
+      <polygon fill="#181818" points="806.52,746.99,810.3854,737.9314,806.4455,741.9906,802.3863,738.0506,806.52,746.99" style="stroke:#181818;stroke-width:1;"/>
+    </g>
+    <g class="link" data-entity-1="C_0005358168373881656558" data-entity-2="C_0008710558658600266601" data-source-line="121" data-uid="lnk14" id="link_C_0005358168373881656558_C_0008710558658600266601">
+      <path codeLine="121" d="M1151.5782,457.9522 C1156.1882,484.4322 1158.97,500.46 1163.21,524.85" fill="none" id="C_0005358168373881656558-backto-C_0008710558658600266601" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="none" points="1149.52,446.13,1146.6084,452.7271,1151.5782,457.9522,1154.4898,451.355,1149.52,446.13" style="stroke:#181818;stroke-width:1;"/>
+      <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="1159.5" y="483.353"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="52.741" x="1169.5" y="490.897">registry_</text>
+    </g>
+    <g class="link" data-entity-1="C_0004798182382714279225" data-entity-2="C_0005221504587205040302" data-source-line="122" data-uid="lnk15" id="link_C_0004798182382714279225_C_0005221504587205040302">
+      <path codeLine="122" d="M776.2,158.29 C776.37,276.99 779.38,515.69 798.5,717 C799.42,726.7 799.8099,730.7787 800.9599,740.8587" fill="none" id="C_0004798182382714279225-to-C_0005221504587205040302" style="stroke:#181818;stroke-width:1;stroke-dasharray:7.0,7.0;"/>
+      <polygon fill="#181818" points="801.64,746.82,804.5941,737.4246,801.0732,741.8522,796.6456,738.3314,801.64,746.82" style="stroke:#181818;stroke-width:1;"/>
+    </g>
+    <g class="link" data-entity-1="C_0004798182382714279225" data-entity-2="C_0005358168373881656558" data-source-line="123" data-uid="lnk16" id="link_C_0004798182382714279225_C_0005358168373881656558">
+      <path codeLine="123" d="M889.3801,165.217 C923.3601,189.817 952.06,210.6 988.47,236.95" fill="none" id="C_0004798182382714279225-backto-C_0005358168373881656558" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="none" points="879.66,158.18,882.1744,164.9385,889.3801,165.217,886.8657,158.4584,879.66,158.18" style="stroke:#181818;stroke-width:1;"/>
+      <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="945.5" y="195.353"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="48.334" x="955.5" y="202.897">factory_</text>
+    </g>
+  </g>
+</svg>

@@ -97,6 +97,15 @@
  * [t00090](./test_cases/t00090.md) - Metaprogramming test case with recursive type list
  * [t00091](./test_cases/t00091.md) - Declaration forwarding test case
  * [t00092](./test_cases/t00092.md) - Test case for relationship_hints config option
+ * [t00093](./test_cases/t00093.md) - Test case for bridge design pattern
+ * [t00094](./test_cases/t00094.md) - Test case for builder design pattern
+ * [t00095](./test_cases/t00095.md) - Test case for prototype design pattern
+ * [t00096](./test_cases/t00096.md) - Test case for prototype design pattern using static polymorphism
+ * [t00097](./test_cases/t00097.md) - Test case for decorator design pattern
+ * [t00098](./test_cases/t00098.md) - Test case for decorator design pattern using static polymorphism
+ * [t00099](./test_cases/t00099.md) - Test case for bridge design pattern using static polymorphism
+ * [t00100](./test_cases/t00100.md) - Test case for builder design pattern using static polymorphism
+ * [t00101](./test_cases/t00101.md) - Test case for strategy design pattern using static polymorphism
 ## Sequence diagrams
  * [t20001](./test_cases/t20001.md) - Basic sequence diagram test case
  * [t20002](./test_cases/t20002.md) - Free function sequence diagram test case

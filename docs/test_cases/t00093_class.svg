@@ -1,0 +1,196 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" data-diagram-type="CLASS" height="1156px" preserveAspectRatio="none" style="width:1631px;height:1156px;background:#FFFFFF;" version="1.1" viewBox="0 0 1631 1156" width="1631px" zoomAndPan="magnify">
+  <defs>
+    <style type="text/css">a:hover { text-decoration: underline; }</style>
+  </defs>
+  <g>
+    <g class="entity" data-entity="C_0007515812632800921463" data-source-line="1" data-uid="ent0002" id="entity_C_0007515812632800921463">
+      <rect fill="#F1F1F1" height="113.2038" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="494.1722" x="277" y="813"/>
+      <ellipse cx="491.6682" cy="829" fill="#A9DCDF" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
+      <path d="M491.7776,824.3438 L490.6213,829.4219 L492.9494,829.4219 L491.7776,824.3438 Z M490.2932,822.1094 L493.2776,822.1094 L496.6369,834.5 L494.1838,834.5 L493.4182,831.4375 L490.1369,831.4375 L489.3869,834.5 L486.9494,834.5 L490.2932,822.1094 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="56.3358" x="512.1682" y="834.432">Renderer</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="278" x2="770.1722" y1="845" y2="845"/>
+      <ellipse cx="288" cy="860.034" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="247.183" x="297" y="863.9659">~Renderer() constexpr = default : void</text>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:1.0,2.0;" x1="278" x2="770.1722" y1="872.0679" y2="872.0679"/>
+      <ellipse cx="288" cy="887.1019" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="353.9047" x="297" y="891.0339">render_circle(double x, double y, double radius) = 0 : void</text>
+      <ellipse cx="288" cy="906.1698" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="468.1722" x="297" y="910.1018">render_rectangle(double x, double y, double width, double height) = 0 : void</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="278" x2="770.1722" y1="918.2038" y2="918.2038"/>
+    </g>
+    <g class="entity" data-entity="C_0016028587466059689823" data-source-line="9" data-uid="ent0003" id="entity_C_0016028587466059689823">
+      <rect fill="#F1F1F1" height="162.4075" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="500.2343" x="7" y="987"/>
+      <ellipse cx="201.0954" cy="1003" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
+      <path d="M204.0641,1008.6406 Q203.486,1008.9375 202.8454,1009.0781 Q202.2047,1009.2344 201.5016,1009.2344 Q199.0016,1009.2344 197.6735,1007.5938 Q196.361,1005.9375 196.361,1002.8125 Q196.361,999.6875 197.6735,998.0313 Q199.0016,996.375 201.5016,996.375 Q202.2047,996.375 202.8454,996.5313 Q203.5016,996.6875 204.0641,996.9844 L204.0641,999.7031 Q203.4391,999.125 202.8454,998.8594 Q202.2516,998.5781 201.6266,998.5781 Q200.2829,998.5781 199.5954,999.6563 Q198.9079,1000.7188 198.9079,1002.8125 Q198.9079,1004.9063 199.5954,1005.9844 Q200.2829,1007.0469 201.6266,1007.0469 Q202.2516,1007.0469 202.8454,1006.7813 Q203.4391,1006.5 204.0641,1005.9219 L204.0641,1008.6406 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="103.5436" x="221.5954" y="1008.432">VectorRenderer</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="8" x2="506.2343" y1="1019" y2="1019"/>
+      <ellipse cx="18" cy="1034.034" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="351.4267" x="27" y="1037.9659">render_circle(double x, double y, double radius) : void</text>
+      <ellipse cx="18" cy="1053.1019" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="474.2343" x="27" y="1057.0339">render_rectangle(double x, double y, double width, double height) : void</text>
+      <ellipse cx="18" cy="1072.1698" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="284.1429" x="27" y="1076.1018">set_fill_color(const std::string &amp; color) : void</text>
+      <ellipse cx="18" cy="1091.2377" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="244.0611" x="27" y="1095.1697">set_stroke_width(double width) : void</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="8" x2="506.2343" y1="1103.2717" y2="1103.2717"/>
+      <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="15" y="1115.3056"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="132.2435" x="27" y="1122.2376">fill_color : std::string</text>
+      <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="15" y="1134.3735"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="141.4135" x="27" y="1141.3055">stroke_width : double</text>
+    </g>
+    <g class="entity" data-entity="C_0008868095716427291368" data-source-line="19" data-uid="ent0004" id="entity_C_0008868095716427291368">
+      <rect fill="#F1F1F1" height="162.4075" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="500.2343" x="542" y="987"/>
+      <ellipse cx="736.2564" cy="1003" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
+      <path d="M739.2251,1008.6406 Q738.647,1008.9375 738.0064,1009.0781 Q737.3657,1009.2344 736.6626,1009.2344 Q734.1626,1009.2344 732.8345,1007.5938 Q731.522,1005.9375 731.522,1002.8125 Q731.522,999.6875 732.8345,998.0313 Q734.1626,996.375 736.6626,996.375 Q737.3657,996.375 738.0064,996.5313 Q738.6626,996.6875 739.2251,996.9844 L739.2251,999.7031 Q738.6001,999.125 738.0064,998.8594 Q737.4126,998.5781 736.7876,998.5781 Q735.4439,998.5781 734.7564,999.6563 Q734.0689,1000.7188 734.0689,1002.8125 Q734.0689,1004.9063 734.7564,1005.9844 Q735.4439,1007.0469 736.7876,1007.0469 Q737.4126,1007.0469 738.0064,1006.7813 Q738.6001,1006.5 739.2251,1005.9219 L739.2251,1008.6406 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="103.2216" x="756.7564" y="1008.432">RasterRenderer</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="543" x2="1041.2343" y1="1019" y2="1019"/>
+      <ellipse cx="553" cy="1034.034" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="351.4267" x="562" y="1037.9659">render_circle(double x, double y, double radius) : void</text>
+      <ellipse cx="553" cy="1053.1019" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="474.2343" x="562" y="1057.0339">render_rectangle(double x, double y, double width, double height) : void</text>
+      <ellipse cx="553" cy="1072.1698" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="240.9391" x="562" y="1076.1018">set_anti_aliasing(bool enabled) : void</text>
+      <ellipse cx="553" cy="1091.2377" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="135.7295" x="562" y="1095.1697">set_dpi(int dpi) : void</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="543" x2="1041.2343" y1="1103.2717" y2="1103.2717"/>
+      <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="550" y="1115.3056"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="122.0935" x="562" y="1122.2376">anti_aliasing : bool</text>
+      <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="550" y="1134.3735"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="49.1818" x="562" y="1141.3055">dpi : int</text>
+    </g>
+    <g class="entity" data-entity="C_0015822342402667944661" data-source-line="29" data-uid="ent0005" id="entity_C_0015822342402667944661">
+      <rect fill="#F1F1F1" height="189.4754" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="352.1428" x="499" y="275"/>
+      <ellipse cx="651.7114" cy="291" fill="#A9DCDF" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
+      <path d="M651.8208,286.3438 L650.6646,291.4219 L652.9927,291.4219 L651.8208,286.3438 Z M650.3364,284.1094 L653.3208,284.1094 L656.6802,296.5 L654.2271,296.5 L653.4614,293.4375 L650.1802,293.4375 L649.4302,296.5 L646.9927,296.5 L650.3364,284.1094 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="38.2199" x="672.2114" y="296.432">Shape</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="500" x2="850.1428" y1="307" y2="307"/>
+      <ellipse cx="510" cy="322.034" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="326.1428" x="519" y="325.9659">Shape(std::shared_ptr&lt;Renderer&gt; renderer) : void</text>
+      <ellipse cx="510" cy="341.1019" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="157.7234" x="519" y="345.0339">~Shape() = default : void</text>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:1.0,2.0;" x1="500" x2="850.1428" y1="353.1358" y2="353.1358"/>
+      <ellipse cx="510" cy="368.1698" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="99.8756" x="519" y="372.1018">draw() = 0 : void</text>
+      <ellipse cx="510" cy="387.2377" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="231.3912" x="519" y="391.1697">move(double dx, double dy) = 0 : void</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="500" x2="850.1428" y1="399.2717" y2="399.2717"/>
+      <polygon fill="none" points="510,409.3056,514,413.3056,510,417.3056,506,413.3056" style="stroke:#B38D22;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="301.1529" x="519" y="418.2376">renderer_bridge_ : std::shared_ptr&lt;Renderer&gt;</text>
+      <polygon fill="none" points="510,428.3735,514,432.3735,510,436.3735,506,432.3735" style="stroke:#B38D22;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="70.5037" x="519" y="437.3055">x_ : double</text>
+      <polygon fill="none" points="510,447.4415,514,451.4415,510,455.4415,506,451.4415" style="stroke:#B38D22;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="70.2377" x="519" y="456.3734">y_ : double</text>
+    </g>
+    <g class="entity" data-entity="C_0015170974831419498086" data-source-line="41" data-uid="ent0006" id="entity_C_0015170974831419498086">
+      <rect fill="#F1F1F1" height="170.4075" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="446.0125" x="574" y="562.5"/>
+      <ellipse cx="774.5213" cy="578.5" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
+      <path d="M777.4901,584.1406 Q776.9119,584.4375 776.2713,584.5781 Q775.6307,584.7344 774.9276,584.7344 Q772.4276,584.7344 771.0994,583.0938 Q769.7869,581.4375 769.7869,578.3125 Q769.7869,575.1875 771.0994,573.5313 Q772.4276,571.875 774.9276,571.875 Q775.6307,571.875 776.2713,572.0313 Q776.9276,572.1875 777.4901,572.4844 L777.4901,575.2031 Q776.8651,574.625 776.2713,574.3594 Q775.6776,574.0781 775.0526,574.0781 Q773.7088,574.0781 773.0213,575.1563 Q772.3338,576.2188 772.3338,578.3125 Q772.3338,580.4063 773.0213,581.4844 Q773.7088,582.5469 775.0526,582.5469 Q775.6776,582.5469 776.2713,582.2813 Q776.8651,582 777.4901,581.4219 L777.4901,584.1406 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="36.4698" x="795.0213" y="583.932">Circle</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="575" x2="1019.0125" y1="594.5" y2="594.5"/>
+      <ellipse cx="585" cy="609.534" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="420.0125" x="594" y="613.4659">Circle(std::shared_ptr&lt;Renderer&gt; renderer, double radius) : void</text>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:1.0,2.0;" x1="575" x2="1019.0125" y1="621.5679" y2="621.5679"/>
+      <ellipse cx="585" cy="636.6019" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="80.4857" x="594" y="640.5339">draw() : void</text>
+      <ellipse cx="585" cy="655.6698" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="173.5153" x="594" y="659.6018">get_radius() const : double</text>
+      <ellipse cx="585" cy="674.7377" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="221.9411" x="594" y="678.6697">move(double dx, double dy) : void</text>
+      <ellipse cx="585" cy="693.8056" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="205.0292" x="594" y="697.7376">set_radius(double radius) : void</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="575" x2="1019.0125" y1="705.8396" y2="705.8396"/>
+      <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="582" y="717.8735"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="104.3136" x="594" y="724.8055">radius_ : double</text>
+    </g>
+    <g class="entity" data-entity="C_0012375550317572858605" data-source-line="52" data-uid="ent0007" id="entity_C_0012375550317572858605">
+      <rect fill="#F1F1F1" height="208.5433" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="569.6181" x="1055" y="543"/>
+      <ellipse cx="1303.0582" cy="559" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
+      <path d="M1306.0269,564.6406 Q1305.4488,564.9375 1304.8082,565.0781 Q1304.1676,565.2344 1303.4644,565.2344 Q1300.9644,565.2344 1299.6363,563.5938 Q1298.3238,561.9375 1298.3238,558.8125 Q1298.3238,555.6875 1299.6363,554.0313 Q1300.9644,552.375 1303.4644,552.375 Q1304.1676,552.375 1304.8082,552.5313 Q1305.4644,552.6875 1306.0269,552.9844 L1306.0269,555.7031 Q1305.4019,555.125 1304.8082,554.8594 Q1304.2144,554.5781 1303.5894,554.5781 Q1302.2457,554.5781 1301.5582,555.6563 Q1300.8707,556.7188 1300.8707,558.8125 Q1300.8707,560.9063 1301.5582,561.9844 Q1302.2457,563.0469 1303.5894,563.0469 Q1304.2144,563.0469 1304.8082,562.7813 Q1305.4019,562.5 1306.0269,561.9219 L1306.0269,564.6406 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="65.0017" x="1323.5582" y="564.432">Rectangle</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="1056" x2="1623.6181" y1="575" y2="575"/>
+      <ellipse cx="1066" cy="590.034" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="543.6181" x="1075" y="593.9659">Rectangle(std::shared_ptr&lt;Renderer&gt; renderer, double width, double height) : void</text>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:1.0,2.0;" x1="1056" x2="1623.6181" y1="602.0679" y2="602.0679"/>
+      <ellipse cx="1066" cy="617.1019" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="80.4857" x="1075" y="621.0339">draw() : void</text>
+      <ellipse cx="1066" cy="636.1698" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="174.7753" x="1075" y="640.1018">get_height() const : double</text>
+      <ellipse cx="1066" cy="655.2377" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="169.2313" x="1075" y="659.1697">get_width() const : double</text>
+      <ellipse cx="1066" cy="674.3056" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="221.9411" x="1075" y="678.2376">move(double dx, double dy) : void</text>
+      <ellipse cx="1066" cy="693.3735" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="334.8928" x="1075" y="697.3055">set_dimensions(double width, double height) : void</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="1056" x2="1623.6181" y1="705.4075" y2="705.4075"/>
+      <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="1063" y="717.4415"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="105.5736" x="1075" y="724.3734">height_ : double</text>
+      <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="1063" y="736.5094"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="100.0296" x="1075" y="743.4414">width_ : double</text>
+    </g>
+    <g class="entity" data-entity="C_0017095177180264382182" data-source-line="65" data-uid="ent0008" id="entity_C_0017095177180264382182">
+      <rect fill="#F1F1F1" height="189.4754" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="440.9304" x="132.5" y="7"/>
+      <ellipse cx="283.9725" cy="23" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
+      <path d="M286.9412,28.6406 Q286.3631,28.9375 285.7225,29.0781 Q285.0818,29.2344 284.3787,29.2344 Q281.8787,29.2344 280.5506,27.5938 Q279.2381,25.9375 279.2381,22.8125 Q279.2381,19.6875 280.5506,18.0313 Q281.8787,16.375 284.3787,16.375 Q285.0818,16.375 285.7225,16.5313 Q286.3787,16.6875 286.9412,16.9844 L286.9412,19.7031 Q286.3162,19.125 285.7225,18.8594 Q285.1287,18.5781 284.5037,18.5781 Q283.16,18.5781 282.4725,19.6563 Q281.785,20.7188 281.785,22.8125 Q281.785,24.9063 282.4725,25.9844 Q283.16,27.0469 284.5037,27.0469 Q285.1287,27.0469 285.7225,26.7813 Q286.3162,26.5 286.9412,25.9219 L286.9412,28.6406 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="129.4855" x="304.4725" y="28.432">DrawingApplication</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="133.5" x2="572.4304" y1="39" y2="39"/>
+      <ellipse cx="143.5" cy="54.034" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="414.9304" x="152.5" y="57.9659">DrawingApplication(std::shared_ptr&lt;Renderer&gt; renderer) : void</text>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:1.0,2.0;" x1="133.5" x2="572.4304" y1="66.0679" y2="66.0679"/>
+      <ellipse cx="143.5" cy="81.1019" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="219.7011" x="152.5" y="85.0339">create_circle(double radius) : void</text>
+      <ellipse cx="143.5" cy="100.1698" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="342.5087" x="152.5" y="104.1018">create_rectangle(double width, double height) : void</text>
+      <ellipse cx="143.5" cy="119.2377" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="101.7796" x="152.5" y="123.1697">draw_all() : void</text>
+      <ellipse cx="143.5" cy="138.3056" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="243.235" x="152.5" y="142.2376">move_all(double dx, double dy) : void</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="133.5" x2="572.4304" y1="150.3396" y2="150.3396"/>
+      <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="140.5" y="162.3735"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="251.817" x="152.5" y="169.3055">renderer_ : std::shared_ptr&lt;Renderer&gt;</text>
+      <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="140.5" y="181.4415"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="304.9188" x="152.5" y="188.3734">shapes_ : std::vector&lt;std::unique_ptr&lt;Shape&gt;&gt;</text>
+    </g>
+    <g class="link" data-entity-1="C_0007515812632800921463" data-entity-2="C_0016028587466059689823" data-source-line="77" data-uid="lnk9" id="link_C_0007515812632800921463_C_0016028587466059689823">
+      <path codeLine="77" d="M434.063,936.6895 C408.383,955.5895 393.65,966.43 365.89,986.86" fill="none" id="C_0007515812632800921463-backto-C_0016028587466059689823" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="none" points="448.56,926.02,430.5065,931.8572,437.6195,941.5218,448.56,926.02" style="stroke:#181818;stroke-width:1;"/>
+    </g>
+    <g class="link" data-entity-1="C_0007515812632800921463" data-entity-2="C_0008868095716427291368" data-source-line="78" data-uid="lnk10" id="link_C_0007515812632800921463_C_0008868095716427291368">
+      <path codeLine="78" d="M614.2367,936.6626 C640.0167,955.5626 654.84,966.43 682.71,986.86" fill="none" id="C_0007515812632800921463-backto-C_0008868095716427291368" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="none" points="599.72,926.02,610.6892,941.5015,617.7843,931.8237,599.72,926.02" style="stroke:#181818;stroke-width:1;"/>
+    </g>
+    <g class="link" data-entity-1="C_0015822342402667944661" data-entity-2="C_0007515812632800921463" data-source-line="79" data-uid="lnk11" id="link_C_0015822342402667944661_C_0007515812632800921463">
+      <path codeLine="79" d="M503.49,464.05 C477.07,486.32 453.47,512.61 438,543 C395.86,625.78 408.96,663.77 438,752 C445.15,773.73 454.4625,789.9507 468.1625,808.0007" fill="none" id="C_0015822342402667944661-to-C_0007515812632800921463" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="#181818" points="471.79,812.78,469.535,803.1928,468.7671,808.7973,463.1626,808.0294,471.79,812.78" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="none" points="444,643.353,448,647.353,444,651.353,440,647.353" style="stroke:#B38D22;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="105.7161" x="451" y="652.897">renderer_bridge_</text>
+    </g>
+    <g class="link" data-entity-1="C_0015170974831419498086" data-entity-2="C_0007515812632800921463" data-source-line="80" data-uid="lnk12" id="link_C_0015170974831419498086_C_0007515812632800921463">
+      <path codeLine="80" d="M692.62,732.61 C659.36,759.42 628.0611,784.6343 597.9311,808.9243" fill="none" id="C_0015170974831419498086-to-C_0007515812632800921463" style="stroke:#181818;stroke-width:1;stroke-dasharray:7.0,7.0;"/>
+      <polygon fill="#181818" points="593.26,812.69,602.7772,810.1555,597.1526,809.5519,597.7562,803.9273,593.26,812.69" style="stroke:#181818;stroke-width:1;"/>
+    </g>
+    <g class="link" data-entity-1="C_0015822342402667944661" data-entity-2="C_0015170974831419498086" data-source-line="81" data-uid="lnk13" id="link_C_0015822342402667944661_C_0015170974831419498086">
+      <path codeLine="81" d="M723.7511,480.7916 C737.7811,512.5116 746.06,531.26 759.73,562.19" fill="none" id="C_0015822342402667944661-backto-C_0015170974831419498086" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="none" points="716.47,464.33,718.2639,483.2187,729.2383,478.3646,716.47,464.33" style="stroke:#181818;stroke-width:1;"/>
+    </g>
+    <g class="link" data-entity-1="C_0012375550317572858605" data-entity-2="C_0007515812632800921463" data-source-line="82" data-uid="lnk14" id="link_C_0012375550317572858605_C_0007515812632800921463">
+      <path codeLine="82" d="M1054.93,747.11 C1049.25,748.78 1043.6,750.41 1038,752 C951.74,776.48 862.0482,797.9933 776.9782,816.8233" fill="none" id="C_0012375550317572858605-to-C_0007515812632800921463" style="stroke:#181818;stroke-width:1;stroke-dasharray:7.0,7.0;"/>
+      <polygon fill="#181818" points="771.12,818.12,780.7718,820.0804,776.0018,817.0394,779.0428,812.2695,771.12,818.12" style="stroke:#181818;stroke-width:1;"/>
+    </g>
+    <g class="link" data-entity-1="C_0015822342402667944661" data-entity-2="C_0012375550317572858605" data-source-line="83" data-uid="lnk15" id="link_C_0015822342402667944661_C_0012375550317572858605">
+      <path codeLine="83" d="M867.6552,450.4596 C940.9552,480.8796 1010.78,509.86 1090.44,542.92" fill="none" id="C_0015822342402667944661-backto-C_0012375550317572858605" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="none" points="851.03,443.56,865.3553,456.0013,869.955,444.9178,851.03,443.56" style="stroke:#181818;stroke-width:1;"/>
+    </g>
+    <g class="link" data-entity-1="C_0017095177180264382182" data-entity-2="C_0007515812632800921463" data-source-line="84" data-uid="lnk16" id="link_C_0017095177180264382182_C_0007515812632800921463">
+      <path codeLine="84" d="M339.32,196.09 C324.56,327.64 313.85,571.35 403,752 C414.23,774.75 427.4601,791.3469 445.7601,808.8169" fill="none" id="C_0017095177180264382182-to-C_0007515812632800921463" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="#181818" points="450.1,812.96,446.3522,803.8521,446.4834,809.5074,440.8281,809.6387,450.1,812.96" style="stroke:#181818;stroke-width:1;"/>
+      <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="341" y="501.353"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="59.904" x="351" y="508.897">renderer_</text>
+    </g>
+    <g class="link" data-entity-1="C_0017095177180264382182" data-entity-2="C_0015822342402667944661" data-source-line="85" data-uid="lnk17" id="link_C_0017095177180264382182_C_0015822342402667944661">
+      <path codeLine="85" d="M475.7817,203.9223 C506.6517,229.4223 530.83,249.4 561.69,274.89" fill="none" id="C_0017095177180264382182-backto-C_0015822342402667944661" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="none" points="466.53,196.28,468.6084,203.1851,475.7817,203.9223,473.7033,197.0173,466.53,196.28" style="stroke:#181818;stroke-width:1;"/>
+      <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="526" y="233.353"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="48.88" x="536" y="240.897">shapes_</text>
+    </g>
+  </g>
+</svg>
