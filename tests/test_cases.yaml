@@ -291,6 +291,9 @@ test_cases:
     - name: t00098
       title: Test case for decorator design pattern using static polymorphism
       description:
+    - name: t00099
+      title: Test case for bridge design pattern using static polymorphism
+      description:
   Sequence diagrams:
     - name: t20001
       title: Basic sequence diagram test case

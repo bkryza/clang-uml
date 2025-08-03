@@ -5,9 +5,6 @@
 namespace clanguml {
 namespace t00093 {
 
-// Bridge pattern implementation: Drawing system with multiple renderers
-
-// Implementor interface
 class Renderer {
 public:
     virtual ~Renderer() = default;
@@ -16,7 +13,6 @@ public:
         double x, double y, double width, double height) = 0;
 };
 
-// Concrete Implementors
 class VectorRenderer : public Renderer {
 public:
     void render_circle(double x, double y, double radius) override { }
@@ -49,7 +45,6 @@ private:
     bool anti_aliasing{true};
 };
 
-// Abstraction
 class Shape {
 public:
     explicit Shape(std::shared_ptr<Renderer> renderer)
@@ -67,7 +62,6 @@ protected:
     double y_{0.0};
 };
 
-// Refined Abstractions
 class Circle : public Shape {
 public:
     Circle(std::shared_ptr<Renderer> renderer, double radius)
@@ -125,7 +119,6 @@ private:
     double height_;
 };
 
-// Client code demonstrating the Bridge pattern
 class DrawingApplication {
 public:
     DrawingApplication(std::shared_ptr<Renderer> renderer)

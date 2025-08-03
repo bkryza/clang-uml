@@ -1,0 +1,10 @@
+diagrams:
+  t00099_class:
+    type: class
+    glob:
+      - t00099.cc
+    title: Bridge design pattern with static polymorphism
+    include:
+      namespaces:
+        - clanguml::t00099
+    using_namespace: clanguml::t00099

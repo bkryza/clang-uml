@@ -143,7 +143,7 @@ TEST_CASE("t00096")
             "double", "const std::vector<std::unique_ptr<T>> & shapes"));
 
         REQUIRE(IsAggregation<Private>(src, "ShapeManager<CloneableDrawable T>",
-            "PrototypeRegistry<T>", "registry_"));
+            "PrototypeRegistry<CloneableDrawable T>", "registry_"));
 
         REQUIRE(IsClass(src, "DrawingApplication"));
         REQUIRE(IsMethod<Public, Const>(src, "DrawingApplication",
