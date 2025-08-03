@@ -297,6 +297,9 @@ test_cases:
     - name: t00100
       title: Test case for builder design pattern using static polymorphism
       description:
+    - name: t00101
+      title: Test case for strategy design pattern using static polymorphism
+      description:
   Sequence diagrams:
     - name: t20001
       title: Basic sequence diagram test case
