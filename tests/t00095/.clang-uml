@@ -1,0 +1,9 @@
+diagrams:
+  t00095_class:
+    type: class
+    glob:
+      - t00095.cc
+    include:
+      namespaces:
+        - clanguml::t00095
+    using_namespace: clanguml::t00095

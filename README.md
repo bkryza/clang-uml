@@ -228,6 +228,22 @@ results in the following diagram (via PlantUML):
 
 ![class_diagram_example](docs/test_cases/t00014_class.svg)
 
+#### Design patterns examples
+
+The following list references test cases representing some of design patterns:
+* **Factory** - [t00020](docs/test_cases/t00020.md) (virtual polymorphism) and
+               [t00059](docs/test_cases/t00059.md) (static polymorphism)
+* **Bridge** - [t00093](docs/test_cases/t00093.md) (virtual polymorphism) and
+               [t00099](docs/test_cases/t00099.md) (static polymorphism)
+* **Builder** - [t00094](docs/test_cases/t00094.md) (virtual polymorphism) and
+                [t00100](docs/test_cases/t00100.md) (static polymorphism)
+* **Prototype** - [t00095](docs/test_cases/t00095.md) (virtual polymorphism) and
+                  [t00096](docs/test_cases/t00096.md) (static polymorphism)
+* **Decorator** - [t00097](docs/test_cases/t00097.md) (virtual polymorphism) and
+                  [t00098](docs/test_cases/t00098.md) (static polymorphism)
+* **Strategy** - [t00023](docs/test_cases/t00023.md) (virtual polymorphism) and
+               [t00101](docs/test_cases/t00101.md) (static polymorphism)
+
 ### Sequence diagrams
 
 #### Example

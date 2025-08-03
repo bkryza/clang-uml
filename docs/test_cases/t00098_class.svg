@@ -1,0 +1,172 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" data-diagram-type="CLASS" height="1080px" preserveAspectRatio="none" style="width:961px;height:1080px;background:#FFFFFF;" version="1.1" viewBox="0 0 961 1080" width="961px" zoomAndPan="magnify">
+  <title>Decorator design pattern with templates and concepts</title>
+  <defs>
+    <style type="text/css">a:hover { text-decoration: underline; }</style>
+  </defs>
+  <g>
+    <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="383.4305" x="282.1392" y="24.9659">Decorator design pattern with templates and concepts</text>
+    <g class="entity" data-entity="C_0008876837216240248889" data-source-line="2" data-uid="ent0002" id="entity_C_0008876837216240248889">
+      <rect fill="#F1F1F1" height="99.5479" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="327.3768" x="184.5" y="974.0679"/>
+      <ellipse cx="300.0615" cy="996.7739" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
+      <path d="M303.0303,1002.4146 Q302.4522,1002.7114 301.8115,1002.8521 Q301.1709,1003.0083 300.4678,1003.0083 Q297.9678,1003.0083 296.6397,1001.3677 Q295.3272,999.7114 295.3272,996.5864 Q295.3272,993.4614 296.6397,991.8052 Q297.9678,990.1489 300.4678,990.1489 Q301.1709,990.1489 301.8115,990.3052 Q302.4678,990.4614 303.0303,990.7583 L303.0303,993.4771 Q302.4053,992.8989 301.8115,992.6333 Q301.2178,992.3521 300.5928,992.3521 Q299.249,992.3521 298.5615,993.4302 Q297.874,994.4927 297.874,996.5864 Q297.874,998.6802 298.5615,999.7583 Q299.249,1000.8208 300.5928,1000.8208 Q301.2178,1000.8208 301.8115,1000.5552 Q302.4053,1000.2739 303.0303,999.6958 L303.0303,1002.4146 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="52.9444" x="332.9602" y="991.896">«concept»</text>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="77.7417" x="320.5615" y="1010.378">Component</text>
+      <rect fill="#FFFFFF" height="18.3441" style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" width="8.012" x="506.8648" y="971.0679"/>
+      <text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="6.012" x="507.8648" y="984.896">T</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="185.5" x2="510.8768" y1="1019.4799" y2="1019.4799"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="78.0077" x="190.5" y="1038.4459">(const T &amp; t)</text>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:1.0,2.0;" x1="185.5" x2="510.8768" y1="1046.5479" y2="1046.5479"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="315.3768" x="190.5" y="1065.5138">{t.operation()} -&gt; std::convertible_to&lt;std::string&gt;</text>
+    </g>
+    <g class="entity" data-entity="C_0016561016950896338451" data-source-line="8" data-uid="ent0003" id="entity_C_0016561016950896338451">
+      <rect fill="#F1F1F1" height="67.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="215.3633" x="418.5" y="795.5679"/>
+      <ellipse cx="454.3367" cy="811.5679" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
+      <path d="M457.3055,817.2085 Q456.7273,817.5054 456.0867,817.646 Q455.4461,817.8023 454.743,817.8023 Q452.243,817.8023 450.9148,816.1617 Q449.6023,814.5054 449.6023,811.3804 Q449.6023,808.2554 450.9148,806.5992 Q452.243,804.9429 454.743,804.9429 Q455.4461,804.9429 456.0867,805.0992 Q456.743,805.2554 457.3055,805.5523 L457.3055,808.271 Q456.6805,807.6929 456.0867,807.4273 Q455.493,807.146 454.868,807.146 Q453.5242,807.146 452.8367,808.2242 Q452.1492,809.2867 452.1492,811.3804 Q452.1492,813.4742 452.8367,814.5523 Q453.5242,815.6148 454.868,815.6148 Q455.493,815.6148 456.0867,815.3492 Q456.6805,815.0679 457.3055,814.4898 L457.3055,817.2085 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="137.0595" x="472.9671" y="816.9999">ConcreteComponent</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="419.5" x2="632.8633" y1="827.5679" y2="827.5679"/>
+      <ellipse cx="429.5" cy="842.6019" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="189.3633" x="438.5" y="846.5339">operation() const : std::string</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="419.5" x2="632.8633" y1="854.6358" y2="854.6358"/>
+    </g>
+    <g class="entity" data-entity="C_0005213864195876733834" data-source-line="13" data-uid="ent0004" id="entity_C_0005213864195876733834">
+      <rect fill="#F1F1F1" height="132.2717" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="281.709" x="669" y="763.0679"/>
+      <ellipse cx="691.9456" cy="779.0679" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
+      <path d="M694.9144,784.7085 Q694.3362,785.0054 693.6956,785.146 Q693.055,785.3023 692.3519,785.3023 Q689.8519,785.3023 688.5237,783.6617 Q687.2112,782.0054 687.2112,778.8804 Q687.2112,775.7554 688.5237,774.0992 Q689.8519,772.4429 692.3519,772.4429 Q693.055,772.4429 693.6956,772.5992 Q694.3519,772.7554 694.9144,773.0523 L694.9144,775.771 Q694.2894,775.1929 693.6956,774.9273 Q693.1019,774.646 692.4769,774.646 Q691.1331,774.646 690.4456,775.7242 Q689.7581,776.7867 689.7581,778.8804 Q689.7581,780.9742 690.4456,782.0523 Q691.1331,783.1148 692.4769,783.1148 Q693.1019,783.1148 693.6956,782.8492 Q694.2894,782.5679 694.9144,781.9898 L694.9144,784.7085 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="134.5115" x="707.7113" y="784.4999">ConcreteDecoratorA</text>
+      <rect fill="#FFFFFF" height="18.3441" style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" width="95.5406" x="858.1684" y="760.0679"/>
+      <text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="93.5406" x="859.1684" y="773.896">Component Inner</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="670" x2="949.709" y1="795.0679" y2="795.0679"/>
+      <ellipse cx="680" cy="810.1019" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="255.709" x="689" y="814.0339">ConcreteDecoratorA(Inner inner) : void</text>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:1.0,2.0;" x1="670" x2="949.709" y1="822.1358" y2="822.1358"/>
+      <ellipse cx="680" cy="837.1698" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="230.7471" x="689" y="841.1018">added_behavior() const : std::string</text>
+      <ellipse cx="680" cy="856.2377" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="189.3633" x="689" y="860.1697">operation() const : std::string</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="670" x2="949.709" y1="868.2717" y2="868.2717"/>
+      <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="677" y="880.3056"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="87.5696" x="689" y="887.2376">inner_ : Inner</text>
+    </g>
+    <g class="entity" data-entity="C_0005066890982799846966" data-source-line="22" data-uid="ent0005" id="entity_C_0005066890982799846966">
+      <rect fill="#F1F1F1" height="132.2717" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="281.863" x="214" y="601.0679"/>
+      <ellipse cx="236.9456" cy="617.0679" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
+      <path d="M239.9144,622.7085 Q239.3362,623.0054 238.6956,623.146 Q238.055,623.3023 237.3519,623.3023 Q234.8519,623.3023 233.5237,621.6617 Q232.2112,620.0054 232.2112,616.8804 Q232.2112,613.7554 233.5237,612.0992 Q234.8519,610.4429 237.3519,610.4429 Q238.055,610.4429 238.6956,610.5992 Q239.3519,610.7554 239.9144,611.0523 L239.9144,613.771 Q239.2894,613.1929 238.6956,612.9273 Q238.1019,612.646 237.4769,612.646 Q236.1331,612.646 235.4456,613.7242 Q234.7581,614.7867 234.7581,616.8804 Q234.7581,618.9742 235.4456,620.0523 Q236.1331,621.1148 237.4769,621.1148 Q238.1019,621.1148 238.6956,620.8492 Q239.2894,620.5679 239.9144,619.9898 L239.9144,622.7085 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="134.6655" x="252.7113" y="622.4999">ConcreteDecoratorB</text>
+      <rect fill="#FFFFFF" height="18.3441" style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" width="95.5406" x="403.3224" y="598.0679"/>
+      <text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="93.5406" x="404.3224" y="611.896">Component Inner</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="215" x2="494.863" y1="633.0679" y2="633.0679"/>
+      <ellipse cx="225" cy="648.1019" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="255.863" x="234" y="652.0339">ConcreteDecoratorB(Inner inner) : void</text>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:1.0,2.0;" x1="215" x2="494.863" y1="660.1358" y2="660.1358"/>
+      <ellipse cx="225" cy="675.1698" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="210.4052" x="234" y="679.1018">additional_method() const : void</text>
+      <ellipse cx="225" cy="694.2377" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="189.3633" x="234" y="698.1697">operation() const : std::string</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="215" x2="494.863" y1="706.2717" y2="706.2717"/>
+      <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="222" y="718.3056"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="87.5696" x="234" y="725.2376">inner_ : Inner</text>
+    </g>
+    <g class="entity" data-entity="C_0015308488410191553172" data-source-line="31" data-uid="ent0006" id="entity_C_0015308488410191553172">
+      <rect fill="#F1F1F1" height="113.2038" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="199.0113" x="99.5" y="380.0679"/>
+      <ellipse cx="138.4854" cy="396.0679" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
+      <path d="M141.4542,401.7085 Q140.8761,402.0054 140.2354,402.146 Q139.5948,402.3023 138.8917,402.3023 Q136.3917,402.3023 135.0636,400.6617 Q133.7511,399.0054 133.7511,395.8804 Q133.7511,392.7554 135.0636,391.0992 Q136.3917,389.4429 138.8917,389.4429 Q139.5948,389.4429 140.2354,389.5992 Q140.8917,389.7554 141.4542,390.0523 L141.4542,392.771 Q140.8292,392.1929 140.2354,391.9273 Q139.6417,391.646 139.0167,391.646 Q137.6729,391.646 136.9854,392.7242 Q136.2979,393.7867 136.2979,395.8804 Q136.2979,397.9742 136.9854,399.0523 Q137.6729,400.1148 139.0167,400.1148 Q139.6417,400.1148 140.2354,399.8492 Q140.8292,399.5679 141.4542,398.9898 L141.4542,401.7085 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="37.6738" x="157.8155" y="401.4999">Client</text>
+      <rect fill="#FFFFFF" height="18.3441" style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" width="74.0365" x="227.4748" y="377.0679"/>
+      <text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="72.0365" x="228.4748" y="390.896">Component C</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="100.5" x2="297.5113" y1="412.0679" y2="412.0679"/>
+      <ellipse cx="110.5" cy="427.1019" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="173.0113" x="119.5" y="431.0339">Client(C component) : void</text>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:1.0,2.0;" x1="100.5" x2="297.5113" y1="439.1358" y2="439.1358"/>
+      <ellipse cx="110.5" cy="454.1698" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="137.2415" x="119.5" y="458.1018">execute() : std::string</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="100.5" x2="297.5113" y1="466.2038" y2="466.2038"/>
+      <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="107.5" y="478.2377"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="101.7096" x="119.5" y="485.1697">component_ : C</text>
+    </g>
+    <g class="entity" data-entity="C_0008905995241130596975" data-source-line="39" data-uid="ent0007" id="entity_C_0008905995241130596975">
+      <rect fill="#F1F1F1" height="48" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="279.3042" x="408.5" y="523.0679"/>
+      <ellipse cx="423.5" cy="539.0679" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
+      <path d="M426.4688,544.7085 Q425.8906,545.0054 425.25,545.146 Q424.6094,545.3023 423.9063,545.3023 Q421.4063,545.3023 420.0781,543.6617 Q418.7656,542.0054 418.7656,538.8804 Q418.7656,535.7554 420.0781,534.0992 Q421.4063,532.4429 423.9063,532.4429 Q424.6094,532.4429 425.25,532.5992 Q425.9063,532.7554 426.4688,533.0523 L426.4688,535.771 Q425.8438,535.1929 425.25,534.9273 Q424.6563,534.646 424.0313,534.646 Q422.6875,534.646 422,535.7242 Q421.3125,536.7867 421.3125,538.8804 Q421.3125,540.9742 422,542.0523 Q422.6875,543.1148 424.0313,543.1148 Q424.6563,543.1148 425.25,542.8492 Q425.8438,542.5679 426.4688,541.9898 L426.4688,544.7085 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="134.5115" x="437.5" y="544.4999">ConcreteDecoratorA</text>
+      <rect fill="#FFFFFF" height="18.3441" style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" width="110.7927" x="580.0115" y="520.0679"/>
+      <text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="108.7927" x="581.0115" y="533.896">ConcreteComponent</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="409.5" x2="686.8042" y1="555.0679" y2="555.0679"/>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="409.5" x2="686.8042" y1="563.0679" y2="563.0679"/>
+    </g>
+    <g class="entity" data-entity="C_0003285186541502255684" data-source-line="43" data-uid="ent0008" id="entity_C_0003285186541502255684">
+      <rect fill="#F1F1F1" height="48" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="400.143" x="252" y="302.0679"/>
+      <ellipse cx="267" cy="318.0679" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
+      <path d="M269.9688,323.7085 Q269.3906,324.0054 268.75,324.146 Q268.1094,324.3023 267.4063,324.3023 Q264.9063,324.3023 263.5781,322.6617 Q262.2656,321.0054 262.2656,317.8804 Q262.2656,314.7554 263.5781,313.0992 Q264.9063,311.4429 267.4063,311.4429 Q268.1094,311.4429 268.75,311.5992 Q269.4063,311.7554 269.9688,312.0523 L269.9688,314.771 Q269.3438,314.1929 268.75,313.9273 Q268.1563,313.646 267.5313,313.646 Q266.1875,313.646 265.5,314.7242 Q264.8125,315.7867 264.8125,317.8804 Q264.8125,319.9742 265.5,321.0523 Q266.1875,322.1148 267.5313,322.1148 Q268.1563,322.1148 268.75,321.8492 Q269.3438,321.5679 269.9688,320.9898 L269.9688,323.7085 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="134.6655" x="281" y="323.4999">ConcreteDecoratorB</text>
+      <rect fill="#FFFFFF" height="18.3441" style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" width="231.4775" x="423.6655" y="299.0679"/>
+      <text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="229.4775" x="424.6655" y="312.896">ConcreteDecoratorA&lt;ConcreteComponent&gt;</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="253" x2="651.143" y1="334.0679" y2="334.0679"/>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="253" x2="651.143" y1="342.0679" y2="342.0679"/>
+    </g>
+    <g class="entity" data-entity="C_0011754703513508804720" data-source-line="47" data-uid="ent0009" id="entity_C_0011754703513508804720">
+      <rect fill="#F1F1F1" height="48" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="424.2922" x="7" y="193.0679"/>
+      <ellipse cx="22" cy="209.0679" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
+      <path d="M24.9688,214.7085 Q24.3906,215.0054 23.75,215.146 Q23.1094,215.3023 22.4063,215.3023 Q19.9063,215.3023 18.5781,213.6617 Q17.2656,212.0054 17.2656,208.8804 Q17.2656,205.7554 18.5781,204.0992 Q19.9063,202.4429 22.4063,202.4429 Q23.1094,202.4429 23.75,202.5992 Q24.4063,202.7554 24.9688,203.0523 L24.9688,205.771 Q24.3438,205.1929 23.75,204.9273 Q23.1563,204.646 22.5313,204.646 Q21.1875,204.646 20.5,205.7242 Q19.8125,206.7867 19.8125,208.8804 Q19.8125,210.9742 20.5,212.0523 Q21.1875,213.1148 22.5313,213.1148 Q23.1563,213.1148 23.75,212.8492 Q24.3438,212.5679 24.9688,211.9898 L24.9688,214.7085 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="37.6738" x="36" y="214.4999">Client</text>
+      <rect fill="#FFFFFF" height="18.3441" style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" width="352.6183" x="81.6738" y="190.0679"/>
+      <text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="350.6183" x="82.6738" y="203.896">ConcreteDecoratorB&lt;ConcreteDecoratorA&lt;ConcreteComponent&gt;&gt;</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="8" x2="430.2922" y1="225.0679" y2="225.0679"/>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="8" x2="430.2922" y1="233.0679" y2="233.0679"/>
+    </g>
+    <g class="entity" data-entity="C_0009384409517498194198" data-source-line="51" data-uid="ent0010" id="entity_C_0009384409517498194198">
+      <rect fill="#F1F1F1" height="67.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="128.2976" x="155" y="47.0679"/>
+      <ellipse cx="210.5448" cy="63.0679" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
+      <path d="M213.5136,68.7085 Q212.9354,69.0054 212.2948,69.146 Q211.6542,69.3023 210.9511,69.3023 Q208.4511,69.3023 207.1229,67.6617 Q205.8104,66.0054 205.8104,62.8804 Q205.8104,59.7554 207.1229,58.0992 Q208.4511,56.4429 210.9511,56.4429 Q211.6542,56.4429 212.2948,56.5992 Q212.9511,56.7554 213.5136,57.0523 L213.5136,59.771 Q212.8886,59.1929 212.2948,58.9273 Q211.7011,58.646 211.0761,58.646 Q209.7323,58.646 209.0448,59.7242 Q208.3573,60.7867 208.3573,62.8804 Q208.3573,64.9742 209.0448,66.0523 Q209.7323,67.1148 211.0761,67.1148 Q211.7011,67.1148 212.2948,66.8492 Q212.8886,66.5679 213.5136,65.9898 L213.5136,68.7085 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="8.708" x="231.0448" y="68.4999">R</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="156" x2="282.2976" y1="79.0679" y2="79.0679"/>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="156" x2="282.2976" y1="87.0679" y2="87.0679"/>
+      <ellipse cx="166" cy="102.1019" fill="none" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="102.2976" x="175" y="106.0339">client : BAClient</text>
+    </g>
+    <g class="link" data-entity-1="C_0005213864195876733834" data-entity-2="C_0008876837216240248889" data-source-line="56" data-uid="lnk11" id="link_C_0005213864195876733834_C_0008876837216240248889">
+      <path codeLine="56" d="M668.87,889.0279 C603.73,916.2379 532.8161,945.8544 470.8861,971.7344" fill="none" id="C_0005213864195876733834-to-C_0008876837216240248889" style="stroke:#181818;stroke-width:1;stroke-dasharray:7.0,7.0;"/>
+      <polygon fill="#181818" points="465.35,974.0479,475.1964,974.2684,469.9634,972.12,472.1118,966.887,465.35,974.0479" style="stroke:#181818;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="33.176" x="580" y="939.9649">Inner</text>
+    </g>
+    <g class="link" data-entity-1="C_0005066890982799846966" data-entity-2="C_0008876837216240248889" data-source-line="57" data-uid="lnk12" id="link_C_0005066890982799846966_C_0008876837216240248889">
+      <path codeLine="57" d="M353.72,733.1779 C352.34,802.7379 350.3178,905.4191 349.0878,968.0691" fill="none" id="C_0005066890982799846966-to-C_0008876837216240248889" style="stroke:#181818;stroke-width:1;stroke-dasharray:7.0,7.0;"/>
+      <polygon fill="#181818" points="348.97,974.0679,353.1459,965.1482,349.0681,969.0689,345.1474,964.9911,348.97,974.0679" style="stroke:#181818;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="33.176" x="354" y="834.4649">Inner</text>
+    </g>
+    <g class="link" data-entity-1="C_0015308488410191553172" data-entity-2="C_0008876837216240248889" data-source-line="58" data-uid="lnk13" id="link_C_0015308488410191553172_C_0008876837216240248889">
+      <path codeLine="58" d="M191.31,493.2179 C184.77,553.3179 179.25,651.4179 199,733.0679 C220.99,823.9879 273.3691,913.3641 310.0791,968.8441" fill="none" id="C_0015308488410191553172-to-C_0008876837216240248889" style="stroke:#181818;stroke-width:1;stroke-dasharray:7.0,7.0;"/>
+      <polygon fill="#181818" points="313.39,973.8479,311.7595,964.135,310.6309,969.6781,305.0878,968.5495,313.39,973.8479" style="stroke:#181818;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="8.216" x="200" y="672.4649">C</text>
+    </g>
+    <g class="link" data-entity-1="C_0008905995241130596975" data-entity-2="C_0016561016950896338451" data-source-line="59" data-uid="lnk14" id="link_C_0008905995241130596975_C_0016561016950896338451">
+      <path codeLine="59" d="M546.16,571.4579 C542.25,621.2779 533.5502,731.9664 529.0502,789.2164" fill="none" id="C_0008905995241130596975-to-C_0016561016950896338451" style="stroke:#181818;stroke-width:1;stroke-dasharray:7.0,7.0;"/>
+      <polygon fill="#181818" points="528.58,795.1979,533.2729,786.539,528.9718,790.2133,525.2975,785.9121,528.58,795.1979" style="stroke:#181818;stroke-width:1;"/>
+    </g>
+    <g class="link" data-entity-1="C_0008905995241130596975" data-entity-2="C_0005213864195876733834" data-source-line="60" data-uid="lnk15" id="link_C_0008905995241130596975_C_0005213864195876733834">
+      <path codeLine="60" d="M569.89,571.4579 C608.87,613.1279 679.3313,688.4248 736.7113,749.7448" fill="none" id="C_0008905995241130596975-to-C_0005213864195876733834" style="stroke:#181818;stroke-width:1;stroke-dasharray:7.0,7.0;"/>
+      <polygon fill="none" points="749.01,762.8879,741.0924,745.6452,732.3303,753.8443,749.01,762.8879" style="stroke:#181818;stroke-width:1;"/>
+    </g>
+    <g class="link" data-entity-1="C_0003285186541502255684" data-entity-2="C_0008905995241130596975" data-source-line="61" data-uid="lnk16" id="link_C_0003285186541502255684_C_0008905995241130596975">
+      <path codeLine="61" d="M462.09,350.0879 C480.53,392.1479 517.0407,475.4529 535.4907,517.5329" fill="none" id="C_0003285186541502255684-to-C_0008905995241130596975" style="stroke:#181818;stroke-width:1;stroke-dasharray:7.0,7.0;"/>
+      <polygon fill="#181818" points="537.9,523.0279,537.9494,513.1792,535.8923,518.4487,530.6227,516.3916,537.9,523.0279" style="stroke:#181818;stroke-width:1;"/>
+    </g>
+    <g class="link" data-entity-1="C_0003285186541502255684" data-entity-2="C_0005066890982799846966" data-source-line="62" data-uid="lnk17" id="link_C_0003285186541502255684_C_0005066890982799846966">
+      <path codeLine="62" d="M444.35,350.1779 C432.37,386.7079 408.71,460.1179 391,523.0679 C383.9,548.3279 381.0487,558.8186 374.9787,583.2586" fill="none" id="C_0003285186541502255684-to-C_0005066890982799846966" style="stroke:#181818;stroke-width:1;stroke-dasharray:7.0,7.0;"/>
+      <polygon fill="none" points="370.64,600.7279,380.8018,584.7049,369.1556,581.8124,370.64,600.7279" style="stroke:#181818;stroke-width:1;"/>
+    </g>
+    <g class="link" data-entity-1="C_0011754703513508804720" data-entity-2="C_0003285186541502255684" data-source-line="63" data-uid="lnk18" id="link_C_0011754703513508804720_C_0003285186541502255684">
+      <path codeLine="63" d="M269.27,241.1579 C308.47,259.1579 357.1873,281.5343 396.3673,299.5243" fill="none" id="C_0011754703513508804720-to-C_0003285186541502255684" style="stroke:#181818;stroke-width:1;stroke-dasharray:7.0,7.0;"/>
+      <polygon fill="#181818" points="401.82,302.0279,395.3101,294.6373,397.2761,299.9415,391.9719,301.9075,401.82,302.0279" style="stroke:#181818;stroke-width:1;"/>
+    </g>
+    <g class="link" data-entity-1="C_0011754703513508804720" data-entity-2="C_0015308488410191553172" data-source-line="64" data-uid="lnk19" id="link_C_0011754703513508804720_C_0015308488410191553172">
+      <path codeLine="64" d="M216.86,241.3479 C213.85,274.1079 209.9062,316.9234 205.7862,361.7834" fill="none" id="C_0011754703513508804720-to-C_0015308488410191553172" style="stroke:#181818;stroke-width:1;stroke-dasharray:7.0,7.0;"/>
+      <polygon fill="none" points="204.14,379.7079,211.7611,362.3321,199.8114,361.2346,204.14,379.7079" style="stroke:#181818;stroke-width:1;"/>
+    </g>
+    <g class="link" data-entity-1="C_0009384409517498194198" data-entity-2="C_0011754703513508804720" data-source-line="65" data-uid="lnk20" id="link_C_0009384409517498194198_C_0011754703513508804720">
+      <path codeLine="65" d="M219,126.1279 C219,150.3879 219,170.9279 219,192.6579" fill="none" id="C_0009384409517498194198-backto-C_0011754703513508804720" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="none" points="219,114.1279,215,120.1279,219,126.1279,223,120.1279,219,114.1279" style="stroke:#181818;stroke-width:1;"/>
+      <ellipse cx="225" cy="154.4209" fill="none" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="33.007" x="232" y="158.9649">client</text>
+    </g>
+  </g>
+</svg>

@@ -372,6 +372,10 @@ const clang::Type *get_unqualified_type(const clang::TypedefDecl *decl);
  */
 const clang::EnumDecl *get_typedef_enum_decl(const clang::TypedefDecl *decl);
 
+const clang::ConceptDecl *get_template_parameter_concept_constraint(
+    const clang::TemplateTypeParmType *type_parameter,
+    const clang::TemplateDecl *template_decl);
+
 /**
  * Check if clang::Expr is a call on lambda operator()
  *

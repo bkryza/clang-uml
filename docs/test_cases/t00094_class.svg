@@ -1,0 +1,235 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" data-diagram-type="CLASS" height="1460px" preserveAspectRatio="none" style="width:1353px;height:1460px;background:#FFFFFF;" version="1.1" viewBox="0 0 1353 1460" width="1353px" zoomAndPan="magnify">
+  <defs>
+    <style type="text/css">a:hover { text-decoration: underline; }</style>
+  </defs>
+  <g>
+    <g class="entity" data-entity="C_0009303658429834106833" data-source-line="1" data-uid="ent0002" id="entity_C_0009303658429834106833">
+      <rect fill="#F1F1F1" height="524.6979" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="398.7066" x="325" y="929"/>
+      <ellipse cx="486.9024" cy="945" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
+      <path d="M489.8712,950.6406 Q489.2931,950.9375 488.6524,951.0781 Q488.0118,951.2344 487.3087,951.2344 Q484.8087,951.2344 483.4806,949.5938 Q482.1681,947.9375 482.1681,944.8125 Q482.1681,941.6875 483.4806,940.0313 Q484.8087,938.375 487.3087,938.375 Q488.0118,938.375 488.6524,938.5313 Q489.3087,938.6875 489.8712,938.9844 L489.8712,941.7031 Q489.2462,941.125 488.6524,940.8594 Q488.0587,940.5781 487.4337,940.5781 Q486.0899,940.5781 485.4024,941.6563 Q484.7149,942.7188 484.7149,944.8125 Q484.7149,946.9063 485.4024,947.9844 Q486.0899,949.0469 487.4337,949.0469 Q488.0587,949.0469 488.6524,948.7813 Q489.2462,948.5 489.8712,947.9219 L489.8712,950.6406 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="66.4017" x="507.4024" y="950.432">Computer</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="326" x2="722.7066" y1="961" y2="961"/>
+      <ellipse cx="336" cy="976.034" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="257.4171" x="345" y="979.9659">add_port(const std::string &amp; port) : void</text>
+      <ellipse cx="336" cy="995.1019" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="175.4753" x="345" y="999.0339">display_specs() const : void</text>
+      <ellipse cx="336" cy="1014.1698" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="269.961" x="345" y="1018.1018">get_case_type() const : const std::string &amp;</text>
+      <ellipse cx="336" cy="1033.2377" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="229.8511" x="345" y="1037.1697">get_cpu() const : const std::string &amp;</text>
+      <ellipse cx="336" cy="1052.3056" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="297.5969" x="345" y="1056.2376">get_graphics_card() const : const std::string &amp;</text>
+      <ellipse cx="336" cy="1071.3735" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="159.2354" x="345" y="1075.3055">get_memory() const : int</text>
+      <ellipse cx="336" cy="1090.4415" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="294.1389" x="345" y="1094.3734">get_motherboard() const : const std::string &amp;</text>
+      <ellipse cx="336" cy="1109.5094" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="325.4148" x="345" y="1113.4414">get_ports() const : const std::vector&lt;std::string&gt; &amp;</text>
+      <ellipse cx="336" cy="1128.5773" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="195.0752" x="345" y="1132.5093">get_power_supply() const : int</text>
+      <ellipse cx="336" cy="1147.6452" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="256.241" x="345" y="1151.5772">get_storage() const : const std::string &amp;</text>
+      <ellipse cx="336" cy="1166.7131" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="324.3508" x="345" y="1170.6451">set_case_type(const std::string &amp; case_type) : void</text>
+      <ellipse cx="336" cy="1185.781" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="244.1311" x="345" y="1189.713">set_cpu(const std::string &amp; cpu) : void</text>
+      <ellipse cx="336" cy="1204.849" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="313.7668" x="345" y="1208.7809">set_graphics_card(const std::string &amp; gpu) : void</text>
+      <ellipse cx="336" cy="1223.9169" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="228.4371" x="345" y="1227.8489">set_memory(int memory_gb) : void</text>
+      <ellipse cx="336" cy="1242.9848" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="372.7066" x="345" y="1246.9168">set_motherboard(const std::string &amp; motherboard) : void</text>
+      <ellipse cx="336" cy="1262.0527" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="221.0452" x="345" y="1265.9847">set_power_supply(int watts) : void</text>
+      <ellipse cx="336" cy="1281.1206" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="296.9109" x="345" y="1285.0526">set_storage(const std::string &amp; storage) : void</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="326" x2="722.7066" y1="1293.1546" y2="1293.1546"/>
+      <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="333" y="1305.1885"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="147.6294" x="345" y="1312.1205">case_type_ : std::string</text>
+      <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="333" y="1324.2565"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="107.5196" x="345" y="1331.1884">cpu_ : std::string</text>
+      <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="333" y="1343.3244"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="175.2654" x="345" y="1350.2564">graphics_card_ : std::string</text>
+      <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="333" y="1362.3923"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="113.4696" x="345" y="1369.3243">memory_gb_ : int</text>
+      <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="333" y="1381.4602"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="171.8074" x="345" y="1388.3922">motherboard_ : std::string</text>
+      <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="333" y="1400.5281"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="203.0833" x="345" y="1407.4601">ports_ : std::vector&lt;std::string&gt;</text>
+      <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="333" y="1419.596"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="167.7614" x="345" y="1426.528">power_supply_watts_ : int</text>
+      <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="333" y="1438.664"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="133.9095" x="345" y="1445.5959">storage_ : std::string</text>
+    </g>
+    <g class="entity" data-entity="C_0009947264012039475392" data-source-line="30" data-uid="ent0003" id="entity_C_0009947264012039475392">
+      <rect fill="#F1F1F1" height="284.815" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="323.7788" x="362.5" y="256"/>
+      <ellipse cx="467.0586" cy="272" fill="#A9DCDF" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
+      <path d="M467.168,267.3438 L466.0117,272.4219 L468.3399,272.4219 L467.168,267.3438 Z M465.6836,265.1094 L468.668,265.1094 L472.0274,277.5 L469.5742,277.5 L468.8086,274.4375 L465.5274,274.4375 L464.7774,277.5 L462.3399,277.5 L465.6836,265.1094 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="106.1616" x="487.5586" y="277.432">ComputerBuilder</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="363.5" x2="685.2788" y1="288" y2="288"/>
+      <ellipse cx="373.5" cy="303.034" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="230.6911" x="382.5" y="306.9659">~ComputerBuilder() = default : void</text>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:1.0,2.0;" x1="363.5" x2="685.2788" y1="315.0679" y2="315.0679"/>
+      <ellipse cx="373.5" cy="330.1019" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="132.5235" x="382.5" y="334.0339">build_case() = 0 : void</text>
+      <ellipse cx="373.5" cy="349.1698" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="127.7495" x="382.5" y="353.1018">build_cpu() = 0 : void</text>
+      <ellipse cx="373.5" cy="368.2377" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="192.5413" x="382.5" y="372.1697">build_graphics_card() = 0 : void</text>
+      <ellipse cx="373.5" cy="387.3056" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="156.6734" x="382.5" y="391.2376">build_memory() = 0 : void</text>
+      <ellipse cx="373.5" cy="406.3735" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="188.2573" x="382.5" y="410.3055">build_motherboard() = 0 : void</text>
+      <ellipse cx="373.5" cy="425.4415" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="137.4515" x="382.5" y="429.3734">build_ports() = 0 : void</text>
+      <ellipse cx="373.5" cy="444.5094" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="189.9093" x="382.5" y="448.4414">build_power_supply() = 0 : void</text>
+      <ellipse cx="373.5" cy="463.5773" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="152.3894" x="382.5" y="467.5093">build_storage() = 0 : void</text>
+      <ellipse cx="373.5" cy="482.6452" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="297.7788" x="382.5" y="486.5772">get_computer() = 0 : std::unique_ptr&lt;Computer&gt;</text>
+      <ellipse cx="373.5" cy="501.7131" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="98.3636" x="382.5" y="505.6451">reset() = 0 : void</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="363.5" x2="685.2788" y1="513.7471" y2="513.7471"/>
+      <polygon fill="none" points="373.5,523.781,377.5,527.781,373.5,531.781,369.5,527.781" style="stroke:#B38D22;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="263.549" x="382.5" y="532.713">computer_ : std::unique_ptr&lt;Computer&gt;</text>
+    </g>
+    <g class="entity" data-entity="C_0013852582857276413846" data-source-line="47" data-uid="ent0004" id="entity_C_0013852582857276413846">
+      <rect fill="#F1F1F1" height="265.7471" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="319.5089" x="364.5" y="602"/>
+      <ellipse cx="437.1668" cy="618" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
+      <path d="M440.1355,623.6406 Q439.5574,623.9375 438.9168,624.0781 Q438.2761,624.2344 437.573,624.2344 Q435.073,624.2344 433.7449,622.5938 Q432.4324,620.9375 432.4324,617.8125 Q432.4324,614.6875 433.7449,613.0313 Q435.073,611.375 437.573,611.375 Q438.2761,611.375 438.9168,611.5313 Q439.573,611.6875 440.1355,611.9844 L440.1355,614.7031 Q439.5105,614.125 438.9168,613.8594 Q438.323,613.5781 437.698,613.5781 Q436.3543,613.5781 435.6668,614.6563 Q434.9793,615.7188 434.9793,617.8125 Q434.9793,619.9063 435.6668,620.9844 Q436.3543,622.0469 437.698,622.0469 Q438.323,622.0469 438.9168,621.7813 Q439.5105,621.5 440.1355,620.9219 L440.1355,623.6406 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="165.6754" x="457.6668" y="623.432">GamingComputerBuilder</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="365.5" x2="683.0089" y1="634" y2="634"/>
+      <ellipse cx="375.5" cy="649.034" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="212.9112" x="384.5" y="652.9659">GamingComputerBuilder() : void</text>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:1.0,2.0;" x1="365.5" x2="683.0089" y1="661.0679" y2="661.0679"/>
+      <ellipse cx="375.5" cy="676.1019" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="115.7235" x="384.5" y="680.0339">build_case() : void</text>
+      <ellipse cx="375.5" cy="695.1698" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="110.5296" x="384.5" y="699.1018">build_cpu() : void</text>
+      <ellipse cx="375.5" cy="714.2377" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="178.2753" x="384.5" y="718.1697">build_graphics_card() : void</text>
+      <ellipse cx="375.5" cy="733.3056" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="142.0154" x="384.5" y="737.2376">build_memory() : void</text>
+      <ellipse cx="375.5" cy="752.3735" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="174.8173" x="384.5" y="756.3055">build_motherboard() : void</text>
+      <ellipse cx="375.5" cy="771.4415" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="121.1695" x="384.5" y="775.3734">build_ports() : void</text>
+      <ellipse cx="375.5" cy="790.5094" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="177.8553" x="384.5" y="794.4414">build_power_supply() : void</text>
+      <ellipse cx="375.5" cy="809.5773" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="136.9195" x="384.5" y="813.5093">build_storage() : void</text>
+      <ellipse cx="375.5" cy="828.6452" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="293.5089" x="384.5" y="832.5772">get_computer() : std::unique_ptr&lt;Computer&gt;</text>
+      <ellipse cx="375.5" cy="847.7131" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="80.5697" x="384.5" y="851.6451">reset() : void</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="365.5" x2="683.0089" y1="859.7471" y2="859.7471"/>
+    </g>
+    <g class="entity" data-entity="C_0007183842431282563313" data-source-line="63" data-uid="ent0005" id="entity_C_0007183842431282563313">
+      <rect fill="#F1F1F1" height="265.7471" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="319.5089" x="719.5" y="602"/>
+      <ellipse cx="798.7747" cy="618" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
+      <path d="M801.7435,623.6406 Q801.1654,623.9375 800.5247,624.0781 Q799.8841,624.2344 799.181,624.2344 Q796.681,624.2344 795.3529,622.5938 Q794.0404,620.9375 794.0404,617.8125 Q794.0404,614.6875 795.3529,613.0313 Q796.681,611.375 799.181,611.375 Q799.8841,611.375 800.5247,611.5313 Q801.181,611.6875 801.7435,611.9844 L801.7435,614.7031 Q801.1185,614.125 800.5247,613.8594 Q799.931,613.5781 799.306,613.5781 Q797.9622,613.5781 797.2747,614.6563 Q796.5872,615.7188 796.5872,617.8125 Q796.5872,619.9063 797.2747,620.9844 Q797.9622,622.0469 799.306,622.0469 Q799.931,622.0469 800.5247,621.7813 Q801.1185,621.5 801.7435,620.9219 L801.7435,623.6406 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="152.4594" x="819.2747" y="623.432">OfficeComputerBuilder</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="720.5" x2="1038.0089" y1="634" y2="634"/>
+      <ellipse cx="730.5" cy="649.034" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="199.6952" x="739.5" y="652.9659">OfficeComputerBuilder() : void</text>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:1.0,2.0;" x1="720.5" x2="1038.0089" y1="661.0679" y2="661.0679"/>
+      <ellipse cx="730.5" cy="676.1019" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="115.7235" x="739.5" y="680.0339">build_case() : void</text>
+      <ellipse cx="730.5" cy="695.1698" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="110.5296" x="739.5" y="699.1018">build_cpu() : void</text>
+      <ellipse cx="730.5" cy="714.2377" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="178.2753" x="739.5" y="718.1697">build_graphics_card() : void</text>
+      <ellipse cx="730.5" cy="733.3056" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="142.0154" x="739.5" y="737.2376">build_memory() : void</text>
+      <ellipse cx="730.5" cy="752.3735" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="174.8173" x="739.5" y="756.3055">build_motherboard() : void</text>
+      <ellipse cx="730.5" cy="771.4415" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="121.1695" x="739.5" y="775.3734">build_ports() : void</text>
+      <ellipse cx="730.5" cy="790.5094" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="177.8553" x="739.5" y="794.4414">build_power_supply() : void</text>
+      <ellipse cx="730.5" cy="809.5773" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="136.9195" x="739.5" y="813.5093">build_storage() : void</text>
+      <ellipse cx="730.5" cy="828.6452" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="293.5089" x="739.5" y="832.5772">get_computer() : std::unique_ptr&lt;Computer&gt;</text>
+      <ellipse cx="730.5" cy="847.7131" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="80.5697" x="739.5" y="851.6451">reset() : void</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="720.5" x2="1038.0089" y1="859.7471" y2="859.7471"/>
+    </g>
+    <g class="entity" data-entity="C_0010870507312489566148" data-source-line="79" data-uid="ent0006" id="entity_C_0010870507312489566148">
+      <rect fill="#F1F1F1" height="170.4075" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="472.8784" x="7" y="7"/>
+      <ellipse cx="179.2204" cy="23" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
+      <path d="M182.1892,28.6406 Q181.6111,28.9375 180.9704,29.0781 Q180.3298,29.2344 179.6267,29.2344 Q177.1267,29.2344 175.7986,27.5938 Q174.4861,25.9375 174.4861,22.8125 Q174.4861,19.6875 175.7986,18.0313 Q177.1267,16.375 179.6267,16.375 Q180.3298,16.375 180.9704,16.5313 Q181.6267,16.6875 182.1892,16.9844 L182.1892,19.7031 Q181.5642,19.125 180.9704,18.8594 Q180.3767,18.5781 179.7517,18.5781 Q178.4079,18.5781 177.7204,19.6563 Q177.0329,20.7188 177.0329,22.8125 Q177.0329,24.9063 177.7204,25.9844 Q178.4079,27.0469 179.7517,27.0469 Q180.3767,27.0469 180.9704,26.7813 Q181.5642,26.5 182.1892,25.9219 L182.1892,28.6406 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="119.9375" x="199.7204" y="28.432">ComputerDirector</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="8" x2="478.8784" y1="39" y2="39"/>
+      <ellipse cx="18" cy="54.034" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="446.8784" x="27" y="57.9659">ComputerDirector(std::unique_ptr&lt;ComputerBuilder&gt; builder) : void</text>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:1.0,2.0;" x1="8" x2="478.8784" y1="66.0679" y2="66.0679"/>
+      <ellipse cx="18" cy="81.1019" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="373.4766" x="27" y="85.0339">construct_basic_computer() : std::unique_ptr&lt;Computer&gt;</text>
+      <ellipse cx="18" cy="100.1698" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="388.6666" x="27" y="104.1018">construct_custom_computer() : std::unique_ptr&lt;Computer&gt;</text>
+      <ellipse cx="18" cy="119.2377" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="360.6667" x="27" y="123.1697">construct_full_computer() : std::unique_ptr&lt;Computer&gt;</text>
+      <ellipse cx="18" cy="138.3056" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="399.5865" x="27" y="142.2376">set_builder(std::unique_ptr&lt;ComputerBuilder&gt; builder) : void</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="8" x2="478.8784" y1="150.3396" y2="150.3396"/>
+      <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="15" y="162.3735"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="293.3129" x="27" y="169.3055">builder_ : std::unique_ptr&lt;ComputerBuilder&gt;</text>
+    </g>
+    <g class="entity" data-entity="C_0009531330955696297245" data-source-line="90" data-uid="ent0007" id="entity_C_0009531330955696297245">
+      <rect fill="#F1F1F1" height="105.2038" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="669.1017" x="677" y="39.5"/>
+      <ellipse cx="956.656" cy="55.5" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
+      <path d="M959.6248,61.1406 Q959.0467,61.4375 958.406,61.5781 Q957.7654,61.7344 957.0623,61.7344 Q954.5623,61.7344 953.2342,60.0938 Q951.9217,58.4375 951.9217,55.3125 Q951.9217,52.1875 953.2342,50.5313 Q954.5623,48.875 957.0623,48.875 Q957.7654,48.875 958.406,49.0313 Q959.0623,49.1875 959.6248,49.4844 L959.6248,52.2031 Q958.9998,51.625 958.406,51.3594 Q957.8123,51.0781 957.1873,51.0781 Q955.8435,51.0781 955.156,52.1563 Q954.4685,53.2188 954.4685,55.3125 Q954.4685,57.4063 955.156,58.4844 Q955.8435,59.5469 957.1873,59.5469 Q957.8123,59.5469 958.406,59.2813 Q958.9998,59 959.6248,58.4219 L959.6248,61.1406 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="101.2896" x="977.156" y="60.932">ComputerStore</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="678" x2="1345.1017" y1="71.5" y2="71.5"/>
+      <ellipse cx="688" cy="86.534" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="643.1017" x="697" y="90.4659">order_custom_computer(std::unique_ptr&lt;ComputerBuilder&gt; builder) : std::unique_ptr&lt;Computer&gt;</text>
+      <ellipse cx="688" cy="105.6019" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="365.1327" x="697" y="109.5339">order_gaming_computer() : std::unique_ptr&lt;Computer&gt;</text>
+      <ellipse cx="688" cy="124.6698" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="351.0347" x="697" y="128.6018">order_office_computer() : std::unique_ptr&lt;Computer&gt;</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="678" x2="1345.1017" y1="136.7038" y2="136.7038"/>
+    </g>
+    <g class="link" data-entity-1="C_0009947264012039475392" data-entity-2="C_0009303658429834106833" data-source-line="97" data-uid="lnk8" id="link_C_0009947264012039475392_C_0009303658429834106833">
+      <path codeLine="97" d="M352.8061,498.8691 C314.7761,528.8491 288.64,558.43 267.5,602 C215.89,708.36 228.47,756.41 267.5,868 C281.03,906.69 301.36,944.2 324.78,979.13" fill="none" id="C_0009947264012039475392-backto-C_0009303658429834106833" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="none" points="362.23,491.44,355.0417,492.0132,352.8061,498.8691,359.9944,498.2958,362.23,491.44" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="none" points="273.5,730.853,277.5,734.853,273.5,738.853,269.5,734.853" style="stroke:#B38D22;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="65.4551" x="280.5" y="740.397">computer_</text>
+    </g>
+    <g class="link" data-entity-1="C_0013852582857276413846" data-entity-2="C_0009303658429834106833" data-source-line="98" data-uid="lnk9" id="link_C_0013852582857276413846_C_0009303658429834106833">
+      <path codeLine="98" d="M524.5,868.07 C524.5,887.47 524.5,901.99 524.5,922.91" fill="none" id="C_0013852582857276413846-to-C_0009303658429834106833" style="stroke:#181818;stroke-width:1;stroke-dasharray:7.0,7.0;"/>
+      <polygon fill="#181818" points="524.5,928.91,528.5,919.91,524.5,923.91,520.5,919.91,524.5,928.91" style="stroke:#181818;stroke-width:1;"/>
+    </g>
+    <g class="link" data-entity-1="C_0009947264012039475392" data-entity-2="C_0013852582857276413846" data-source-line="99" data-uid="lnk10" id="link_C_0009947264012039475392_C_0013852582857276413846">
+      <path codeLine="99" d="M524.5,559.36 C524.5,579.39 524.5,581.92 524.5,601.76" fill="none" id="C_0009947264012039475392-backto-C_0013852582857276413846" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="none" points="524.5,541.36,518.5,559.36,530.5,559.36,524.5,541.36" style="stroke:#181818;stroke-width:1;"/>
+    </g>
+    <g class="link" data-entity-1="C_0007183842431282563313" data-entity-2="C_0009303658429834106833" data-source-line="100" data-uid="lnk11" id="link_C_0007183842431282563313_C_0009303658429834106833">
+      <path codeLine="100" d="M776.34,868.07 C759.76,889.3 745.8122,907.1505 727.8722,930.1305" fill="none" id="C_0007183842431282563313-to-C_0009303658429834106833" style="stroke:#181818;stroke-width:1;stroke-dasharray:7.0,7.0;"/>
+      <polygon fill="#181818" points="724.18,934.86,732.8713,930.2273,727.2568,930.9188,726.5653,925.3044,724.18,934.86" style="stroke:#181818;stroke-width:1;"/>
+    </g>
+    <g class="link" data-entity-1="C_0009947264012039475392" data-entity-2="C_0007183842431282563313" data-source-line="101" data-uid="lnk12" id="link_C_0009947264012039475392_C_0007183842431282563313">
+      <path codeLine="101" d="M687.8924,553.4621 C709.2624,573.5921 718.07,581.89 739.24,601.84" fill="none" id="C_0009947264012039475392-backto-C_0007183842431282563313" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="none" points="674.79,541.12,683.7783,557.8296,692.0064,549.0947,674.79,541.12" style="stroke:#181818;stroke-width:1;"/>
+    </g>
+    <g class="link" data-entity-1="C_0010870507312489566148" data-entity-2="C_0009303658429834106833" data-source-line="102" data-uid="lnk13" id="link_C_0010870507312489566148_C_0009303658429834106833">
+      <path codeLine="102" d="M221.02,177.26 C186.34,323.68 132.92,631.98 225.5,868 C247.53,924.15 280.4334,971.8848 320.9334,1017.2348" fill="none" id="C_0010870507312489566148-to-C_0009303658429834106833" style="stroke:#181818;stroke-width:1;stroke-dasharray:7.0,7.0;"/>
+      <polygon fill="#181818" points="324.93,1021.71,321.9186,1012.3328,321.5995,1017.9807,315.9517,1017.6616,324.93,1021.71" style="stroke:#181818;stroke-width:1;"/>
+    </g>
+    <g class="link" data-entity-1="C_0010870507312489566148" data-entity-2="C_0009947264012039475392" data-source-line="103" data-uid="lnk14" id="link_C_0010870507312489566148_C_0009947264012039475392">
+      <path codeLine="103" d="M329.1679,185.829 C351.7479,210.299 368.93,228.91 393.83,255.9" fill="none" id="C_0010870507312489566148-backto-C_0009947264012039475392" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="none" points="321.03,177.01,322.1593,184.1321,329.1679,185.829,328.0386,178.7069,321.03,177.01" style="stroke:#181818;stroke-width:1;"/>
+      <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="362.5" y="214.353"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="49.205" x="372.5" y="221.897">builder_</text>
+    </g>
+    <g class="link" data-entity-1="C_0009531330955696297245" data-entity-2="C_0009303658429834106833" data-source-line="104" data-uid="lnk15" id="link_C_0009531330955696297245_C_0009303658429834106833">
+      <path codeLine="104" d="M1032.59,144.84 C1082.34,275.99 1193.03,627.6 1057.5,868 C986.4,994.13 849.4383,1074.2318 729.6583,1124.1518" fill="none" id="C_0009531330955696297245-to-C_0009303658429834106833" style="stroke:#181818;stroke-width:1;stroke-dasharray:7.0,7.0;"/>
+      <polygon fill="#181818" points="724.12,1126.46,733.9662,1126.69,728.7352,1124.5365,730.8886,1119.3056,724.12,1126.46" style="stroke:#181818;stroke-width:1;"/>
+    </g>
+    <g class="link" data-entity-1="C_0009531330955696297245" data-entity-2="C_0009947264012039475392" data-source-line="105" data-uid="lnk16" id="link_C_0009531330955696297245_C_0009947264012039475392">
+      <path codeLine="105" d="M928.89,144.65 C862.74,186.01 773.0074,242.1191 691.8074,292.8891" fill="none" id="C_0009531330955696297245-to-C_0009947264012039475392" style="stroke:#181818;stroke-width:1;stroke-dasharray:7.0,7.0;"/>
+      <polygon fill="#181818" points="686.72,296.07,696.4717,294.6903,690.9595,293.4193,692.2305,287.907,686.72,296.07" style="stroke:#181818;stroke-width:1;"/>
+    </g>
+  </g>
+</svg>
