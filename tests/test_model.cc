@@ -507,7 +507,8 @@ TEST_CASE("Test from_string diagram_t")
     try {
         from_string("unknown_type");
         CHECK(false);
-    } catch (const std::runtime_error &e) {
+    }
+    catch (const std::runtime_error &e) {
         CHECK(std::string(e.what()) == "Invalid diagram type: unknown_type");
     }
 }

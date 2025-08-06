@@ -119,11 +119,11 @@ public:
     }
 };
 
-template<typename T>
+template <typename T>
 Generator<T> template_generator(T start, T step, unsigned count)
 {
     for (unsigned i = 0; i < count; ++i) {
-        co_yield start + i * step;
+        co_yield start + i *step;
     }
 }
 
@@ -171,12 +171,12 @@ int tmain()
 
         FibonacciGenerator fib_gen;
         auto class_gen = fib_gen.generate_sequence(5ULL);
-        
+
         for (int j = 0; class_gen; ++j)
             std::cout << "class_fib(" << j << ")=" << class_gen() << '\n';
 
         auto template_gen = template_generator<unsigned long long>(10, 5, 3);
-        
+
         for (int j = 0; template_gen; ++j)
             std::cout << "template_gen(" << j << ")=" << template_gen() << '\n';
     }

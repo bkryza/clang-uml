@@ -24,7 +24,6 @@ TEST_CASE("t20054")
     auto [config, db, diagram, model] =
         CHECK_SEQUENCE_MODEL("t20054", "t20054_sequence");
 
-
     CHECK_SEQUENCE_DIAGRAM(*config, diagram, *model, [](const auto &src) {
         REQUIRE(MessageOrder(src,
             {{"tmain()", "A", "a()"}, {"A", "A::AA", "aa()"},
