@@ -19,6 +19,14 @@ struct A {
         BBB bbb;
     };
 
+    struct {
+        double c{1.0};
+        double h{1.0};
+
+        double celcius_to_fahrenheit(double cel) { return (9 * cel) / 5 + 32; }
+
+    } units;
+
     void a() { aa.aa(); }
 
     AA aa;
@@ -29,6 +37,7 @@ void tmain()
     A a;
 
     a.a();
+    a.units.celcius_to_fahrenheit(100);
 }
 
 } // namespace t20054

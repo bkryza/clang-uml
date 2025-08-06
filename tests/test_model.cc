@@ -20,6 +20,7 @@
 #include "doctest/doctest.h"
 
 #include "class_diagram/model/class.h"
+#include "common/model/enums.h"
 #include "common/model/namespace.h"
 #include "common/model/package.h"
 #include "common/model/path.h"
@@ -489,4 +490,64 @@ TEST_CASE("Test path_type")
     auto p2 = path{"A/B/C/D", path_type::kFilesystem};
 
     REQUIRE_THROWS_AS(p1 = p2, std::runtime_error);
+}
+
+TEST_CASE("Test from_string diagram_t")
+{
+    using namespace clanguml::common::model;
+
+    CHECK(from_string("class") == diagram_t::kClass);
+    CHECK(from_string("sequence") == diagram_t::kSequence);
+    CHECK(from_string("package") == diagram_t::kPackage);
+    CHECK(from_string("include") == diagram_t::kInclude);
+
+    REQUIRE_THROWS_AS(from_string("invalid_diagram_type"), std::runtime_error);
+    REQUIRE_THROWS_AS(from_string(""), std::runtime_error);
+
+    try {
+        from_string("unknown_type");
+        CHECK(false);
+    }
+    catch (const std::runtime_error &e) {
+        CHECK(std::string(e.what()) == "Invalid diagram type: unknown_type");
+    }
+}
+
+TEST_CASE("Test to_string module_access_t")
+{
+    using namespace clanguml::common::model;
+
+    CHECK(to_string(module_access_t::kPublic) == "public");
+    CHECK(to_string(module_access_t::kPrivate) == "private");
+}
+
+TEST_CASE("Test is_return message_t")
+{
+    using namespace clanguml::common::model;
+
+    CHECK(is_return(message_t::kReturn));
+    CHECK(is_return(message_t::kCoReturn));
+    CHECK(is_return(message_t::kCoYield));
+
+    CHECK_FALSE(is_return(message_t::kCall));
+    CHECK_FALSE(is_return(message_t::kIf));
+    CHECK_FALSE(is_return(message_t::kElse));
+    CHECK_FALSE(is_return(message_t::kElseIf));
+    CHECK_FALSE(is_return(message_t::kIfEnd));
+    CHECK_FALSE(is_return(message_t::kWhile));
+    CHECK_FALSE(is_return(message_t::kWhileEnd));
+    CHECK_FALSE(is_return(message_t::kDo));
+    CHECK_FALSE(is_return(message_t::kDoEnd));
+    CHECK_FALSE(is_return(message_t::kFor));
+    CHECK_FALSE(is_return(message_t::kForEnd));
+    CHECK_FALSE(is_return(message_t::kTry));
+    CHECK_FALSE(is_return(message_t::kCatch));
+    CHECK_FALSE(is_return(message_t::kTryEnd));
+    CHECK_FALSE(is_return(message_t::kSwitch));
+    CHECK_FALSE(is_return(message_t::kCase));
+    CHECK_FALSE(is_return(message_t::kSwitchEnd));
+    CHECK_FALSE(is_return(message_t::kConditional));
+    CHECK_FALSE(is_return(message_t::kConditionalElse));
+    CHECK_FALSE(is_return(message_t::kConditionalEnd));
+    CHECK_FALSE(is_return(message_t::kCoAwait));
 }

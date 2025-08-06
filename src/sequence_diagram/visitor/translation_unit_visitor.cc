@@ -75,14 +75,7 @@ bool translation_unit_visitor::VisitObjCProtocolDecl(
 
     set_unique_id(declaration->getID(), class_id);
 
-    auto &class_model =
-        diagram()
-            .get_participant<sequence_diagram::model::class_>(class_id)
-            .has_value()
-        ? *diagram()
-               .get_participant<sequence_diagram::model::class_>(class_id)
-               .get()
-        : *objc_protocol_model_ptr;
+    auto &class_model = get_participant(class_id, *objc_protocol_model_ptr);
 
     if (diagram().should_include(class_model)) {
         LOG_DBG("Adding ObjC protocol participant {} with id {}",
@@ -125,14 +118,7 @@ bool translation_unit_visitor::VisitObjCInterfaceDecl(
 
     set_unique_id(declaration->getID(), class_id);
 
-    auto &class_model =
-        diagram()
-            .get_participant<sequence_diagram::model::class_>(class_id)
-            .has_value()
-        ? *diagram()
-               .get_participant<sequence_diagram::model::class_>(class_id)
-               .get()
-        : *objc_interface_model_ptr;
+    auto &class_model = get_participant(class_id, *objc_interface_model_ptr);
 
     if (diagram().should_include(class_model)) {
         LOG_DBG("Adding ObjC interface participant {} with id {}",
@@ -195,14 +181,7 @@ bool translation_unit_visitor::VisitCXXRecordDecl(
 
     set_unique_id(declaration->getID(), class_id);
 
-    auto &class_model =
-        diagram()
-            .get_participant<sequence_diagram::model::class_>(class_id)
-            .has_value()
-        ? *diagram()
-               .get_participant<sequence_diagram::model::class_>(class_id)
-               .get()
-        : *class_model_ptr;
+    auto &class_model = get_participant(class_id, *class_model_ptr);
 
     if (!declaration->isCompleteDefinition()) {
         forward_declarations_.emplace(class_id, std::move(class_model_ptr));
@@ -1824,10 +1803,6 @@ bool translation_unit_visitor::VisitCoyieldExpr(clang::CoyieldExpr *expr)
         m.set_return_type(
             context().current_method_decl_->getReturnType().getAsString());
     }
-    else if (context().current_objc_method_decl_ != nullptr) {
-        m.set_return_type(
-            context().current_objc_method_decl_->getReturnType().getAsString());
-    }
 
     // We can skip the ID of the return activity here, we'll just add it during
     // diagram generation
@@ -2487,21 +2462,8 @@ translation_unit_visitor::create_class_model(clang::CXXRecordDecl *cls)
 
         c.set_namespace(ns);
         if (cls->getNameAsString().empty()) {
-            // Nested structs can be anonymous
-            if (anonymous_struct_relationships_.count(cls->getID()) > 0) {
-                const auto &[label, hint, access] =
-                    anonymous_struct_relationships_[cls->getID()];
-
-                c.set_name(parent_class.value().name() +
-                    "::" + fmt::format("({})", label));
-
-                parent_class.value().add_relationship(
-                    {hint, common::to_id(c.full_name(false)), access, label});
-            }
-            else
-                c.set_name(parent_class.value().name() + "::" +
-                    fmt::format(
-                        "(anonymous_{})", std::to_string(cls->getID())));
+            c.set_name(parent_class.value().name() + "::" +
+                fmt::format("(anonymous_{})", std::to_string(cls->getID())));
         }
         else {
             c.set_name(
