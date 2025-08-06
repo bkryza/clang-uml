@@ -290,6 +290,21 @@ public:
 
 private:
     /**
+     * @brief Get existing participant or fallback to provided model
+     *
+     * @param element_id ID of the participant to lookup
+     * @param fallback_model Fallback model to use if participant doesn't exist
+     * @return Reference to existing participant or fallback model
+     */
+    template <typename T = sequence_diagram::model::class_>
+    T &get_participant(eid_t element_id, T &fallback_model)
+    {
+        return diagram().get_participant<T>(element_id).has_value()
+            ? *diagram().get_participant<T>(element_id).get()
+            : fallback_model;
+    }
+
+    /**
      * @brief Check if the diagram should include a declaration.
      *
      * @param decl Clang declaration.
@@ -600,7 +615,7 @@ private:
     std::map<int64_t /* local anonymous struct id */,
         std::tuple<std::string /* field name */, common::model::relationship_t,
             common::model::access_t>>
-        anonymous_struct_relationships_;
+        anonymous_structs_;
 
     std::map<eid_t, std::set<eid_t>> activity_callers_;
 

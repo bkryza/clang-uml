@@ -59,8 +59,42 @@ TEST_CASE("t20070")
                 {"Generator<unsigned long long>",
                     "Generator<unsigned long long>", "fill()"}, //
                 {"Generator<unsigned long long>", "tmain()",
-                    "unsigned long long", Response{}} //
+                    "unsigned long long", Response{}}, //
+            }));
 
+        REQUIRE(MessageOrder(src,
+            {
+                //
+                {"tmain()", "FibonacciGenerator",
+                    "generate_sequence(unsigned int)"}, //
+                {"FibonacciGenerator", "tmain()",
+                    "Generator<unsigned long long>", Response{}, CoReturn{}}, //
+                {"FibonacciGenerator", "Generator::promise_type",
+                    "yield_value(int &&)"}, //
+                {"Generator::promise_type", "FibonacciGenerator",
+                    "std::suspend_always", Response{}}, //
+                {"FibonacciGenerator", "tmain()",
+                    "Generator<unsigned long long>", Response{}, CoYield{}}, //
+            }));
+        REQUIRE(MessageOrder(src,
+            {
+                //
+                {"tmain()",
+                    "template_generator<unsigned long long>(unsigned long "
+                    "long,unsigned long long,unsigned int)",
+                    ""}, //
+                {"template_generator<unsigned long long>(unsigned long "
+                 "long,unsigned long long,unsigned int)",
+                    "Generator::promise_type",
+                    "yield_value(unsigned long long &&)"}, //
+                {"Generator::promise_type",
+                    "template_generator<unsigned long long>(unsigned long "
+                    "long,unsigned long long,unsigned int)",
+                    "std::suspend_always", Response{}}, //
+                {"template_generator<unsigned long long>(unsigned long "
+                 "long,unsigned long long,unsigned int)",
+                    "tmain()", "Generator<unsigned long long>", Response{},
+                    CoYield{}}, //
             }));
     });
 }

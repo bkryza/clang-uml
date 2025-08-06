@@ -89,6 +89,44 @@ private:
     }
 };
 
+class FibonacciGenerator {
+public:
+    Generator<unsigned long long> generate_sequence(unsigned n)
+    {
+        if (n == 0) {
+            co_return;
+        }
+
+        co_yield 0;
+
+        if (n == 1)
+            co_return;
+
+        co_yield 1;
+
+        if (n == 2)
+            co_return;
+
+        unsigned long long a = 0;
+        unsigned long long b = 1;
+
+        for (unsigned i = 2; i < n; ++i) {
+            unsigned long long s = a + b;
+            co_yield s;
+            a = b;
+            b = s;
+        }
+    }
+};
+
+template<typename T>
+Generator<T> template_generator(T start, T step, unsigned count)
+{
+    for (unsigned i = 0; i < count; ++i) {
+        co_yield start + i * step;
+    }
+}
+
 Generator<unsigned long long> fibonacci_sequence(unsigned n)
 {
     if (n == 0) {
@@ -130,6 +168,17 @@ int tmain()
 
         for (int j = 0; gen; ++j)
             std::cout << "fib(" << j << ")=" << gen() << '\n';
+
+        FibonacciGenerator fib_gen;
+        auto class_gen = fib_gen.generate_sequence(5ULL);
+        
+        for (int j = 0; class_gen; ++j)
+            std::cout << "class_fib(" << j << ")=" << class_gen() << '\n';
+
+        auto template_gen = template_generator<unsigned long long>(10, 5, 3);
+        
+        for (int j = 0; template_gen; ++j)
+            std::cout << "template_gen(" << j << ")=" << template_gen() << '\n';
     }
     catch (const std::exception &ex) {
         std::cerr << "Exception: " << ex.what() << '\n';
