@@ -123,6 +123,7 @@ endif()
 set(TEST_NAMES
     test_types
     test_util
+    test_clang_util
     test_model
     test_cases
     test_compilation_database
