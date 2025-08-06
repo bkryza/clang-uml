@@ -1,11 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" data-diagram-type="SEQUENCE" height="1271px" preserveAspectRatio="none" style="width:1012px;height:1271px;background:#FFFFFF;" version="1.1" viewBox="0 0 1012 1271" width="1012px" zoomAndPan="magnify">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" data-diagram-type="SEQUENCE" height="2705px" preserveAspectRatio="none" style="width:1817px;height:2705px;background:#FFFFFF;" version="1.1" viewBox="0 0 1817 2705" width="1817px" zoomAndPan="magnify">
   <defs>
     <style type="text/css">a:hover { text-decoration: underline; }</style>
   </defs>
   <g>
     <g>
       <title>tmain()</title>
-      <rect fill="#FFFFFF" height="1136.5563" style="stroke:#181818;stroke-width:1;" width="10" x="55.3309" y="68.1358"/>
+      <rect fill="#FFFFFF" height="2570.209" style="stroke:#181818;stroke-width:1;" width="10" x="55.3309" y="68.1358"/>
     </g>
     <g>
       <title>&lt;&lt; Coroutine &gt;&gt;</title>
@@ -32,6 +32,22 @@
       <rect fill="#FFFFFF" height="31.706" style="stroke:#181818;stroke-width:1;" width="10" x="656.6049" y="757.6682"/>
     </g>
     <g>
+      <title>Generator::promise_type</title>
+      <rect fill="#FFFFFF" height="31.706" style="stroke:#181818;stroke-width:1;" width="10" x="656.6049" y="1302.2584"/>
+    </g>
+    <g>
+      <title>Generator::promise_type</title>
+      <rect fill="#FFFFFF" height="31.706" style="stroke:#181818;stroke-width:1;" width="10" x="656.6049" y="1498.2006"/>
+    </g>
+    <g>
+      <title>Generator::promise_type</title>
+      <rect fill="#FFFFFF" height="31.706" style="stroke:#181818;stroke-width:1;" width="10" x="656.6049" y="1720.8487"/>
+    </g>
+    <g>
+      <title>Generator::promise_type</title>
+      <rect fill="#FFFFFF" height="31.706" style="stroke:#181818;stroke-width:1;" width="10" x="656.6049" y="2191.3209"/>
+    </g>
+    <g>
       <title>Generator&lt;unsigned long long&gt;</title>
       <rect fill="#FFFFFF" height="106.412" style="stroke:#181818;stroke-width:1;" width="10" x="868.1622" y="904.1983"/>
     </g>
@@ -47,49 +63,106 @@
       <title>Generator&lt;unsigned long long&gt;</title>
       <rect fill="#FFFFFF" height="28" style="stroke:#181818;stroke-width:1;" width="10" x="873.1622" y="1082.0223"/>
     </g>
-    <rect fill="none" height="1122.5563" style="stroke:#000000;stroke-width:1.5;" width="995.6377" x="10" y="75.1358"/>
+    <g>
+      <title>Generator&lt;unsigned long long&gt;</title>
+      <rect fill="#FFFFFF" height="106.412" style="stroke:#181818;stroke-width:1;" width="10" x="868.1622" y="1867.3788"/>
+    </g>
+    <g>
+      <title>Generator&lt;unsigned long long&gt;</title>
+      <rect fill="#FFFFFF" height="28" style="stroke:#181818;stroke-width:1;" width="10" x="873.1622" y="1907.0848"/>
+    </g>
+    <g>
+      <title>Generator&lt;unsigned long long&gt;</title>
+      <rect fill="#FFFFFF" height="106.412" style="stroke:#181818;stroke-width:1;" width="10" x="868.1622" y="2005.4968"/>
+    </g>
+    <g>
+      <title>Generator&lt;unsigned long long&gt;</title>
+      <rect fill="#FFFFFF" height="28" style="stroke:#181818;stroke-width:1;" width="10" x="873.1622" y="2045.2028"/>
+    </g>
+    <g>
+      <title>Generator&lt;unsigned long long&gt;</title>
+      <rect fill="#FFFFFF" height="106.412" style="stroke:#181818;stroke-width:1;" width="10" x="868.1622" y="2337.851"/>
+    </g>
+    <g>
+      <title>Generator&lt;unsigned long long&gt;</title>
+      <rect fill="#FFFFFF" height="28" style="stroke:#181818;stroke-width:1;" width="10" x="873.1622" y="2377.557"/>
+    </g>
+    <g>
+      <title>Generator&lt;unsigned long long&gt;</title>
+      <rect fill="#FFFFFF" height="106.412" style="stroke:#181818;stroke-width:1;" width="10" x="868.1622" y="2475.969"/>
+    </g>
+    <g>
+      <title>Generator&lt;unsigned long long&gt;</title>
+      <rect fill="#FFFFFF" height="28" style="stroke:#181818;stroke-width:1;" width="10" x="873.1622" y="2515.675"/>
+    </g>
+    <g>
+      <title>FibonacciGenerator</title>
+      <rect fill="#FFFFFF" height="629.5324" style="stroke:#181818;stroke-width:1;" width="10" x="1062.1845" y="1187.4344"/>
+    </g>
+    <g>
+      <title>&lt;&lt; Coroutine &gt;&gt;</title>
+      <rect fill="#FFFFFF" height="154.5301" style="stroke:#181818;stroke-width:1;" width="10" x="1464.5402" y="2132.9089"/>
+    </g>
+    <rect fill="none" height="2556.209" style="stroke:#000000;stroke-width:1.5;" width="1800.3492" x="10" y="75.1358"/>
     <rect fill="none" height="113.118" style="stroke:#000000;stroke-width:1.5;" width="439.8755" x="20" y="115.8419"/>
     <rect fill="none" height="69.118" style="stroke:#000000;stroke-width:1.5;" width="385.7196" x="20" y="435.196"/>
     <rect fill="none" height="69.118" style="stroke:#000000;stroke-width:1.5;" width="385.7196" x="20" y="631.1381"/>
     <rect fill="none" height="132.5301" style="stroke:#000000;stroke-width:1.5;" width="740.6866" x="20" y="714.2562"/>
     <rect fill="none" height="295.9421" style="stroke:#000000;stroke-width:1.5;" width="975.6377" x="20" y="860.7862"/>
+    <rect fill="none" height="69.118" style="stroke:#000000;stroke-width:1.5;" width="1128.7312" x="20" y="1202.4344"/>
+    <rect fill="none" height="69.118" style="stroke:#000000;stroke-width:1.5;" width="1128.7312" x="20" y="1398.3765"/>
+    <rect fill="none" height="69.118" style="stroke:#000000;stroke-width:1.5;" width="1128.7312" x="20" y="1594.3186"/>
+    <rect fill="none" height="132.5301" style="stroke:#000000;stroke-width:1.5;" width="1128.7312" x="20" y="1677.4367"/>
+    <rect fill="none" height="295.9421" style="stroke:#000000;stroke-width:1.5;" width="975.6377" x="20" y="1823.9667"/>
+    <rect fill="none" height="132.5301" style="stroke:#000000;stroke-width:1.5;" width="1780.3492" x="20" y="2147.9089"/>
+    <rect fill="none" height="295.9421" style="stroke:#000000;stroke-width:1.5;" width="975.6377" x="20" y="2294.4389"/>
     <g>
       <title>tmain()</title>
-      <rect fill="#000000" fill-opacity="0.00000" height="1156.5563" width="8" x="56.3309" y="58.1358"/>
-      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="60" x2="60" y1="58.1358" y2="1214.6921"/>
+      <rect fill="#000000" fill-opacity="0.00000" height="2590.209" width="8" x="56.3309" y="58.1358"/>
+      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="60" x2="60" y1="58.1358" y2="2648.3448"/>
     </g>
     <g>
       <title>&lt;&lt; Coroutine &gt;&gt;</title>
-      <rect fill="#000000" fill-opacity="0.00000" height="1156.5563" width="8" x="275.1911" y="58.1358"/>
-      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="278.6625" x2="278.6625" y1="58.1358" y2="1214.6921"/>
+      <rect fill="#000000" fill-opacity="0.00000" height="2590.209" width="8" x="275.1911" y="58.1358"/>
+      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="278.6625" x2="278.6625" y1="58.1358" y2="2648.3448"/>
     </g>
     <g>
       <title>foo()</title>
-      <rect fill="#000000" fill-opacity="0.00000" height="1156.5563" width="8" x="423.7976" y="58.1358"/>
-      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="427.7196" x2="427.7196" y1="58.1358" y2="1214.6921"/>
+      <rect fill="#000000" fill-opacity="0.00000" height="2590.209" width="8" x="423.7976" y="58.1358"/>
+      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="427.7196" x2="427.7196" y1="58.1358" y2="2648.3448"/>
     </g>
     <g>
       <title>AwaitableFoo</title>
-      <rect fill="#000000" fill-opacity="0.00000" height="1156.5563" width="8" x="507.1994" y="58.1358"/>
-      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="510.8755" x2="510.8755" y1="58.1358" y2="1214.6921"/>
+      <rect fill="#000000" fill-opacity="0.00000" height="2590.209" width="8" x="507.1994" y="58.1358"/>
+      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="510.8755" x2="510.8755" y1="58.1358" y2="2648.3448"/>
     </g>
     <g>
       <title>Generator::promise_type</title>
-      <rect fill="#000000" fill-opacity="0.00000" height="1156.5563" width="8" x="657.6049" y="58.1358"/>
-      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="661.5232" x2="661.5232" y1="58.1358" y2="1214.6921"/>
+      <rect fill="#000000" fill-opacity="0.00000" height="2590.209" width="8" x="657.6049" y="58.1358"/>
+      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="661.5232" x2="661.5232" y1="58.1358" y2="2648.3448"/>
     </g>
     <g>
       <title>Generator&lt;unsigned long long&gt;</title>
-      <rect fill="#000000" fill-opacity="0.00000" height="1156.5563" width="8" x="869.1622" y="58.1358"/>
-      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="872.6866" x2="872.6866" y1="58.1358" y2="1214.6921"/>
+      <rect fill="#000000" fill-opacity="0.00000" height="2590.209" width="8" x="869.1622" y="58.1358"/>
+      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="872.6866" x2="872.6866" y1="58.1358" y2="2648.3448"/>
+    </g>
+    <g>
+      <title>FibonacciGenerator</title>
+      <rect fill="#000000" fill-opacity="0.00000" height="2590.209" width="8" x="1063.1845" y="58.1358"/>
+      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="1066.6377" x2="1066.6377" y1="58.1358" y2="2648.3448"/>
+    </g>
+    <g>
+      <title>&lt;&lt; Coroutine &gt;&gt;</title>
+      <rect fill="#000000" fill-opacity="0.00000" height="2590.209" width="8" x="1465.5402" y="58.1358"/>
+      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="1468.7312" x2="1468.7312" y1="58.1358" y2="2648.3448"/>
     </g>
     <g class="participant participant-head" data-participant="C_0008960354845392757372">
       <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="60.6618" x="30" y="24.0679"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="46.6618" x="37" y="46.0339">tmain()</text>
     </g>
     <g class="participant participant-tail" data-participant="C_0008960354845392757372">
-      <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="60.6618" x="30" y="1213.6921"/>
-      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="46.6618" x="37" y="1235.6581">tmain()</text>
+      <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="60.6618" x="30" y="2647.3448"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="46.6618" x="37" y="2669.3108">tmain()</text>
     </g>
     <g class="participant participant-head" data-participant="C_0009625317333489462440">
       <rect fill="#E2E2F0" height="52.1358" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="233.0571" x="162.6625" y="5"/>
@@ -97,45 +170,63 @@
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="219.0571" x="169.6625" y="46.0339">fibonacci_sequence(unsigned int)</text>
     </g>
     <g class="participant participant-tail" data-participant="C_0009625317333489462440">
-      <rect fill="#E2E2F0" height="52.1358" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="233.0571" x="162.6625" y="1213.6921"/>
-      <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="74.3677" x="242.0072" y="1235.6581">«Coroutine»</text>
-      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="219.0571" x="169.6625" y="1254.726">fibonacci_sequence(unsigned int)</text>
+      <rect fill="#E2E2F0" height="52.1358" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="233.0571" x="162.6625" y="2647.3448"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="74.3677" x="242.0072" y="2669.3108">«Coroutine»</text>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="219.0571" x="169.6625" y="2688.3787">fibonacci_sequence(unsigned int)</text>
     </g>
     <g class="participant participant-head" data-participant="C_0007120414872781103477">
       <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="44.1559" x="405.7196" y="24.0679"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="30.1559" x="412.7196" y="46.0339">foo()</text>
     </g>
     <g class="participant participant-tail" data-participant="C_0007120414872781103477">
-      <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="44.1559" x="405.7196" y="1213.6921"/>
-      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="30.1559" x="412.7196" y="1235.6581">foo()</text>
+      <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="44.1559" x="405.7196" y="2647.3448"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="30.1559" x="412.7196" y="2669.3108">foo()</text>
     </g>
     <g class="participant participant-head" data-participant="C_0015577419785651234906">
       <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="102.6477" x="459.8755" y="24.0679"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="88.6477" x="466.8755" y="46.0339">AwaitableFoo</text>
     </g>
     <g class="participant participant-tail" data-participant="C_0015577419785651234906">
-      <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="102.6477" x="459.8755" y="1213.6921"/>
-      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="88.6477" x="466.8755" y="1235.6581">AwaitableFoo</text>
+      <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="102.6477" x="459.8755" y="2647.3448"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="88.6477" x="466.8755" y="2669.3108">AwaitableFoo</text>
     </g>
     <g class="participant participant-head" data-participant="C_0003618765333581065245">
       <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="178.1634" x="572.5232" y="24.0679"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="164.1634" x="579.5232" y="46.0339">Generator::promise_type</text>
     </g>
     <g class="participant participant-tail" data-participant="C_0003618765333581065245">
-      <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="178.1634" x="572.5232" y="1213.6921"/>
-      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="164.1634" x="579.5232" y="1235.6581">Generator::promise_type</text>
+      <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="178.1634" x="572.5232" y="2647.3448"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="164.1634" x="579.5232" y="2669.3108">Generator::promise_type</text>
     </g>
     <g class="participant participant-head" data-participant="C_0017111168954217566751">
       <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="224.9512" x="760.6866" y="24.0679"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="210.9512" x="767.6866" y="46.0339">Generator&lt;unsigned long long&gt;</text>
     </g>
     <g class="participant participant-tail" data-participant="C_0017111168954217566751">
-      <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="224.9512" x="760.6866" y="1213.6921"/>
-      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="210.9512" x="767.6866" y="1235.6581">Generator&lt;unsigned long long&gt;</text>
+      <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="224.9512" x="760.6866" y="2647.3448"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="210.9512" x="767.6866" y="2669.3108">Generator&lt;unsigned long long&gt;</text>
+    </g>
+    <g class="participant participant-head" data-participant="C_0001058749576026578427">
+      <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="143.0935" x="995.6377" y="24.0679"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="129.0935" x="1002.6377" y="46.0339">FibonacciGenerator</text>
+    </g>
+    <g class="participant participant-tail" data-participant="C_0001058749576026578427">
+      <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="143.0935" x="995.6377" y="2647.3448"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="129.0935" x="1002.6377" y="2669.3108">FibonacciGenerator</text>
+    </g>
+    <g class="participant participant-head" data-participant="C_0009999851530951415081">
+      <rect fill="#E2E2F0" height="52.1358" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="641.6179" x="1148.7312" y="5"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="74.3677" x="1432.3563" y="26.9659">«Coroutine»</text>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="627.6179" x="1155.7312" y="46.0339">template_generator&lt;unsigned long long&gt;(unsigned long long,unsigned long long,unsigned int)</text>
+    </g>
+    <g class="participant participant-tail" data-participant="C_0009999851530951415081">
+      <rect fill="#E2E2F0" height="52.1358" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="641.6179" x="1148.7312" y="2647.3448"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="74.3677" x="1432.3563" y="2669.3108">«Coroutine»</text>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="627.6179" x="1155.7312" y="2688.3787">template_generator&lt;unsigned long long&gt;(unsigned long long,unsigned long long,unsigned int)</text>
     </g>
     <g>
       <title>tmain()</title>
-      <rect fill="#FFFFFF" height="1136.5563" style="stroke:#181818;stroke-width:1;" width="10" x="55.3309" y="68.1358"/>
+      <rect fill="#FFFFFF" height="2570.209" style="stroke:#181818;stroke-width:1;" width="10" x="55.3309" y="68.1358"/>
     </g>
     <g>
       <title>&lt;&lt; Coroutine &gt;&gt;</title>
@@ -162,6 +253,22 @@
       <rect fill="#FFFFFF" height="31.706" style="stroke:#181818;stroke-width:1;" width="10" x="656.6049" y="757.6682"/>
     </g>
     <g>
+      <title>Generator::promise_type</title>
+      <rect fill="#FFFFFF" height="31.706" style="stroke:#181818;stroke-width:1;" width="10" x="656.6049" y="1302.2584"/>
+    </g>
+    <g>
+      <title>Generator::promise_type</title>
+      <rect fill="#FFFFFF" height="31.706" style="stroke:#181818;stroke-width:1;" width="10" x="656.6049" y="1498.2006"/>
+    </g>
+    <g>
+      <title>Generator::promise_type</title>
+      <rect fill="#FFFFFF" height="31.706" style="stroke:#181818;stroke-width:1;" width="10" x="656.6049" y="1720.8487"/>
+    </g>
+    <g>
+      <title>Generator::promise_type</title>
+      <rect fill="#FFFFFF" height="31.706" style="stroke:#181818;stroke-width:1;" width="10" x="656.6049" y="2191.3209"/>
+    </g>
+    <g>
       <title>Generator&lt;unsigned long long&gt;</title>
       <rect fill="#FFFFFF" height="106.412" style="stroke:#181818;stroke-width:1;" width="10" x="868.1622" y="904.1983"/>
     </g>
@@ -177,8 +284,48 @@
       <title>Generator&lt;unsigned long long&gt;</title>
       <rect fill="#FFFFFF" height="28" style="stroke:#181818;stroke-width:1;" width="10" x="873.1622" y="1082.0223"/>
     </g>
+    <g>
+      <title>Generator&lt;unsigned long long&gt;</title>
+      <rect fill="#FFFFFF" height="106.412" style="stroke:#181818;stroke-width:1;" width="10" x="868.1622" y="1867.3788"/>
+    </g>
+    <g>
+      <title>Generator&lt;unsigned long long&gt;</title>
+      <rect fill="#FFFFFF" height="28" style="stroke:#181818;stroke-width:1;" width="10" x="873.1622" y="1907.0848"/>
+    </g>
+    <g>
+      <title>Generator&lt;unsigned long long&gt;</title>
+      <rect fill="#FFFFFF" height="106.412" style="stroke:#181818;stroke-width:1;" width="10" x="868.1622" y="2005.4968"/>
+    </g>
+    <g>
+      <title>Generator&lt;unsigned long long&gt;</title>
+      <rect fill="#FFFFFF" height="28" style="stroke:#181818;stroke-width:1;" width="10" x="873.1622" y="2045.2028"/>
+    </g>
+    <g>
+      <title>Generator&lt;unsigned long long&gt;</title>
+      <rect fill="#FFFFFF" height="106.412" style="stroke:#181818;stroke-width:1;" width="10" x="868.1622" y="2337.851"/>
+    </g>
+    <g>
+      <title>Generator&lt;unsigned long long&gt;</title>
+      <rect fill="#FFFFFF" height="28" style="stroke:#181818;stroke-width:1;" width="10" x="873.1622" y="2377.557"/>
+    </g>
+    <g>
+      <title>Generator&lt;unsigned long long&gt;</title>
+      <rect fill="#FFFFFF" height="106.412" style="stroke:#181818;stroke-width:1;" width="10" x="868.1622" y="2475.969"/>
+    </g>
+    <g>
+      <title>Generator&lt;unsigned long long&gt;</title>
+      <rect fill="#FFFFFF" height="28" style="stroke:#181818;stroke-width:1;" width="10" x="873.1622" y="2515.675"/>
+    </g>
+    <g>
+      <title>FibonacciGenerator</title>
+      <rect fill="#FFFFFF" height="629.5324" style="stroke:#181818;stroke-width:1;" width="10" x="1062.1845" y="1187.4344"/>
+    </g>
+    <g>
+      <title>&lt;&lt; Coroutine &gt;&gt;</title>
+      <rect fill="#FFFFFF" height="154.5301" style="stroke:#181818;stroke-width:1;" width="10" x="1464.5402" y="2132.9089"/>
+    </g>
     <path d="M10,75.1358 L73.941,75.1358 L73.941,84.8419 L63.941,94.8419 L10,94.8419 L10,75.1358" fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/>
-    <rect fill="none" height="1122.5563" style="stroke:#000000;stroke-width:1.5;" width="995.6377" x="10" y="75.1358"/>
+    <rect fill="none" height="2556.209" style="stroke:#000000;stroke-width:1.5;" width="1800.3492" x="10" y="75.1358"/>
     <text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="18.941" x="25" y="90.0328">try</text>
     <g class="message" data-participant-1="C_0008960354845392757372" data-participant-2="C_0009625317333489462440">
       <polygon fill="#181818" points="262.1911,96.8419,272.1911,100.8419,262.1911,104.8419,266.1911,100.8419" style="stroke:#181818;stroke-width:1;"/>
@@ -316,9 +463,200 @@
       <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="70.3309" x2="872.1622" y1="1148.7284" y2="1148.7284"/>
       <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="111.3061" x="82.3309" y="1142.9194">unsigned long long</text>
     </g>
-    <line style="stroke:#000000;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="10" x2="1005.6377" y1="1164.7284" y2="1164.7284"/>
-    <text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="128.7981" x="15" y="1176.4873">[const std::exception &amp;]</text>
-    <line style="stroke:#000000;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="10" x2="1005.6377" y1="1181.7103" y2="1181.7103"/>
-    <text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="16.6869" x="15" y="1193.4692">[...]</text>
+    <g class="message" data-participant-1="C_0008960354845392757372" data-participant-2="C_0001058749576026578427">
+      <polygon fill="#181818" points="1050.1845,1183.4344,1060.1845,1187.4344,1050.1845,1191.4344,1054.1845,1187.4344" style="stroke:#181818;stroke-width:1;"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="65.3309" x2="1056.1845" y1="1187.4344" y2="1187.4344"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="203.9442" x="72.3309" y="1181.6254">generate_sequence(unsigned int)</text>
+    </g>
+    <path d="M20,1202.4344 L82.459,1202.4344 L82.459,1212.1404 L72.459,1222.1404 L20,1222.1404 L20,1202.4344" fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/>
+    <rect fill="none" height="69.118" style="stroke:#000000;stroke-width:1.5;" width="1128.7312" x="20" y="1202.4344"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="17.459" x="35" y="1217.3314">alt</text>
+    <text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="39.1047" x="97.459" y="1216.1933">[n == 0]</text>
+    <g class="message" data-participant-1="C_0001058749576026578427" data-participant-2="C_0008960354845392757372">
+      <polygon fill="#181818" points="76.3309,1259.5524,66.3309,1263.5524,76.3309,1267.5524,72.3309,1263.5524" style="stroke:#181818;stroke-width:1;"/>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="70.3309" x2="1061.1845" y1="1263.5524" y2="1263.5524"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="66.9501" x="82.3309" y="1240.0374">«co_return»</text>
+      <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="184.8602" x="82.3309" y="1257.7434">Generator&lt;unsigned long long&gt;</text>
+    </g>
+    <g class="message" data-participant-1="C_0001058749576026578427" data-participant-2="C_0003618765333581065245">
+      <polygon fill="#181818" points="677.6049,1298.2584,667.6049,1302.2584,677.6049,1306.2584,673.6049,1302.2584" style="stroke:#181818;stroke-width:1;"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="671.6049" x2="1061.1845" y1="1302.2584" y2="1302.2584"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="113.3471" x="683.6049" y="1296.4494">yield_value(int &amp;&amp;)</text>
+    </g>
+    <g class="message" data-participant-1="C_0003618765333581065245" data-participant-2="C_0001058749576026578427">
+      <polygon fill="#181818" points="1050.1845,1329.9645,1060.1845,1333.9645,1050.1845,1337.9645,1054.1845,1333.9645" style="stroke:#181818;stroke-width:1;"/>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="661.6049" x2="1056.1845" y1="1333.9645" y2="1333.9645"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="116.2851" x="668.6049" y="1328.1555">std::suspend_always</text>
+    </g>
+    <g class="message" data-participant-1="C_0001058749576026578427" data-participant-2="C_0008960354845392757372">
+      <polygon fill="#181818" points="76.3309,1379.3765,66.3309,1383.3765,76.3309,1387.3765,72.3309,1383.3765" style="stroke:#181818;stroke-width:1;"/>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="70.3309" x2="1061.1845" y1="1383.3765" y2="1383.3765"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="57.538" x="82.3309" y="1359.8615">«co_yield»</text>
+      <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="184.8602" x="82.3309" y="1377.5675">Generator&lt;unsigned long long&gt;</text>
+    </g>
+    <path d="M20,1398.3765 L82.459,1398.3765 L82.459,1408.0825 L72.459,1418.0825 L20,1418.0825 L20,1398.3765" fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/>
+    <rect fill="none" height="69.118" style="stroke:#000000;stroke-width:1.5;" width="1128.7312" x="20" y="1398.3765"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="17.459" x="35" y="1413.2735">alt</text>
+    <text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="39.1047" x="97.459" y="1412.1354">[n == 1]</text>
+    <g class="message" data-participant-1="C_0001058749576026578427" data-participant-2="C_0008960354845392757372">
+      <polygon fill="#181818" points="76.3309,1455.4945,66.3309,1459.4945,76.3309,1463.4945,72.3309,1459.4945" style="stroke:#181818;stroke-width:1;"/>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="70.3309" x2="1061.1845" y1="1459.4945" y2="1459.4945"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="66.9501" x="82.3309" y="1435.9795">«co_return»</text>
+      <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="184.8602" x="82.3309" y="1453.6855">Generator&lt;unsigned long long&gt;</text>
+    </g>
+    <g class="message" data-participant-1="C_0001058749576026578427" data-participant-2="C_0003618765333581065245">
+      <polygon fill="#181818" points="677.6049,1494.2006,667.6049,1498.2006,677.6049,1502.2006,673.6049,1498.2006" style="stroke:#181818;stroke-width:1;"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="671.6049" x2="1061.1845" y1="1498.2006" y2="1498.2006"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="113.3471" x="683.6049" y="1492.3916">yield_value(int &amp;&amp;)</text>
+    </g>
+    <g class="message" data-participant-1="C_0003618765333581065245" data-participant-2="C_0001058749576026578427">
+      <polygon fill="#181818" points="1050.1845,1525.9066,1060.1845,1529.9066,1050.1845,1533.9066,1054.1845,1529.9066" style="stroke:#181818;stroke-width:1;"/>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="661.6049" x2="1056.1845" y1="1529.9066" y2="1529.9066"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="116.2851" x="668.6049" y="1524.0976">std::suspend_always</text>
+    </g>
+    <g class="message" data-participant-1="C_0001058749576026578427" data-participant-2="C_0008960354845392757372">
+      <polygon fill="#181818" points="76.3309,1575.3186,66.3309,1579.3186,76.3309,1583.3186,72.3309,1579.3186" style="stroke:#181818;stroke-width:1;"/>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="70.3309" x2="1061.1845" y1="1579.3186" y2="1579.3186"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="57.538" x="82.3309" y="1555.8036">«co_yield»</text>
+      <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="184.8602" x="82.3309" y="1573.5096">Generator&lt;unsigned long long&gt;</text>
+    </g>
+    <path d="M20,1594.3186 L82.459,1594.3186 L82.459,1604.0246 L72.459,1614.0246 L20,1614.0246 L20,1594.3186" fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/>
+    <rect fill="none" height="69.118" style="stroke:#000000;stroke-width:1.5;" width="1128.7312" x="20" y="1594.3186"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="17.459" x="35" y="1609.2156">alt</text>
+    <text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="39.1047" x="97.459" y="1608.0775">[n == 2]</text>
+    <g class="message" data-participant-1="C_0001058749576026578427" data-participant-2="C_0008960354845392757372">
+      <polygon fill="#181818" points="76.3309,1651.4367,66.3309,1655.4367,76.3309,1659.4367,72.3309,1655.4367" style="stroke:#181818;stroke-width:1;"/>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="70.3309" x2="1061.1845" y1="1655.4367" y2="1655.4367"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="66.9501" x="82.3309" y="1631.9216">«co_return»</text>
+      <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="184.8602" x="82.3309" y="1649.6277">Generator&lt;unsigned long long&gt;</text>
+    </g>
+    <path d="M20,1677.4367 L93.288,1677.4367 L93.288,1687.1427 L83.288,1697.1427 L20,1697.1427 L20,1677.4367" fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/>
+    <rect fill="none" height="132.5301" style="stroke:#000000;stroke-width:1.5;" width="1128.7312" x="20" y="1677.4367"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="28.288" x="35" y="1692.3337">loop</text>
+    <text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="133.2531" x="108.288" y="1691.1956">[unsigned i = 2; i &lt; n; ++i]</text>
+    <g class="message" data-participant-1="C_0001058749576026578427" data-participant-2="C_0003618765333581065245">
+      <polygon fill="#181818" points="677.6049,1716.8487,667.6049,1720.8487,677.6049,1724.8487,673.6049,1720.8487" style="stroke:#181818;stroke-width:1;"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="671.6049" x2="1061.1845" y1="1720.8487" y2="1720.8487"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="206.0112" x="683.6049" y="1715.0397">yield_value(unsigned long long &amp;)</text>
+    </g>
+    <g class="message" data-participant-1="C_0003618765333581065245" data-participant-2="C_0001058749576026578427">
+      <polygon fill="#181818" points="1050.1845,1748.5547,1060.1845,1752.5547,1050.1845,1756.5547,1054.1845,1752.5547" style="stroke:#181818;stroke-width:1;"/>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="661.6049" x2="1056.1845" y1="1752.5547" y2="1752.5547"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="116.2851" x="668.6049" y="1746.7457">std::suspend_always</text>
+    </g>
+    <g class="message" data-participant-1="C_0001058749576026578427" data-participant-2="C_0008960354845392757372">
+      <polygon fill="#181818" points="76.3309,1797.9667,66.3309,1801.9667,76.3309,1805.9667,72.3309,1801.9667" style="stroke:#181818;stroke-width:1;"/>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="70.3309" x2="1061.1845" y1="1801.9667" y2="1801.9667"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="57.538" x="82.3309" y="1778.4517">«co_yield»</text>
+      <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="184.8602" x="82.3309" y="1796.1577">Generator&lt;unsigned long long&gt;</text>
+    </g>
+    <path d="M20,1823.9667 L93.288,1823.9667 L93.288,1833.6728 L83.288,1843.6728 L20,1843.6728 L20,1823.9667" fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/>
+    <rect fill="none" height="295.9421" style="stroke:#000000;stroke-width:1.5;" width="975.6377" x="20" y="1823.9667"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="28.288" x="35" y="1838.8638">loop</text>
+    <text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="126.8841" x="108.288" y="1837.7257">[int j = 0; class_gen; ++j]</text>
+    <g class="message" data-participant-1="C_0008960354845392757372" data-participant-2="C_0017111168954217566751">
+      <polygon fill="#181818" points="856.1622,1863.3788,866.1622,1867.3788,856.1622,1871.3788,860.1622,1867.3788" style="stroke:#181818;stroke-width:1;"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="65.3309" x2="862.1622" y1="1867.3788" y2="1867.3788"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="4.303" x="72.3309" y="1861.5698">[</text>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="92.0401" x="76.6339" y="1861.5698">operator bool()</text>
+      <text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="4.303" x="168.674" y="1861.5698">]</text>
+    </g>
+    <g class="message" data-participant-1="C_0017111168954217566751" data-participant-2="C_0017111168954217566751">
+      <line style="stroke:#181818;stroke-width:1;" x1="883.1622" x2="925.1622" y1="1899.0848" y2="1899.0848"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="925.1622" x2="925.1622" y1="1899.0848" y2="1912.0848"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="884.1622" x2="925.1622" y1="1912.0848" y2="1912.0848"/>
+      <polygon fill="#181818" points="894.1622,1908.0848,884.1622,1912.0848,894.1622,1916.0848,890.1622,1912.0848" style="stroke:#181818;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="22.334" x="890.1622" y="1893.2758">fill()</text>
+    </g>
+    <g class="message" data-participant-1="C_0017111168954217566751" data-participant-2="C_0008960354845392757372">
+      <polygon fill="#181818" points="76.3309,1969.7908,66.3309,1973.7908,76.3309,1977.7908,72.3309,1973.7908" style="stroke:#181818;stroke-width:1;"/>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="70.3309" x2="872.1622" y1="1973.7908" y2="1973.7908"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="30.927" x="82.3309" y="1967.9818">_Bool</text>
+    </g>
+    <g class="message" data-participant-1="C_0008960354845392757372" data-participant-2="C_0017111168954217566751">
+      <polygon fill="#181818" points="856.1622,2001.4968,866.1622,2005.4968,856.1622,2009.4968,860.1622,2005.4968" style="stroke:#181818;stroke-width:1;"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="65.3309" x2="862.1622" y1="2005.4968" y2="2005.4968"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="69.3811" x="72.3309" y="1999.6878">operator()()</text>
+    </g>
+    <g class="message" data-participant-1="C_0017111168954217566751" data-participant-2="C_0017111168954217566751">
+      <line style="stroke:#181818;stroke-width:1;" x1="883.1622" x2="925.1622" y1="2037.2028" y2="2037.2028"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="925.1622" x2="925.1622" y1="2037.2028" y2="2050.2028"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="884.1622" x2="925.1622" y1="2050.2028" y2="2050.2028"/>
+      <polygon fill="#181818" points="894.1622,2046.2028,884.1622,2050.2028,894.1622,2054.2028,890.1622,2050.2028" style="stroke:#181818;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="22.334" x="890.1622" y="2031.3938">fill()</text>
+    </g>
+    <g class="message" data-participant-1="C_0017111168954217566751" data-participant-2="C_0008960354845392757372">
+      <polygon fill="#181818" points="76.3309,2107.9089,66.3309,2111.9089,76.3309,2115.9089,72.3309,2111.9089" style="stroke:#181818;stroke-width:1;"/>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="70.3309" x2="872.1622" y1="2111.9089" y2="2111.9089"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="111.3061" x="82.3309" y="2106.0999">unsigned long long</text>
+    </g>
+    <g class="message" data-participant-1="C_0008960354845392757372" data-participant-2="C_0009999851530951415081">
+      <polygon fill="#181818" points="1452.5402,2128.9089,1462.5402,2132.9089,1452.5402,2136.9089,1456.5402,2132.9089" style="stroke:#181818;stroke-width:1;"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="65.3309" x2="1458.5402" y1="2132.9089" y2="2132.9089"/>
+    </g>
+    <path d="M20,2147.9089 L93.288,2147.9089 L93.288,2157.6149 L83.288,2167.6149 L20,2167.6149 L20,2147.9089" fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/>
+    <rect fill="none" height="132.5301" style="stroke:#000000;stroke-width:1.5;" width="1780.3492" x="20" y="2147.9089"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="28.288" x="35" y="2162.8059">loop</text>
+    <text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="157.7169" x="108.288" y="2161.6678">[unsigned i = 0; i &lt; count; ++i]</text>
+    <g class="message" data-participant-1="C_0009999851530951415081" data-participant-2="C_0003618765333581065245">
+      <polygon fill="#181818" points="677.6049,2187.3209,667.6049,2191.3209,677.6049,2195.3209,673.6049,2191.3209" style="stroke:#181818;stroke-width:1;"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="671.6049" x2="1463.5402" y1="2191.3209" y2="2191.3209"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="215.5272" x="683.6049" y="2185.5119">yield_value(unsigned long long &amp;&amp;)</text>
+    </g>
+    <g class="message" data-participant-1="C_0003618765333581065245" data-participant-2="C_0009999851530951415081">
+      <polygon fill="#181818" points="1452.5402,2219.0269,1462.5402,2223.0269,1452.5402,2227.0269,1456.5402,2223.0269" style="stroke:#181818;stroke-width:1;"/>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="661.6049" x2="1458.5402" y1="2223.0269" y2="2223.0269"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="116.2851" x="668.6049" y="2217.2179">std::suspend_always</text>
+    </g>
+    <g class="message" data-participant-1="C_0009999851530951415081" data-participant-2="C_0008960354845392757372">
+      <polygon fill="#181818" points="76.3309,2268.4389,66.3309,2272.4389,76.3309,2276.4389,72.3309,2272.4389" style="stroke:#181818;stroke-width:1;"/>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="70.3309" x2="1463.5402" y1="2272.4389" y2="2272.4389"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="57.538" x="82.3309" y="2248.9239">«co_yield»</text>
+      <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="184.8602" x="82.3309" y="2266.6299">Generator&lt;unsigned long long&gt;</text>
+    </g>
+    <path d="M20,2294.4389 L93.288,2294.4389 L93.288,2304.145 L83.288,2314.145 L20,2314.145 L20,2294.4389" fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/>
+    <rect fill="none" height="295.9421" style="stroke:#000000;stroke-width:1.5;" width="975.6377" x="20" y="2294.4389"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="28.288" x="35" y="2309.336">loop</text>
+    <text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="150.6109" x="108.288" y="2308.1979">[int j = 0; template_gen; ++j]</text>
+    <g class="message" data-participant-1="C_0008960354845392757372" data-participant-2="C_0017111168954217566751">
+      <polygon fill="#181818" points="856.1622,2333.851,866.1622,2337.851,856.1622,2341.851,860.1622,2337.851" style="stroke:#181818;stroke-width:1;"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="65.3309" x2="862.1622" y1="2337.851" y2="2337.851"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="4.303" x="72.3309" y="2332.042">[</text>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="92.0401" x="76.6339" y="2332.042">operator bool()</text>
+      <text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="4.303" x="168.674" y="2332.042">]</text>
+    </g>
+    <g class="message" data-participant-1="C_0017111168954217566751" data-participant-2="C_0017111168954217566751">
+      <line style="stroke:#181818;stroke-width:1;" x1="883.1622" x2="925.1622" y1="2369.557" y2="2369.557"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="925.1622" x2="925.1622" y1="2369.557" y2="2382.557"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="884.1622" x2="925.1622" y1="2382.557" y2="2382.557"/>
+      <polygon fill="#181818" points="894.1622,2378.557,884.1622,2382.557,894.1622,2386.557,890.1622,2382.557" style="stroke:#181818;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="22.334" x="890.1622" y="2363.748">fill()</text>
+    </g>
+    <g class="message" data-participant-1="C_0017111168954217566751" data-participant-2="C_0008960354845392757372">
+      <polygon fill="#181818" points="76.3309,2440.263,66.3309,2444.263,76.3309,2448.263,72.3309,2444.263" style="stroke:#181818;stroke-width:1;"/>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="70.3309" x2="872.1622" y1="2444.263" y2="2444.263"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="30.927" x="82.3309" y="2438.454">_Bool</text>
+    </g>
+    <g class="message" data-participant-1="C_0008960354845392757372" data-participant-2="C_0017111168954217566751">
+      <polygon fill="#181818" points="856.1622,2471.969,866.1622,2475.969,856.1622,2479.969,860.1622,2475.969" style="stroke:#181818;stroke-width:1;"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="65.3309" x2="862.1622" y1="2475.969" y2="2475.969"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="69.3811" x="72.3309" y="2470.16">operator()()</text>
+    </g>
+    <g class="message" data-participant-1="C_0017111168954217566751" data-participant-2="C_0017111168954217566751">
+      <line style="stroke:#181818;stroke-width:1;" x1="883.1622" x2="925.1622" y1="2507.675" y2="2507.675"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="925.1622" x2="925.1622" y1="2507.675" y2="2520.675"/>
+      <line style="stroke:#181818;stroke-width:1;" x1="884.1622" x2="925.1622" y1="2520.675" y2="2520.675"/>
+      <polygon fill="#181818" points="894.1622,2516.675,884.1622,2520.675,894.1622,2524.675,890.1622,2520.675" style="stroke:#181818;stroke-width:1;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="22.334" x="890.1622" y="2501.866">fill()</text>
+    </g>
+    <g class="message" data-participant-1="C_0017111168954217566751" data-participant-2="C_0008960354845392757372">
+      <polygon fill="#181818" points="76.3309,2578.3811,66.3309,2582.3811,76.3309,2586.3811,72.3309,2582.3811" style="stroke:#181818;stroke-width:1;"/>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="70.3309" x2="872.1622" y1="2582.3811" y2="2582.3811"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="111.3061" x="82.3309" y="2576.5721">unsigned long long</text>
+    </g>
+    <line style="stroke:#000000;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="10" x2="1810.3492" y1="2598.3811" y2="2598.3811"/>
+    <text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="128.7981" x="15" y="2610.14">[const std::exception &amp;]</text>
+    <line style="stroke:#000000;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="10" x2="1810.3492" y1="2615.3629" y2="2615.3629"/>
+    <text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="16.6869" x="15" y="2627.1219">[...]</text>
   </g>
 </svg>
