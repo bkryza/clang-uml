@@ -320,7 +320,7 @@ public:
 
     void remove(const std::set<eid_t> &element_ids)
     {
-        for (const auto id : element_ids) {
+        for (const auto &id : element_ids) {
             get_and_remove(id);
         }
     }

@@ -655,9 +655,8 @@ void translation_unit_visitor::process_record_parent_by_type(eid_t parent_id,
                     std::to_string(*destination_multiplicity);
             }
 
-            parent_class.value().add_relationship(
-                {hint, common::to_id(c.full_name(false)), access, label, "",
-                    destination_multiplicity_str});
+            parent_class.value().add_relationship({hint, c.id(), access, label,
+                "", destination_multiplicity_str});
         }
         else
             c.set_name(parent_class.value().name() + "##" +
@@ -668,7 +667,7 @@ void translation_unit_visitor::process_record_parent_by_type(eid_t parent_id,
             parent_class.value().name() + "##" + decl->getNameAsString());
     }
 
-    c.set_id(common::to_id(c.full_name(false)));
+    c.set_id(common::to_id(*decl));
 
     if (!(decl->getNameAsString().empty())) {
         // Don't add anonymous structs as contained in the class
@@ -690,6 +689,8 @@ bool translation_unit_visitor::add_or_update(
 
     id_mapper().add(cls->getID(), cls_id);
 
+    LOG_DBG("CHECKING FOR EXISTENCE OF {}", cls_id.value());
+
     auto maybe_existing_model = diagram().find<ElementT>(cls_id);
 
     ElementT &class_model =
@@ -697,7 +698,9 @@ bool translation_unit_visitor::add_or_update(
 
     auto id = class_model.id();
 
-    if (cls->isCompleteDefinition() && !class_model.complete()) {
+    auto is_complete_definition{cls->isCompleteDefinition()};
+
+    if (is_complete_definition && !class_model.complete()) {
         process_declaration(*cls, class_model);
 
         // Update the source location for the element, otherwise
@@ -706,7 +709,7 @@ bool translation_unit_visitor::add_or_update(
         set_source_location(*cls, class_model);
     }
 
-    if (cls->isCompleteDefinition()) {
+    if (is_complete_definition) {
         if (maybe_existing_model &&
             config().package_type() == config::package_type_t::kDirectory) {
             // Move the class model to current filesystem path
@@ -727,14 +730,18 @@ bool translation_unit_visitor::add_or_update(
     forward_declarations_.get<ElementT>().erase(id);
 
     if constexpr (std::is_same_v<T, clang::ClassTemplateSpecializationDecl>) {
-        if (!class_model.template_specialization_found()) {
+        if (!class_model.template_specialization_found() &&
+            cls->getSpecializedTemplate() != nullptr) {
             // Only do this if we haven't found a better specialization
             // during construction of the template specialization
-            const eid_t ast_id{cls->getSpecializedTemplate()->getID()};
-            const auto maybe_id = id_mapper().get_global_id(ast_id);
-            if (maybe_id.has_value())
-                class_model.add_relationship(
-                    {relationship_t::kInstantiation, maybe_id.value()});
+            //            const eid_t
+            //            ast_id{cls->getSpecializedTemplate()->getID()};
+            eid_t ast_id{common::to_id(*cls->getSpecializedTemplate())};
+            //            const auto maybe_id =
+            //            id_mapper().get_global_id(ast_id); if
+            //            (maybe_id.has_value())
+            class_model.add_relationship(
+                {relationship_t::kInstantiation, ast_id});
         }
     }
 

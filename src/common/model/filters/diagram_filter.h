@@ -666,7 +666,7 @@ private:
                     // Now search current effective_context elements and add any
                     // elements of any type in the diagram which have a
                     // relationship to that element
-                    for (const auto element_id : effective_context) {
+                    for (const auto &element_id : effective_context) {
                         const auto &maybe_element = d.get(element_id);
 
                         if (!maybe_element)
@@ -740,7 +740,7 @@ private:
                 // Now search current effective_context elements and add any
                 // elements of any type in the diagram which have a
                 // relationship to that element
-                for (const auto element_id : effective_context) {
+                for (const auto &element_id : effective_context) {
                     const auto &maybe_element = d.get(element_id);
 
                     if (!maybe_element)

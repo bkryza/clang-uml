@@ -615,7 +615,7 @@ bool template_builder<VisitorT>::simplify_system_template(
 
     if (simplified != full_name) {
         ct.set_type(simplified);
-        ct.set_id(common::to_id(simplified));
+        //        ct.set_id(common::to_id(simplified));
         ct.clear_params();
         return true;
     }
@@ -676,8 +676,8 @@ void template_builder<VisitorT>::build_from_template_declaration(
                                 templated_element.value().add_relationship(
                                     {relationship_t::kConstraint,
                                         id_mapper()
-                                            .get_global_id(
-                                                eid_t{named_concept->getID()})
+                                            .get_global_id(eid_t{
+                                                common::to_id(*named_concept)})
                                             .value(),
                                         model::access_t::kNone,
                                         ct.name().value()});
@@ -766,7 +766,8 @@ void template_builder<VisitorT>::build_from_template_specialization_type(
         template_type.desugar(),
         template_type.getTemplateName().getAsTemplateDecl()->getASTContext());
 
-    auto *template_decl{template_type.getTemplateName().getAsTemplateDecl()};
+    const auto *template_decl{
+        template_type.getTemplateName().getAsTemplateDecl()};
 
     build(location_declaration, template_instantiation, cls, template_decl,
         template_type.template_arguments(), full_template_specialization_name,
@@ -890,12 +891,14 @@ void template_builder<VisitorT>::build(const clang::NamedDecl &location_decl,
 
     if constexpr (std::is_same_v<typename VisitorT::diagram_t,
                       class_diagram::model::diagram>) {
-        find_instantiation_relationships(template_instantiation,
-            eid_t{template_decl->getID()}, full_template_specialization_name);
+        if (templated_class_decl != nullptr) {
+            find_instantiation_relationships(template_instantiation,
+                common::to_id(*templated_class_decl),
+                full_template_specialization_name);
+        }
     }
 
-    template_instantiation.set_id(
-        common::to_id(template_instantiation.full_name(false)));
+    // template_instantiation.set_id(common::to_id(*template_decl));
 
     visitor_.set_source_location(location_decl, template_instantiation);
 }
@@ -933,13 +936,12 @@ void template_builder<VisitorT>::build_from_class_template_specialization(
         template_instantiation, template_decl);
 
     // Update the id after the template parameters are processed
-    template_instantiation.set_id(
-        common::to_id(template_instantiation.full_name(false)));
+    template_instantiation.set_id(common::to_id(template_specialization));
 
     if constexpr (std::is_same_v<typename VisitorT::diagram_t,
                       class_diagram::model::diagram>) {
         find_instantiation_relationships(template_instantiation,
-            eid_t{template_specialization.getID()}, qualified_name);
+            common::to_id(*template_decl), qualified_name);
     }
 
     visitor_.set_source_location(
@@ -1045,8 +1047,8 @@ void template_builder<VisitorT>::process_template_arguments(
     }
 
     // Update id
-    template_instantiation.set_id(
-        common::to_id(template_instantiation.full_name(false)));
+    //    template_instantiation.set_id(common::to_id(*template_decl));
+    // common::to_id(template_instantiation.full_name(false)));
 }
 
 template <typename VisitorT>
@@ -1650,12 +1652,23 @@ template_builder<VisitorT>::try_as_template_specialization_type(
         visitor_.create_element(nested_template_type->getTemplateName()
                                     .getAsTemplateDecl()
                                     ->getTemplatedDecl());
+
+    nested_template_instantiation->set_id(
+        common::to_id(*nested_template_type->getTemplateName()
+                           .getAsTemplateDecl()
+                           ->getTemplatedDecl()));
+
     build_from_template_specialization_type(location_decl,
         *nested_template_instantiation, cls, *nested_template_type,
         diagram().should_include(
             namespace_{template_decl->getQualifiedNameAsString()})
             ? std::make_optional(&template_instantiation)
             : parent);
+
+    nested_template_instantiation->set_id(
+        common::to_id(*nested_template_type->getTemplateName()
+                           .getAsTemplateDecl()
+                           ->getTemplatedDecl()));
 
     argument.set_id(nested_template_instantiation->id());
 
@@ -1668,8 +1681,8 @@ template_builder<VisitorT>::try_as_template_specialization_type(
     simplify_system_template(
         argument, argument.to_string(using_namespace(), false));
 
-    argument.set_id(
-        common::to_id(argument.to_string(using_namespace(), false)));
+    //    argument.set_id(
+    //        common::to_id(argument.to_string(using_namespace(), false)));
 
     const auto nested_template_instantiation_full_name =
         nested_template_instantiation->full_name(false);
@@ -1802,7 +1815,7 @@ template_builder<VisitorT>::try_as_record_type(
         common::to_string(type, template_decl->getASTContext()));
 
     argument.set_type(type_name);
-    const auto type_id = common::to_id(type_name);
+    const auto type_id = common::to_id(type, template_decl->getASTContext());
 
     argument.set_id(type_id);
 
@@ -1870,13 +1883,12 @@ std::optional<template_parameter> template_builder<VisitorT>::try_as_enum_type(
 
     auto type_name = common::to_string(type, template_decl->getASTContext());
     argument.set_type(type_name);
-    const auto type_id = common::to_id(type_name);
-    argument.set_id(type_id);
+    argument.set_id(common::to_id(type, template_decl->getASTContext()));
 
     if (enum_type->getAsTagDecl() != nullptr &&
         config_.generate_template_argument_dependencies()) {
         template_instantiation.add_relationship(
-            {relationship_t::kDependency, type_id});
+            {relationship_t::kDependency, *argument.id()});
     }
 
     return argument;

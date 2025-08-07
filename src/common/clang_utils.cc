@@ -18,6 +18,7 @@
 
 #include "clang_utils.h"
 
+#include "clang/Index/USRGeneration.h"
 #include <clang/Lex/Preprocessor.h>
 
 namespace clanguml::common {
@@ -461,17 +462,36 @@ bool is_subexpr_of(const clang::Stmt *parent_stmt, const clang::Stmt *sub_stmt)
         [sub_stmt](const auto *e) { return is_subexpr_of(e, sub_stmt); });
 }
 
-template <> eid_t to_id(const std::string &full_name)
-{
-    return static_cast<eid_t>(
-        static_cast<uint64_t>(std::hash<std::string>{}(full_name)));
-}
+// eid_t to_id(const std::string &full_name)
+//{
+//     return static_cast<eid_t>(
+//         static_cast<uint64_t>(std::hash<std::string>{}(full_name)));
+// }
+
+eid_t to_id(const clang::Decl &decl) { return eid_t(to_usr(decl)); }
 
 eid_t to_id(const clang::QualType &type, const clang::ASTContext &ctx)
 {
-    return to_id(common::to_string(type, ctx));
+    return eid_t(to_usr(type, ctx));
 }
 
+eid_t to_id(
+    const clang::TemplateSpecializationType &type, const clang::ASTContext &ctx)
+{
+    return eid_t(to_usr(type, ctx));
+}
+
+eid_t to_id(const std::string &file)
+{
+    throw std::logic_error("Function not yet implemented");
+}
+
+eid_t to_id(const std::filesystem::path &file)
+{
+    return eid_t(file.lexically_normal().string());
+}
+
+/*
 template <> eid_t to_id(const clang::NamespaceDecl &declaration)
 {
     return to_id(get_qualified_name(declaration));
@@ -537,6 +557,63 @@ template <> eid_t to_id(const clang::TemplateArgument &template_argument)
     }
 
     throw std::runtime_error("Cannot generate id for template argument");
+}
+*/
+usr_t to_usr(const clang::Decl &decl)
+{
+    clang::SmallVector<char, 1024> buf{};
+    if (clang::index::generateUSRForDecl(&decl, buf)) {
+        decl.dump();
+        return {};
+    }
+
+    return usr_t{std::string{buf.data(), buf.size()}};
+}
+
+usr_t to_usr(
+    const clang::TemplateSpecializationType &type, const clang::ASTContext &ctx)
+{
+    llvm::SmallString<128> usr_buf;
+    clang::QualType qt(&type, 0);
+    if (!clang::index::generateUSRForType(qt,
+            const_cast<clang::ASTContext &>(ctx),
+            usr_buf)) {
+        llvm::outs() << "TemplateSpecializationType USR: " << usr_buf << '\n';
+    }
+
+    return usr_t(usr_buf.c_str());
+}
+
+usr_t to_usr(const clang::QualType &type, const clang::ASTContext &ctx)
+{
+    const clang::Type *T = type.getTypePtrOrNull();
+    if (!T)
+        return {};
+
+    // Unwrap typedefs and sugar
+    T = T->getUnqualifiedDesugaredType();
+
+    if (const auto *RT = llvm::dyn_cast<clang::RecordType>(T)) {
+        return to_usr(*RT->getDecl());
+    }
+    else if (const auto *ET = llvm::dyn_cast<clang::EnumType>(T)) {
+        return to_usr(*ET->getDecl());
+    }
+    else if (const auto *TT = llvm::dyn_cast<clang::TypedefType>(T)) {
+        return to_usr(*TT->getDecl());
+    }
+    else if (const auto *TP = llvm::dyn_cast<clang::TemplateTypeParmType>(T)) {
+        return to_usr(*TP->getDecl());
+    }
+    else if (const auto *TS =
+                 llvm::dyn_cast<clang::TemplateSpecializationType>(T)) {
+        if (auto *TD = TS->getTemplateName().getAsTemplateDecl()) {
+            return to_usr(*TD);
+        }
+    }
+
+    // Not a type that maps to a Decl with a USR
+    return {};
 }
 
 std::pair<common::model::namespace_, std::string> split_ns(

@@ -314,6 +314,8 @@ TEST_CASE("Test subclasses regexp filter")
 {
     using clanguml::class_diagram::model::class_method;
     using clanguml::common::to_id;
+    using clanguml::common::usr_t;
+    using clanguml::common::eid_t;
     using clanguml::common::model::access_t;
     using clanguml::common::model::diagram_filter;
     using clanguml::common::model::namespace_;
@@ -338,28 +340,28 @@ TEST_CASE("Test subclasses regexp filter")
     p->set_name("ns2");
     diagram.add(namespace_{"ns1"}, std::move(p));
 
-    auto base_id = to_id("ns1::ns2::BaseA"s);
+    auto base_id = eid_t{usr_t{"ns1::ns2::BaseA"s}};
     auto c = std::make_unique<class_>(config.using_namespace());
     c->set_namespace(namespace_{"ns1::ns2"});
     c->set_name("BaseA");
-    c->set_id(base_id);
+    c->set_id(eid_t{base_id});
     diagram.add(namespace_{"ns1::ns2"}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
     c->set_namespace(namespace_{"ns1::ns2"});
     c->set_name("A1");
-    c->set_id(to_id("ns1::ns2::A1"s));
+    c->set_id(eid_t{usr_t{"ns1::ns2::A1"s}});
     c->add_relationship(relationship{base_id});
     diagram.add(namespace_{"ns1::ns2"}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
     c->set_namespace(namespace_{"ns1::ns2"});
     c->set_name("A2");
-    c->set_id(to_id("ns1::ns2::A2"s));
+    c->set_id(eid_t{usr_t{"ns1::ns2::A2"s}});
     c->add_relationship(relationship{base_id});
     diagram.add(namespace_{"ns1::ns2"}, std::move(c));
 
-    auto b_id = to_id("ns1::ns2::BaseB"s);
+    auto b_id = eid_t{usr_t{"ns1::ns2::BaseB"s}};
     c = std::make_unique<class_>(config.using_namespace());
     c->set_namespace(namespace_{"ns1::ns2"});
     c->set_name("BaseB");
@@ -369,18 +371,18 @@ TEST_CASE("Test subclasses regexp filter")
     c = std::make_unique<class_>(config.using_namespace());
     c->set_namespace(namespace_{"ns1::ns2"});
     c->set_name("B1");
-    c->set_id(to_id("ns1::ns2::B1"s));
+    c->set_id(eid_t{usr_t{"ns1::ns2::B1"s}});
     c->add_relationship(relationship{b_id});
     diagram.add(namespace_{"ns1::ns2"}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
     c->set_namespace(namespace_{"ns1::ns2"});
     c->set_name("B2");
-    c->set_id(to_id("ns1::ns2::B2"s));
+    c->set_id(eid_t{usr_t{"ns1::ns2::B2"s}});
     c->add_relationship(relationship{b_id});
     diagram.add(namespace_{"ns1::ns2"}, std::move(c));
 
-    auto common_id = to_id("ns1::ns2::Common"s);
+    auto common_id = eid_t{usr_t{"ns1::ns2::Common"s}};
     c = std::make_unique<class_>(config.using_namespace());
     c->set_namespace(namespace_{"ns1::ns2"});
     c->set_name("Common");
@@ -390,7 +392,7 @@ TEST_CASE("Test subclasses regexp filter")
     c = std::make_unique<class_>(config.using_namespace());
     c->set_namespace(namespace_{"ns1::ns2"});
     c->set_name("C1");
-    c->set_id(to_id("ns1::ns2::C1"s));
+    c->set_id(eid_t{usr_t{"ns1::ns2::C1"s}});
     c->add_relationship(relationship{common_id});
     diagram.add(namespace_{"ns1::ns2"}, std::move(c));
 
@@ -408,6 +410,8 @@ TEST_CASE("Test parents regexp filter")
 {
     using clanguml::class_diagram::model::class_method;
     using clanguml::common::to_id;
+    using clanguml::common::usr_t;
+    using clanguml::common::eid_t;
     using clanguml::common::model::access_t;
     using clanguml::common::model::diagram_filter;
     using clanguml::common::model::namespace_;
@@ -432,7 +436,7 @@ TEST_CASE("Test parents regexp filter")
     p->set_name("ns2");
     diagram.add(namespace_{"ns1"}, std::move(p));
 
-    auto basea_id = to_id("ns1::ns2::BaseA"s);
+    auto basea_id = eid_t{usr_t{"ns1::ns2::BaseA"s}};
     auto c = std::make_unique<class_>(config.using_namespace());
     c->set_namespace(namespace_{"ns1::ns2"});
     c->set_name("BaseA");
@@ -442,18 +446,18 @@ TEST_CASE("Test parents regexp filter")
     c = std::make_unique<class_>(config.using_namespace());
     c->set_namespace(namespace_{"ns1::ns2"});
     c->set_name("A1");
-    c->set_id(to_id("ns1::ns2::A1"s));
+    c->set_id(eid_t{usr_t{"ns1::ns2::A1"s}});
     c->add_relationship(relationship{basea_id});
     diagram.add(namespace_{"ns1::ns2"}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
     c->set_namespace(namespace_{"ns1::ns2"});
     c->set_name("A2");
-    c->set_id(to_id("ns1::ns2::A2"s));
+    c->set_id(eid_t{usr_t{"ns1::ns2::A2"s}});
     c->add_relationship(relationship{basea_id});
     diagram.add(namespace_{"ns1::ns2"}, std::move(c));
 
-    auto baseb_id = to_id("ns1::ns2::BaseB"s);
+    auto baseb_id = eid_t{usr_t{"ns1::ns2::BaseB"s}};
     c = std::make_unique<class_>(config.using_namespace());
     c->set_namespace(namespace_{"ns1::ns2"});
     c->set_name("BaseB");
@@ -463,18 +467,18 @@ TEST_CASE("Test parents regexp filter")
     c = std::make_unique<class_>(config.using_namespace());
     c->set_namespace(namespace_{"ns1::ns2"});
     c->set_name("B1");
-    c->set_id(to_id("ns1::ns2::B1"s));
+    c->set_id(eid_t{usr_t{"ns1::ns2::B1"s}});
     c->add_relationship(relationship{baseb_id});
     diagram.add(namespace_{"ns1::ns2"}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
     c->set_namespace(namespace_{"ns1::ns2"});
     c->set_name("B2");
-    c->set_id(to_id("ns1::ns2::B2"s));
+    c->set_id(eid_t{usr_t{"ns1::ns2::B2"s}});
     c->add_relationship(relationship{baseb_id});
     diagram.add(namespace_{"ns1::ns2"}, std::move(c));
 
-    auto common_id = to_id("ns1::ns2::Common"s);
+    auto common_id = eid_t{usr_t{"ns1::ns2::Common"s}};
     c = std::make_unique<class_>(config.using_namespace());
     c->set_namespace(namespace_{"ns1::ns2"});
     c->set_name("Common");
@@ -484,7 +488,7 @@ TEST_CASE("Test parents regexp filter")
     c = std::make_unique<class_>(config.using_namespace());
     c->set_namespace(namespace_{"ns1::ns2"});
     c->set_name("C3");
-    c->set_id(to_id("ns1::ns2::C3"s));
+    c->set_id(eid_t{usr_t{"ns1::ns2::C3"s}});
     c->add_relationship(relationship{common_id});
     diagram.add(namespace_{"ns1::ns2"}, std::move(c));
 
@@ -502,6 +506,8 @@ TEST_CASE("Test specializations regexp filter")
 {
     using clanguml::class_diagram::model::class_method;
     using clanguml::common::to_id;
+    using clanguml::common::usr_t;
+    using clanguml::common::eid_t;
     using clanguml::common::model::access_t;
     using clanguml::common::model::diagram_filter;
     using clanguml::common::model::namespace_;
@@ -519,7 +525,7 @@ TEST_CASE("Test specializations regexp filter")
     auto &config = *cfg.diagrams["regex_specializations_test"];
     clanguml::class_diagram::model::diagram diagram;
 
-    const auto template_id = to_id("A<Ts...>"s);
+    const auto template_id = eid_t{usr_t{"A<Ts...>"s}};
 
     auto c = std::make_unique<class_>(config.using_namespace());
     c->set_name("A");
@@ -531,7 +537,7 @@ TEST_CASE("Test specializations regexp filter")
     c = std::make_unique<class_>(config.using_namespace());
     c->set_name("A");
     c->add_template(template_parameter::make_argument("double"));
-    c->set_id(to_id("A<double>"s));
+    c->set_id(eid_t{usr_t{"A<double>"s}});
     c->add_relationship(
         relationship{relationship_t::kInstantiation, template_id});
     diagram.add(namespace_{}, std::move(c));
@@ -539,7 +545,7 @@ TEST_CASE("Test specializations regexp filter")
     c = std::make_unique<class_>(config.using_namespace());
     c->set_name("A");
     c->add_template(template_parameter::make_argument("int"));
-    c->set_id(to_id("A<int>"s));
+    c->set_id(eid_t{usr_t{"A<int>"s}});
     c->add_relationship(
         relationship{relationship_t::kInstantiation, template_id});
     diagram.add(namespace_{}, std::move(c));
@@ -548,7 +554,7 @@ TEST_CASE("Test specializations regexp filter")
     c->set_name("A");
     c->add_template(template_parameter::make_argument("int"));
     c->add_template(template_parameter::make_argument("std::string"));
-    c->set_id(to_id("A<int,std::string>"s));
+    c->set_id(eid_t{usr_t{"A<int,std::string>"s}});
     c->add_relationship(
         relationship{relationship_t::kInstantiation, template_id});
     diagram.add(namespace_{}, std::move(c));
@@ -567,6 +573,8 @@ TEST_CASE("Test context regexp filter")
     using clanguml::class_diagram::model::class_;
     using clanguml::class_diagram::model::class_method;
     using clanguml::common::to_id;
+    using clanguml::common::usr_t;
+    using clanguml::common::eid_t;
     using clanguml::common::model::access_t;
     using clanguml::common::model::diagram_filter;
     using clanguml::common::model::namespace_;
@@ -586,51 +594,51 @@ TEST_CASE("Test context regexp filter")
 
     auto c = std::make_unique<class_>(config.using_namespace());
     c->set_name("A");
-    c->set_id(to_id("A"s));
+    c->set_id(eid_t{usr_t{"A"s}});
     diagram.add(namespace_{}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
     c->set_name("A1");
-    c->set_id(to_id("A1"s));
+    c->set_id(eid_t{usr_t{"A1"s}});
     c->add_relationship(
-        relationship{relationship_t::kAssociation, to_id("A"s)});
+        relationship{relationship_t::kAssociation, eid_t{usr_t{"A"s}}});
     diagram.add(namespace_{}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
     c->set_name("A2");
-    c->set_id(to_id("A2"s));
-    c->add_relationship(relationship{relationship_t::kDependency, to_id("A"s)});
+    c->set_id(eid_t{usr_t{"A2"s}});
+    c->add_relationship(relationship{relationship_t::kDependency, eid_t{usr_t{"A"s}}});
     diagram.add(namespace_{}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
     c->set_name("A21");
-    c->set_id(to_id("A21"s));
+    c->set_id(eid_t{usr_t{"A21"s}});
     c->add_relationship(
-        relationship{relationship_t::kDependency, to_id("A2"s)});
+        relationship{relationship_t::kDependency, eid_t{usr_t{"A2"s}}});
     diagram.add(namespace_{}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
     c->set_name("B");
-    c->set_id(to_id("B"s));
+    c->set_id(eid_t{usr_t{"B"s}});
     diagram.add(namespace_{}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
     c->set_name("B1");
-    c->set_id(to_id("B1"s));
+    c->set_id(eid_t{usr_t{"B1"s}});
     c->add_relationship(
-        relationship{relationship_t::kAssociation, to_id("B"s)});
+        relationship{relationship_t::kAssociation, eid_t{usr_t{"B"s}}});
     diagram.add(namespace_{}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
     c->set_name("C");
-    c->set_id(to_id("C"s));
+    c->set_id(eid_t{usr_t{"C"s}});
     diagram.add(namespace_{}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
     c->set_name("C1");
-    c->set_id(to_id("C1"s));
+    c->set_id(eid_t{usr_t{"C1"s}});
     c->add_relationship(
-        relationship{relationship_t::kAssociation, to_id("C"s)});
+        relationship{relationship_t::kAssociation, eid_t{usr_t{"C"s}}});
     diagram.add(namespace_{}, std::move(c));
 
     diagram.set_complete(true);
@@ -656,6 +664,8 @@ TEST_CASE("Test dependencies regexp filter")
     using clanguml::class_diagram::model::class_;
     using clanguml::class_diagram::model::class_method;
     using clanguml::common::to_id;
+    using clanguml::common::usr_t;
+    using clanguml::common::eid_t;
     using clanguml::common::model::access_t;
     using clanguml::common::model::diagram_filter;
     using clanguml::common::model::namespace_;
@@ -675,48 +685,48 @@ TEST_CASE("Test dependencies regexp filter")
 
     auto c = std::make_unique<class_>(config.using_namespace());
     c->set_name("A");
-    c->set_id(to_id("A"s));
+    c->set_id(eid_t{usr_t{"A"s}});
     diagram.add(namespace_{}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
     c->set_name("A1");
-    c->set_id(to_id("A1"s));
-    c->add_relationship(relationship{relationship_t::kDependency, to_id("A"s)});
+    c->set_id(eid_t{usr_t{"A1"s}});
+    c->add_relationship(relationship{relationship_t::kDependency, eid_t{usr_t{"A"s}}});
     diagram.add(namespace_{}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
     c->set_name("A2");
-    c->set_id(to_id("A2"s));
-    c->add_relationship(relationship{relationship_t::kDependency, to_id("A"s)});
+    c->set_id(eid_t{usr_t{"A2"s}});
+    c->add_relationship(relationship{relationship_t::kDependency, eid_t{usr_t{"A"s}}});
     diagram.add(namespace_{}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
     c->set_name("A21");
-    c->set_id(to_id("A21"s));
+    c->set_id(eid_t{usr_t{"A21"s}});
     c->add_relationship(
-        relationship{relationship_t::kDependency, to_id("A2"s)});
+        relationship{relationship_t::kDependency, eid_t{usr_t{"A2"s}}});
     diagram.add(namespace_{}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
     c->set_name("B");
-    c->set_id(to_id("B"s));
+    c->set_id(eid_t{usr_t{"B"s}});
     diagram.add(namespace_{}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
     c->set_name("B1");
-    c->set_id(to_id("B1"s));
-    c->add_relationship(relationship{relationship_t::kDependency, to_id("B"s)});
+    c->set_id(eid_t{usr_t{"B1"s}});
+    c->add_relationship(relationship{relationship_t::kDependency, eid_t{usr_t{"B"s}}});
     diagram.add(namespace_{}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
     c->set_name("C");
-    c->set_id(to_id("C"s));
+    c->set_id(eid_t{usr_t{"C"s}});
     diagram.add(namespace_{}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
     c->set_name("C1");
-    c->set_id(to_id("C1"s));
-    c->add_relationship(relationship{relationship_t::kDependency, to_id("C"s)});
+    c->set_id(eid_t{usr_t{"C1"s}});
+    c->add_relationship(relationship{relationship_t::kDependency, eid_t{usr_t{"C"s}}});
     diagram.add(namespace_{}, std::move(c));
 
     diagram.set_complete(true);
@@ -741,6 +751,8 @@ TEST_CASE("Test dependants regexp filter")
     using clanguml::class_diagram::model::class_;
     using clanguml::class_diagram::model::class_method;
     using clanguml::common::to_id;
+    using clanguml::common::usr_t;
+    using clanguml::common::eid_t;
     using clanguml::common::model::access_t;
     using clanguml::common::model::diagram_filter;
     using clanguml::common::model::namespace_;
@@ -760,48 +772,48 @@ TEST_CASE("Test dependants regexp filter")
 
     auto c = std::make_unique<class_>(config.using_namespace());
     c->set_name("A");
-    c->set_id(to_id("A"s));
+    c->set_id(eid_t{usr_t{"A"s}});
     diagram.add(namespace_{}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
     c->set_name("A1");
-    c->set_id(to_id("A1"s));
-    c->add_relationship(relationship{relationship_t::kDependency, to_id("A"s)});
+    c->set_id(eid_t{usr_t{"A1"s}});
+    c->add_relationship(relationship{relationship_t::kDependency, eid_t{usr_t{"A"s}}});
     diagram.add(namespace_{}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
     c->set_name("A2");
-    c->set_id(to_id("A2"s));
-    c->add_relationship(relationship{relationship_t::kDependency, to_id("A"s)});
+    c->set_id(eid_t{usr_t{"A2"s}});
+    c->add_relationship(relationship{relationship_t::kDependency, eid_t{usr_t{"A"s}}});
     diagram.add(namespace_{}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
     c->set_name("A21");
-    c->set_id(to_id("A21"s));
+    c->set_id(eid_t{usr_t{"A21"s}});
     c->add_relationship(
-        relationship{relationship_t::kDependency, to_id("A2"s)});
+        relationship{relationship_t::kDependency, eid_t{usr_t{"A2"s}}});
     diagram.add(namespace_{}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
     c->set_name("B");
-    c->set_id(to_id("B"s));
+    c->set_id(eid_t{usr_t{"B"s}});
     diagram.add(namespace_{}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
     c->set_name("B1");
-    c->set_id(to_id("B1"s));
-    c->add_relationship(relationship{relationship_t::kDependency, to_id("B"s)});
+    c->set_id(eid_t{usr_t{"B1"s}});
+    c->add_relationship(relationship{relationship_t::kDependency, eid_t{usr_t{"B"s}}});
     diagram.add(namespace_{}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
     c->set_name("C");
-    c->set_id(to_id("C"s));
+    c->set_id(eid_t{usr_t{"C"s}});
     diagram.add(namespace_{}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
     c->set_name("C1");
-    c->set_id(to_id("C1"s));
-    c->add_relationship(relationship{relationship_t::kDependency, to_id("C"s)});
+    c->set_id(eid_t{usr_t{"C1"s}});
+    c->add_relationship(relationship{relationship_t::kDependency, eid_t{usr_t{"C"s}}});
     diagram.add(namespace_{}, std::move(c));
 
     diagram.set_complete(true);
@@ -824,6 +836,8 @@ TEST_CASE("Test dependants regexp filter")
 TEST_CASE("Test callee_types filter")
 {
     using clanguml::common::to_id;
+    using clanguml::common::usr_t;
+    using clanguml::common::eid_t;
     using clanguml::common::model::diagram_filter;
     using clanguml::common::model::diagram_filter_factory;
     using clanguml::sequence_diagram::model::class_;
@@ -843,23 +857,23 @@ TEST_CASE("Test callee_types filter")
 
     p = std::make_unique<function>(config.using_namespace());
     p->set_name("A");
-    p->set_id(to_id("A"s));
+    p->set_id(eid_t{usr_t{"A"s}});
     diagram.add_participant(std::move(p));
 
     p = std::make_unique<function_template>(config.using_namespace());
     p->set_name("A1");
-    p->set_id(to_id("A1"s));
+    p->set_id(eid_t{usr_t{"A1"s}});
     diagram.add_participant(std::move(p));
 
     p = std::make_unique<class_>(config.using_namespace());
     p->set_name("C1");
-    p->set_id(to_id("C1"s));
+    p->set_id(eid_t{usr_t{"C1"s}});
     diagram.add_participant(std::move(p));
 
     p = std::make_unique<method>(config.using_namespace());
     p->set_name("M1");
-    p->set_id(to_id("M1"s));
-    dynamic_cast<method *>(p.get())->set_class_id(to_id("C1"s));
+    p->set_id(eid_t{usr_t{"M1"s}});
+    dynamic_cast<method *>(p.get())->set_class_id(eid_t{usr_t{"C1"s}});
     diagram.add_participant(std::move(p));
 
     diagram.set_complete(true);
@@ -867,11 +881,11 @@ TEST_CASE("Test callee_types filter")
     diagram_filter &filter = *filter_ptr;
 
     CHECK(
-        filter.should_include(*diagram.get_participant<function>(to_id("A"s))));
+        filter.should_include(*diagram.get_participant<function>(eid_t{usr_t{"A"s}})));
     CHECK(filter.should_include(
-        *diagram.get_participant<function_template>(to_id("A1"s))));
+        *diagram.get_participant<function_template>(eid_t{usr_t{"A1"s}})));
     CHECK(!filter.should_include(
-        *diagram.get_participant<participant>(to_id("M1"s))));
+        *diagram.get_participant<participant>(eid_t{usr_t{"M1"s}})));
 }
 
 ///

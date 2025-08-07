@@ -47,6 +47,7 @@ model::access_t access_specifier_to_access_t(
     clang::AccessSpecifier access_specifier);
 model::access_t access_specifier_to_access_t(
     clang::ObjCIvarDecl::AccessControl access_specifier);
+
 /**
  * @brief Generate full qualified name for
  * [clang::TagDecl](https://clang.llvm.org/doxygen/classclang_1_1TagDecl.html)
@@ -183,12 +184,24 @@ bool is_subexpr_of(const clang::Stmt *parent_stmt, const clang::Stmt *sub_stmt);
  *
  * @{
  */
-template <typename T> eid_t to_id(const T &declaration);
+//template <typename T> eid_t to_id(const T &declaration);
 
-template <> eid_t to_id(const std::string &full_name);
+//template <> eid_t to_id(const std::string &full_name);
+
+usr_t to_usr(const clang::Decl& decl);
+
+usr_t to_usr(const clang::QualType &type, const clang::ASTContext &ctx);
+
+usr_t to_usr(const clang::TemplateSpecializationType &type, const clang::ASTContext &ctx);
 
 eid_t to_id(const clang::QualType &type, const clang::ASTContext &ctx);
 
+eid_t to_id(const clang::TemplateSpecializationType &type, const clang::ASTContext &ctx);
+
+eid_t to_id(const clang::Decl& decl);
+
+
+/*
 template <> eid_t to_id(const clang::NamespaceDecl &declaration);
 
 template <> eid_t to_id(const clang::CXXRecordDecl &declaration);
@@ -208,9 +221,14 @@ template <> eid_t to_id(const clang::TagDecl &declaration);
 template <> eid_t to_id(const clang::EnumType &type);
 
 template <> eid_t to_id(const clang::TemplateSpecializationType &type);
+*/
 
-template <> eid_t to_id(const std::filesystem::path &type);
+eid_t to_id(const std::string &type);
+
+eid_t to_id(const std::filesystem::path &type);
 /** @} */ // end of to_id
+
+
 
 /**
  * @brief Split qualified name to namespace and name

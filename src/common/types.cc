@@ -18,6 +18,7 @@
 
 #include "types.h"
 
+
 namespace clanguml::common {
 
 eid_t::eid_t()
@@ -35,6 +36,13 @@ eid_t::eid_t(int64_t id)
 eid_t::eid_t(type id)
     : value_{id}
     , is_global_{true}
+{
+}
+
+eid_t::eid_t(usr_t &&u)
+    : value_{static_cast<uint64_t>(std::hash<std::string>{}(u.id.value()))}
+    , is_global_{true}
+    , usr_{std::move(u.id.value())}
 {
 }
 

@@ -182,7 +182,7 @@ translation_unit_visitor::create_declaration(
 
         e.set_namespace(ns);
         e.set_name(parent_class.value().name(), enm_name);
-        e.set_id(common::to_id(e.full_name(false)));
+        e.set_id(common::to_id(*enm));
         e.add_relationship({relationship_t::kContainment, *parent_id_opt});
         e.nested(true);
     }
@@ -191,14 +191,14 @@ translation_unit_visitor::create_declaration(
 
         e.set_namespace(ns);
         e.set_name(parent_class.value().name(), enm_name);
-        e.set_id(common::to_id(e.full_name(false)));
+        e.set_id(common::to_id(*enm));
         e.add_relationship({relationship_t::kContainment, *parent_id_opt});
         e.nested(true);
     }
     else {
         e.set_name(enm_name);
         e.set_namespace(ns);
-        e.set_id(common::to_id(e.full_name(false)));
+        e.set_id(common::to_id(*enm));
     }
 
     id_mapper().add(enm->getID(), e.id());
@@ -310,10 +310,9 @@ bool translation_unit_visitor::VisitClassTemplateDecl(
 
     tbuilder().build_from_template_declaration(*c_ptr, *cls, *c_ptr);
 
-    // Override the id with the template id, for now we don't care about the
-    // underlying templated class id
-    const auto cls_full_name = c_ptr->full_name(false);
-    const auto id = common::to_id(cls_full_name);
+    const auto id = common::to_id(*cls);
+
+    LOG_DBG("=========== {}, {}", id.usr(), id.value());
 
     c_ptr->set_id(id);
     c_ptr->is_template(true);
@@ -938,7 +937,7 @@ std::unique_ptr<class_> translation_unit_visitor::create_declaration(
     if (!c.is_nested()) {
         c.set_name(common::get_tag_name(*cls));
         c.set_namespace(ns);
-        c.set_id(common::to_id(c.full_name(false)));
+        c.set_id(common::to_id(*cls));
     }
 
     c.is_struct(cls->isStruct());
@@ -971,7 +970,7 @@ translation_unit_visitor::create_objc_category_declaration(
     decl->getClassInterface()->getNameAsString();
     c.set_name(fmt::format("{}({})",
         decl->getClassInterface()->getNameAsString(), decl->getNameAsString()));
-    c.set_id(common::to_id(fmt::format("__objc__category__{}", c.name())));
+    c.set_id(common::to_id(*decl));
     c.is_category(true);
 
     process_comment(*decl, c);
@@ -1300,9 +1299,9 @@ void translation_unit_visitor::process_class_bases(
             common::access_specifier_to_access_t(base.getAccessSpecifier()),
             base.isVirtual()};
 
-        LOG_DBG("Found base class {} [{}] for class {}",
+        LOG_DBG("Found base class {} [{}, {}] for class {}",
             common::to_string(base.getType(), cls->getASTContext()),
-            parent_id.value(), c.name());
+            parent_id.usr(), parent_id.value(), c.name());
 
         c.add_relationship(std::move(cp));
     }
@@ -2004,6 +2003,8 @@ void translation_unit_visitor::process_function_parameter(
             templ != nullptr) {
             auto template_specialization_ptr =
                 std::make_unique<class_>(config().using_namespace());
+            template_specialization_ptr->set_id(
+                common::to_id(*templ, p.getASTContext()));
             tbuilder().build_from_template_specialization_type(p,
                 *template_specialization_ptr,
                 templ->getTemplateName().getAsTemplateDecl(), *templ, &c);
@@ -2175,8 +2176,7 @@ translation_unit_visitor::process_template_specialization(
 
     if (!template_instantiation.is_nested()) {
         template_instantiation.set_name(common::get_tag_name(*cls));
-        template_instantiation.set_id(
-            common::to_id(template_instantiation.full_name(false)));
+        template_instantiation.set_id(common::to_id(*cls));
     }
 
     process_comment(*cls, template_instantiation);
@@ -2301,12 +2301,20 @@ void translation_unit_visitor::process_field(
         // Build the template instantiation for the field type
         auto template_specialization_ptr =
             std::make_unique<class_>(config().using_namespace());
+
+        template_specialization_ptr->set_id(common::to_id(
+            *template_field_type, field_declaration.getASTContext()));
+
         tbuilder().build_from_template_specialization_type(field_declaration,
             *template_specialization_ptr,
             field_type->getAs<clang::TemplateSpecializationType>()
                 ->getTemplateName()
                 .getAsTemplateDecl(),
             *template_field_type, {&c});
+
+        template_specialization_ptr->set_id(common::to_id(
+            *template_field_type, field_declaration.getASTContext()));
+
         template_specialization_ptr->is_template(true);
 
         if (!field.skip_relationship() && template_specialization_ptr) {
@@ -2562,6 +2570,13 @@ void translation_unit_visitor::add_diagram_element(
 
 void translation_unit_visitor::add_class(std::unique_ptr<class_> &&c)
 {
+
+    if(c->full_name(false) == "clanguml::t00044::signal_handler<Ret(Args...),A>")
+        LOG_DBG("BBBBBBBBBBBBBBBBBBBBBBBBBBBB");
+
+    if (c->id().value() == 5659110981430392188)
+        LOG_DBG("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+
     if ((config().generate_packages() &&
             config().package_type() == config::package_type_t::kDirectory)) {
         assert(!c->file().empty());
@@ -2695,8 +2710,8 @@ void translation_unit_visitor::find_instantiation_relationships(
         }
     }
 
-    auto templated_decl_global_id =
-        id_mapper().get_global_id(templated_decl_id).value_or(eid_t{});
+    auto templated_decl_global_id = templated_decl_id;
+    // id_mapper().get_global_id(templated_decl_id).value_or(eid_t{});
 
     if (best_match_id.value() > 0) {
         destination = best_match_full_name;
@@ -2712,7 +2727,7 @@ void translation_unit_visitor::find_instantiation_relationships(
                 templated_decl_global_id});
         template_instantiation.template_specialization_found(true);
     }
-    else if (id_mapper().get_global_id(templated_decl_id).has_value()) {
+    else if (templated_decl_id.value() != 0) {
         template_instantiation.add_relationship(
             {common::model::relationship_t::kInstantiation, templated_decl_id});
         template_instantiation.template_specialization_found(true);

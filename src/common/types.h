@@ -17,6 +17,10 @@
  */
 #pragma once
 
+#include "model/namespace.h"
+
+#include "clang/Index/USRGeneration.h"
+
 #include <cassert>
 #include <cstdint>
 #include <optional>
@@ -25,9 +29,21 @@
 #include <variant>
 #include <vector>
 
-#include "model/namespace.h"
-
 namespace clanguml::common {
+
+struct usr_t {
+    usr_t()
+        : id{}
+    {
+    }
+
+    usr_t(std::string &&str)
+        : id{std::move(str)}
+    {
+    }
+
+    std::optional<std::string> id;
+};
 
 /**
  * @brief Universal class for representing all kinds of Id's in the diagram
@@ -35,8 +51,8 @@ namespace clanguml::common {
  *
  * This class provides a convenient way of representing id's in the diagram
  * model. The main problem it solves is that it allows to store both
- * Clang AST ID's (obtained using getID() method), which are local to a single
- * translation unit and have a type int64_t as well as global (across
+ * Clang AST ID's (obtained using getID() method), which are local to a
+ * single translation unit and have a type int64_t as well as global (across
  * multiple translation units) id's used by clang-uml in the intermediate
  * model (which are uint64_t).
  *
@@ -49,6 +65,8 @@ public:
     using type = uint64_t;
 
     eid_t();
+
+    explicit eid_t(usr_t &&u);
 
     explicit eid_t(int64_t id);
 
@@ -75,9 +93,12 @@ public:
 
     int64_t ast_local_value() const;
 
+    const std::string& usr() const { return usr_; }
+
 private:
     type value_;
     bool is_global_;
+    std::string usr_;
 };
 
 /**
@@ -108,7 +129,8 @@ std::string to_string(generator_type_t type);
  * something.
  *
  * This is not an owning type - it will not accept an rvalue - the actual
- * value must be stored somewhere else as lvalue or some kind of smart pointer.
+ * value must be stored somewhere else as lvalue or some kind of smart
+ * pointer.
  *
  * @note Probably unsafe - do not use at home.
  *
@@ -242,8 +264,8 @@ struct regex {
      * @brief Constructor
      *
      * @param r Parsed regular expression
-     * @param p Raw regular expression pattern used for regenerating config and
-     *          debugging
+     * @param p Raw regular expression pattern used for regenerating config
+     * and debugging
      */
     regex(std::regex r, std::string p)
         : regexp{std::move(r)}
@@ -288,8 +310,8 @@ template <typename T> struct or_regex {
      * @brief Constructor from regex
      *
      * @param r Parsed regular expression
-     * @param p Raw regular expression pattern used for regenerating config and
-     *          debugging
+     * @param p Raw regular expression pattern used for regenerating config
+     * and debugging
      */
     or_regex(std::regex r, std::string p)
         : value_{regex{std::move(r), std::move(p)}}
