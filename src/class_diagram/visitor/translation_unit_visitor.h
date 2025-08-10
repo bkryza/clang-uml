@@ -610,7 +610,7 @@ private:
 
     forward_declarations_t<class_, enum_> forward_declarations_;
 
-    std::map<int64_t /* local anonymous struct id */,
+    std::map<eid_t /* anonymous struct id */,
         std::tuple<std::string /* field name */, common::model::relationship_t,
             common::model::access_t,
             std::optional<size_t> /* destination_multiplicity */>>
@@ -641,10 +641,11 @@ void translation_unit_visitor::process_record_parent_by_type(eid_t parent_id,
     c.set_namespace(parent_ns);
     const auto cls_name = decl->getNameAsString();
     if (cls_name.empty()) {
+        const auto decl_id = common::to_id(*decl);
         // Nested structs can be anonymous
-        if (anonymous_struct_relationships_.count(decl->getID()) > 0) {
+        if (anonymous_struct_relationships_.count(decl_id) > 0) {
             const auto &[label, hint, access, destination_multiplicity] =
-                anonymous_struct_relationships_[decl->getID()];
+                anonymous_struct_relationships_[decl_id];
 
             c.set_name(parent_class.value().name() + "##" +
                 fmt::format("({})", label));

@@ -280,7 +280,9 @@ bool translation_unit_visitor::VisitTypeAliasTemplateDecl(
         const auto name = template_specialization_ptr->full_name(true);
         const auto id = template_specialization_ptr->id();
 
-        LOG_DBG("Adding class {} with id {}", name, id);
+        assert(id.value() != 0);
+
+        LOG_DBG("Adding class {} with id {} [{}]", name, id, id.usr());
 
         set_source_location(*cls, *template_specialization_ptr);
         set_owning_module(*cls, *template_specialization_ptr);
@@ -1241,8 +1243,8 @@ void translation_unit_visitor::process_objc_ivar(
             field_type->getAsRecordDecl()->getNameAsString().empty()) {
             // Relationships to fields whose type is an anonymous and nested
             // struct have to be handled separately here
-            anonymous_struct_relationships_[field_type->getAsRecordDecl()
-                                                ->getID()] =
+            anonymous_struct_relationships_[common::to_id(
+                *(field_type->getAsRecordDecl()))] =
                 std::make_tuple(field.name(), relationship_hint, field.access(),
                     field.destination_multiplicity());
         }
@@ -2274,11 +2276,9 @@ void translation_unit_visitor::process_field(
     const auto *template_field_type =
         field_type->getAs<clang::TemplateSpecializationType>();
     // TODO: Refactor to an unalias_type() method
-    if (template_field_type != nullptr)
-        if (template_field_type->isTypeAlias())
-            template_field_type =
-                template_field_type->getAliasedType()
-                    ->getAs<clang::TemplateSpecializationType>();
+    while (template_field_type != nullptr && template_field_type->isTypeAlias())
+        template_field_type = template_field_type->getAliasedType()
+                                  ->getAs<clang::TemplateSpecializationType>();
 
     bool field_type_is_template_template_parameter{false};
     if (template_field_type != nullptr) {
@@ -2314,6 +2314,8 @@ void translation_unit_visitor::process_field(
 
         template_specialization_ptr->set_id(common::to_id(
             *template_field_type, field_declaration.getASTContext()));
+
+        LOG_DBG(">>> {}", template_specialization_ptr->id().usr());
 
         template_specialization_ptr->is_template(true);
 
@@ -2397,8 +2399,8 @@ void translation_unit_visitor::process_field(
                 field_type->getAsRecordDecl()->getNameAsString().empty()) {
                 // Relationships to fields whose type is an anonymous nested
                 // struct have to be handled separately here
-                anonymous_struct_relationships_[field_type->getAsRecordDecl()
-                                                    ->getID()] =
+                anonymous_struct_relationships_[common::to_id(
+                    *(field_type->getAsRecordDecl()))] =
                     std::make_tuple(field.name(), relationship_hint,
                         field.access(), field.destination_multiplicity());
             }
@@ -2570,12 +2572,7 @@ void translation_unit_visitor::add_diagram_element(
 
 void translation_unit_visitor::add_class(std::unique_ptr<class_> &&c)
 {
-
-    if(c->full_name(false) == "clanguml::t00044::signal_handler<Ret(Args...),A>")
-        LOG_DBG("BBBBBBBBBBBBBBBBBBBBBBBBBBBB");
-
-    if (c->id().value() == 5659110981430392188)
-        LOG_DBG("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+    assert(c->id().value() != 0);
 
     if ((config().generate_packages() &&
             config().package_type() == config::package_type_t::kDirectory)) {

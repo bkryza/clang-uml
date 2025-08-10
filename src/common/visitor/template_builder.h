@@ -772,6 +772,9 @@ void template_builder<VisitorT>::build_from_template_specialization_type(
     build(location_declaration, template_instantiation, cls, template_decl,
         template_type.template_arguments(), full_template_specialization_name,
         parent);
+
+    template_instantiation.set_id(common::to_id(template_type,
+        template_type.getTemplateName().getAsTemplateDecl()->getASTContext()));
 }
 
 template <typename VisitorT>
@@ -898,7 +901,9 @@ void template_builder<VisitorT>::build(const clang::NamedDecl &location_decl,
         }
     }
 
-    // template_instantiation.set_id(common::to_id(*template_decl));
+    //    template_decl->dump();
+
+    template_instantiation.set_id(common::to_id(*template_decl));
 
     visitor_.set_source_location(location_decl, template_instantiation);
 }
@@ -1653,10 +1658,14 @@ template_builder<VisitorT>::try_as_template_specialization_type(
                                     .getAsTemplateDecl()
                                     ->getTemplatedDecl());
 
-    nested_template_instantiation->set_id(
-        common::to_id(*nested_template_type->getTemplateName()
-                           .getAsTemplateDecl()
-                           ->getTemplatedDecl()));
+    const auto nested_template_instantiation_id =
+        common::to_id(*nested_template_type,
+            nested_template_type->getTemplateName()
+                .getAsTemplateDecl()
+                ->getTemplatedDecl()
+                ->getASTContext());
+
+    nested_template_instantiation->set_id(nested_template_instantiation_id);
 
     build_from_template_specialization_type(location_decl,
         *nested_template_instantiation, cls, *nested_template_type,
@@ -1665,10 +1674,7 @@ template_builder<VisitorT>::try_as_template_specialization_type(
             ? std::make_optional(&template_instantiation)
             : parent);
 
-    nested_template_instantiation->set_id(
-        common::to_id(*nested_template_type->getTemplateName()
-                           .getAsTemplateDecl()
-                           ->getTemplatedDecl()));
+    assert(nested_template_instantiation->id() == nested_template_instantiation_id);
 
     argument.set_id(nested_template_instantiation->id());
 
@@ -1680,9 +1686,6 @@ template_builder<VisitorT>::try_as_template_specialization_type(
     // be simply 'std::string')
     simplify_system_template(
         argument, argument.to_string(using_namespace(), false));
-
-    //    argument.set_id(
-    //        common::to_id(argument.to_string(using_namespace(), false)));
 
     const auto nested_template_instantiation_full_name =
         nested_template_instantiation->full_name(false);

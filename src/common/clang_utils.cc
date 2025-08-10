@@ -578,7 +578,10 @@ usr_t to_usr(
     if (!clang::index::generateUSRForType(qt,
             const_cast<clang::ASTContext &>(ctx),
             usr_buf)) {
-        llvm::outs() << "TemplateSpecializationType USR: " << usr_buf << '\n';
+//        llvm::outs() << "TemplateSpecializationType USR: " << usr_buf << '\n';
+    }
+    else {
+        assert(false); // "Failed to convert template specialization type to USR"
     }
 
     return usr_t(usr_buf.c_str());
