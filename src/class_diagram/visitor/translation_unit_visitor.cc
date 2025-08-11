@@ -934,12 +934,13 @@ std::unique_ptr<class_> translation_unit_visitor::create_declaration(
 
     auto ns{common::get_tag_namespace(*cls)};
 
+    c.set_id(common::to_id(*cls));
+
     process_record_parent(cls, c, ns);
 
     if (!c.is_nested()) {
         c.set_name(common::get_tag_name(*cls));
         c.set_namespace(ns);
-        c.set_id(common::to_id(*cls));
     }
 
     c.is_struct(cls->isStruct());
@@ -2161,6 +2162,7 @@ translation_unit_visitor::process_template_specialization(
 
     auto &template_instantiation = *c_ptr;
     template_instantiation.is_template(true);
+    template_instantiation.set_id(common::to_id(*cls));
 
     // TODO: refactor to method get_qualified_name()
     auto qualified_name = cls->getQualifiedNameAsString();
@@ -2178,7 +2180,6 @@ translation_unit_visitor::process_template_specialization(
 
     if (!template_instantiation.is_nested()) {
         template_instantiation.set_name(common::get_tag_name(*cls));
-        template_instantiation.set_id(common::to_id(*cls));
     }
 
     process_comment(*cls, template_instantiation);

@@ -313,8 +313,8 @@ bool diagram::add_with_namespace_path(std::unique_ptr<ElementT> &&e)
     const auto full_name = e->full_name(false);
     const auto element_type = e->type_name();
 
-    LOG_DBG("Adding {}: {}::{}, {}", element_type,
-        e->get_namespace().to_string(), base_name, full_name);
+    LOG_DBG("Adding {}: {}::{}, {} [{}]", element_type,
+        e->get_namespace().to_string(), base_name, full_name, e->id().usr());
 
     if (util::contains(base_name, "::"))
         throw std::runtime_error("Name cannot contain namespace: " + base_name);
