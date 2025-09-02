@@ -861,7 +861,7 @@ translation_unit_visitor::create_concept_declaration(clang::ConceptDecl *cpt)
 
     concept_model.set_name(cpt->getNameAsString());
     concept_model.set_namespace(ns);
-    concept_model.set_id(common::to_id(concept_model.full_name(false)));
+    concept_model.set_id(common::to_id(*cpt));
 
     process_comment(*cpt, concept_model);
     set_source_location(*cpt, concept_model);
@@ -885,6 +885,7 @@ std::unique_ptr<class_> translation_unit_visitor::create_declaration(
 
     auto record_ptr{std::make_unique<class_>(config().using_namespace())};
     auto &record = *record_ptr;
+    record.set_id(common::to_id(*rec));
 
     process_record_parent(rec, record, namespace_{});
 
@@ -901,7 +902,7 @@ std::unique_ptr<class_> translation_unit_visitor::create_declaration(
 #endif
 
         record.set_name(record_name);
-        record.set_id(common::to_id(record.full_name(false)));
+        record.set_id(common::to_id(*rec));
     }
 
     process_comment(*rec, record);
@@ -1278,15 +1279,37 @@ void translation_unit_visitor::process_class_bases(
         if (const auto *tsp =
                 base.getType()->getAs<clang::TemplateSpecializationType>();
             tsp != nullptr) {
-            auto template_specialization_ptr =
-                std::make_unique<class_>(config().using_namespace());
-            tbuilder().build_from_template_specialization_type(
-                *cls, *template_specialization_ptr, cls, *tsp, {});
+            // First check if the template declaration already exists in the
+            // model
+            auto type_template_decl_id =
+                common::to_id(*tsp, cls->getASTContext());
 
-            parent_id = template_specialization_ptr->id();
+            if (common::is_template_specialization_fully_dependent(*tsp)) {
+                type_template_decl_id = common::to_id(
+                    *tsp->getTemplateName().getAsTemplateDecl(true));
+            }
 
-            if (diagram().should_include(*template_specialization_ptr)) {
-                add_class(std::move(template_specialization_ptr));
+            if (diagram().get(type_template_decl_id).has_value()) {
+                parent_id = type_template_decl_id;
+            }
+            else {
+                auto template_specialization_ptr =
+                    std::make_unique<class_>(config().using_namespace());
+                tbuilder().build_from_template_specialization_type(
+                    *cls, *template_specialization_ptr, cls, *tsp, {});
+
+                if (common::is_template_specialization_fully_dependent(*tsp)) {
+                    type_template_decl_id = common::to_id(
+                        *tsp->getTemplateName().getAsTemplateDecl(true));
+                }
+
+                template_specialization_ptr->set_id(type_template_decl_id);
+
+                parent_id = template_specialization_ptr->id();
+
+                if (diagram().should_include(*template_specialization_ptr)) {
+                    add_class(std::move(template_specialization_ptr));
+                }
             }
         }
         else if (const auto *record_type =
@@ -1489,6 +1512,16 @@ void translation_unit_visitor::process_method(
                 *template_specialization_ptr,
                 unaliased_type->getTemplateName().getAsTemplateDecl(),
                 *unaliased_type, &c);
+
+            auto id = common::to_id(*unaliased_type, mf.getASTContext());
+
+            if (common::is_template_specialization_fully_dependent(
+                    *unaliased_type)) {
+                id = common::to_id(
+                    *unaliased_type->getTemplateName().getAsTemplateDecl(true));
+            }
+
+            template_specialization_ptr->set_id(id);
 
             template_specialization_ptr->is_template();
 
@@ -1762,7 +1795,7 @@ bool translation_unit_visitor::find_relationships(const clang::Decl *decl,
             // calculate here properly the ID for nested enums. It will be
             // resolved properly in finalize().
             relationships.emplace_back(
-                enum_type->getDecl()->getID(), relationship_hint, decl);
+                common::to_id(*enum_type->getDecl()), relationship_hint, decl);
         }
     }
     // TODO: Objc support
@@ -1851,15 +1884,26 @@ bool translation_unit_visitor::find_relationships(const clang::Decl *decl,
     else if (const auto *template_specialization_type =
                  type->getAs<clang::TemplateSpecializationType>();
              template_specialization_type != nullptr) {
+
         const auto *type_instantiation_template_decl =
             template_specialization_type->getTemplateName().getAsTemplateDecl();
+
+        auto id = common::to_id(*template_specialization_type,
+            type_instantiation_template_decl->getASTContext());
+        auto id_decl = common::to_id(
+            *template_specialization_type->getTemplateName().getAsTemplateDecl(
+                true));
+
+        if (id_decl.has_value() &&
+            common::is_template_specialization_fully_dependent(
+                *template_specialization_type)) {
+            id = common::to_id(*template_specialization_type->getTemplateName()
+                                    .getAsTemplateDecl(true));
+        }
+
         if (should_include(template_specialization_type->getTemplateName()
                                .getAsTemplateDecl())) {
-            relationships.emplace_back(
-                template_specialization_type->getTemplateName()
-                    .getAsTemplateDecl()
-                    ->getID(),
-                relationship_hint, decl);
+            relationships.emplace_back(id, relationship_hint, decl);
         }
         auto idx{0};
         for (const auto &template_argument :
@@ -2153,9 +2197,10 @@ std::unique_ptr<class_>
 translation_unit_visitor::process_template_specialization(
     clang::ClassTemplateSpecializationDecl *cls)
 {
-    LOG_DBG("Processing template specialization {} at {}",
+    LOG_DBG("Processing template specialization {} at {} [{}]",
         cls->getQualifiedNameAsString(),
-        cls->getLocation().printToString(source_manager()));
+        cls->getLocation().printToString(source_manager()),
+        common::to_id(*cls));
 
     auto c_ptr = std::make_unique<class_>(config().using_namespace());
     tbuilder().build_from_class_template_specialization(*c_ptr, *cls);
@@ -2303,8 +2348,20 @@ void translation_unit_visitor::process_field(
         auto template_specialization_ptr =
             std::make_unique<class_>(config().using_namespace());
 
-        template_specialization_ptr->set_id(common::to_id(
-            *template_field_type, field_declaration.getASTContext()));
+        auto id = common::to_id(
+            *template_field_type, field_declaration.getASTContext());
+
+        auto id_decl = common::to_id(
+            *template_field_type->getTemplateName().getAsTemplateDecl(true));
+
+        if (id_decl.has_value() &&
+            common::is_template_specialization_fully_dependent(
+                *template_field_type)) {
+            template_specialization_ptr->set_id(id_decl);
+        }
+        else {
+            template_specialization_ptr->set_id(id);
+        }
 
         tbuilder().build_from_template_specialization_type(field_declaration,
             *template_specialization_ptr,
@@ -2313,10 +2370,14 @@ void translation_unit_visitor::process_field(
                 .getAsTemplateDecl(),
             *template_field_type, {&c});
 
-        template_specialization_ptr->set_id(common::to_id(
-            *template_field_type, field_declaration.getASTContext()));
-
-        LOG_DBG(">>> {}", template_specialization_ptr->id().usr());
+        if (id_decl.has_value() &&
+            common::is_template_specialization_fully_dependent(
+                *template_field_type)) {
+            template_specialization_ptr->set_id(id_decl);
+        }
+        else {
+            template_specialization_ptr->set_id(id);
+        }
 
         template_specialization_ptr->is_template(true);
 

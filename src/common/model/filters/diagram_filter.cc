@@ -852,7 +852,8 @@ tvl::value_t subclass_filter::match(const diagram &d, const element &e) const
     std::vector<std::string> parents_names;
     for (const auto p : parents) {
         parents_names.push_back(p.get().full_name(false));
-        LOG_DBG("FOUND BASE CLASS {} OF {}", p.get().full_name_no_ns(), e.full_name(false));
+        LOG_DBG("FOUND BASE CLASS {} OF {}", p.get().full_name_no_ns(),
+            e.full_name(false));
     }
 
     // Now check if any of the parents matches the roots specified in the
@@ -860,7 +861,8 @@ tvl::value_t subclass_filter::match(const diagram &d, const element &e) const
     for (const auto &root : roots_) {
         for (const auto &parent : parents) {
             auto full_name = parent.get().full_name(false);
-            LOG_DBG("AAAAAAAAAAAAAAAAAA {} =?= {}", root.to_string(), full_name);
+            LOG_DBG(
+                "AAAAAAAAAAAAAAAAAA {} =?= {}", root.to_string(), full_name);
             if (root == full_name) {
                 if (type() == filter_t::kExclusive)
                     LOG_TRACE("Element {} rejected by subclass_filter",

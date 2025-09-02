@@ -18,7 +18,8 @@
 
 #include "clang_utils.h"
 
-#include "clang/Index/USRGeneration.h"
+#include "common/clang/USRGeneration.h"
+
 #include <clang/Lex/Preprocessor.h>
 
 namespace clanguml::common {
@@ -179,6 +180,33 @@ std::string to_string(
     return result;
 }
 
+std::string to_string(const clang::TemplateSpecializationType &type,
+    const clang::ASTContext &ctx, bool try_canonical)
+{
+    using namespace clang;
+
+    PrintingPolicy PP(ctx.getLangOpts());
+    PP.PrintCanonicalTypes = false; // prefer source-like spelling
+    PP.SuppressTagKeyword = true;   // "vector<int>" vs "class vector<int>"
+    PP.FullyQualifiedName = false;
+
+    llvm::SmallString<512> buf;
+    llvm::raw_svector_ostream os(buf);
+
+    // Print the template name (handles qualification/aliases correctly).
+    type.getTemplateName().print(os, PP);
+
+    // Print the template argument list.
+    auto args = type.template_arguments(); // ArrayRef<TemplateArgument>
+    // Some Clang versions only have the (ptr, count, PP, skipBrackets)
+    // overload.
+    printTemplateArgumentList(os, args, PP /*, skipBrackets=false*/);
+
+    auto result = std::string(os.str());
+
+    return result;
+}
+
 std::string to_string(const clang::QualType &type, const clang::ASTContext &ctx,
     bool try_canonical)
 {
@@ -190,6 +218,7 @@ std::string to_string(const clang::QualType &type, const clang::ASTContext &ctx,
 
     clang::PrintingPolicy print_policy(ctx.getLangOpts());
     print_policy.SuppressScope = 0;
+
 #if LLVM_VERSION_MAJOR < 21
     print_policy.PrintCanonicalTypes = 0;
 #else
@@ -244,7 +273,8 @@ std::string to_string(const clang::QualType &type, const clang::ASTContext &ctx,
     clanguml::util::replace_all(result, "> >", ">>");
 
     // Try to get rid of 'type-parameter-X-Y' ugliness
-    if (result.find("type-parameter-") != std::string::npos) {
+    if (result.find("type-parameter-") != std::string::npos ||
+        result.find("template-parameter-") != std::string::npos) {
         util::if_not_null(
             common::dereference(type)->getAs<clang::TypedefType>(),
             [&result, &type](auto *p) {
@@ -462,13 +492,14 @@ bool is_subexpr_of(const clang::Stmt *parent_stmt, const clang::Stmt *sub_stmt)
         [sub_stmt](const auto *e) { return is_subexpr_of(e, sub_stmt); });
 }
 
-// eid_t to_id(const std::string &full_name)
-//{
-//     return static_cast<eid_t>(
-//         static_cast<uint64_t>(std::hash<std::string>{}(full_name)));
-// }
+eid_t to_id(const clang::Decl &decl)
+{
+    auto u = to_usr(decl);
+    if (!u.id.has_value())
+        return {};
 
-eid_t to_id(const clang::Decl &decl) { return eid_t(to_usr(decl)); }
+    return eid_t{std::move(u)};
+}
 
 eid_t to_id(const clang::QualType &type, const clang::ASTContext &ctx)
 {
@@ -491,79 +522,15 @@ eid_t to_id(const std::filesystem::path &file)
     return eid_t(file.lexically_normal().string());
 }
 
-/*
-template <> eid_t to_id(const clang::NamespaceDecl &declaration)
+eid_t to_id(const common::model::package &pkg)
 {
-    return to_id(get_qualified_name(declaration));
+    return eid_t("__directory__" + pkg.full_name(false));
 }
 
-template <> eid_t to_id(const clang::RecordDecl &declaration)
-{
-    return to_id(get_qualified_name(declaration));
-}
-
-template <> eid_t to_id(const clang::ObjCCategoryDecl &type)
-{
-    return to_id(fmt::format("__objc__category__{}", type.getNameAsString()));
-}
-
-template <> eid_t to_id(const clang::ObjCInterfaceDecl &type)
-{
-    return to_id(fmt::format("__objc__interface__{}", type.getNameAsString()));
-}
-
-template <> eid_t to_id(const clang::ObjCProtocolDecl &type)
-{
-    return to_id(fmt::format("__objc__protocol__{}", type.getNameAsString()));
-}
-
-template <> eid_t to_id(const clang::EnumDecl &declaration)
-{
-    return to_id(get_qualified_name(declaration));
-}
-
-template <> eid_t to_id(const clang::TagDecl &declaration)
-{
-    return to_id(get_qualified_name(declaration));
-}
-
-template <> eid_t to_id(const clang::CXXRecordDecl &declaration)
-{
-    return to_id(get_qualified_name(declaration));
-}
-
-template <> eid_t to_id(const clang::EnumType &t)
-{
-    return to_id(*t.getDecl());
-}
-
-template <> eid_t to_id(const std::filesystem::path &file)
-{
-    return to_id(file.lexically_normal().string());
-}
-
-template <> eid_t to_id(const clang::TemplateArgument &template_argument)
-{
-    if (template_argument.getKind() == clang::TemplateArgument::Type) {
-        if (const auto *enum_type =
-                template_argument.getAsType()->getAs<clang::EnumType>();
-            enum_type != nullptr)
-            return to_id(*enum_type->getAsTagDecl());
-
-        if (const auto *record_type =
-                template_argument.getAsType()->getAs<clang::RecordType>();
-            record_type != nullptr)
-            return to_id(*record_type->getAsRecordDecl());
-    }
-
-    throw std::runtime_error("Cannot generate id for template argument");
-}
-*/
 usr_t to_usr(const clang::Decl &decl)
 {
     clang::SmallVector<char, 1024> buf{};
-    if (clang::index::generateUSRForDecl(&decl, buf)) {
-        decl.dump();
+    if (clanguml::common::index::generateUSRForDecl(&decl, buf)) {
         return {};
     }
 
@@ -575,13 +542,11 @@ usr_t to_usr(
 {
     llvm::SmallString<128> usr_buf;
     clang::QualType qt(&type, 0);
-    if (!clang::index::generateUSRForType(qt,
-            const_cast<clang::ASTContext &>(ctx),
-            usr_buf)) {
-//        llvm::outs() << "TemplateSpecializationType USR: " << usr_buf << '\n';
-    }
+    if (!clanguml::common::index::generateUSRForType(
+            qt, const_cast<clang::ASTContext &>(ctx), usr_buf)) { }
     else {
-        assert(false); // "Failed to convert template specialization type to USR"
+        assert(
+            false); // "Failed to convert template specialization type to USR"
     }
 
     return usr_t(usr_buf.c_str());
@@ -1273,6 +1238,21 @@ const clang::ConceptDecl *get_template_parameter_concept_constraint(
         return nullptr;
 
     return template_type_parameter->getTypeConstraint()->getNamedConcept();
+}
+
+bool is_template_specialization_fully_dependent(
+    const clang::TemplateSpecializationType &tst)
+{
+    bool result{tst.template_arguments().size() > 0};
+
+    for (size_t i = 0; i < tst.template_arguments().size(); i++) {
+        if (!tst.template_arguments()[i].isDependent()) {
+            result = false;
+            break;
+        }
+    }
+
+    return result;
 }
 
 bool is_lambda_call(const clang::Expr *expr)

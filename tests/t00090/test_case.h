@@ -28,7 +28,6 @@ TEST_CASE("t00090")
         REQUIRE(!src.contains("type-parameter-"));
 
         REQUIRE(IsClassTemplate(src, "HList<>"));
-        REQUIRE(IsClassTemplate(src, "HList<T...>"));
         REQUIRE(IsClassTemplate(src, "HList<T0,TRest...>"));
         REQUIRE(IsClassTemplate(src, "HList<TRest...>"));
 
@@ -37,18 +36,16 @@ TEST_CASE("t00090")
         REQUIRE(IsConcept(src, "IsArithmetic<T>"));
 
         REQUIRE(IsBaseClass(src, "HList<TRest...>", "HList<T0,TRest...>"));
-        REQUIRE(
-            IsBaseClass(src, "HList<T...>", "Arithmetic<IsArithmetic T...>"));
+        REQUIRE(IsBaseClass(
+            src, "HList<TRest...>", "Arithmetic<IsArithmetic T...>"));
 
-        REQUIRE(IsInstantiation(src, "HList<T...>", "HList<T0,TRest...>"));
-        REQUIRE(IsInstantiation(src, "HList<T...>", "HList<TRest...>"));
-        REQUIRE(IsInstantiation(src, "HList<TRest...>", "HList<T...>"));
+        REQUIRE(IsInstantiation(src, "HList<TRest...>", "HList<T0,TRest...>"));
 
         if constexpr (std::is_same_v<plantuml_t, std::decay_t<decltype(src)>>) {
-            REQUIRE(IsInstantiation(src, "HList<T...>", "HList< >"));
+            REQUIRE(IsInstantiation(src, "HList<TRest...>", "HList< >"));
         }
         else {
-            REQUIRE(IsInstantiation(src, "HList<T...>", "HList<>"));
+            REQUIRE(IsInstantiation(src, "HList<TRest...>", "HList<>"));
         }
     });
 }

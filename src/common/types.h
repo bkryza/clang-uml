@@ -91,9 +91,11 @@ public:
 
     type value() const;
 
+    bool has_value() const;
+
     int64_t ast_local_value() const;
 
-    const std::string& usr() const { return usr_; }
+    const std::string &usr() const { return usr_; }
 
 private:
     type value_;

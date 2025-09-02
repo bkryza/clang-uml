@@ -675,10 +675,7 @@ void template_builder<VisitorT>::build_from_template_declaration(
                                 visitor_.should_include(named_concept)) {
                                 templated_element.value().add_relationship(
                                     {relationship_t::kConstraint,
-                                        id_mapper()
-                                            .get_global_id(eid_t{
-                                                common::to_id(*named_concept)})
-                                            .value(),
+                                        common::to_id(*named_concept),
                                         model::access_t::kNone,
                                         ct.name().value()});
                             }
@@ -773,8 +770,19 @@ void template_builder<VisitorT>::build_from_template_specialization_type(
         template_type.template_arguments(), full_template_specialization_name,
         parent);
 
-    template_instantiation.set_id(common::to_id(template_type,
-        template_type.getTemplateName().getAsTemplateDecl()->getASTContext()));
+    auto id =
+        common::to_id(template_type, location_declaration.getASTContext());
+
+    auto id_decl =
+        common::to_id(*template_type.getTemplateName().getAsTemplateDecl(true));
+
+    if (id_decl.has_value() &&
+        common::is_template_specialization_fully_dependent(template_type)) {
+        template_instantiation.set_id(id_decl);
+    }
+    else {
+        template_instantiation.set_id(id);
+    }
 }
 
 template <typename VisitorT>
@@ -901,10 +909,6 @@ void template_builder<VisitorT>::build(const clang::NamedDecl &location_decl,
         }
     }
 
-    //    template_decl->dump();
-
-    template_instantiation.set_id(common::to_id(*template_decl));
-
     visitor_.set_source_location(location_decl, template_instantiation);
 }
 
@@ -934,6 +938,8 @@ void template_builder<VisitorT>::build_from_class_template_specialization(
     ns.pop_back();
     template_instantiation.set_name(template_decl->getNameAsString());
     template_instantiation.set_namespace(ns);
+
+    template_instantiation.set_id(common::to_id(template_specialization));
 
     process_template_arguments(template_specialization, parent,
         &template_specialization, template_base_params,
@@ -1638,10 +1644,12 @@ template_builder<VisitorT>::try_as_template_specialization_type(
         if (const auto *template_specialization_decl =
                 clang::dyn_cast<clang::ClassTemplateSpecializationDecl>(cls);
             template_specialization_decl != nullptr) {
-            nested_type_name =
+            auto maybe_nested_type_name =
                 template_specialization_decl->getDescribedTemplateParams()
                     ->getParam(argument_index)
                     ->getNameAsString();
+            if (!maybe_nested_type_name.empty())
+                nested_type_name = maybe_nested_type_name;
         }
         else {
             // fallback
@@ -1658,12 +1666,18 @@ template_builder<VisitorT>::try_as_template_specialization_type(
                                     .getAsTemplateDecl()
                                     ->getTemplatedDecl());
 
-    const auto nested_template_instantiation_id =
-        common::to_id(*nested_template_type,
-            nested_template_type->getTemplateName()
-                .getAsTemplateDecl()
-                ->getTemplatedDecl()
-                ->getASTContext());
+    eid_t nested_template_instantiation_id;
+
+    nested_template_instantiation_id =
+        common::to_id(*nested_template_type, cls->getASTContext());
+
+    if (common::is_template_specialization_fully_dependent(
+            *nested_template_type) &&
+        to_usr(*nested_template_type->getTemplateName().getAsTemplateDecl(true))
+            .id.has_value()) {
+        nested_template_instantiation_id = common::to_id(
+            *nested_template_type->getTemplateName().getAsTemplateDecl(true));
+    }
 
     nested_template_instantiation->set_id(nested_template_instantiation_id);
 
@@ -1674,9 +1688,9 @@ template_builder<VisitorT>::try_as_template_specialization_type(
             ? std::make_optional(&template_instantiation)
             : parent);
 
-    assert(nested_template_instantiation->id() == nested_template_instantiation_id);
+    nested_template_instantiation->set_id(nested_template_instantiation_id);
 
-    argument.set_id(nested_template_instantiation->id());
+    argument.set_id(nested_template_instantiation_id);
 
     for (const auto &t : nested_template_instantiation->template_params())
         argument.add_template_param(t);
@@ -1769,7 +1783,6 @@ template_builder<VisitorT>::try_as_template_parm_type(
     argument.is_variadic(is_variadic);
 
     common::ensure_lambda_type_is_relative(config(), type_parameter_name);
-
     return argument;
 }
 

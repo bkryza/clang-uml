@@ -18,7 +18,6 @@
 
 #include "types.h"
 
-
 namespace clanguml::common {
 
 eid_t::eid_t()
@@ -83,6 +82,8 @@ bool operator<(const eid_t &lhs, const eid_t &rhs)
 }
 
 eid_t::type eid_t::value() const { return value_; }
+
+bool eid_t::has_value() const { return value_ != 0ULL; }
 
 int64_t eid_t::ast_local_value() const
 {
