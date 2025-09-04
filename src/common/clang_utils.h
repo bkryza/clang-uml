@@ -195,6 +195,8 @@ usr_t to_usr(const clang::QualType &type, const clang::ASTContext &ctx);
 usr_t to_usr(const clang::TemplateSpecializationType &type,
     const clang::ASTContext &ctx);
 
+usr_t to_usr(const clang::Module &module);
+
 eid_t to_id(const clang::QualType &type, const clang::ASTContext &ctx);
 
 eid_t to_id(const clang::TemplateSpecializationType &type,
@@ -207,6 +209,8 @@ eid_t to_id(const std::string &type);
 eid_t to_id(const std::filesystem::path &type);
 
 eid_t to_id(const common::model::package &pkg);
+
+eid_t to_id(const clang::Module &module);
 
 /** @} */ // end of to_id
 

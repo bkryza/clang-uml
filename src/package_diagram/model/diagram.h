@@ -291,7 +291,7 @@ bool diagram::add_with_module_path(
 
         auto package_absolute_path = module_absolute_path | pkg->name();
 
-        pkg->set_id(common::to_id(package_absolute_path.to_string()));
+        pkg->set_id(eid_t{common::usr_t{package_absolute_path.to_string()}});
 
         auto p_ref = std::ref(*pkg);
 
@@ -324,7 +324,8 @@ bool diagram::add_with_filesystem_path(
         auto ns = common::model::path(
             parent_path.begin(), it, common::model::path_type::kFilesystem);
         pkg->set_namespace(ns);
-        pkg->set_id(common::to_id(pkg->full_name(false)));
+        pkg->set_id(
+            common::to_id(std::filesystem::path(pkg->full_name(false))));
 
         add_with_filesystem_path(ns, std::move(pkg));
     }

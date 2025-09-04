@@ -527,6 +527,8 @@ eid_t to_id(const common::model::package &pkg)
     return eid_t("__directory__" + pkg.full_name(false));
 }
 
+eid_t to_id(const clang::Module &module) { return eid_t(to_usr(module)); }
+
 usr_t to_usr(const clang::Decl &decl)
 {
     clang::SmallVector<char, 1024> buf{};
@@ -582,6 +584,20 @@ usr_t to_usr(const clang::QualType &type, const clang::ASTContext &ctx)
 
     // Not a type that maps to a Decl with a USR
     return {};
+}
+
+usr_t to_usr(const clang::Module &module)
+{
+    std::string module_path = module.Name;
+#if LLVM_VERSION_MAJOR < 15
+    if (module->Kind == clang::Module::ModuleKind::PrivateModuleFragment) {
+#else
+    if (module.isPrivateModule()) {
+#endif
+        module_path = module.getTopLevelModule()->Name;
+    }
+
+    return usr_t{std::move(module_path)};
 }
 
 std::pair<common::model::namespace_, std::string> split_ns(

@@ -307,7 +307,7 @@ void translation_unit_visitor::add_relationships(
 
         pkg->set_name(pkg_name);
         pkg->set_namespace(parent_path);
-        pkg->set_id(common::to_id(pkg->full_name(false)));
+        pkg->set_id(get_package_id(cls));
         set_source_location(*cls, *pkg);
 
         if (diagram().should_include(*pkg))
@@ -409,16 +409,7 @@ eid_t translation_unit_visitor::get_package_id(const clang::Decl *cls)
     if (config().package_type() == config::package_type_t::kModule) {
         const auto *module = cls->getOwningModule();
         if (module != nullptr) {
-            std::string module_path = module->Name;
-#if LLVM_VERSION_MAJOR < 15
-            if (module->Kind ==
-                clang::Module::ModuleKind::PrivateModuleFragment) {
-#else
-            if (module->isPrivateModule()) {
-#endif
-                module_path = module->getTopLevelModule()->Name;
-            }
-            return common::to_id(module_path);
+            return common::to_id(*module);
         }
 
         return {};
@@ -432,7 +423,7 @@ eid_t translation_unit_visitor::get_package_id(const clang::Decl *cls)
         relative_file.string(), common::model::path_type::kFilesystem};
     parent_path.pop_back();
 
-    return common::to_id(parent_path.to_string());
+    return common::to_id(std::filesystem::path(parent_path.to_string()));
 }
 
 void translation_unit_visitor::process_class_declaration(
