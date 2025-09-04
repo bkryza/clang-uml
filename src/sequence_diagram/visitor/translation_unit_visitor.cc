@@ -73,8 +73,6 @@ bool translation_unit_visitor::VisitObjCProtocolDecl(
 
     const auto class_id = objc_protocol_model_ptr->id();
 
-    set_unique_id(declaration->getID(), class_id);
-
     auto &class_model = get_participant(class_id, *objc_protocol_model_ptr);
 
     if (diagram().should_include(class_model)) {
@@ -116,8 +114,6 @@ bool translation_unit_visitor::VisitObjCInterfaceDecl(
 
     const auto class_id = objc_interface_model_ptr->id();
 
-    set_unique_id(declaration->getID(), class_id);
-
     auto &class_model = get_participant(class_id, *objc_interface_model_ptr);
 
     if (diagram().should_include(class_model)) {
@@ -158,18 +154,10 @@ bool translation_unit_visitor::VisitCXXRecordDecl(
     if (!should_include(declaration))
         return true;
 
-    if (has_processed_template_class(declaration->getQualifiedNameAsString()))
+    if (has_processed_template_name(declaration->getQualifiedNameAsString()))
         // If we have already processed the template of this class
         // skip it
         return true;
-
-    // Skip this class if it's parent template is already in the model
-    if (declaration->isTemplated() &&
-        declaration->getDescribedTemplate() != nullptr) {
-
-        if (skipped_.count(declaration->getDescribedTemplate()->getID()))
-            return true;
-    }
 
     LOG_TRACE("Visiting class declaration at {}",
         declaration->getBeginLoc().printToString(source_manager()));
@@ -184,8 +172,6 @@ bool translation_unit_visitor::VisitCXXRecordDecl(
     context().reset();
 
     const auto class_id = class_model_ptr->id();
-
-    set_unique_id(declaration->getID(), class_id);
 
     auto &class_model = get_participant(class_id, *class_model_ptr);
 
@@ -231,7 +217,7 @@ bool translation_unit_visitor::VisitClassTemplateDecl(
     if (!class_model_ptr)
         return true;
 
-    add_processed_template_class(declaration->getQualifiedNameAsString());
+    add_processed_template_name(declaration->getQualifiedNameAsString());
 
     tbuilder().build_from_template_declaration(*class_model_ptr, *declaration);
 
@@ -241,9 +227,6 @@ bool translation_unit_visitor::VisitClassTemplateDecl(
     // Override the id with the template id, for now we don't care about the
     // underlying templated class id
     class_model_ptr->set_id(id);
-
-    skipped_.insert(declaration->getID());
-    set_unique_id(declaration->getID(), id);
 
     if (!declaration->getTemplatedDecl()->isCompleteDefinition()) {
         forward_declarations_.emplace(id, std::move(class_model_ptr));
@@ -287,8 +270,6 @@ bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
     const auto id = common::to_id(*declaration);
 
     template_specialization_ptr->set_id(id);
-
-    set_unique_id(declaration->getID(), id);
 
     if (!declaration->isCompleteDefinition()) {
         forward_declarations_.emplace(
@@ -351,8 +332,6 @@ bool translation_unit_visitor::VisitObjCMethodDecl(
 
     method_model_ptr->set_id(common::to_id(*declaration));
 
-    set_unique_id(declaration->getID(), method_model_ptr->id());
-
     LOG_TRACE("Set id {} --> {} for method name {} [{}]", declaration->getID(),
         method_model_ptr->id(), method_full_name,
         declaration->isThisDeclarationADefinition());
@@ -403,7 +382,7 @@ bool translation_unit_visitor::VisitCXXMethodDecl(
     }
 
     if (declaration->isTemplated() &&
-        has_processed_template_class(declaration->getQualifiedNameAsString())) {
+        has_processed_template_name(declaration->getQualifiedNameAsString())) {
         return true;
     }
 
@@ -426,15 +405,6 @@ bool translation_unit_visitor::VisitCXXMethodDecl(
     const auto method_full_name = method_model_ptr->full_name(false);
 
     method_model_ptr->set_id(common::to_id(*declaration));
-
-    // Callee methods in call expressions are referred to by first declaration
-    // id, so they should both be mapped to method_model
-    if (declaration->isThisDeclarationADefinition()) {
-        set_unique_id(
-            declaration->getFirstDecl()->getID(), method_model_ptr->id());
-    }
-
-    set_unique_id(declaration->getID(), method_model_ptr->id());
 
     LOG_TRACE("Set id {} --> {} for method name {} [{}]", declaration->getID(),
         method_model_ptr->id(), method_full_name,
@@ -486,7 +456,7 @@ bool translation_unit_visitor::VisitFunctionDecl(
         declaration->getLocation().printToString(source_manager()));
 
     if (declaration->isTemplated() &&
-        has_processed_template_class(declaration->getQualifiedNameAsString())) {
+        has_processed_template_name(declaration->getQualifiedNameAsString())) {
         return true;
     }
 
@@ -520,13 +490,6 @@ bool translation_unit_visitor::VisitFunctionDecl(
     context().update(declaration);
 
     context().set_caller_id(function_model_ptr->id());
-
-    if (declaration->isThisDeclarationADefinition()) {
-        set_unique_id(
-            declaration->getFirstDecl()->getID(), function_model_ptr->id());
-    }
-
-    set_unique_id(declaration->getID(), function_model_ptr->id());
 
     process_comment(*declaration, *function_model_ptr);
 
@@ -564,9 +527,7 @@ bool translation_unit_visitor::VisitFunctionTemplateDecl(
     LOG_TRACE("Visiting function template declaration {} at {}", function_name,
         declaration->getLocation().printToString(source_manager()));
 
-    skipped_.insert(declaration->getID());
-
-    add_processed_template_class(function_name);
+    add_processed_template_name(function_name);
 
     auto function_template_model = build_function_template(*declaration);
 
@@ -586,8 +547,6 @@ bool translation_unit_visitor::VisitFunctionTemplateDecl(
     context().update(declaration);
 
     context().set_caller_id(function_template_model->id());
-
-    set_unique_id(declaration->getID(), function_template_model->id());
 
     diagram().add_participant(std::move(function_template_model));
 
@@ -621,8 +580,6 @@ bool translation_unit_visitor::VisitLambdaExpr(clang::LambdaExpr *expr)
     lambda_class_model_ptr->is_lambda(true);
 
     const auto cls_id = lambda_class_model_ptr->id();
-
-    set_unique_id(cls->getID(), cls_id);
 
     auto lambda_method_model_ptr =
         create_lambda_method_model(expr->getCallOperator());
@@ -670,9 +627,6 @@ bool translation_unit_visitor::VisitLambdaExpr(clang::LambdaExpr *expr)
     }
 
     context().enter_lambda_expression(lambda_method_model_ptr->id());
-
-    set_unique_id(
-        expr->getCallOperator()->getID(), lambda_method_model_ptr->id());
 
     diagram().add_participant(std::move(lambda_method_model_ptr));
 
@@ -2491,7 +2445,7 @@ translation_unit_visitor::create_class_model(clang::CXXRecordDecl *cls)
             (parent_record_decl->getDescribedTemplate() != nullptr)) {
             parent_record_decl->getDescribedTemplate()->getID();
             if (parent_record_decl->getDescribedTemplate() != nullptr)
-                id_opt = get_unique_id(ast_id);
+                id_opt = ast_id;
         }
 
         if (!id_opt)
@@ -2595,27 +2549,6 @@ translation_unit_visitor::create_class_model(clang::CXXRecordDecl *cls)
     return c_ptr;
 }
 
-void translation_unit_visitor::set_unique_id(int64_t local_id, eid_t global_id)
-{
-    //    LOG_TRACE("Setting local element mapping {} --> {}", local_id,
-    //    global_id);
-
-    //    assert(global_id.is_global());
-
-    //    id_mapper().add(local_id, global_id);
-}
-
-std::optional<eid_t> translation_unit_visitor::get_unique_id(
-    eid_t local_id) const
-{
-    assert(local_id.is_global());
-
-    if (local_id.is_global())
-        return local_id;
-
-    return id_mapper().get_global_id(local_id);
-}
-
 std::unique_ptr<model::function_template>
 translation_unit_visitor::build_function_template(
     const clang::FunctionTemplateDecl &declaration)
@@ -2715,8 +2648,6 @@ translation_unit_visitor::process_class_template_specialization(
         return {};
 
     template_instantiation.set_id(common::to_id(*cls));
-
-    set_unique_id(cls->getID(), template_instantiation.id());
 
     return c_ptr;
 }
@@ -2973,8 +2904,6 @@ void translation_unit_visitor::pop_message_to_diagram(
 
 void translation_unit_visitor::finalize()
 {
-    resolve_ids_to_global();
-
     // Change all messages with target set to an id of a lambda expression to
     // to the ID of their operator() - this is necessary, as some calls to
     // lambda expressions are visited before the actual lambda expressions
@@ -3007,50 +2936,16 @@ void translation_unit_visitor::ensure_lambda_messages_have_operator_as_target()
     }
 }
 
-void translation_unit_visitor::resolve_ids_to_global()
-{
-    std::set<eid_t> active_participants_unique;
-
-    // Change all active participants AST local ids to diagram global ids
-    for (auto id : diagram().active_participants()) {
-        if (const auto unique_id = get_unique_id(id);
-            !id.is_global() && unique_id.has_value()) {
-            active_participants_unique.emplace(unique_id.value());
-        }
-        else if (id.is_global()) {
-            active_participants_unique.emplace(id);
-        }
-    }
-
-    diagram().active_participants() = std::move(active_participants_unique);
-
-    // Change all message callees AST local ids to diagram global ids
-    for (auto &[id, activity] : diagram().sequences()) {
-        for (auto &m : activity.messages()) {
-            if (const auto unique_id = get_unique_id(m.to());
-                !m.to().is_global() && unique_id.has_value()) {
-                m.set_to(unique_id.value());
-                assert(m.to().is_global());
-            }
-        }
-    }
-}
-
 void translation_unit_visitor::add_callers_to_activities()
 {
     // Translate reverse activity call graph local ids to global ids
     std::map<eid_t, std::set<eid_t>> acs;
     for (const auto &[id, caller_ids] : activity_callers_) {
-        auto unique_id = get_unique_id(id);
-        if (!unique_id)
-            continue;
         std::set<eid_t> unique_caller_ids;
         for (const auto &caller_id : caller_ids) {
-            auto unique_caller_id = get_unique_id(caller_id);
-            if (unique_caller_id)
-                unique_caller_ids.emplace(*unique_caller_id);
+            unique_caller_ids.emplace(caller_id);
         }
-        acs.emplace(*unique_id, std::move(unique_caller_ids));
+        acs.emplace(id, std::move(unique_caller_ids));
     }
 
     // Change all message callees AST local ids to diagram global ids

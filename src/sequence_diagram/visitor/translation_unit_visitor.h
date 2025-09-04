@@ -189,12 +189,12 @@ public:
      */
     const call_expression_context &context() const;
 
-    void add_processed_template_class(std::string qualified_name)
+    void add_processed_template_name(std::string qualified_name)
     {
         processed_template_qualified_names_.emplace(std::move(qualified_name));
     }
 
-    bool has_processed_template_class(const std::string &qualified_name) const
+    bool has_processed_template_name(const std::string &qualified_name) const
     {
         return util::contains(
             processed_template_qualified_names_, qualified_name);
@@ -280,25 +280,6 @@ public:
 
         return {};
     }
-
-    /**
-     * @brief Store the mapping from local clang entity id (obtained using
-     *        getID()) method to clang-uml global id
-     *
-     * @todo Refactor to @ref ast_id_mapper
-     *
-     * @param local_id Local AST element id
-     * @param global_id Globa diagram element id
-     */
-    void set_unique_id(int64_t local_id, eid_t global_id);
-
-    /**
-     * @brief Retrieve the global `clang-uml` entity id based on the Clang
-     *        local id
-     * @param local_id AST local element id
-     * @return Global diagram element id
-     */
-    std::optional<eid_t> get_unique_id(eid_t local_id) const;
 
     /**
      * @brief Finalize diagram model for this translation unit
@@ -600,8 +581,6 @@ private:
      */
     template_builder_t &tbuilder() { return template_builder_; }
 
-    void resolve_ids_to_global();
-
     void ensure_lambda_messages_have_operator_as_target();
 
     void add_callers_to_activities();
@@ -631,8 +610,6 @@ private:
 
     std::map<eid_t, std::unique_ptr<clanguml::sequence_diagram::model::class_>>
         forward_declarations_;
-
-    std::set<int64_t> skipped_;
 
     std::map<int64_t /* local anonymous struct id */,
         std::tuple<std::string /* field name */, common::model::relationship_t,
