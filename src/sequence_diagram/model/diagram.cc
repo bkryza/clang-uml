@@ -107,10 +107,26 @@ void diagram::add_participant(std::unique_ptr<participant> p)
 
         participants_.emplace(participant_id, std::move(p));
     }
+    else {
+        if (participants_.at(participant_id)->full_name(false) !=
+            p->full_name(false)) {
+            LOG_ERROR("Participant with id {} already exists but has different "
+                      "name {} [{}], {} [{}]",
+                participant_id.value(),
+                participants_.at(participant_id)->full_name(false),
+                participants_.at(participant_id)->id().usr(),
+                p->full_name(false), p->id().usr());
+
+            assert(participants_.at(participant_id)->full_name(false) ==
+                p->full_name(false));
+        }
+    }
 }
 
 void diagram::add_active_participant(eid_t id)
 {
+    assert(id.is_global());
+
     active_participants_.emplace(id);
 }
 
@@ -561,7 +577,7 @@ void diagram::print() const
 {
     LOG_TRACE(" --- Participants ---");
     for (const auto &[id, participant] : participants_) {
-        LOG_DBG("{} - {}", id, participant->to_string());
+        LOG_DBG("{} [{}] - {}", id, id.usr(), participant->to_string());
     }
 
     LOG_TRACE(" --- Activities ---");

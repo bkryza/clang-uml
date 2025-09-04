@@ -166,8 +166,9 @@ void generator::generate_to_activity(
                 model()
                     .get_participant<model::function>(to.value().id())
                     .value();
-            msg["to"]["participant_id"] = std::to_string(
-                common::to_id(file_participant.file_relative()).value());
+            msg["to"]["participant_id"] = std::to_string(common::to_id(
+                std::filesystem::path{file_participant.file_relative()})
+                                                             .value());
         }
         else {
             msg["to"]["participant_id"] =
@@ -210,8 +211,9 @@ void generator::generate_from_activity(const message &m,
                 model()
                     .get_participant<model::function>(from.value().id())
                     .value();
-            msg["from"]["participant_id"] = std::to_string(
-                common::to_id(file_participant.file_relative()).value());
+            msg["from"]["participant_id"] = std::to_string(common::to_id(
+                std::filesystem::path{file_participant.file_relative()})
+                                                               .value());
         }
         else {
             msg["from"]["participant_id"] =
@@ -765,8 +767,8 @@ std::optional<eid_t> generator::generate_participant(
         const auto &function_participant =
             model().get_participant<model::function>(*participant_id).value();
 
-        const auto file_participant_id =
-            common::to_id(function_participant.file_relative());
+        const auto file_participant_id = common::to_id(
+            std::filesystem::path{function_participant.file_relative()});
 
         if (!is_participant_generated(file_participant_id)) {
             nlohmann::json p = function_participant;

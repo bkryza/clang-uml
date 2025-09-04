@@ -560,7 +560,7 @@ void generator::generate_participant(
 
         assert(!file_path.empty());
 
-        const auto file_id = common::to_id(file_path);
+        const auto file_id = common::to_id(std::filesystem::path{file_path});
 
         if (is_participant_generated(file_id))
             return;
@@ -622,7 +622,8 @@ std::string generator::generate_alias(
     if ((participant.type_name() == "function" ||
             participant.type_name() == "function_template") &&
         config().combine_free_functions_into_file_participants()) {
-        const auto file_id = common::to_id(participant.file());
+        const auto file_id =
+            common::to_id(std::filesystem::path{participant.file()});
 
         return fmt::format("C_{:022}", file_id.value());
     }

@@ -189,6 +189,17 @@ public:
      */
     const call_expression_context &context() const;
 
+    void add_processed_template_class(std::string qualified_name)
+    {
+        processed_template_qualified_names_.emplace(std::move(qualified_name));
+    }
+
+    bool has_processed_template_class(const std::string &qualified_name) const
+    {
+        return util::contains(
+            processed_template_qualified_names_, qualified_name);
+    }
+
     /**
      * @brief Get participant by declaration
      *
@@ -201,11 +212,9 @@ public:
     {
         assert(decl != nullptr);
 
-        auto unique_participant_id = get_unique_id(eid_t{decl->getID()});
-        if (!unique_participant_id.has_value())
-            return {};
+        auto id = common::to_id(*decl);
 
-        return get_participant<T>(unique_participant_id.value());
+        return get_participant<T>(id);
     }
 
     /**
@@ -220,11 +229,9 @@ public:
     {
         assert(decl != nullptr);
 
-        auto unique_participant_id = get_unique_id(eid_t{decl->getID()});
-        if (!unique_participant_id.has_value())
-            return {};
+        auto id = common::to_id(*decl);
 
-        return get_participant<T>(unique_participant_id.value());
+        return get_participant<T>(id);
     }
 
     /**
@@ -259,6 +266,19 @@ public:
 
         return common::optional_ref<T>(
             *(static_cast<T *>(diagram().participants().at(id).get())));
+    }
+
+    template <typename T = model::participant>
+    common::optional_ref<T> get_participant(const std::string &full_name) const
+    {
+        for (const auto &[id, p] : diagram().participants()) {
+            if (p->full_name(false) == full_name ||
+                p->full_name(true) == full_name) {
+                return common::optional_ref<T>(*(static_cast<T *>(p.get())));
+            }
+        }
+
+        return {};
     }
 
     /**
@@ -612,6 +632,8 @@ private:
     std::map<eid_t, std::unique_ptr<clanguml::sequence_diagram::model::class_>>
         forward_declarations_;
 
+    std::set<int64_t> skipped_;
+
     std::map<int64_t /* local anonymous struct id */,
         std::tuple<std::string /* field name */, common::model::relationship_t,
             common::model::access_t>>
@@ -627,5 +649,14 @@ private:
         processed_comments_by_caller_id_;
 
     template_builder_t template_builder_;
+
+    /**
+     * When visiting CXX records we need to know if they have already been
+     * process in VisitClassTemplateDecl or
+     * VisitClassTemplateSpecializationDecl. If yes, then we need to skip it
+     *
+     * @todo There must be a better way to do this...
+     */
+    std::set<std::string> processed_template_qualified_names_;
 };
 } // namespace clanguml::sequence_diagram::visitor

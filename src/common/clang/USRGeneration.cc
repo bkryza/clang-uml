@@ -46,7 +46,7 @@ static bool printLoc(llvm::raw_ostream &OS, SourceLocation Loc,
         return true;
     }
     if (IncludeOffset) {
-        // Use the offest into the FileID to represent the location.  Using
+        // Use the offset into the FileID to represent the location.  Using
         // a line/column can cause us to look back at the original source file,
         // which is expensive.
         OS << '@' << Decomposed.second;
@@ -566,7 +566,12 @@ void USRGenerator::VisitTagDecl(const TagDecl *D)
 
     bool AlreadyStarted = false;
     if (const CXXRecordDecl *CXXRecord = dyn_cast<CXXRecordDecl>(D)) {
-        if (ClassTemplateDecl *ClassTmpl =
+
+        if(CXXRecord->isLambda()) {
+            Out << "@L";
+            printLoc(Out, CXXRecord->getBeginLoc(), Context->getSourceManager(), true);
+        }
+        else if (ClassTemplateDecl *ClassTmpl =
                 CXXRecord->getDescribedClassTemplate()) {
             AlreadyStarted = true;
 
@@ -994,7 +999,6 @@ void USRGenerator::VisitType(QualType T)
         if (const MemberPointerType *MPT = T->getAs<MemberPointerType>()) {
             Out << "*M";
             T = MPT->getPointeeType();
-//            T.dump();
             continue;
         }
         if (const PointerType *PT = T->getAs<PointerType>()) {
