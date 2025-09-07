@@ -1285,8 +1285,8 @@ void translation_unit_visitor::process_class_bases(
                 common::to_id(*tsp, cls->getASTContext());
 
             if (common::is_template_specialization_fully_dependent(*tsp)) {
-                type_template_decl_id = common::to_id(
-                    *tsp->getTemplateName().getAsTemplateDecl(true));
+                type_template_decl_id =
+                    common::to_id(*tsp->getTemplateName().getAsTemplateDecl());
             }
 
             if (diagram().get(type_template_decl_id).has_value()) {
@@ -1300,7 +1300,7 @@ void translation_unit_visitor::process_class_bases(
 
                 if (common::is_template_specialization_fully_dependent(*tsp)) {
                     type_template_decl_id = common::to_id(
-                        *tsp->getTemplateName().getAsTemplateDecl(true));
+                        *tsp->getTemplateName().getAsTemplateDecl());
                 }
 
                 template_specialization_ptr->set_id(type_template_decl_id);
@@ -1518,7 +1518,7 @@ void translation_unit_visitor::process_method(
             if (common::is_template_specialization_fully_dependent(
                     *unaliased_type)) {
                 id = common::to_id(
-                    *unaliased_type->getTemplateName().getAsTemplateDecl(true));
+                    *unaliased_type->getTemplateName().getAsTemplateDecl());
             }
 
             template_specialization_ptr->set_id(id);
@@ -1890,15 +1890,15 @@ bool translation_unit_visitor::find_relationships(const clang::Decl *decl,
 
         auto id = common::to_id(*template_specialization_type,
             type_instantiation_template_decl->getASTContext());
-        auto id_decl = common::to_id(
-            *template_specialization_type->getTemplateName().getAsTemplateDecl(
-                true));
+        auto id_decl =
+            common::to_id(*template_specialization_type->getTemplateName()
+                               .getAsTemplateDecl());
 
         if (id_decl.has_value() &&
             common::is_template_specialization_fully_dependent(
                 *template_specialization_type)) {
             id = common::to_id(*template_specialization_type->getTemplateName()
-                                    .getAsTemplateDecl(true));
+                                    .getAsTemplateDecl());
         }
 
         if (should_include(template_specialization_type->getTemplateName()
@@ -2352,7 +2352,7 @@ void translation_unit_visitor::process_field(
             *template_field_type, field_declaration.getASTContext());
 
         auto id_decl = common::to_id(
-            *template_field_type->getTemplateName().getAsTemplateDecl(true));
+            *template_field_type->getTemplateName().getAsTemplateDecl());
 
         if (id_decl.has_value() &&
             common::is_template_specialization_fully_dependent(

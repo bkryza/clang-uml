@@ -774,7 +774,7 @@ void template_builder<VisitorT>::build_from_template_specialization_type(
         common::to_id(template_type, location_declaration.getASTContext());
 
     auto id_decl =
-        common::to_id(*template_type.getTemplateName().getAsTemplateDecl(true));
+        common::to_id(*template_type.getTemplateName().getAsTemplateDecl());
 
     if (id_decl.has_value() &&
         common::is_template_specialization_fully_dependent(template_type)) {
@@ -1673,10 +1673,10 @@ template_builder<VisitorT>::try_as_template_specialization_type(
 
     if (common::is_template_specialization_fully_dependent(
             *nested_template_type) &&
-        to_usr(*nested_template_type->getTemplateName().getAsTemplateDecl(true))
+        to_usr(*nested_template_type->getTemplateName().getAsTemplateDecl())
             .id.has_value()) {
         nested_template_instantiation_id = common::to_id(
-            *nested_template_type->getTemplateName().getAsTemplateDecl(true));
+            *nested_template_type->getTemplateName().getAsTemplateDecl());
     }
 
     nested_template_instantiation->set_id(nested_template_instantiation_id);
