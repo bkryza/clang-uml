@@ -1262,7 +1262,20 @@ bool is_template_specialization_fully_dependent(
     bool result{tst.template_arguments().size() > 0};
 
     for (size_t i = 0; i < tst.template_arguments().size(); i++) {
-        if (!tst.template_arguments()[i].isDependent()) {
+        if (!tst.template_arguments()[i].isDependent() ||
+            ((tst.template_arguments()[i].getKind() ==
+                 clang::TemplateArgument::ArgKind::Type) &&
+                (tst.template_arguments()[i]
+                        .getAsType()
+                        ->isFunctionProtoType() ||
+                    tst.template_arguments()[i]
+                        .getAsType()
+                        ->isReferenceType() ||
+                    tst.template_arguments()[i].getAsType()->isPointerType() ||
+                    tst.template_arguments()[i].getAsType()->isArrayType() ||
+                    tst.template_arguments()[i]
+                        .getAsType()
+                        ->isMemberFunctionPointerType()))) {
             result = false;
             break;
         }
