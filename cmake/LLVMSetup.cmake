@@ -20,6 +20,7 @@ if(NOT "${LLVM_CONFIG_PATH}" STREQUAL "")
     string(REGEX MATCH "^([0-9]+)\\.([0-9]+)\\.(.+)"
             LLVM_VERSION_MATCH ${LLVM_VERSION_STR})
     set(LLVM_VERSION ${CMAKE_MATCH_1})
+    set(LLVM_VERSION_MAJOR ${CMAKE_MATCH_1})
     set(LLVM_VERSION_MINOR ${CMAKE_MATCH_2})
 endif()
 

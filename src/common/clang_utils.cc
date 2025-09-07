@@ -590,7 +590,7 @@ usr_t to_usr(const clang::Module &module)
 {
     std::string module_path = module.Name;
 #if LLVM_VERSION_MAJOR < 15
-    if (module->Kind == clang::Module::ModuleKind::PrivateModuleFragment) {
+    if (module.Kind == clang::Module::ModuleKind::PrivateModuleFragment) {
 #else
     if (module.isPrivateModule()) {
 #endif

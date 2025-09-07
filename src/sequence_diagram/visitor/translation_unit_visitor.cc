@@ -2121,7 +2121,8 @@ bool translation_unit_visitor::process_class_template_method_call_expression(
     if (dependent_member_callee == nullptr)
         return false;
 
-    if (auto *me = dyn_cast<clang::MemberExpr>(dependent_member_callee)) {
+    if (auto *me =
+            clang::dyn_cast<clang::MemberExpr>(dependent_member_callee)) {
         auto *member_decl = me->getMemberDecl();
         auto callee_id = common::to_id(*member_decl);
 
@@ -2148,16 +2149,6 @@ bool translation_unit_visitor::process_class_template_method_call_expression(
             const auto tst_id =
                 common::to_id(*tst, template_declaration->getASTContext());
 
-            //            if
-            //            (!common::is_template_specialization_fully_dependent(*tst))
-            //            {
-            //                m.set_to(tst_id);
-            //                m.set_message_name(
-            //                    dependent_member_callee->getMember().getAsString());
-            //
-            //                diagram().add_active_participant(tst_id);
-            //            }
-            //            else {
             // In this case we just have to guess the member by name
             std::string callee_method_full_name;
 
