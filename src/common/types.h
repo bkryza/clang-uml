@@ -68,16 +68,12 @@ public:
 
     explicit eid_t(usr_t &&u);
 
-    explicit eid_t(int64_t id);
-
     explicit eid_t(type id);
 
     eid_t(const eid_t &) = default;
     eid_t(eid_t &&) noexcept = default;
     eid_t &operator=(const eid_t &) = default;
     eid_t &operator=(eid_t &&) noexcept = default;
-
-    eid_t &operator=(int64_t ast_id);
 
     ~eid_t() = default;
 
@@ -92,8 +88,6 @@ public:
     type value() const;
 
     bool has_value() const;
-
-    int64_t ast_local_value() const;
 
     const std::string &usr() const { return usr_; }
 

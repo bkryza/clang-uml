@@ -611,19 +611,11 @@ private:
     std::map<eid_t, std::unique_ptr<clanguml::sequence_diagram::model::class_>>
         forward_declarations_;
 
-    std::map<int64_t /* local anonymous struct id */,
-        std::tuple<std::string /* field name */, common::model::relationship_t,
-            common::model::access_t>>
-        anonymous_structs_;
-
     std::map<eid_t, std::set<eid_t>> activity_callers_;
 
     mutable unsigned within_static_variable_declaration_{0};
     mutable std::set<const clang::Expr *>
         already_visited_in_static_declaration_{};
-
-    mutable std::set<std::pair<int64_t, const clang::RawComment *>>
-        processed_comments_by_caller_id_;
 
     template_builder_t template_builder_;
 

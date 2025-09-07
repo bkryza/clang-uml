@@ -332,10 +332,6 @@ bool translation_unit_visitor::VisitObjCMethodDecl(
 
     method_model_ptr->set_id(common::to_id(*declaration));
 
-    LOG_TRACE("Set id {} --> {} for method name {} [{}]", declaration->getID(),
-        method_model_ptr->id(), method_full_name,
-        declaration->isThisDeclarationADefinition());
-
     context().update(declaration);
 
     context().set_caller_id(method_model_ptr->id());
@@ -405,10 +401,6 @@ bool translation_unit_visitor::VisitCXXMethodDecl(
     const auto method_full_name = method_model_ptr->full_name(false);
 
     method_model_ptr->set_id(common::to_id(*declaration));
-
-    LOG_TRACE("Set id {} --> {} for method name {} [{}]", declaration->getID(),
-        method_model_ptr->id(), method_full_name,
-        declaration->isThisDeclarationADefinition());
 
     context().update(declaration);
 
@@ -564,11 +556,6 @@ bool translation_unit_visitor::VisitLambdaExpr(clang::LambdaExpr *expr)
     LOG_TRACE("Visiting lambda expression {} at {} [caller_id = {}]",
         lambda_full_name, expr->getBeginLoc().printToString(source_manager()),
         context().caller_id());
-
-    LOG_TRACE("Lambda call operator ID {} - lambda class ID {}, class call "
-              "operator ID {}",
-        expr->getCallOperator()->getID(), expr->getLambdaClass()->getID(),
-        expr->getLambdaClass()->getLambdaCallOperator()->getID());
 
     // Create lambda class participant
     auto *cls = expr->getLambdaClass();
@@ -1986,7 +1973,7 @@ bool translation_unit_visitor::process_operator_call_expression(
 
     LOG_DBG("Operator '{}' call expression to {} at {}",
         getOperatorSpelling(operator_call_expr->getOperator()),
-        operator_call_expr->getCalleeDecl()->getID(),
+        common::to_id(*operator_call_expr->getCalleeDecl()).usr(),
         operator_call_expr->getBeginLoc().printToString(source_manager()));
 
     // Handle the case if the callee is a lambda
@@ -2443,9 +2430,7 @@ translation_unit_visitor::create_class_model(clang::CXXRecordDecl *cls)
         // If not, check if the parent template declaration is in the model
         if (!id_opt &&
             (parent_record_decl->getDescribedTemplate() != nullptr)) {
-            parent_record_decl->getDescribedTemplate()->getID();
-            if (parent_record_decl->getDescribedTemplate() != nullptr)
-                id_opt = ast_id;
+            id_opt = common::to_id(*parent_record_decl->getDescribedTemplate());
         }
 
         if (!id_opt)
@@ -3017,9 +3002,6 @@ translation_unit_visitor::create_objc_method_model(
         return {};
     }
 
-    LOG_DBG("Getting ObjC method's interface with local id {}",
-        parent_decl->getID());
-
     const auto maybe_method_class = get_participant<model::class_>(parent_decl);
 
     if (!maybe_method_class) {
@@ -3286,13 +3268,6 @@ translation_unit_visitor::get_expression_comment(const clang::SourceManager &sm,
 
     if (raw_comment == nullptr)
         return {};
-
-    if (!caller_id.is_global() &&
-        !processed_comments_by_caller_id_
-             .emplace(caller_id.ast_local_value(), raw_comment)
-             .second) {
-        return {};
-    }
 
     const auto &[decorators, stripped_comment] = decorators::parse(
         raw_comment->getFormattedText(sm, sm.getDiagnostics()));

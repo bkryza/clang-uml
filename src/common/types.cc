@@ -26,12 +26,6 @@ eid_t::eid_t()
 {
 }
 
-eid_t::eid_t(int64_t id)
-    : value_{static_cast<type>(id)}
-    , is_global_{false}
-{
-}
-
 eid_t::eid_t(type id)
     : value_{id}
     , is_global_{true}
@@ -43,15 +37,6 @@ eid_t::eid_t(usr_t &&u)
     , is_global_{true}
     , usr_{std::move(u.id.value())}
 {
-}
-
-eid_t &eid_t::operator=(int64_t ast_id)
-{
-    // Can't assign ast_id if the id is already a global one
-    assert(!is_global_);
-
-    value_ = static_cast<uint64_t>(ast_id);
-    return *this;
 }
 
 bool eid_t::is_global() const { return is_global_; }
@@ -84,13 +69,6 @@ bool operator<(const eid_t &lhs, const eid_t &rhs)
 eid_t::type eid_t::value() const { return value_; }
 
 bool eid_t::has_value() const { return value_ != 0ULL; }
-
-int64_t eid_t::ast_local_value() const
-{
-    assert(!is_global_);
-
-    return static_cast<int64_t>(value_);
-}
 
 std::string to_string(const bool v) { return v ? "true" : "false"; }
 
