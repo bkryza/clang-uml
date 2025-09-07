@@ -533,16 +533,6 @@ private:
     void add_incomplete_forward_declarations();
 
     /**
-     * @brief Replace any AST local ids in diagram elements with global ones
-     *
-     * Not all elements global ids can be set in relationships during
-     * traversal of the AST. In such cases, a local id (obtained from
-     * `getID()`) and at after the traversal is complete, the id is replaced
-     * with the global diagram id.
-     */
-    void resolve_local_to_global_ids();
-
-    /**
      * @brief Process concept constraint requirements
      *
      * @param cpt Concept declaration
@@ -688,10 +678,6 @@ bool translation_unit_visitor::add_or_update(
 
     const auto cls_id = c_ptr->id();
 
-    id_mapper().add(cls->getID(), cls_id);
-
-    LOG_DBG("CHECKING FOR EXISTENCE OF {}", cls_id.value());
-
     auto maybe_existing_model = diagram().find<ElementT>(cls_id);
 
     ElementT &class_model =
@@ -735,12 +721,7 @@ bool translation_unit_visitor::add_or_update(
             cls->getSpecializedTemplate() != nullptr) {
             // Only do this if we haven't found a better specialization
             // during construction of the template specialization
-            //            const eid_t
-            //            ast_id{cls->getSpecializedTemplate()->getID()};
             eid_t ast_id{common::to_id(*cls->getSpecializedTemplate())};
-            //            const auto maybe_id =
-            //            id_mapper().get_global_id(ast_id); if
-            //            (maybe_id.has_value())
             class_model.add_relationship(
                 {relationship_t::kInstantiation, ast_id});
         }

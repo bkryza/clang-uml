@@ -20,7 +20,6 @@
 #include "class_diagram/model/diagram.h"
 #include "common/model/diagram.h"
 #include "common/model/template_element.h"
-#include "common/visitor/ast_id_mapper.h"
 #include "common/visitor/translation_unit_visitor.h"
 #include "config/config.h"
 
@@ -535,13 +534,6 @@ public:
         const std::string &qualified_name) const;
 
     /**
-     * @brief Get reference to Clang AST to clang-uml id mapper
-     *
-     * @return Reference to Clang AST to clang-uml id mapper
-     */
-    common::visitor::ast_id_mapper &id_mapper();
-
-    /**
      * @brief Get reference to the current source manager
      *
      * @return Reference to the current source manager
@@ -555,8 +547,6 @@ private:
     // Reference to diagram config
     const clanguml::config::diagram &config_;
 
-    common::visitor::ast_id_mapper &id_mapper_;
-
     clang::SourceManager &source_manager_;
 
     VisitorT &visitor_;
@@ -568,7 +558,6 @@ template_builder<VisitorT>::template_builder(
     const clanguml::config::diagram &config_, VisitorT &visitor)
     : diagram_{diagram_}
     , config_{config_}
-    , id_mapper_{visitor.id_mapper()}
     , source_manager_{visitor.source_manager()}
     , visitor_{visitor}
 {
@@ -593,12 +582,6 @@ const namespace_ &template_builder<VisitorT>::using_namespace() const
 }
 
 template <typename VisitorT>
-common::visitor::ast_id_mapper &template_builder<VisitorT>::id_mapper()
-{
-    return id_mapper_;
-}
-
-template <typename VisitorT>
 clang::SourceManager &template_builder<VisitorT>::source_manager() const
 {
     return source_manager_;
@@ -615,7 +598,6 @@ bool template_builder<VisitorT>::simplify_system_template(
 
     if (simplified != full_name) {
         ct.set_type(simplified);
-        //        ct.set_id(common::to_id(simplified));
         ct.clear_params();
         return true;
     }
