@@ -1849,7 +1849,7 @@ bool translation_unit_visitor::find_relationships(const clang::Decl *decl,
         }
         else if (type->getAsCXXRecordDecl() != nullptr) {
             relationships.emplace_back(
-                common::to_id(type, decl->getASTContext()), relationship_hint,
+                common::to_id(type, type->getAsCXXRecordDecl()->getASTContext()), relationship_hint,
                 decl);
             result = true;
         }
