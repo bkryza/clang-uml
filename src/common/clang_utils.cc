@@ -189,7 +189,7 @@ std::string to_string(const clang::TemplateSpecializationType &type,
 #if LLVM_VERSION_MAJOR < 21
     PP.PrintCanonicalTypes = false; // prefer source-like spelling
 #endif
-    PP.SuppressTagKeyword = true;   // "vector<int>" vs "class vector<int>"
+    PP.SuppressTagKeyword = true; // "vector<int>" vs "class vector<int>"
     PP.FullyQualifiedName = false;
 
     llvm::SmallString<512> buf;

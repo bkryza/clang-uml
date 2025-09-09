@@ -145,7 +145,6 @@ TEST_CASE("Test diagnostic_consumer")
     FileSystemOptions file_opts;
     FileManager file_mgr(file_opts, fs);
 
-
 #if LLVM_VERSION_MAJOR < 21
     auto diag_engine = DiagnosticsEngine(
         llvm::IntrusiveRefCntPtr<DiagnosticIDs>(new DiagnosticIDs()),
@@ -153,8 +152,7 @@ TEST_CASE("Test diagnostic_consumer")
 #else
     auto *diagopt = new DiagnosticOptions();
     auto diag_engine = DiagnosticsEngine(
-        llvm::IntrusiveRefCntPtr<DiagnosticIDs>(new DiagnosticIDs()),
-        *diagopt);
+        llvm::IntrusiveRefCntPtr<DiagnosticIDs>(new DiagnosticIDs()), *diagopt);
 #endif
     SourceManager source_mgr(diag_engine, file_mgr);
 
