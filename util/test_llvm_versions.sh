@@ -3,9 +3,36 @@
 set -e
 trap 'echo "Build failed!"' ERR
 
-if [ $# -ne 1 ]; then
-    echo "Usage: $0 <llvm_version>"
-    echo "Example: $0 18"
+if [ $# -eq 0 ]; then
+    echo "Testing all supported LLVM versions: 12, 13, 14, 15, 16, 17, 18, 19, 20, 21"
+    echo "Will stop on first compilation error or test failure."
+    echo
+    
+    # Test all versions in order
+    for version in 12 13 14 15 16 17 18 19 20 21; do
+        echo "========================================================="
+        echo " Testing LLVM version $version"
+        echo "========================================================="
+        
+        # Call this script recursively with the version
+        if ! "$0" "$version"; then
+            echo "FAILED: Testing stopped at LLVM version $version"
+            exit 1
+        fi
+        
+        echo "SUCCESS: LLVM version $version completed successfully"
+        echo
+    done
+    
+    echo "========================================================="
+    echo " ALL LLVM VERSIONS TESTED SUCCESSFULLY!"
+    echo "========================================================="
+    exit 0
+elif [ $# -ne 1 ]; then
+    echo "Usage: $0 [llvm_version]"
+    echo "Examples:"
+    echo "  $0          # Test all supported LLVM versions (12-21)"
+    echo "  $0 18       # Test specific LLVM version"
     exit 1
 fi
 
