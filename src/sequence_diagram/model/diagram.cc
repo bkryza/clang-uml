@@ -110,15 +110,12 @@ void diagram::add_participant(std::unique_ptr<participant> p)
     else {
         if (participants_.at(participant_id)->full_name(false) !=
             p->full_name(false)) {
-            LOG_ERROR("Participant with id {} already exists but has different "
-                      "name {} [{}], {} [{}]",
+            LOG_WARN("Participant with id {} already exists but has different "
+                     "name {} [{}], {} [{}]",
                 participant_id.value(),
                 participants_.at(participant_id)->full_name(false),
                 participants_.at(participant_id)->id().usr(),
                 p->full_name(false), p->id().usr());
-
-            assert(participants_.at(participant_id)->full_name(false) ==
-                p->full_name(false));
         }
     }
 }

@@ -25,6 +25,11 @@ call_expression_context::call_expression_context() = default;
 void call_expression_context::reset()
 {
     current_caller_id_ = eid_t{};
+    reset_declarations();
+}
+
+void call_expression_context::reset_declarations()
+{
     current_class_decl_ = nullptr;
     current_class_template_decl_ = nullptr;
     current_class_template_specialization_decl_ = nullptr;
@@ -105,27 +110,32 @@ clang::ASTContext *call_expression_context::get_ast_context() const
 
 void call_expression_context::update(clang::CXXRecordDecl *cls)
 {
+    reset_declarations();
     current_class_decl_ = cls;
 }
 
 void call_expression_context::update(clang::ObjCInterfaceDecl *cls)
 {
+    reset_declarations();
     objc_interface_decl_ = cls;
 }
 
 void call_expression_context::update(clang::ObjCProtocolDecl *cls)
 {
+    reset_declarations();
     objc_protocol_decl_ = cls;
 }
 
 void call_expression_context::update(
     clang::ClassTemplateSpecializationDecl *clst)
 {
+    reset_declarations();
     current_class_template_specialization_decl_ = clst;
 }
 
 void call_expression_context::update(clang::ClassTemplateDecl *clst)
 {
+    reset_declarations();
     current_class_template_decl_ = clst;
 }
 
@@ -136,6 +146,7 @@ void call_expression_context::update(clang::CXXMethodDecl *method)
 
 void call_expression_context::update(clang::ObjCMethodDecl *method)
 {
+    reset_declarations();
     current_objc_method_decl_ = method;
 }
 

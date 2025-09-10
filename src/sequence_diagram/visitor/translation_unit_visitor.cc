@@ -3101,6 +3101,17 @@ void translation_unit_visitor::process_function_parameters(
     for (const auto *param : declaration.parameters()) {
         auto parameter_type =
             common::to_string(param->getType(), param->getASTContext());
+
+        if (param->getType().isConstQualified() &&
+            !param->getType()->isPointerType() &&
+            !param->getType()->isReferenceType()) {
+            auto non_const_type = param->getType();
+            non_const_type.removeLocalConst();
+
+            parameter_type =
+                common::to_string(non_const_type, param->getASTContext());
+        }
+
         common::ensure_lambda_type_is_relative(config(), parameter_type);
         parameter_type = simplify_system_template(parameter_type);
 
