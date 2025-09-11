@@ -1813,7 +1813,7 @@ template_builder<VisitorT>::try_as_record_type(
         common::to_string(type, template_decl->getASTContext()));
 
     argument.set_type(type_name);
-    const auto type_id = common::to_id(type, template_decl->getASTContext());
+    const auto type_id = common::to_id(type);
 
     argument.set_id(type_id);
 
@@ -1881,7 +1881,7 @@ std::optional<template_parameter> template_builder<VisitorT>::try_as_enum_type(
 
     auto type_name = common::to_string(type, template_decl->getASTContext());
     argument.set_type(type_name);
-    argument.set_id(common::to_id(type, template_decl->getASTContext()));
+    argument.set_id(common::to_id(type));
 
     if (enum_type->getAsTagDecl() != nullptr &&
         config_.generate_template_argument_dependencies() &&

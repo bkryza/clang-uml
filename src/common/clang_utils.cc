@@ -504,10 +504,7 @@ eid_t to_id(const clang::Decl &decl)
     return eid_t{std::move(u)};
 }
 
-eid_t to_id(const clang::QualType &type, clang::ASTContext &ctx)
-{
-    return eid_t(to_usr(type, ctx));
-}
+eid_t to_id(const clang::QualType &type) { return eid_t(to_usr(type)); }
 
 eid_t to_id(
     const clang::TemplateSpecializationType &type, clang::ASTContext &ctx)
@@ -553,7 +550,7 @@ usr_t to_usr(
     return {usr_buf.c_str()};
 }
 
-usr_t to_usr(const clang::QualType &type, clang::ASTContext & /*ctx*/)
+usr_t to_usr(const clang::QualType &type)
 {
     const clang::Type *T = type.getTypePtrOrNull();
     if (T == nullptr)
