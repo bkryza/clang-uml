@@ -33,10 +33,12 @@ eid_t::eid_t(type id)
 }
 
 eid_t::eid_t(usr_t &&u)
-    : value_{static_cast<uint64_t>(std::hash<std::string>{}(u.id.value()))}
-    , is_global_{true}
-    , usr_{std::move(u.id.value())}
 {
+    if (u.id.has_value()) {
+        value_ = static_cast<uint64_t>(std::hash<std::string>{}(u.id.value()));
+        usr_ = std::move(u).id.value();
+        is_global_ = true;
+    }
 }
 
 bool eid_t::is_global() const { return is_global_; }

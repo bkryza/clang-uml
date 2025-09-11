@@ -199,9 +199,9 @@ clang-format:
 format:
 	docker run --rm -v $(CURDIR):/root/sources bkryza/clang-format-check:1.5
 
-.PHONY: debug_tidy
+.PHONY: tidy
 tidy: debug
-	run-clang-tidy-17 -extra-arg=-Wno-unknown-warning-option -j $(NUMPROC) -p debug "${PWD}/src"
+	run-clang-tidy-20 -extra-arg=-Wno-unknown-warning-option -extra-arg=-std=c++17 -allow-no-checks -j $(NUMPROC) -p debug "${PWD}/src"
 
 .PHONY: check-formatting
 check-formatting:

@@ -103,6 +103,6 @@ bool generateUSRFragmentForModuleName(StringRef ModName, raw_ostream &OS);
 
 
 } // namespace index
-} // namespace clang
+} // namespace common
 
 } // namespace clanguml

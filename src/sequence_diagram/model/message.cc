@@ -22,7 +22,7 @@ namespace clanguml::sequence_diagram::model {
 
 message::message(common::model::message_t type, eid_t from)
     : type_{type}
-    , from_{from}
+    , from_{std::move(from)}
 {
 }
 

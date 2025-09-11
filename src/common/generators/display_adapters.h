@@ -118,7 +118,7 @@ protected:
     {
         util::replace_all(n, "##", "::");
 
-        if constexpr (std::is_base_of<common::model::element, T>::value) {
+        if constexpr (std::is_base_of_v<common::model::element, T>) {
             if (!with_packages_) {
                 if (needs_root_prefix(element_))
                     return fmt::format("::{}", n);

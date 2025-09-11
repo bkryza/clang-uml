@@ -767,7 +767,7 @@ std::optional<eid_t> generator::generate_participant(
         const auto &function_participant =
             model().get_participant<model::function>(*participant_id).value();
 
-        const auto file_participant_id = common::to_id(
+        auto file_participant_id = common::to_id(
             std::filesystem::path{function_participant.file_relative()});
 
         if (!is_participant_generated(file_participant_id)) {

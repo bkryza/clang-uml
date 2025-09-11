@@ -1884,7 +1884,8 @@ std::optional<template_parameter> template_builder<VisitorT>::try_as_enum_type(
     argument.set_id(common::to_id(type, template_decl->getASTContext()));
 
     if (enum_type->getAsTagDecl() != nullptr &&
-        config_.generate_template_argument_dependencies()) {
+        config_.generate_template_argument_dependencies() &&
+        argument.id().has_value()) {
         template_instantiation.add_relationship(
             {relationship_t::kDependency, *argument.id()});
     }
@@ -1937,7 +1938,7 @@ bool template_builder<VisitorT>::add_base_classes(
         }
     }
 
-    const auto maybe_id = ct.id();
+    const auto &maybe_id = ct.id();
     if (add_template_argument_as_base_class && maybe_id) {
         LOG_DBG("Adding template argument as base class '{}'",
             ct.to_string({}, false));

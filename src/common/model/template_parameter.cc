@@ -521,8 +521,8 @@ bool template_parameter::find_nested_relationships(const clang::Decl *decl,
     else {
         for (const auto &template_argument : template_params()) {
 
-            const auto maybe_id = template_argument.id();
-            const auto maybe_arg_type = template_argument.type();
+            const auto &maybe_id = template_argument.id();
+            const auto &maybe_arg_type = template_argument.type();
 
             if (maybe_id && maybe_arg_type && should_include(*maybe_arg_type)) {
                 if (allow_hint_override && template_argument.is_association() &&

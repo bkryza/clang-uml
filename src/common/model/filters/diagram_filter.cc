@@ -780,23 +780,26 @@ tvl::value_t callee_filter::match(
                 return p.type_name() == "method";
             case config::callee_type::constructor:
                 return p.type_name() == "method" &&
-                    ((method &)p).is_constructor();
+                    (dynamic_cast<const method &>(p)).is_constructor();
             case config::callee_type::assignment:
                 return p.type_name() == "method" &&
-                    ((method &)p).is_assignment();
+                    (dynamic_cast<const method &>(p)).is_assignment();
             case config::callee_type::operator_:
-                return is_function(&p) && ((function &)p).is_operator();
+                return is_function(&p) &&
+                    (dynamic_cast<const function &>(p)).is_operator();
             case config::callee_type::defaulted:
                 return p.type_name() == "method" &&
-                    ((method &)p).is_defaulted();
+                    (dynamic_cast<const method &>(p)).is_defaulted();
             case config::callee_type::static_:
-                return is_function(&p) && ((function &)p).is_static();
+                return is_function(&p) &&
+                    (dynamic_cast<const function &>(p)).is_static();
             case config::callee_type::function:
                 return p.type_name() == "function";
             case config::callee_type::function_template:
                 return p.type_name() == "function_template";
             case config::callee_type::lambda:
-                return p.type_name() == "method" && is_lambda((method &)p);
+                return p.type_name() == "method" &&
+                    is_lambda(dynamic_cast<const method &>(p));
             case config::callee_type::cuda_kernel:
                 return is_cuda_kernel(&p);
             case config::callee_type::cuda_device:
@@ -852,8 +855,6 @@ tvl::value_t subclass_filter::match(const diagram &d, const element &e) const
     std::vector<std::string> parents_names;
     for (const auto p : parents) {
         parents_names.push_back(p.get().full_name(false));
-        LOG_DBG("FOUND BASE CLASS {} OF {}", p.get().full_name_no_ns(),
-            e.full_name(false));
     }
 
     // Now check if any of the parents matches the roots specified in the
@@ -861,8 +862,6 @@ tvl::value_t subclass_filter::match(const diagram &d, const element &e) const
     for (const auto &root : roots_) {
         for (const auto &parent : parents) {
             auto full_name = parent.get().full_name(false);
-            LOG_DBG(
-                "AAAAAAAAAAAAAAAAAA {} =?= {}", root.to_string(), full_name);
             if (root == full_name) {
                 if (type() == filter_t::kExclusive)
                     LOG_TRACE("Element {} rejected by subclass_filter",
@@ -1036,7 +1035,7 @@ void context_filter::initialize_effective_context_class_diagram(
         find_elements_in_direct_relationship<class_diagram::model::diagram>(
             d, context_cfg, effective_context, current_iteration_context);
 
-        for (auto id : current_iteration_context) {
+        for (const auto &id : current_iteration_context) {
             if (effective_context.count(id) == 0) {
                 // Found new element to add to context
                 effective_context.emplace(id);
@@ -1083,7 +1082,7 @@ void context_filter::initialize_effective_context_package_diagram(
         find_elements_in_direct_relationship<package_diagram::model::diagram>(
             d, context_cfg, effective_context, current_iteration_context);
 
-        for (auto id : current_iteration_context) {
+        for (const auto &id : current_iteration_context) {
             if (effective_context.count(id) == 0) {
                 // Found new element to add to context
                 effective_context.emplace(id);

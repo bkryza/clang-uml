@@ -190,21 +190,19 @@ bool is_subexpr_of(const clang::Stmt *parent_stmt, const clang::Stmt *sub_stmt);
  */
 usr_t to_usr(const clang::Decl &decl);
 
-usr_t to_usr(const clang::QualType &type, const clang::ASTContext &ctx);
+usr_t to_usr(const clang::QualType &type, clang::ASTContext &ctx);
 
-usr_t to_usr(const clang::TemplateSpecializationType &type,
-    const clang::ASTContext &ctx);
+usr_t to_usr(
+    const clang::TemplateSpecializationType &type, clang::ASTContext &ctx);
 
 usr_t to_usr(const clang::Module &module);
 
-eid_t to_id(const clang::QualType &type, const clang::ASTContext &ctx);
+eid_t to_id(const clang::QualType &type, clang::ASTContext &ctx);
 
-eid_t to_id(const clang::TemplateSpecializationType &type,
-    const clang::ASTContext &ctx);
+eid_t to_id(
+    const clang::TemplateSpecializationType &type, clang::ASTContext &ctx);
 
 eid_t to_id(const clang::Decl &decl);
-
-eid_t to_id(const std::string &type);
 
 eid_t to_id(const std::filesystem::path &type);
 

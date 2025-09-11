@@ -2121,7 +2121,7 @@ bool translation_unit_visitor::process_class_template_method_call_expression(
     if (dependent_member_callee == nullptr)
         return false;
 
-    if (auto *me =
+    if (const auto *me =
             clang::dyn_cast<clang::MemberExpr>(dependent_member_callee)) {
         auto *member_decl = me->getMemberDecl();
         auto callee_id = common::to_id(*member_decl);
@@ -3262,7 +3262,7 @@ bool translation_unit_visitor::should_include(
 
 std::optional<std::pair<unsigned int, std::string>>
 translation_unit_visitor::get_expression_comment(const clang::SourceManager &sm,
-    const clang::ASTContext &context, const eid_t caller_id,
+    const clang::ASTContext &context, const eid_t /*caller_id*/,
     const clang::Stmt *stmt)
 {
     const auto *raw_comment =

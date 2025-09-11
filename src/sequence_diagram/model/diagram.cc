@@ -395,11 +395,11 @@ std::vector<message_chain_t> diagram::get_all_from_to_message_chains(
             if (next_it == end(chain))
                 break;
 
-            auto from_id = *it;
+            const auto &from_id = *it;
             if (activities_.count(from_id) == 0)
                 continue;
 
-            auto to_id = *(next_it);
+            const auto &to_id = *(next_it);
 
             const auto &act = activities_.at(from_id);
 
@@ -516,7 +516,7 @@ void diagram::inline_lambda_operator_calls()
     }
 
     // Skip active participants which are not in lambdaless_diagram participants
-    for (auto id : this->active_participants()) {
+    for (const auto &id : this->active_participants()) {
         if (participants.count(id) > 0) {
             active_participants.emplace(id);
         }

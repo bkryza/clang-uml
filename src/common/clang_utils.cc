@@ -181,7 +181,7 @@ std::string to_string(
 }
 
 std::string to_string(const clang::TemplateSpecializationType &type,
-    const clang::ASTContext &ctx, bool try_canonical)
+    const clang::ASTContext &ctx, bool /*try_canonical*/)
 {
     using namespace clang;
 
@@ -192,7 +192,8 @@ std::string to_string(const clang::TemplateSpecializationType &type,
     PP.SuppressTagKeyword = true; // "vector<int>" vs "class vector<int>"
     PP.FullyQualifiedName = false;
 
-    llvm::SmallString<512> buf;
+    constexpr auto kBufSize{512};
+    llvm::SmallString<kBufSize> buf;
     llvm::raw_svector_ostream os(buf);
 
     // Print the template name (handles qualification/aliases correctly).
@@ -503,20 +504,15 @@ eid_t to_id(const clang::Decl &decl)
     return eid_t{std::move(u)};
 }
 
-eid_t to_id(const clang::QualType &type, const clang::ASTContext &ctx)
+eid_t to_id(const clang::QualType &type, clang::ASTContext &ctx)
 {
     return eid_t(to_usr(type, ctx));
 }
 
 eid_t to_id(
-    const clang::TemplateSpecializationType &type, const clang::ASTContext &ctx)
+    const clang::TemplateSpecializationType &type, clang::ASTContext &ctx)
 {
     return eid_t(to_usr(type, ctx));
-}
-
-eid_t to_id(const std::string &file)
-{
-    throw std::logic_error("Function not yet implemented");
 }
 
 eid_t to_id(const std::filesystem::path &file)
@@ -533,7 +529,8 @@ eid_t to_id(const clang::Module &module) { return eid_t(to_usr(module)); }
 
 usr_t to_usr(const clang::Decl &decl)
 {
-    clang::SmallVector<char, 1024> buf{};
+    constexpr auto kBufSize{1024};
+    clang::SmallVector<char, kBufSize> buf{};
     if (clanguml::common::index::generateUSRForDecl(&decl, buf)) {
         return {};
     }
@@ -542,24 +539,24 @@ usr_t to_usr(const clang::Decl &decl)
 }
 
 usr_t to_usr(
-    const clang::TemplateSpecializationType &type, const clang::ASTContext &ctx)
+    const clang::TemplateSpecializationType &type, clang::ASTContext &ctx)
 {
-    llvm::SmallString<128> usr_buf;
+    constexpr auto kBufSize{1024};
+    llvm::SmallString<kBufSize> usr_buf;
     clang::QualType qt(&type, 0);
-    if (!clanguml::common::index::generateUSRForType(
-            qt, const_cast<clang::ASTContext &>(ctx), usr_buf)) { }
+    if (!clanguml::common::index::generateUSRForType(qt, ctx, usr_buf)) { }
     else {
         assert(
             false); // "Failed to convert template specialization type to USR"
     }
 
-    return usr_t(usr_buf.c_str());
+    return {usr_buf.c_str()};
 }
 
-usr_t to_usr(const clang::QualType &type, const clang::ASTContext &ctx)
+usr_t to_usr(const clang::QualType &type, clang::ASTContext & /*ctx*/)
 {
     const clang::Type *T = type.getTypePtrOrNull();
-    if (!T)
+    if (T == nullptr)
         return {};
 
     // Unwrap typedefs and sugar
@@ -568,17 +565,20 @@ usr_t to_usr(const clang::QualType &type, const clang::ASTContext &ctx)
     if (const auto *RT = llvm::dyn_cast<clang::RecordType>(T)) {
         return to_usr(*RT->getDecl());
     }
-    else if (const auto *ET = llvm::dyn_cast<clang::EnumType>(T)) {
+
+    if (const auto *ET = llvm::dyn_cast<clang::EnumType>(T)) {
         return to_usr(*ET->getDecl());
     }
-    else if (const auto *TT = llvm::dyn_cast<clang::TypedefType>(T)) {
+
+    if (const auto *TT = llvm::dyn_cast<clang::TypedefType>(T)) {
         return to_usr(*TT->getDecl());
     }
-    else if (const auto *TP = llvm::dyn_cast<clang::TemplateTypeParmType>(T)) {
+
+    if (const auto *TP = llvm::dyn_cast<clang::TemplateTypeParmType>(T)) {
         return to_usr(*TP->getDecl());
     }
-    else if (const auto *TS =
-                 llvm::dyn_cast<clang::TemplateSpecializationType>(T)) {
+
+    if (const auto *TS = llvm::dyn_cast<clang::TemplateSpecializationType>(T)) {
         if (auto *TD = TS->getTemplateName().getAsTemplateDecl()) {
             return to_usr(*TD);
         }
@@ -599,7 +599,7 @@ usr_t to_usr(const clang::Module &module)
         module_path = module.getTopLevelModule()->Name;
     }
 
-    return usr_t{std::move(module_path)};
+    return {std::move(module_path)};
 }
 
 std::pair<common::model::namespace_, std::string> split_ns(
@@ -1261,7 +1261,7 @@ const clang::ConceptDecl *get_template_parameter_concept_constraint(
 bool is_template_specialization_fully_dependent(
     const clang::TemplateSpecializationType &tst)
 {
-    bool result{tst.template_arguments().size() > 0};
+    bool result{!tst.template_arguments().empty()};
 
     for (size_t i = 0; i < tst.template_arguments().size(); i++) {
         if (!tst.template_arguments()[i].isDependent() ||

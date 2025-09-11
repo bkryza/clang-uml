@@ -14,6 +14,7 @@ Checks: >-
   -bugprone-crtp-constructor-accessibility,
   -bugprone-unused-local-non-trivial-variable,
   -clang-analyzer-alpha.*,
+  -clang-analyzer-optin*,
   -clang-analyzer-core.StackAddressEscape,
   -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
   -cppcoreguidelines-macro-usage,
@@ -56,6 +57,7 @@ Checks: >-
   -openmp*,
   -performance-unnecessary-value-param,
   -performance-enum-size,
+  -portability-template-virtual-member-function,
   -readability-inconsistent-declaration-parameter-name,
   -readability-identifier-length,
   -readability-identifier-naming,
@@ -68,6 +70,7 @@ Checks: >-
   -readability-make-member-function-const,
   -readability-redundant-casting,
   -readability-avoid-return-with-void-value,
+  -readability-container-contains,
   -darwin*,
   -zircon*
 WarningsAsErrors: '*'

@@ -26,7 +26,7 @@ relationship::relationship(relationship_t type, eid_t destination,
     access_t access, std::string label, std::string multiplicity_source,
     std::string multiplicity_destination)
     : type_{type}
-    , destination_{destination}
+    , destination_{std::move(destination)}
     , multiplicity_source_{std::move(multiplicity_source)}
     , multiplicity_destination_{std::move(multiplicity_destination)}
     , label_{std::move(label)}
