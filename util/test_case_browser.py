@@ -96,9 +96,11 @@ def main(dir1, dir2):
 
     title_label = ui.label().classes('text-xl font-semibold text-center mb-4')
 
-    with ui.grid(columns=2).classes('w-full gap-2'):
-        left_image = ui.image().classes('border p-1')
-        right_image = ui.image().classes('border p-1')
+    with ui.row().classes('w-full gap-2'):
+        with ui.element('div').classes('object-contain').style('width: 60vh; height: 50%;'):
+            left_image = ui.image().classes('border p-1 object-contain')
+        with ui.element('div').classes('object-contain').style('width: 60vh; height: 50%;'):
+            right_image = ui.image().classes('border p-1 object-contain')
 
     keyboard = ui.keyboard(on_key=handle_key)
 

@@ -1,6 +1,6 @@
 <svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" aria-roledescription="sequence" role="graphics-document document" viewBox="-50 -10 1026 288" style="max-width: 1026px; background-color: white;" width="1026" id="my-svg">
   <g>
-    <rect class="actor actor-bottom" ry="3" rx="3" name="C_0015178936324891580453" height="65" width="164" stroke="#666" fill="#eaeaea" y="202" x="762"/>
+    <rect class="actor actor-bottom" ry="3" rx="3" name="C_0008892526860517045639" height="65" width="164" stroke="#666" fill="#eaeaea" y="202" x="762"/>
     <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="234.5" x="844">
       <tspan dy="-8" x="844">&lt;&lt; CUDA Device &gt;&gt;</tspan>
     </text>
@@ -9,7 +9,7 @@
     </text>
   </g>
   <g>
-    <rect class="actor actor-bottom" ry="3" rx="3" name="C_0006536992010162789483" height="65" width="158" stroke="#666" fill="#eaeaea" y="202" x="554"/>
+    <rect class="actor actor-bottom" ry="3" rx="3" name="C_0007497879601275842782" height="65" width="158" stroke="#666" fill="#eaeaea" y="202" x="554"/>
     <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="234.5" x="633">
       <tspan dy="-8" x="633">&lt;&lt; CUDA Device &gt;&gt;</tspan>
     </text>
@@ -18,7 +18,7 @@
     </text>
   </g>
   <g>
-    <rect class="actor actor-bottom" ry="3" rx="3" name="C_0015988772945202309445" height="65" width="304" stroke="#666" fill="#eaeaea" y="202" x="200"/>
+    <rect class="actor actor-bottom" ry="3" rx="3" name="C_0015372897021497768235" height="65" width="304" stroke="#666" fill="#eaeaea" y="202" x="200"/>
     <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="234.5" x="352">
       <tspan dy="-8" x="352">&lt;&lt; CUDA Kernel &gt;&gt;</tspan>
     </text>
@@ -27,15 +27,15 @@
     </text>
   </g>
   <g>
-    <rect class="actor actor-bottom" ry="3" rx="3" name="C_0011985590119186302825" height="65" width="150" stroke="#666" fill="#eaeaea" y="202" x="0"/>
+    <rect class="actor actor-bottom" ry="3" rx="3" name="C_0014983004056104622253" height="65" width="150" stroke="#666" fill="#eaeaea" y="202" x="0"/>
     <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="234.5" x="75">
       <tspan dy="0" x="75">tmain()</tspan>
     </text>
   </g>
   <g>
-    <line name="C_0015178936324891580453" stroke="#999" stroke-width="0.5px" class="actor-line 200" y2="202" x2="844" y1="65" x1="844" id="actor3"/>
+    <line name="C_0008892526860517045639" stroke="#999" stroke-width="0.5px" class="actor-line 200" y2="202" x2="844" y1="65" x1="844" id="actor3"/>
     <g id="root-3">
-      <rect class="actor actor-top" ry="3" rx="3" name="C_0015178936324891580453" height="65" width="164" stroke="#666" fill="#eaeaea" y="0" x="762"/>
+      <rect class="actor actor-top" ry="3" rx="3" name="C_0008892526860517045639" height="65" width="164" stroke="#666" fill="#eaeaea" y="0" x="762"/>
       <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="32.5" x="844">
         <tspan dy="-8" x="844">&lt;&lt; CUDA Device &gt;&gt;</tspan>
       </text>
@@ -45,9 +45,9 @@
     </g>
   </g>
   <g>
-    <line name="C_0006536992010162789483" stroke="#999" stroke-width="0.5px" class="actor-line 200" y2="202" x2="633" y1="65" x1="633" id="actor2"/>
+    <line name="C_0007497879601275842782" stroke="#999" stroke-width="0.5px" class="actor-line 200" y2="202" x2="633" y1="65" x1="633" id="actor2"/>
     <g id="root-2">
-      <rect class="actor actor-top" ry="3" rx="3" name="C_0006536992010162789483" height="65" width="158" stroke="#666" fill="#eaeaea" y="0" x="554"/>
+      <rect class="actor actor-top" ry="3" rx="3" name="C_0007497879601275842782" height="65" width="158" stroke="#666" fill="#eaeaea" y="0" x="554"/>
       <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="32.5" x="633">
         <tspan dy="-8" x="633">&lt;&lt; CUDA Device &gt;&gt;</tspan>
       </text>
@@ -57,9 +57,9 @@
     </g>
   </g>
   <g>
-    <line name="C_0015988772945202309445" stroke="#999" stroke-width="0.5px" class="actor-line 200" y2="202" x2="352" y1="65" x1="352" id="actor1"/>
+    <line name="C_0015372897021497768235" stroke="#999" stroke-width="0.5px" class="actor-line 200" y2="202" x2="352" y1="65" x1="352" id="actor1"/>
     <g id="root-1">
-      <rect class="actor actor-top" ry="3" rx="3" name="C_0015988772945202309445" height="65" width="304" stroke="#666" fill="#eaeaea" y="0" x="200"/>
+      <rect class="actor actor-top" ry="3" rx="3" name="C_0015372897021497768235" height="65" width="304" stroke="#666" fill="#eaeaea" y="0" x="200"/>
       <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="32.5" x="352">
         <tspan dy="-8" x="352">&lt;&lt; CUDA Kernel &gt;&gt;</tspan>
       </text>
@@ -69,9 +69,9 @@
     </g>
   </g>
   <g>
-    <line name="C_0011985590119186302825" stroke="#999" stroke-width="0.5px" class="actor-line 200" y2="202" x2="75" y1="65" x1="75" id="actor0"/>
+    <line name="C_0014983004056104622253" stroke="#999" stroke-width="0.5px" class="actor-line 200" y2="202" x2="75" y1="65" x1="75" id="actor0"/>
     <g id="root-0">
-      <rect class="actor actor-top" ry="3" rx="3" name="C_0011985590119186302825" height="65" width="150" stroke="#666" fill="#eaeaea" y="0" x="0"/>
+      <rect class="actor actor-top" ry="3" rx="3" name="C_0014983004056104622253" height="65" width="150" stroke="#666" fill="#eaeaea" y="0" x="0"/>
       <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="32.5" x="75">
         <tspan dy="0" x="75">tmain()</tspan>
       </text>

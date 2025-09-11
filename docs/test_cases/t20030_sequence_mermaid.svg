@@ -1,59 +1,59 @@
 <svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" aria-roledescription="sequence" role="graphics-document document" viewBox="-50 -10 857 933" style="max-width: 857px; background-color: white;" width="857" id="my-svg">
   <g>
-    <rect class="actor actor-bottom" ry="3" rx="3" name="C_0000288724919109363868" height="65" width="150" stroke="#666" fill="#eaeaea" y="847" x="607"/>
+    <rect class="actor actor-bottom" ry="3" rx="3" name="C_0014014196245756966788" height="65" width="150" stroke="#666" fill="#eaeaea" y="847" x="607"/>
     <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="879.5" x="682">
       <tspan dy="0" x="682">tmain(bool,int)</tspan>
     </text>
   </g>
   <g>
-    <rect class="actor actor-bottom" ry="3" rx="3" name="C_0008653656918787685622" height="65" width="150" stroke="#666" fill="#eaeaea" y="847" x="400"/>
+    <rect class="actor actor-bottom" ry="3" rx="3" name="C_0007702182866936488117" height="65" width="150" stroke="#666" fill="#eaeaea" y="847" x="400"/>
     <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="879.5" x="475">
       <tspan dy="0" x="475">A</tspan>
     </text>
   </g>
   <g>
-    <rect class="actor actor-bottom" ry="3" rx="3" name="C_0008309924522937711738" height="65" width="150" stroke="#666" fill="#eaeaea" y="847" x="200"/>
+    <rect class="actor actor-bottom" ry="3" rx="3" name="C_0018000158462385970765" height="65" width="150" stroke="#666" fill="#eaeaea" y="847" x="200"/>
     <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="879.5" x="275">
       <tspan dy="0" x="275">magic()</tspan>
     </text>
   </g>
   <g>
-    <rect class="actor actor-bottom" ry="3" rx="3" name="C_0010117148495871364237" height="65" width="150" stroke="#666" fill="#eaeaea" y="847" x="0"/>
+    <rect class="actor actor-bottom" ry="3" rx="3" name="C_0009589600229179433293" height="65" width="150" stroke="#666" fill="#eaeaea" y="847" x="0"/>
     <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="879.5" x="75">
       <tspan dy="0" x="75">tmain(int)</tspan>
     </text>
   </g>
   <g>
-    <line name="C_0000288724919109363868" stroke="#999" stroke-width="0.5px" class="actor-line 200" y2="847" x2="682" y1="65" x1="682" id="actor3"/>
+    <line name="C_0014014196245756966788" stroke="#999" stroke-width="0.5px" class="actor-line 200" y2="847" x2="682" y1="65" x1="682" id="actor3"/>
     <g id="root-3">
-      <rect class="actor actor-top" ry="3" rx="3" name="C_0000288724919109363868" height="65" width="150" stroke="#666" fill="#eaeaea" y="0" x="607"/>
+      <rect class="actor actor-top" ry="3" rx="3" name="C_0014014196245756966788" height="65" width="150" stroke="#666" fill="#eaeaea" y="0" x="607"/>
       <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="32.5" x="682">
         <tspan dy="0" x="682">tmain(bool,int)</tspan>
       </text>
     </g>
   </g>
   <g>
-    <line name="C_0008653656918787685622" stroke="#999" stroke-width="0.5px" class="actor-line 200" y2="847" x2="475" y1="65" x1="475" id="actor2"/>
+    <line name="C_0007702182866936488117" stroke="#999" stroke-width="0.5px" class="actor-line 200" y2="847" x2="475" y1="65" x1="475" id="actor2"/>
     <g id="root-2">
-      <rect class="actor actor-top" ry="3" rx="3" name="C_0008653656918787685622" height="65" width="150" stroke="#666" fill="#eaeaea" y="0" x="400"/>
+      <rect class="actor actor-top" ry="3" rx="3" name="C_0007702182866936488117" height="65" width="150" stroke="#666" fill="#eaeaea" y="0" x="400"/>
       <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="32.5" x="475">
         <tspan dy="0" x="475">A</tspan>
       </text>
     </g>
   </g>
   <g>
-    <line name="C_0008309924522937711738" stroke="#999" stroke-width="0.5px" class="actor-line 200" y2="847" x2="275" y1="65" x1="275" id="actor1"/>
+    <line name="C_0018000158462385970765" stroke="#999" stroke-width="0.5px" class="actor-line 200" y2="847" x2="275" y1="65" x1="275" id="actor1"/>
     <g id="root-1">
-      <rect class="actor actor-top" ry="3" rx="3" name="C_0008309924522937711738" height="65" width="150" stroke="#666" fill="#eaeaea" y="0" x="200"/>
+      <rect class="actor actor-top" ry="3" rx="3" name="C_0018000158462385970765" height="65" width="150" stroke="#666" fill="#eaeaea" y="0" x="200"/>
       <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="32.5" x="275">
         <tspan dy="0" x="275">magic()</tspan>
       </text>
     </g>
   </g>
   <g>
-    <line name="C_0010117148495871364237" stroke="#999" stroke-width="0.5px" class="actor-line 200" y2="847" x2="75" y1="65" x1="75" id="actor0"/>
+    <line name="C_0009589600229179433293" stroke="#999" stroke-width="0.5px" class="actor-line 200" y2="847" x2="75" y1="65" x1="75" id="actor0"/>
     <g id="root-0">
-      <rect class="actor actor-top" ry="3" rx="3" name="C_0010117148495871364237" height="65" width="150" stroke="#666" fill="#eaeaea" y="0" x="0"/>
+      <rect class="actor actor-top" ry="3" rx="3" name="C_0009589600229179433293" height="65" width="150" stroke="#666" fill="#eaeaea" y="0" x="0"/>
       <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor actor-box" alignment-baseline="central" dominant-baseline="central" y="32.5" x="75">
         <tspan dy="0" x="75">tmain(int)</tspan>
       </text>
