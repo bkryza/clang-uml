@@ -138,4 +138,43 @@ bool diagram::should_include(const common::model::source_file &f) const
     return filter_->should_include(f);
 }
 
+void diagram::add_relationship(relationship &&cr)
+{
+    assert(cr.source().has_value());
+
+    if ((cr.type() == relationship_t::kInstantiation) &&
+        (cr.destination() == cr.source())) {
+        LOG_DBG("Skipping self instantiation relationship for {}",
+            cr.destination());
+        return;
+    }
+
+    if (!util::contains(relationships_, cr)) {
+        LOG_DBG("Adding relationship from: '{}' - {} - '{}'", cr.source(),
+            to_string(cr.type()), cr.destination());
+
+        relationships_.emplace_back(std::move(cr));
+    }
+}
+
+void diagram::remove_duplicate_relationships()
+{
+    std::vector<relationship> unique_relationships;
+
+    for (auto &r : relationships_) {
+        if (!util::contains(unique_relationships, r)) {
+            unique_relationships.emplace_back(r);
+        }
+    }
+
+    std::swap(relationships_, unique_relationships);
+}
+
+std::vector<relationship> &diagram::relationships() { return relationships_; }
+
+const std::vector<relationship> &diagram::relationships() const
+{
+    return relationships_;
+}
+
 } // namespace clanguml::common::model

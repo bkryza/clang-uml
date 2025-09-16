@@ -39,7 +39,7 @@ void generator::generate_relationships(
         });
     }
     else {
-        for (const auto &r : f.relationships()) {
+        for (const auto &r : model().relationships(f.id())) {
             nlohmann::json rel = r;
             rel["source"] = std::to_string(f.id().value());
             parent["relationships"].push_back(std::move(rel));

@@ -37,7 +37,7 @@ void generator::generate_relationships(
 
     // Generate this packages relationship
     if (model().should_include(relationship_t::kDependency)) {
-        for (const auto &r : p.relationships()) {
+        for (const auto &r : model().relationships(p.id())) {
             std::stringstream relstr;
             try {
                 auto destination_package = model().get(r.destination());

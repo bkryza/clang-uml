@@ -2557,7 +2557,7 @@ translation_unit_visitor::build_function_template_instantiation(
     auto template_instantiation_ptr =
         std::make_unique<model::function_template>(config().using_namespace());
     auto &template_instantiation = *template_instantiation_ptr;
-
+    template_instantiation.set_id(common::to_id(declaration));
     set_qualified_name(declaration, template_instantiation);
 
     tbuilder().build(declaration, template_instantiation, &declaration,

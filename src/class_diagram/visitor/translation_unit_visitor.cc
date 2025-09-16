@@ -182,7 +182,8 @@ translation_unit_visitor::create_declaration(
         e.set_namespace(ns);
         e.set_name(parent_class.value().name(), enm_name);
         e.set_id(common::to_id(*enm));
-        e.add_relationship({relationship_t::kContainment, *parent_id_opt});
+        diagram().add_relationship(
+            {relationship_t::kContainment, e.id(), *parent_id_opt});
         e.nested(true);
     }
     else if (parent_id_opt && diagram().find<objc_interface>(*parent_id_opt)) {
@@ -191,7 +192,8 @@ translation_unit_visitor::create_declaration(
         e.set_namespace(ns);
         e.set_name(parent_class.value().name(), enm_name);
         e.set_id(common::to_id(*enm));
-        e.add_relationship({relationship_t::kContainment, *parent_id_opt});
+        diagram().add_relationship(
+            {relationship_t::kContainment, e.id(), *parent_id_opt});
         e.nested(true);
     }
     else {
@@ -710,13 +712,13 @@ void translation_unit_visitor::find_relationships_in_constraint_expression(
         if (type_element_id != c.id() &&
             (relationship_type != relationship_t::kNone)) {
 
-            relationship r{relationship_type, type_element_id};
+            relationship r{relationship_type, c.id(), type_element_id};
 
             if (source_decl != nullptr) {
                 set_source_location(*source_decl, r);
             }
 
-            c.add_relationship(std::move(r));
+            diagram().add_relationship(std::move(r));
         }
     }
 }
@@ -764,10 +766,10 @@ void translation_unit_visitor::process_concept_specialization_relationships(
         }
 
         if (!constrained_template_params.empty())
-            c.add_relationship(
-                {relationship_t::kConstraint, target_id, access_t::kNone,
-                    fmt::format(
-                        "{}", fmt::join(constrained_template_params, ","))});
+            diagram().add_relationship({relationship_t::kConstraint, c.id(),
+                target_id, access_t::kNone,
+                fmt::format(
+                    "{}", fmt::join(constrained_template_params, ","))});
     }
 }
 
@@ -1067,14 +1069,14 @@ void translation_unit_visitor::process_objc_category_declaration(
     // category
     if (cls.getClassInterface() != nullptr) {
         eid_t objc_interface_id = common::to_id(*cls.getClassInterface());
-        common::model::relationship r{
-            relationship_t::kInstantiation, objc_interface_id, access_t::kNone};
+        common::model::relationship r{relationship_t::kInstantiation, c.id(),
+            objc_interface_id, access_t::kNone};
 
         LOG_DBG("Found protocol {} [{}] for ObjC interface {}",
             cls.getClassInterface()->getNameAsString(),
             objc_interface_id.value(), c.name());
 
-        c.add_relationship(std::move(r));
+        diagram().add_relationship(std::move(r));
     }
 
     c.complete(true);
@@ -1122,23 +1124,24 @@ void translation_unit_visitor::process_objc_interface_base(
 {
     if (const auto *base = cls.getSuperClass(); base != nullptr) {
         eid_t parent_id = common::to_id(*base);
-        common::model::relationship cp{parent_id, access_t::kNone, false};
+        common::model::relationship cp{
+            c.id(), parent_id, access_t::kNone, false};
 
         LOG_DBG("Found base class {} [{}] for ObjC interface {}",
             base->getNameAsString(), parent_id.value(), c.name());
 
-        c.add_relationship(std::move(cp));
+        diagram().add_relationship(std::move(cp));
     }
 
     for (const auto *protocol : cls.protocols()) {
         eid_t parent_id = common::to_id(*protocol);
         common::model::relationship cp{
-            relationship_t::kInstantiation, parent_id, access_t::kNone};
+            relationship_t::kInstantiation, c.id(), parent_id, access_t::kNone};
 
         LOG_DBG("Found protocol {} [{}] for ObjC interface {}",
             protocol->getNameAsString(), parent_id.value(), c.name());
 
-        c.add_relationship(std::move(cp));
+        diagram().add_relationship(std::move(cp));
     }
 }
 
@@ -1299,7 +1302,7 @@ void translation_unit_visitor::process_class_bases(
             // This could be a template parameter - we don't want it here
             continue;
 
-        common::model::relationship cp{parent_id,
+        common::model::relationship cp{c.id(), parent_id,
             common::access_specifier_to_access_t(base.getAccessSpecifier()),
             base.isVirtual()};
 
@@ -1307,7 +1310,7 @@ void translation_unit_visitor::process_class_bases(
             common::to_string(base.getType(), cls->getASTContext()),
             parent_id.usr(), parent_id.value(), c.name());
 
-        c.add_relationship(std::move(cp));
+        diagram().add_relationship(std::move(cp));
     }
 }
 
@@ -1416,12 +1419,12 @@ void translation_unit_visitor::process_friend(
         }
         else if (friend_type->getAs<clang::RecordType>() != nullptr) {
             if (should_include(friend_type->getAsRecordDecl())) {
-                relationship r{relationship_t::kFriendship,
+                relationship r{relationship_t::kFriendship, c.id(),
                     common::to_id(*friend_type->getAsRecordDecl()),
                     common::access_specifier_to_access_t(f.getAccess()),
                     "<<friend>>"};
 
-                c.add_relationship(std::move(r));
+                diagram().add_relationship(std::move(r));
             }
         }
     }
@@ -1519,7 +1522,8 @@ void translation_unit_visitor::process_method(
         relationships) {
         if (type_element_id != c.id() &&
             (relationship_type != relationship_t::kNone)) {
-            relationship r{relationship_t::kDependency, type_element_id};
+            relationship r{
+                relationship_t::kDependency, c.id(), type_element_id};
 
             if (source_decl != nullptr) {
                 set_source_location(*source_decl, r);
@@ -1529,7 +1533,7 @@ void translation_unit_visitor::process_method(
                     "{}: {}",
                 c, mf.getNameAsString(), r.type(), r.label());
 
-            c.add_relationship(std::move(r));
+            diagram().add_relationship(std::move(r));
         }
     }
 
@@ -1593,7 +1597,8 @@ void translation_unit_visitor::process_objc_method(
         relationships) {
         if (type_element_id != c.id() &&
             (relationship_type != relationship_t::kNone)) {
-            relationship r{relationship_t::kDependency, type_element_id};
+            relationship r{
+                relationship_t::kDependency, c.id(), type_element_id};
 
             if (source_decl != nullptr) {
                 set_source_location(*source_decl, r);
@@ -1603,7 +1608,7 @@ void translation_unit_visitor::process_objc_method(
                     "{}: {}",
                 c, mf.getNameAsString(), r.type(), r.label());
 
-            c.add_relationship(std::move(r));
+            diagram().add_relationship(std::move(r));
         }
     }
 
@@ -1684,10 +1689,10 @@ void translation_unit_visitor::
                     diagram().classes().back();
 
                 if (should_include(deduced_auto_decl)) {
-                    relationship r{relationship_t::kDependency,
+                    relationship r{relationship_t::kDependency, c.id(),
                         template_specialization_model.get().id()};
 
-                    c.add_relationship(std::move(r));
+                    diagram().add_relationship(std::move(r));
                 }
             }
         }
@@ -1966,7 +1971,8 @@ void translation_unit_visitor::process_objc_method_parameter(
             relationships) {
             if (type_element_id != c.id() &&
                 (relationship_type != relationship_t::kNone)) {
-                relationship r{relationship_t::kDependency, type_element_id};
+                relationship r{
+                    relationship_t::kDependency, c.id(), type_element_id};
 
                 if (source_decl != nullptr) {
                     set_source_location(*source_decl, r);
@@ -1976,7 +1982,7 @@ void translation_unit_visitor::process_objc_method_parameter(
                         "{}: {}",
                     c, r.type(), r.label());
 
-                c.add_relationship(std::move(r));
+                diagram().add_relationship(std::move(r));
             }
         }
     }
@@ -2050,7 +2056,8 @@ void translation_unit_visitor::process_function_parameter(
             relationships) {
             if (type_element_id != c.id() &&
                 (relationship_type != relationship_t::kNone)) {
-                relationship r{relationship_t::kDependency, type_element_id};
+                relationship r{
+                    relationship_t::kDependency, c.id(), type_element_id};
 
                 if (source_decl != nullptr) {
                     set_source_location(*source_decl, r);
@@ -2060,7 +2067,7 @@ void translation_unit_visitor::process_function_parameter(
                         "{}: {}",
                     c, r.type(), r.label());
 
-                c.add_relationship(std::move(r));
+                diagram().add_relationship(std::move(r));
             }
         }
     }
@@ -2076,7 +2083,7 @@ void translation_unit_visitor::add_relationships(
 
     for (const auto &[target, relationship_type, source_decl] : relationships) {
         if (relationship_type != relationship_t::kNone) {
-            relationship r{relationship_type, target};
+            relationship r{relationship_type, c.id(), target};
             r.set_label(field.name());
             r.set_access(field.access());
             if (source_decl != nullptr) {
@@ -2103,7 +2110,7 @@ void translation_unit_visitor::add_relationships(
             LOG_DBG("Adding relationship from {} to {} with label {}", c,
                 r.destination(), r.type(), r.label());
 
-            c.add_relationship(std::move(r));
+            diagram().add_relationship(std::move(r));
 
             if (break_on_first_aggregation &&
                 relationship_type == relationship_t::kAggregation)
@@ -2180,11 +2187,12 @@ translation_unit_visitor::process_template_specialization(
         common::to_id(*cls));
 
     auto c_ptr = std::make_unique<class_>(config().using_namespace());
+    auto &template_instantiation = *c_ptr;
+    template_instantiation.set_id(common::to_id(*cls));
+
     tbuilder().build_from_class_template_specialization(*c_ptr, *cls);
 
-    auto &template_instantiation = *c_ptr;
     template_instantiation.is_template(true);
-    template_instantiation.set_id(common::to_id(*cls));
 
     // TODO: refactor to method get_qualified_name()
     auto qualified_name = cls->getQualifiedNameAsString();
@@ -2719,21 +2727,23 @@ void translation_unit_visitor::find_instantiation_relationships(
 
     if (best_match_id.value() > 0) {
         destination = best_match_full_name;
-        template_instantiation.add_relationship(
-            {common::model::relationship_t::kInstantiation, best_match_id});
+        diagram().add_relationship(
+            {common::model::relationship_t::kInstantiation,
+                template_instantiation.id(), best_match_id});
         template_instantiation.template_specialization_found(true);
     }
     // If we can't find optimal match for parent template specialization,
     // just use whatever clang suggests
     else if (diagram().has_element(templated_decl_global_id)) {
-        template_instantiation.add_relationship(
+        diagram().add_relationship(
             {common::model::relationship_t::kInstantiation,
-                templated_decl_global_id});
+                template_instantiation.id(), templated_decl_global_id});
         template_instantiation.template_specialization_found(true);
     }
     else if (templated_decl_id.value() != 0) {
-        template_instantiation.add_relationship(
-            {common::model::relationship_t::kInstantiation, templated_decl_id});
+        diagram().add_relationship(
+            {common::model::relationship_t::kInstantiation,
+                template_instantiation.id(), templated_decl_id});
         template_instantiation.template_specialization_found(true);
     }
     else if (diagram().should_include(common::model::namespace_{full_name})) {
@@ -2745,8 +2755,9 @@ void translation_unit_visitor::find_instantiation_relationships(
                 "- delaying until the translation unit is complete ",
             templated_decl_global_id);
 
-        template_instantiation.add_relationship(
-            {common::model::relationship_t::kInstantiation, templated_decl_id});
+        diagram().add_relationship(
+            {common::model::relationship_t::kInstantiation,
+                template_instantiation.id(), templated_decl_id});
     }
 }
 

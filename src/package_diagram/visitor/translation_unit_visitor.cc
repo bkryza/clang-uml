@@ -381,14 +381,14 @@ void translation_unit_visitor::add_relationships(
                     get_parent_package_ids(destination_id), current_package_id))
                 continue;
 
-            relationship r{relationship_t::kDependency, destination_id,
-                common::model::access_t::kNone};
+            relationship r{relationship_t::kDependency, current_package_id,
+                destination_id, common::model::access_t::kNone};
 
             if (std::get<2>(dependency) != nullptr)
                 set_source_location(*std::get<2>(dependency), r);
 
             if (destination_id != current_package_id)
-                current_package.value().add_relationship(std::move(r));
+                diagram().add_relationship(std::move(r));
         }
     }
 }

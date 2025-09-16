@@ -447,16 +447,15 @@ struct edge_traversal_filter : public filter_visitor {
 
 private:
     template <typename C, typename D>
-    bool add_adjacent(const C &from, const D &to,
+    bool add_adjacent(const DiagramT &cd, const C &from, const D &to,
         const std::vector<relationship_t> &relationships) const
     {
         bool added_new_element{false};
-
         for (const auto &from_el : from) {
             //  Check if any of its relationships of type relationship_
             //  points to an element already in the matching_elements_
             //  set
-            for (const auto &rel : from_el.get().relationships()) {
+            for (const auto &rel : cd.relationships(from_el.get().id())) {
                 // Consider only if connected by one of specified relationships
                 if (util::contains(relationships, rel.type())) {
                     for (const auto &to_el : to) {
@@ -525,13 +524,13 @@ private:
         while (keep_looking) {
             keep_looking = false;
             if (forward_) {
-                if (add_adjacent(matching_elements_, detail::view<ElementT>(cd),
-                        {relationship_}))
+                if (add_adjacent(cd, matching_elements_,
+                        detail::view<ElementT>(cd), {relationship_}))
                     keep_looking = true;
             }
             else {
-                if (add_adjacent(detail::view<ElementT>(cd), matching_elements_,
-                        {relationship_}))
+                if (add_adjacent(cd, detail::view<ElementT>(cd),
+                        matching_elements_, {relationship_}))
                     keep_looking = true;
             }
         }
@@ -636,7 +635,8 @@ private:
                         current_iteration_context);
                 }
                 else {
-                    for (const relationship &rel : p.get()->relationships()) {
+                    for (const relationship &rel :
+                        d.relationships(p.get()->id())) {
                         if (!should_include(context_cfg, rel.type()) ||
                             !d.should_include(rel.type())) {
                             continue;
@@ -673,7 +673,7 @@ private:
                             continue;
 
                         for (const relationship &rel :
-                            maybe_element.value().relationships()) {
+                            d.relationships(element_id)) {
                             if (!should_include(context_cfg, rel.type()) ||
                                 !d.should_include(rel.type())) {
                                 continue;
@@ -711,7 +711,7 @@ private:
                 process_elements(d, *pkg, context_cfg, effective_context,
                     current_iteration_context);
 
-                for (const relationship &rel : p.get()->relationships()) {
+                for (const relationship &rel : d.relationships(p.get()->id())) {
                     if (!should_include(context_cfg, rel.type()) ||
                         !d.should_include(rel.type())) {
                         continue;
@@ -747,7 +747,7 @@ private:
                         continue;
 
                     for (const relationship &rel :
-                        maybe_element.value().relationships()) {
+                        d.relationships(element_id)) {
                         if (!should_include(context_cfg, rel.type()) ||
                             !d.should_include(rel.type())) {
                             continue;

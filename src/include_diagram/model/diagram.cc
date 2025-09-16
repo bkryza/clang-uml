@@ -117,6 +117,8 @@ diagram::get_with_namespace(
 
 void diagram::apply_filter()
 {
+    common::model::apply_filter(relationships(), filter());
+
     // First find all element ids which should be removed
     std::set<eid_t> to_remove;
 
@@ -132,6 +134,14 @@ void diagram::apply_filter()
     element_view<source_file>::remove(to_remove);
 
     nested_trait_fspath::remove(to_remove);
+
+    auto &rels = relationships();
+    rels.erase(std::remove_if(std::begin(rels), std::end(rels),
+                   [&to_remove](auto &&r) {
+                       return to_remove.count(r.source()) > 0 ||
+                           to_remove.count(r.destination()) > 0;
+                   }),
+        std::end(rels));
 }
 
 bool diagram::is_empty() const { return element_view<source_file>::is_empty(); }

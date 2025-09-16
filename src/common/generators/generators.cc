@@ -246,29 +246,31 @@ bool is_diagram_supported_by_generators(
     const std::vector<generator_type_t> &generators,
     model::diagram_t diagram_type)
 {
-    for (const auto generator_type : generators) {
-        if (generator_type == generator_type_t::plantuml) {
-            if (generator_supports_diagram_type<plantuml_generator_tag>(
-                    diagram_type))
-                return true;
-        }
-        else if (generator_type == generator_type_t::json) {
-            if (generator_supports_diagram_type<json_generator_tag>(
-                    diagram_type))
-                return true;
-        }
-        else if (generator_type == generator_type_t::mermaid) {
-            if (generator_supports_diagram_type<mermaid_generator_tag>(
-                    diagram_type))
-                return true;
-        }
-        else if (generator_type == generator_type_t::graphml) {
-            if (generator_supports_diagram_type<graphml_generator_tag>(
-                    diagram_type))
-                return true;
-        }
-    }
-    return false;
+    return std::any_of(generators.begin(), generators.end(),
+        [diagram_type](const auto generator_type) {
+            if (generator_type == generator_type_t::plantuml) {
+                if (generator_supports_diagram_type<plantuml_generator_tag>(
+                        diagram_type))
+                    return true;
+            }
+            else if (generator_type == generator_type_t::json) {
+                if (generator_supports_diagram_type<json_generator_tag>(
+                        diagram_type))
+                    return true;
+            }
+            else if (generator_type == generator_type_t::mermaid) {
+                if (generator_supports_diagram_type<mermaid_generator_tag>(
+                        diagram_type))
+                    return true;
+            }
+            else if (generator_type == generator_type_t::graphml) {
+                if (generator_supports_diagram_type<graphml_generator_tag>(
+                        diagram_type))
+                    return true;
+            }
+
+            return false;
+        });
 }
 
 int generate_diagrams(const std::vector<std::string> &diagram_names,

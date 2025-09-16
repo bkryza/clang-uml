@@ -161,7 +161,7 @@ void diagram::get_parents(
 {
     bool found_new{false};
     for (const auto &parent : parents) {
-        for (const auto &rel : parent.get().relationships()) {
+        for (const auto &rel : relationships(parent.get().id())) {
             if (rel.type() != common::model::relationship_t::kExtension)
                 continue;
 
@@ -246,14 +246,17 @@ void diagram::remove_redundant_dependencies()
         for (const auto &el : elements_view) {
             std::set<eid_t> dependency_relationships_to_remove;
 
-            for (auto &r : el.get().relationships()) {
+            for (auto &r : relationships(el.get().id())) {
                 if (r.type() != relationship_t::kDependency)
                     dependency_relationships_to_remove.emplace(r.destination());
             }
 
-            util::erase_if(el.get().relationships(),
+            util::erase_if(relationships(),
                 [&dependency_relationships_to_remove, &el](const auto &r) {
                     if (r.type() != relationship_t::kDependency)
+                        return false;
+
+                    if (r.source() != el.get().id())
                         return false;
 
                     auto has_another_relationship_to_destination =
@@ -270,6 +273,8 @@ void diagram::remove_redundant_dependencies()
 
 void diagram::apply_filter()
 {
+    common::model::apply_filter(relationships(), filter());
+
     // First find all element ids which should be removed
     std::set<eid_t> to_remove;
 
@@ -299,6 +304,14 @@ void diagram::apply_filter()
         for (const auto &el : elements_view)
             el.get().apply_filter(filter(), to_remove);
     });
+
+    auto &rels = relationships();
+    rels.erase(std::remove_if(std::begin(rels), std::end(rels),
+                   [&to_remove](auto &&r) {
+                       return to_remove.count(r.source()) > 0 ||
+                           to_remove.count(r.destination()) > 0;
+                   }),
+        std::end(rels));
 }
 
 bool diagram::is_empty() const

@@ -22,6 +22,8 @@
 #include "namespace.h"
 #include "source_file.h"
 
+#include <algorithm>
+#include <iterator>
 #include <memory>
 #include <string>
 
@@ -166,6 +168,102 @@ public:
 
     virtual void apply_filter() { }
 
+    /**
+     * Return all relationships outgoing from this element.
+     *
+     * @return List of relationships.
+     */
+    std::vector<relationship> &relationships();
+
+    /**
+     * Return all relationships outgoing from this element.
+     *
+     * @return List of relationships.
+     */
+    const std::vector<relationship> &relationships() const;
+
+    /**
+     * Add relationships, whose source is this element.
+     *
+     * @param cr Relationship to another diagram element.
+     */
+    void add_relationship(relationship &&cr);
+
+    /**
+     * After generating the diagram we need to make sure that there are no
+     * duplicate relationships in the diagram.
+     */
+    void remove_duplicate_relationships();
+
+    /**
+     * Return an iterator range over relationships with matching source id.
+     *
+     * @param source_id The source element id to filter by.
+     * @return Iterator range over relationships with matching source.
+     */
+    auto relationships(eid_t source_id) const
+    {
+        class filtered_iterator {
+        private:
+            std::vector<relationship>::const_iterator current_;
+            std::vector<relationship>::const_iterator end_;
+            eid_t source_id_;
+
+            void advance_to_next_match()
+            {
+                while (current_ != end_ && current_->source() != source_id_) {
+                    ++current_;
+                }
+            }
+
+        public:
+            filtered_iterator(std::vector<relationship>::const_iterator start,
+                std::vector<relationship>::const_iterator end, eid_t source_id)
+                : current_(start)
+                , end_(end)
+                , source_id_(std::move(source_id))
+            {
+                advance_to_next_match();
+            }
+
+            filtered_iterator &operator++()
+            {
+                if (current_ != end_) {
+                    ++current_;
+                    advance_to_next_match();
+                }
+                return *this;
+            }
+
+            const relationship &operator*() const { return *current_; }
+
+            const relationship *operator->() const { return &(*current_); }
+
+            bool operator!=(const filtered_iterator &other) const
+            {
+                return current_ != other.current_;
+            }
+
+            bool operator==(const filtered_iterator &other) const
+            {
+                return current_ == other.current_;
+            }
+        };
+
+        struct filtered_range {
+            filtered_iterator begin_iter;
+            filtered_iterator end_iter;
+
+            filtered_iterator begin() const { return begin_iter; }
+            filtered_iterator end() const { return end_iter; }
+        };
+
+        return filtered_range{filtered_iterator(relationships_.begin(),
+                                  relationships_.end(), source_id),
+            filtered_iterator(
+                relationships_.end(), relationships_.end(), source_id)};
+    }
+
 protected:
     /**
      * Get diagram filter
@@ -177,6 +275,7 @@ protected:
 private:
     std::string name_;
     std::unique_ptr<diagram_filter> filter_;
+    std::vector<relationship> relationships_;
     bool complete_{false};
     bool filtered_{false};
 };

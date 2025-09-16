@@ -646,8 +646,8 @@ void translation_unit_visitor::process_record_parent_by_type(eid_t parent_id,
                     std::to_string(*destination_multiplicity);
             }
 
-            parent_class.value().add_relationship({hint, c.id(), access, label,
-                "", destination_multiplicity_str});
+            diagram().add_relationship({hint, parent_class.value().id(), c.id(),
+                access, label, "", destination_multiplicity_str});
         }
         else
             c.set_name(parent_class.value().name() + "##" +
@@ -663,7 +663,8 @@ void translation_unit_visitor::process_record_parent_by_type(eid_t parent_id,
     if (!(decl->getNameAsString().empty())) {
         // Don't add anonymous structs as contained in the class
         // as they are already added as aggregations
-        c.add_relationship({relationship_t::kContainment, parent_id});
+        diagram().add_relationship(
+            {relationship_t::kContainment, c.id(), parent_id});
     }
 
     c.nested(true);
@@ -722,8 +723,8 @@ bool translation_unit_visitor::add_or_update(
             // Only do this if we haven't found a better specialization
             // during construction of the template specialization
             eid_t ast_id{common::to_id(*cls->getSpecializedTemplate())};
-            class_model.add_relationship(
-                {relationship_t::kInstantiation, ast_id});
+            diagram().add_relationship(
+                {relationship_t::kInstantiation, class_model.id(), ast_id});
         }
     }
 

@@ -351,14 +351,14 @@ TEST_CASE("Test subclasses regexp filter")
     c->set_namespace(namespace_{"ns1::ns2"});
     c->set_name("A1");
     c->set_id(eid_t{usr_t{"ns1::ns2::A1"s}});
-    c->add_relationship(relationship{base_id});
+    diagram.add_relationship(relationship{c->id(), base_id});
     diagram.add(namespace_{"ns1::ns2"}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
     c->set_namespace(namespace_{"ns1::ns2"});
     c->set_name("A2");
     c->set_id(eid_t{usr_t{"ns1::ns2::A2"s}});
-    c->add_relationship(relationship{base_id});
+    diagram.add_relationship(relationship{c->id(), base_id});
     diagram.add(namespace_{"ns1::ns2"}, std::move(c));
 
     auto b_id = eid_t{usr_t{"ns1::ns2::BaseB"s}};
@@ -372,14 +372,14 @@ TEST_CASE("Test subclasses regexp filter")
     c->set_namespace(namespace_{"ns1::ns2"});
     c->set_name("B1");
     c->set_id(eid_t{usr_t{"ns1::ns2::B1"s}});
-    c->add_relationship(relationship{b_id});
+    diagram.add_relationship(relationship{c->id(), b_id});
     diagram.add(namespace_{"ns1::ns2"}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
     c->set_namespace(namespace_{"ns1::ns2"});
     c->set_name("B2");
     c->set_id(eid_t{usr_t{"ns1::ns2::B2"s}});
-    c->add_relationship(relationship{b_id});
+    diagram.add_relationship(relationship{c->id(), b_id});
     diagram.add(namespace_{"ns1::ns2"}, std::move(c));
 
     auto common_id = eid_t{usr_t{"ns1::ns2::Common"s}};
@@ -393,7 +393,7 @@ TEST_CASE("Test subclasses regexp filter")
     c->set_namespace(namespace_{"ns1::ns2"});
     c->set_name("C1");
     c->set_id(eid_t{usr_t{"ns1::ns2::C1"s}});
-    c->add_relationship(relationship{common_id});
+    diagram.add_relationship(relationship{c->id(), common_id});
     diagram.add(namespace_{"ns1::ns2"}, std::move(c));
 
     diagram.set_complete(true);
@@ -447,14 +447,14 @@ TEST_CASE("Test parents regexp filter")
     c->set_namespace(namespace_{"ns1::ns2"});
     c->set_name("A1");
     c->set_id(eid_t{usr_t{"ns1::ns2::A1"s}});
-    c->add_relationship(relationship{basea_id});
+    diagram.add_relationship(relationship{c->id(), basea_id});
     diagram.add(namespace_{"ns1::ns2"}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
     c->set_namespace(namespace_{"ns1::ns2"});
     c->set_name("A2");
     c->set_id(eid_t{usr_t{"ns1::ns2::A2"s}});
-    c->add_relationship(relationship{basea_id});
+    diagram.add_relationship(relationship{c->id(), basea_id});
     diagram.add(namespace_{"ns1::ns2"}, std::move(c));
 
     auto baseb_id = eid_t{usr_t{"ns1::ns2::BaseB"s}};
@@ -468,14 +468,14 @@ TEST_CASE("Test parents regexp filter")
     c->set_namespace(namespace_{"ns1::ns2"});
     c->set_name("B1");
     c->set_id(eid_t{usr_t{"ns1::ns2::B1"s}});
-    c->add_relationship(relationship{baseb_id});
+    diagram.add_relationship(relationship{c->id(), baseb_id});
     diagram.add(namespace_{"ns1::ns2"}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
     c->set_namespace(namespace_{"ns1::ns2"});
     c->set_name("B2");
     c->set_id(eid_t{usr_t{"ns1::ns2::B2"s}});
-    c->add_relationship(relationship{baseb_id});
+    diagram.add_relationship(relationship{c->id(), baseb_id});
     diagram.add(namespace_{"ns1::ns2"}, std::move(c));
 
     auto common_id = eid_t{usr_t{"ns1::ns2::Common"s}};
@@ -489,7 +489,7 @@ TEST_CASE("Test parents regexp filter")
     c->set_namespace(namespace_{"ns1::ns2"});
     c->set_name("C3");
     c->set_id(eid_t{usr_t{"ns1::ns2::C3"s}});
-    c->add_relationship(relationship{common_id});
+    diagram.add_relationship(relationship{c->id(), common_id});
     diagram.add(namespace_{"ns1::ns2"}, std::move(c));
 
     diagram.set_complete(true);
@@ -538,16 +538,16 @@ TEST_CASE("Test specializations regexp filter")
     c->set_name("A");
     c->add_template(template_parameter::make_argument("double"));
     c->set_id(eid_t{usr_t{"A<double>"s}});
-    c->add_relationship(
-        relationship{relationship_t::kInstantiation, template_id});
+    diagram.add_relationship(
+        relationship{relationship_t::kInstantiation, c->id(), template_id});
     diagram.add(namespace_{}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
     c->set_name("A");
     c->add_template(template_parameter::make_argument("int"));
     c->set_id(eid_t{usr_t{"A<int>"s}});
-    c->add_relationship(
-        relationship{relationship_t::kInstantiation, template_id});
+    diagram.add_relationship(
+        relationship{relationship_t::kInstantiation, c->id(), template_id});
     diagram.add(namespace_{}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
@@ -555,8 +555,8 @@ TEST_CASE("Test specializations regexp filter")
     c->add_template(template_parameter::make_argument("int"));
     c->add_template(template_parameter::make_argument("std::string"));
     c->set_id(eid_t{usr_t{"A<int,std::string>"s}});
-    c->add_relationship(
-        relationship{relationship_t::kInstantiation, template_id});
+    diagram.add_relationship(
+        relationship{relationship_t::kInstantiation, c->id(), template_id});
     diagram.add(namespace_{}, std::move(c));
 
     diagram.set_complete(true);
@@ -600,22 +600,22 @@ TEST_CASE("Test context regexp filter")
     c = std::make_unique<class_>(config.using_namespace());
     c->set_name("A1");
     c->set_id(eid_t{usr_t{"A1"s}});
-    c->add_relationship(
-        relationship{relationship_t::kAssociation, eid_t{usr_t{"A"s}}});
+    diagram.add_relationship(relationship{
+        relationship_t::kAssociation, c->id(), eid_t{usr_t{"A"s}}});
     diagram.add(namespace_{}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
     c->set_name("A2");
     c->set_id(eid_t{usr_t{"A2"s}});
-    c->add_relationship(
-        relationship{relationship_t::kDependency, eid_t{usr_t{"A"s}}});
+    diagram.add_relationship(
+        relationship{relationship_t::kDependency, c->id(), eid_t{usr_t{"A"s}}});
     diagram.add(namespace_{}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
     c->set_name("A21");
     c->set_id(eid_t{usr_t{"A21"s}});
-    c->add_relationship(
-        relationship{relationship_t::kDependency, eid_t{usr_t{"A2"s}}});
+    diagram.add_relationship(relationship{
+        relationship_t::kDependency, c->id(), eid_t{usr_t{"A2"s}}});
     diagram.add(namespace_{}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
@@ -626,8 +626,8 @@ TEST_CASE("Test context regexp filter")
     c = std::make_unique<class_>(config.using_namespace());
     c->set_name("B1");
     c->set_id(eid_t{usr_t{"B1"s}});
-    c->add_relationship(
-        relationship{relationship_t::kAssociation, eid_t{usr_t{"B"s}}});
+    diagram.add_relationship(relationship{
+        relationship_t::kAssociation, c->id(), eid_t{usr_t{"B"s}}});
     diagram.add(namespace_{}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
@@ -638,8 +638,8 @@ TEST_CASE("Test context regexp filter")
     c = std::make_unique<class_>(config.using_namespace());
     c->set_name("C1");
     c->set_id(eid_t{usr_t{"C1"s}});
-    c->add_relationship(
-        relationship{relationship_t::kAssociation, eid_t{usr_t{"C"s}}});
+    diagram.add_relationship(relationship{
+        relationship_t::kAssociation, c->id(), eid_t{usr_t{"C"s}}});
     diagram.add(namespace_{}, std::move(c));
 
     diagram.set_complete(true);
@@ -692,22 +692,22 @@ TEST_CASE("Test dependencies regexp filter")
     c = std::make_unique<class_>(config.using_namespace());
     c->set_name("A1");
     c->set_id(eid_t{usr_t{"A1"s}});
-    c->add_relationship(
-        relationship{relationship_t::kDependency, eid_t{usr_t{"A"s}}});
+    diagram.add_relationship(
+        relationship{relationship_t::kDependency, c->id(), eid_t{usr_t{"A"s}}});
     diagram.add(namespace_{}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
     c->set_name("A2");
     c->set_id(eid_t{usr_t{"A2"s}});
-    c->add_relationship(
-        relationship{relationship_t::kDependency, eid_t{usr_t{"A"s}}});
+    diagram.add_relationship(
+        relationship{relationship_t::kDependency, c->id(), eid_t{usr_t{"A"s}}});
     diagram.add(namespace_{}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
     c->set_name("A21");
     c->set_id(eid_t{usr_t{"A21"s}});
-    c->add_relationship(
-        relationship{relationship_t::kDependency, eid_t{usr_t{"A2"s}}});
+    diagram.add_relationship(relationship{
+        relationship_t::kDependency, c->id(), eid_t{usr_t{"A2"s}}});
     diagram.add(namespace_{}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
@@ -718,8 +718,8 @@ TEST_CASE("Test dependencies regexp filter")
     c = std::make_unique<class_>(config.using_namespace());
     c->set_name("B1");
     c->set_id(eid_t{usr_t{"B1"s}});
-    c->add_relationship(
-        relationship{relationship_t::kDependency, eid_t{usr_t{"B"s}}});
+    diagram.add_relationship(
+        relationship{relationship_t::kDependency, c->id(), eid_t{usr_t{"B"s}}});
     diagram.add(namespace_{}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
@@ -730,14 +730,21 @@ TEST_CASE("Test dependencies regexp filter")
     c = std::make_unique<class_>(config.using_namespace());
     c->set_name("C1");
     c->set_id(eid_t{usr_t{"C1"s}});
-    c->add_relationship(
-        relationship{relationship_t::kDependency, eid_t{usr_t{"C"s}}});
+    diagram.add_relationship(
+        relationship{relationship_t::kDependency, c->id(), eid_t{usr_t{"C"s}}});
     diagram.add(namespace_{}, std::move(c));
 
     diagram.set_complete(true);
 
     auto filter_ptr = diagram_filter_factory::create(diagram, config);
     diagram_filter &filter = *filter_ptr;
+
+    auto maybe_A = diagram.find<class_>("A");
+    REQUIRE(maybe_A.has_value());
+
+    for (const auto &r : diagram.relationships()) {
+        LOG_ERROR("{} - {}", r.source().usr(), r.destination().usr());
+    }
 
     CHECK(filter.should_include(*diagram.find<class_>("A")));
     CHECK(!filter.should_include(*diagram.find<class_>("A1")));
@@ -783,22 +790,22 @@ TEST_CASE("Test dependants regexp filter")
     c = std::make_unique<class_>(config.using_namespace());
     c->set_name("A1");
     c->set_id(eid_t{usr_t{"A1"s}});
-    c->add_relationship(
-        relationship{relationship_t::kDependency, eid_t{usr_t{"A"s}}});
+    diagram.add_relationship(
+        relationship{relationship_t::kDependency, c->id(), eid_t{usr_t{"A"s}}});
     diagram.add(namespace_{}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
     c->set_name("A2");
     c->set_id(eid_t{usr_t{"A2"s}});
-    c->add_relationship(
-        relationship{relationship_t::kDependency, eid_t{usr_t{"A"s}}});
+    diagram.add_relationship(
+        relationship{relationship_t::kDependency, c->id(), eid_t{usr_t{"A"s}}});
     diagram.add(namespace_{}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
     c->set_name("A21");
     c->set_id(eid_t{usr_t{"A21"s}});
-    c->add_relationship(
-        relationship{relationship_t::kDependency, eid_t{usr_t{"A2"s}}});
+    diagram.add_relationship(relationship{
+        relationship_t::kDependency, c->id(), eid_t{usr_t{"A2"s}}});
     diagram.add(namespace_{}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
@@ -809,8 +816,8 @@ TEST_CASE("Test dependants regexp filter")
     c = std::make_unique<class_>(config.using_namespace());
     c->set_name("B1");
     c->set_id(eid_t{usr_t{"B1"s}});
-    c->add_relationship(
-        relationship{relationship_t::kDependency, eid_t{usr_t{"B"s}}});
+    diagram.add_relationship(
+        relationship{relationship_t::kDependency, c->id(), eid_t{usr_t{"B"s}}});
     diagram.add(namespace_{}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
@@ -821,8 +828,8 @@ TEST_CASE("Test dependants regexp filter")
     c = std::make_unique<class_>(config.using_namespace());
     c->set_name("C1");
     c->set_id(eid_t{usr_t{"C1"s}});
-    c->add_relationship(
-        relationship{relationship_t::kDependency, eid_t{usr_t{"C"s}}});
+    diagram.add_relationship(
+        relationship{relationship_t::kDependency, c->id(), eid_t{usr_t{"C"s}}});
     diagram.add(namespace_{}, std::move(c));
 
     diagram.set_complete(true);

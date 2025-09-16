@@ -49,33 +49,6 @@ std::string diagram_element::alias() const
     return fmt::format("C_{:022}", id_.value());
 }
 
-void diagram_element::add_relationship(relationship &&cr)
-{
-    if ((cr.type() == relationship_t::kInstantiation) &&
-        (cr.destination() == id())) {
-        LOG_DBG("Skipping self instantiation relationship for {}",
-            cr.destination());
-        return;
-    }
-
-    if (!util::contains(relationships_, cr)) {
-        LOG_DBG("Adding relationship from: '{}' ({}) - {} - '{}'", id(),
-            full_name(true), to_string(cr.type()), cr.destination());
-
-        relationships_.emplace_back(std::move(cr));
-    }
-}
-
-std::vector<relationship> &diagram_element::relationships()
-{
-    return relationships_;
-}
-
-const std::vector<relationship> &diagram_element::relationships() const
-{
-    return relationships_;
-}
-
 void diagram_element::append(const decorated_element &e)
 {
     decorated_element::append(e);
@@ -89,30 +62,9 @@ bool diagram_element::complete() const { return complete_; }
 
 void diagram_element::complete(bool completed) { complete_ = completed; }
 
-void diagram_element::remove_duplicate_relationships()
-{
-    std::vector<relationship> unique_relationships;
-
-    for (auto &r : relationships_) {
-        if (!util::contains(unique_relationships, r)) {
-            unique_relationships.emplace_back(r);
-        }
-    }
-
-    std::swap(relationships_, unique_relationships);
-}
-
 void diagram_element::apply_filter(
     const diagram_filter &filter, const std::set<eid_t> &removed)
 {
-    common::model::apply_filter(relationships(), filter);
-
-    auto &rels = relationships();
-    rels.erase(std::remove_if(std::begin(rels), std::end(rels),
-                   [&removed](auto &&r) {
-                       return removed.count(r.destination()) > 0;
-                   }),
-        std::end(rels));
 }
 
 bool operator==(const diagram_element &l, const diagram_element &r)
