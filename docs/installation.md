@@ -109,10 +109,16 @@ Download and run the latest Windows installer from
 
 #### macOS
 
-Use Homebrew:
+`clang-uml` is available both in [Homebrew](https://brew.sh/):
 
 ```console
 brew install clang-uml
+```
+
+as well as in [MacPorts](https://ports.macports.org/):
+
+```console
+sudo port install clang-uml
 ```
 
 ### Building from source
