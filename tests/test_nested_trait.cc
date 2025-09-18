@@ -336,6 +336,94 @@ end package
 )");
     }
 }
+
+TEST_CASE("Test nested trait operator +=")
+{
+    using clanguml::test::diagram_model_mock;
+    using clanguml::test::id;
+    using clanguml::test::nested_trait_ns;
+
+    diagram_model_mock d1;
+    diagram_model_mock d2;
+
+    namespace_ using_namespace{};
+
+    const auto ns1_id = id();
+    const auto ns2_id = id();
+
+    auto p1 = std::make_unique<package>(using_namespace);
+    p1->set_name("ns1");
+    p1->set_id(ns1_id);
+    auto prel1 = p1->path().relative_to(using_namespace);
+    REQUIRE(d1.add_element(prel1, std::move(p1)));
+
+    auto c1 = std::make_unique<class_>(using_namespace);
+    c1->set_name("A");
+    c1->set_id(id());
+    auto crel1 = c1->path().relative_to(using_namespace);
+    REQUIRE(d1.add_element(crel1, std::move(c1)));
+
+    auto c2 = std::make_unique<class_>(using_namespace);
+    c2->set_name("B");
+    c2->set_namespace(namespace_{"ns1"});
+    c2->set_id(id());
+    auto crel2 = c2->path().relative_to(using_namespace);
+    REQUIRE(d1.add_element(crel2, std::move(c2)));
+
+    auto p2 = std::make_unique<package>(using_namespace);
+    p2->set_name("ns2");
+    p2->set_id(ns2_id);
+    auto prel2 = p2->path().relative_to(using_namespace);
+    REQUIRE(d2.add_element(prel2, std::move(p2)));
+
+    auto c3 = std::make_unique<class_>(using_namespace);
+    c3->set_name("C");
+    c3->set_id(id());
+    auto crel3 = c3->path().relative_to(using_namespace);
+    REQUIRE(d2.add_element(crel3, std::move(c3)));
+
+    auto c4 = std::make_unique<class_>(using_namespace);
+    c4->set_name("D");
+    c4->set_namespace(namespace_{"ns2"});
+    c4->set_id(id());
+    auto crel4 = c4->path().relative_to(using_namespace);
+    REQUIRE(d2.add_element(crel4, std::move(c4)));
+
+    auto p3 = std::make_unique<package>(using_namespace);
+    p3->set_name("ns1");
+    p3->set_id(ns1_id);
+    auto prel3 = p3->path().relative_to(using_namespace);
+    REQUIRE(d2.add_element(prel3, std::move(p3)));
+
+    auto c5 = std::make_unique<class_>(using_namespace);
+    c5->set_name("E");
+    c5->set_namespace(namespace_{"ns1"});
+    c5->set_id(ns1_id);
+    auto crel5 = c5->path().relative_to(using_namespace);
+    REQUIRE(d2.add_element(crel5, std::move(c5)));
+
+    d1 += std::move(d2);
+
+    REQUIRE(d1.get_element(namespace_{"A"}).has_value());
+    REQUIRE(d1.get_element(namespace_{"ns1::B"}).has_value());
+    REQUIRE(d1.get_element(namespace_{"C"}).has_value());
+    REQUIRE(d1.get_element(namespace_{"ns2::D"}).has_value());
+
+    auto ns1_element = d1.get_element(namespace_{"ns1::E"});
+    REQUIRE(ns1_element.has_value());
+
+    {
+        std::stringstream out;
+        generate(d1, out);
+
+        auto result = out.str();
+        REQUIRE(result.find("class A") != std::string::npos);
+        REQUIRE(result.find("class ns1::B") != std::string::npos);
+        REQUIRE(result.find("class ns1::E") != std::string::npos);
+        REQUIRE(result.find("class C") != std::string::npos);
+        REQUIRE(result.find("class ns2::D") != std::string::npos);
+    }
+}
 ///
 /// Main test function
 ///

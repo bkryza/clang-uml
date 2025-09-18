@@ -325,6 +325,34 @@ public:
         }
     }
 
+    nested_trait &operator+=(nested_trait &&other)
+    {
+        for (auto &element : other.elements_) {
+            const auto element_id = element->id();
+
+            if (elements_by_id_.count(element_id) > 0) {
+                auto existing_it = elements_by_id_[element_id];
+                auto *existing_nested =
+                    dynamic_cast<nested_trait<T, Path> *>(existing_it->get());
+                auto *other_nested =
+                    dynamic_cast<nested_trait<T, Path> *>(element.get());
+
+                if (existing_nested && other_nested) {
+                    *existing_nested += std::move(*other_nested);
+                }
+            }
+            else {
+                add_element(std::move(element));
+            }
+        }
+
+        other.elements_.clear();
+        other.elements_by_id_.clear();
+        other.elements_by_name_.clear();
+
+        return *this;
+    }
+
 private:
     /**
      * Returns true of this nested level contains an element with specified
