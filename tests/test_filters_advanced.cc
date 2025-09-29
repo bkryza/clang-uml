@@ -45,7 +45,8 @@ TEST_CASE("Test diagram paths filter")
         clanguml::config::load("./test_config_data/filters_advanced.yml");
 
     auto &config = *cfg.diagrams["include_test"];
-    clanguml::include_diagram::model::diagram diagram;
+    clanguml::include_diagram::model::diagram diagram{
+        dynamic_cast<clanguml::config::include_diagram &>(config)};
 
     auto filter_ptr = diagram_filter_factory::create(diagram, config);
     diagram_filter &filter = *filter_ptr;
@@ -69,7 +70,8 @@ TEST_CASE("Test advanced diagram filter anyof")
         clanguml::config::load("./test_config_data/filters_advanced.yml");
 
     auto &config = *cfg.diagrams["anyof_test"];
-    clanguml::include_diagram::model::diagram diagram;
+    clanguml::class_diagram::model::diagram diagram{
+        dynamic_cast<clanguml::config::class_diagram &>(config)};
 
     diagram.set_complete(true);
 
@@ -97,7 +99,8 @@ TEST_CASE("Test advanced diagram filter anyof with paths")
         clanguml::config::load("./test_config_data/filters_advanced.yml");
 
     auto &config = *cfg.diagrams["anyof_paths_test"];
-    clanguml::include_diagram::model::diagram diagram;
+    clanguml::class_diagram::model::diagram diagram{
+        dynamic_cast<clanguml::config::class_diagram &>(config)};
 
     diagram.set_complete(true);
 
@@ -131,7 +134,8 @@ TEST_CASE("Test advanced diagram filter modules")
         clanguml::config::load("./test_config_data/filters_advanced.yml");
 
     auto &config = *cfg.diagrams["modules_test"];
-    clanguml::include_diagram::model::diagram diagram;
+    clanguml::class_diagram::model::diagram diagram{
+        dynamic_cast<clanguml::config::class_diagram &>(config)};
     diagram.set_complete(true);
 
     auto filter_ptr = diagram_filter_factory::create(diagram, config);
@@ -165,7 +169,8 @@ TEST_CASE("Test method_types include filter")
         clanguml::config::load("./test_config_data/filters_advanced.yml");
 
     auto &config = *cfg.diagrams["method_type_include_test"];
-    clanguml::class_diagram::model::diagram diagram;
+    clanguml::class_diagram::model::diagram diagram{
+        dynamic_cast<clanguml::config::class_diagram &>(config)};
     diagram.set_complete(true);
 
     auto filter_ptr = diagram_filter_factory::create(diagram, config);
@@ -188,7 +193,8 @@ TEST_CASE("Test elements and namespaces regexp filter")
         clanguml::config::load("./test_config_data/filters_advanced.yml");
 
     auto &config = *cfg.diagrams["regex_elements_and_namespaces"];
-    clanguml::class_diagram::model::diagram diagram;
+    clanguml::class_diagram::model::diagram diagram{
+        dynamic_cast<clanguml::config::class_diagram &>(config)};
 
     auto filter_ptr = diagram_filter_factory::create(diagram, config);
     diagram_filter &filter = *filter_ptr;
@@ -222,7 +228,8 @@ TEST_CASE("Test edge filter and namespaces filter")
         clanguml::config::load("./test_config_data/filters_advanced.yml");
 
     auto &config = *cfg.diagrams["edge_filter_and_namespaces"];
-    clanguml::class_diagram::model::diagram diagram;
+    clanguml::class_diagram::model::diagram diagram{
+        dynamic_cast<clanguml::config::class_diagram &>(config)};
 
     auto filter_ptr = diagram_filter_factory::create(diagram, config);
     diagram_filter &filter = *filter_ptr;

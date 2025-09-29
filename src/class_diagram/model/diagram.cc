@@ -118,6 +118,111 @@ common::optional_ref<clanguml::common::model::diagram_element> diagram::get(
     return res;
 }
 
+void diagram::add_class(std::unique_ptr<class_> &&c)
+{
+    assert(c->id().value() != 0);
+
+    if ((config().generate_packages() &&
+            config().package_type() == config::package_type_t::kDirectory)) {
+        assert(!c->file().empty());
+
+        const auto file = config().make_path_relative(c->file());
+
+        common::model::path p{
+            file.string(), common::model::path_type::kFilesystem};
+        p.pop_back();
+
+        add(p, std::move(c));
+    }
+    else if ((config().generate_packages() &&
+                 config().package_type() == config::package_type_t::kModule)) {
+
+        const auto module_path = config().make_module_relative(c->module());
+
+        common::model::path p{module_path, common::model::path_type::kModule};
+
+        add(p, std::move(c));
+    }
+    else {
+        add(c->path(), std::move(c));
+    }
+}
+
+void diagram::add_objc_interface(std::unique_ptr<objc_interface> &&c)
+{
+    if ((config().generate_packages() &&
+            config().package_type() == config::package_type_t::kDirectory)) {
+        assert(!c->file().empty());
+
+        const auto file = config().make_path_relative(c->file());
+
+        common::model::path p{
+            file.string(), common::model::path_type::kFilesystem};
+        p.pop_back();
+
+        add(p, std::move(c));
+    }
+    else {
+        add(c->path(), std::move(c));
+    }
+}
+
+void diagram::add_enum(std::unique_ptr<enum_> &&e)
+{
+    if ((config().generate_packages() &&
+            config().package_type() == config::package_type_t::kDirectory)) {
+        assert(!e->file().empty());
+
+        const auto file = config().make_path_relative(e->file());
+
+        common::model::path p{
+            file.string(), common::model::path_type::kFilesystem};
+        p.pop_back();
+
+        add(p, std::move(e));
+    }
+    else if ((config().generate_packages() &&
+                 config().package_type() == config::package_type_t::kModule)) {
+
+        const auto module_path = config().make_module_relative(e->module());
+
+        common::model::path p{module_path, common::model::path_type::kModule};
+
+        add(p, std::move(e));
+    }
+    else {
+        add(e->path(), std::move(e));
+    }
+}
+
+void diagram::add_concept(std::unique_ptr<concept_> &&c)
+{
+    if ((config().generate_packages() &&
+            config().package_type() == config::package_type_t::kDirectory)) {
+        assert(!c->file().empty());
+
+        const auto file = config().make_path_relative(c->file());
+
+        common::model::path p{
+            file.string(), common::model::path_type::kFilesystem};
+        p.pop_back();
+
+        add(p, std::move(c));
+    }
+    else if ((config().generate_packages() &&
+                 config().package_type() == config::package_type_t::kModule)) {
+
+        const auto module_path = config().make_module_relative(c->module());
+
+        common::model::path p{module_path, common::model::path_type::kModule};
+
+        add(p, std::move(c));
+    }
+    else {
+        add(c->path(), std::move(c));
+    }
+}
+
 template <>
 bool diagram::add_with_namespace_path<common::model::package>(
     std::unique_ptr<common::model::package> &&p)

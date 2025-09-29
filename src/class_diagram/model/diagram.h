@@ -57,12 +57,17 @@ class diagram : public common::model::diagram,
 public:
     using nested_trait_t = nested_trait_ns;
 
-    diagram() = default;
+    diagram(const config::class_diagram &config)
+        : config_{config}
+    {
+    }
 
     diagram(const diagram &) = delete;
     diagram(diagram &&) = default;
     diagram &operator=(const diagram &) = delete;
-    diagram &operator=(diagram &&) = default;
+    diagram &operator=(diagram &&) = delete;
+
+    const config::class_diagram &config() const { return config_; }
 
     /**
      * @brief Get the diagram model type - in this case class.
@@ -216,6 +221,29 @@ public:
         return add_with_filesystem_path(parent_path, std::move(e));
     }
 
+    /**
+     * @brief Add class (or template class) to the diagram.
+     *
+     * @param c Class model
+     */
+    void add_class(std::unique_ptr<class_> &&c);
+
+    /**
+     * @brief Add enum to the diagram.
+     *
+     * @param e Enum model
+     */
+    void add_enum(std::unique_ptr<enum_> &&e);
+
+    /**
+     * @brief Add concept to the diagram.
+     *
+     * @param c Concept model
+     */
+    void add_concept(std::unique_ptr<concept_> &&c);
+
+    void add_objc_interface(std::unique_ptr<objc_interface> &&c);
+
     template <typename ElementT> void move(eid_t id, const path &parent_path)
     {
         LOG_DBG("Moving element {} to package {}", id.value(),
@@ -278,7 +306,26 @@ public:
 
     void apply_filter() override;
 
+    void append(diagram &&other)
+    {
+        clanguml::common::model::diagram::append(
+            dynamic_cast<clanguml::common::model::diagram &&>(other));
+
+        element_views<class_, enum_, concept_, objc_interface>::append(
+            dynamic_cast<
+                element_views<class_, enum_, concept_, objc_interface> &&>(
+                other));
+
+        nested_trait_t::append(dynamic_cast<nested_trait_t &&>(other));
+
+        for (auto &&ae : other.added_elements_) {
+            added_elements_.emplace(std::move(ae));
+        }
+    }
+
 private:
+    const config::class_diagram &config_;
+
     std::set<eid_t> added_elements_;
 
     template <typename ElementT>

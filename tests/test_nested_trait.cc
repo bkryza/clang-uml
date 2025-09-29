@@ -49,6 +49,12 @@ using nested_trait_ns =
 class diagram_model_mock : public element_views<class_>,
                            public nested_trait_ns {
 public:
+    void append(diagram_model_mock &&other)
+    {
+        element_views<class_>::append(
+            dynamic_cast<element_views<class_> &&>(other));
+        nested_trait_ns::append(dynamic_cast<nested_trait_ns &&>(other));
+    }
 };
 
 auto id()
@@ -402,7 +408,7 @@ TEST_CASE("Test nested trait operator +=")
     auto crel5 = c5->path().relative_to(using_namespace);
     REQUIRE(d2.add_element(crel5, std::move(c5)));
 
-    d1 += std::move(d2);
+    d1.append(std::move(d2));
 
     REQUIRE(d1.get_element(namespace_{"A"}).has_value());
     REQUIRE(d1.get_element(namespace_{"ns1::B"}).has_value());

@@ -423,7 +423,7 @@ std::unique_ptr<DiagramModel> generate(const common::compilation_database &db,
 {
     LOG_INFO("Generating diagram {}", name);
 
-    auto diagram = std::make_unique<DiagramModel>();
+    auto diagram = std::make_unique<DiagramModel>(config);
     diagram->set_name(name);
     diagram->set_filter(
         model::diagram_filter_factory::create(*diagram, config));

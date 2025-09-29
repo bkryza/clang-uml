@@ -96,6 +96,15 @@ public:
         }
     }
 
+protected:
+    void append(element_view &&other)
+    {
+        for (auto &&e : other.elements_) {
+            if (!get(e.get().id()))
+                add(std::move(e));
+        }
+    }
+
 private:
     reference_vector<T> elements_;
 };
@@ -109,6 +118,12 @@ template <typename... Ts> struct element_views : public element_view<Ts>... {
     template <typename F> void for_all_elements(F &&f) const
     {
         (f(element_view<Ts>::view()), ...);
+    }
+
+    void append(element_views<Ts...> &&other)
+    {
+        (element_view<Ts>::append(dynamic_cast<element_view<Ts> &&>(other)),
+            ...);
     }
 
     template <typename T> const element_view<T> &view() const

@@ -45,12 +45,16 @@ class diagram : public clanguml::common::model::diagram,
 public:
     using nested_trait_t = nested_trait_ns;
 
-    diagram() = default;
-
+    diagram(const config::package_diagram &config)
+        : config_{config}
+    {
+    }
     diagram(const diagram &) = delete;
     diagram(diagram &&) = default;
     diagram &operator=(const diagram &) = delete;
-    diagram &operator=(diagram &&) = default;
+    diagram &operator=(diagram &&) = delete;
+
+    const config::package_diagram &config() const { return config_; }
 
     /**
      * @brief Get the diagram model type - in this case package.
@@ -173,6 +177,17 @@ public:
     template <typename ElementT>
     const common::reference_vector<ElementT> &elements() const;
 
+    void append(diagram &&other)
+    {
+        clanguml::common::model::diagram::append(
+            dynamic_cast<clanguml::common::model::diagram &&>(other));
+
+        element_views<package>::append(
+            dynamic_cast<element_views<package> &&>(other));
+
+        nested_trait_t::append(dynamic_cast<nested_trait_t &&>(other));
+    }
+
 private:
     /**
      * @brief Add element using module as diagram path
@@ -206,6 +221,9 @@ private:
     template <typename ElementT>
     bool add_with_filesystem_path(
         const common::model::path &parent_path, std::unique_ptr<ElementT> &&e);
+
+private:
+    const config::package_diagram &config_;
 };
 
 template <typename ElementT>

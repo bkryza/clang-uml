@@ -265,6 +265,16 @@ public:
     }
 
 protected:
+    void append(diagram &&other)
+    {
+        assert(complete_ && other.complete());
+        assert(name_ == other.name());
+
+        for (auto &&r : other.relationships()) {
+            add_relationship(std::move(r));
+        }
+    }
+
     /**
      * Get diagram filter
      *

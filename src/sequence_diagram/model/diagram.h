@@ -56,12 +56,17 @@ std::vector<std::vector<eid_t>> find_reverse_message_chains(
  */
 class diagram : public clanguml::common::model::diagram {
 public:
-    diagram() = default;
+    diagram(const config::sequence_diagram &config)
+        : config_{config}
+    {
+    }
 
     diagram(const diagram &) = delete;
     diagram(diagram &&) = default;
     diagram &operator=(const diagram &) = delete;
-    diagram &operator=(diagram &&) = default;
+    diagram &operator=(diagram &&) = delete;
+
+    const config::sequence_diagram &config() const { return config_; }
 
     /**
      * @brief Get the diagram model type - in this case sequence.
@@ -372,6 +377,8 @@ private:
 
         return block_end_types.count(mt) > 0;
     };
+
+    const config::sequence_diagram &config_;
 
     std::map<eid_t, activity> activities_;
 

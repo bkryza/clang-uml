@@ -39,7 +39,8 @@ TEST_CASE("Test diagram paths filter")
     auto cfg = clanguml::config::load("./test_config_data/filters.yml");
 
     auto &config = *cfg.diagrams["include_test"];
-    clanguml::include_diagram::model::diagram diagram;
+    clanguml::include_diagram::model::diagram diagram{
+        dynamic_cast<clanguml::config::include_diagram &>(config)};
 
     auto filter_ptr = diagram_filter_factory::create(diagram, config);
     diagram_filter &filter = *filter_ptr;
@@ -68,7 +69,8 @@ TEST_CASE("Test method_types include filter")
     auto cfg = clanguml::config::load("./test_config_data/filters.yml");
 
     auto &config = *cfg.diagrams["method_type_include_test"];
-    clanguml::class_diagram::model::diagram diagram;
+    clanguml::class_diagram::model::diagram diagram{
+        dynamic_cast<clanguml::config::class_diagram &>(config)};
 
     auto filter_ptr = diagram_filter_factory::create(diagram, config);
     diagram_filter &filter = *filter_ptr;
@@ -95,7 +97,8 @@ TEST_CASE("Test method_types exclude filter")
     auto cfg = clanguml::config::load("./test_config_data/filters.yml");
 
     auto &config = *cfg.diagrams["method_type_exclude_test"];
-    clanguml::class_diagram::model::diagram diagram;
+    clanguml::class_diagram::model::diagram diagram{
+        dynamic_cast<clanguml::config::class_diagram &>(config)};
 
     auto filter_ptr = diagram_filter_factory::create(diagram, config);
     diagram_filter &filter = *filter_ptr;
@@ -128,7 +131,8 @@ TEST_CASE("Test namespaces filter")
     auto cfg = clanguml::config::load("./test_config_data/filters.yml");
 
     auto &config = *cfg.diagrams["namespace_test"];
-    clanguml::class_diagram::model::diagram diagram;
+    clanguml::class_diagram::model::diagram diagram{
+        dynamic_cast<clanguml::config::class_diagram &>(config)};
 
     auto filter_ptr = diagram_filter_factory::create(diagram, config);
     diagram_filter &filter = *filter_ptr;
@@ -191,7 +195,8 @@ TEST_CASE("Test elements regexp filter")
     auto cfg = clanguml::config::load("./test_config_data/filters.yml");
 
     auto &config = *cfg.diagrams["regex_elements_test"];
-    clanguml::class_diagram::model::diagram diagram;
+    clanguml::class_diagram::model::diagram diagram{
+        dynamic_cast<clanguml::config::class_diagram &>(config)};
 
     auto filter_ptr = diagram_filter_factory::create(diagram, config);
     diagram_filter &filter = *filter_ptr;
@@ -234,7 +239,8 @@ TEST_CASE("Test typed elements filter")
     auto cfg = clanguml::config::load("./test_config_data/filters.yml");
 
     auto &config = *cfg.diagrams["regex_typed_elements_test"];
-    clanguml::class_diagram::model::diagram diagram;
+    clanguml::class_diagram::model::diagram diagram{
+        dynamic_cast<clanguml::config::class_diagram &>(config)};
 
     auto filter_ptr = diagram_filter_factory::create(diagram, config);
     diagram_filter &filter = *filter_ptr;
@@ -265,7 +271,8 @@ TEST_CASE("Test namespaces regexp filter")
     auto cfg = clanguml::config::load("./test_config_data/filters.yml");
 
     auto &config = *cfg.diagrams["regex_namespace_test"];
-    clanguml::class_diagram::model::diagram diagram;
+    clanguml::class_diagram::model::diagram diagram{
+        dynamic_cast<clanguml::config::class_diagram &>(config)};
 
     auto filter_ptr = diagram_filter_factory::create(diagram, config);
     diagram_filter &filter = *filter_ptr;
@@ -329,7 +336,8 @@ TEST_CASE("Test subclasses regexp filter")
     auto cfg = clanguml::config::load("./test_config_data/filters.yml");
 
     auto &config = *cfg.diagrams["regex_subclasses_test"];
-    clanguml::class_diagram::model::diagram diagram;
+    clanguml::class_diagram::model::diagram diagram{
+        dynamic_cast<clanguml::config::class_diagram &>(config)};
 
     auto p = std::make_unique<package>(config.using_namespace());
     p->set_namespace({});
@@ -425,7 +433,8 @@ TEST_CASE("Test parents regexp filter")
     auto cfg = clanguml::config::load("./test_config_data/filters.yml");
 
     auto &config = *cfg.diagrams["regex_parents_test"];
-    clanguml::class_diagram::model::diagram diagram;
+    clanguml::class_diagram::model::diagram diagram{
+        dynamic_cast<clanguml::config::class_diagram &>(config)};
 
     auto p = std::make_unique<package>(config.using_namespace());
     p->set_namespace({});
@@ -523,7 +532,8 @@ TEST_CASE("Test specializations regexp filter")
     auto cfg = clanguml::config::load("./test_config_data/filters.yml");
 
     auto &config = *cfg.diagrams["regex_specializations_test"];
-    clanguml::class_diagram::model::diagram diagram;
+    clanguml::class_diagram::model::diagram diagram{
+        dynamic_cast<clanguml::config::class_diagram &>(config)};
 
     const auto template_id = eid_t{usr_t{"A<Ts...>"s}};
 
@@ -590,7 +600,8 @@ TEST_CASE("Test context regexp filter")
     auto cfg = clanguml::config::load("./test_config_data/filters.yml");
 
     auto &config = *cfg.diagrams["regex_context_test"];
-    clanguml::class_diagram::model::diagram diagram;
+    clanguml::class_diagram::model::diagram diagram{
+        dynamic_cast<clanguml::config::class_diagram &>(config)};
 
     auto c = std::make_unique<class_>(config.using_namespace());
     c->set_name("A");
@@ -682,7 +693,8 @@ TEST_CASE("Test dependencies regexp filter")
     auto cfg = clanguml::config::load("./test_config_data/filters.yml");
 
     auto &config = *cfg.diagrams["regex_dependencies_test"];
-    clanguml::class_diagram::model::diagram diagram;
+    clanguml::class_diagram::model::diagram diagram{
+        dynamic_cast<clanguml::config::class_diagram &>(config)};
 
     auto c = std::make_unique<class_>(config.using_namespace());
     c->set_name("A");
@@ -780,7 +792,8 @@ TEST_CASE("Test dependants regexp filter")
     auto cfg = clanguml::config::load("./test_config_data/filters.yml");
 
     auto &config = *cfg.diagrams["regex_dependants_test"];
-    clanguml::class_diagram::model::diagram diagram;
+    clanguml::class_diagram::model::diagram diagram{
+        dynamic_cast<clanguml::config::class_diagram &>(config)};
 
     auto c = std::make_unique<class_>(config.using_namespace());
     c->set_name("A");
@@ -867,7 +880,8 @@ TEST_CASE("Test callee_types filter")
     auto cfg = clanguml::config::load("./test_config_data/filters.yml");
 
     auto &config = *cfg.diagrams["callee_type_include_test"];
-    clanguml::sequence_diagram::model::diagram diagram;
+    clanguml::sequence_diagram::model::diagram diagram{
+        dynamic_cast<clanguml::config::sequence_diagram &>(config)};
 
     std::unique_ptr<participant> p;
 

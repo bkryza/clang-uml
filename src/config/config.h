@@ -848,7 +848,7 @@ struct config : public inheritable_diagram_options {
     option<std::map<std::string, diagram_template>> diagram_templates{
         "diagram_templates"};
 
-    /*! Dictionary of diagrams, keys represent diagram names */
+    /*! Dictionary of diagram configs, keys represent diagram names */
     std::map<std::string, std::shared_ptr<diagram>> diagrams;
 
     /**

@@ -325,7 +325,8 @@ public:
         }
     }
 
-    nested_trait &operator+=(nested_trait &&other)
+protected:
+    void append(nested_trait &&other)
     {
         for (auto &element : other.elements_) {
             const auto element_id = element->id();
@@ -338,19 +339,20 @@ public:
                     dynamic_cast<nested_trait<T, Path> *>(element.get());
 
                 if (existing_nested && other_nested) {
-                    *existing_nested += std::move(*other_nested);
+                    existing_nested->append(std::move(*other_nested));
                 }
             }
             else {
-                add_element(std::move(element));
+                const auto element_name = element->full_name(false);
+                if (!add_element(std::move(element)))
+                    LOG_WARN("Failed to append element '{}' to diagram",
+                        element_name);
             }
         }
 
         other.elements_.clear();
         other.elements_by_id_.clear();
         other.elements_by_name_.clear();
-
-        return *this;
     }
 
 private:

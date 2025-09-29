@@ -125,6 +125,7 @@ set(TEST_NAMES
     test_util
     test_clang_util
     test_model
+    test_diagram_append
     test_cases
     test_compilation_database
     test_decorator_parser

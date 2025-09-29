@@ -151,29 +151,6 @@ public:
      */
     void finalize();
 
-    /**
-     * @brief Add class (or template class) to the diagram.
-     *
-     * @param c Class model
-     */
-    void add_class(std::unique_ptr<class_> &&c);
-
-    /**
-     * @brief Add enum to the diagram.
-     *
-     * @param e Enum model
-     */
-    void add_enum(std::unique_ptr<enum_> &&e);
-
-    /**
-     * @brief Add concept to the diagram.
-     *
-     * @param c Concept model
-     */
-    void add_concept(std::unique_ptr<concept_> &&c);
-
-    void add_objc_interface(std::unique_ptr<objc_interface> &&c);
-
     void add_diagram_element(
         std::unique_ptr<common::model::template_element> element) override;
 
@@ -735,9 +712,9 @@ bool translation_unit_visitor::add_or_update(
         LOG_DBG("Adding {} {} with id {}", class_model.type_name(), class_model,
             class_model.id());
         if constexpr (std::is_same_v<ElementT, class_>)
-            add_class(std::move(c_ptr));
+            diagram().add_class(std::move(c_ptr));
         else
-            add_enum(std::move(c_ptr));
+            diagram().add_enum(std::move(c_ptr));
     }
     else {
         LOG_DBG("Skipping {} {} with id {}", class_model.type_name(),
