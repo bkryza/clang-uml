@@ -485,6 +485,8 @@ public:
         const clanguml::common::model::namespace_ &using_namespace,
         bool relative, bool skip_qualifiers = false) const;
 
+    bool operator==(const template_parameter &other) const;
+
 private:
     /**
      * This class should be only constructed using builder methods.

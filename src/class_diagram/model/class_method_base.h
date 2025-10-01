@@ -80,6 +80,8 @@ public:
      */
     void add_parameter(method_parameter &&parameter);
 
+    bool operator==(const class_method_base &other) const;
+
 private:
     std::vector<method_parameter> parameters_;
 

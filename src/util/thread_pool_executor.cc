@@ -33,21 +33,6 @@ thread_pool_executor::thread_pool_executor(unsigned int pool_size)
 
 thread_pool_executor::~thread_pool_executor() { stop(); }
 
-std::future<void> thread_pool_executor::add(std::function<void()> &&task)
-{
-    std::unique_lock<std::mutex> l(tasks_mutex_);
-
-    std::packaged_task<void()> ptask{std::move(task)};
-    auto res = ptask.get_future();
-
-    tasks_.emplace_back(std::move(ptask));
-
-    l.unlock();
-    tasks_cond_.notify_one();
-
-    return res;
-}
-
 void thread_pool_executor::stop()
 {
     done_ = true;

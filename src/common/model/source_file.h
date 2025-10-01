@@ -76,6 +76,7 @@ public:
         set_name(preferred.filename().string());
         is_absolute_ = preferred.is_absolute();
         set_id(common::to_id(preferred));
+        complete(true);
     }
 
     source_file(const source_file &) = delete;
@@ -168,6 +169,8 @@ public:
 
         return weakly_canonical(res);
     }
+
+    void append(const source_file &) { }
 
 protected:
     /**

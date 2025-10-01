@@ -40,4 +40,10 @@ std::optional<size_t> class_member_base::destination_multiplicity() const
     return destination_multiplicity_;
 }
 
+bool class_member_base::operator==(const class_member_base &other) const
+{
+    return class_element::operator==(other) && is_static_ == other.is_static_ &&
+        destination_multiplicity_ == other.destination_multiplicity_;
+}
+
 } // namespace clanguml::class_diagram::model

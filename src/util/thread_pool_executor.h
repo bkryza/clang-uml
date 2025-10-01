@@ -49,7 +49,20 @@ public:
      * @param task Function to execute
      * @return Future, allowing awaiting the result
      */
-    std::future<void> add(std::function<void()> &&task);
+    template <typename T, typename F> std::future<T> add(F &&task)
+    {
+        std::unique_lock<std::mutex> l(tasks_mutex_);
+
+        std::packaged_task<T()> ptask{std::move(task)};
+        auto res = ptask.get_future();
+
+        tasks_.emplace_back(std::move(ptask));
+
+        l.unlock();
+        tasks_cond_.notify_one();
+
+        return res;
+    }
 
     /**
      * @brief Join all active threads in the pool

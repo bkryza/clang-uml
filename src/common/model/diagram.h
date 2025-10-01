@@ -264,6 +264,13 @@ public:
                 relationships_.end(), relationships_.end(), source_id)};
     }
 
+    /**
+     * Get diagram filter
+     *
+     * @return Reference to the diagrams element filter
+     */
+    diagram_filter &filter() { return *filter_; }
+
 protected:
     void append(diagram &&other)
     {
@@ -274,13 +281,6 @@ protected:
             add_relationship(std::move(r));
         }
     }
-
-    /**
-     * Get diagram filter
-     *
-     * @return Reference to the diagrams element filter
-     */
-    diagram_filter &filter() { return *filter_; }
 
 private:
     std::string name_;

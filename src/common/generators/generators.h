@@ -35,6 +35,7 @@
 #include "package_diagram/generators/json/package_diagram_generator.h"
 #include "package_diagram/generators/mermaid/package_diagram_generator.h"
 #include "package_diagram/generators/plantuml/package_diagram_generator.h"
+#include "progress_indicator.h"
 #include "sequence_diagram/generators/json/sequence_diagram_generator.h"
 #include "sequence_diagram/generators/mermaid/sequence_diagram_generator.h"
 #include "sequence_diagram/generators/plantuml/sequence_diagram_generator.h"
@@ -340,11 +341,6 @@ protected:
     {
         LOG_DBG("Visiting source file: {}", getCurrentFile().str());
 
-        // Update progress indicators, if enabled, on each translation
-        // unit
-        if (progress_)
-            progress_();
-
         if constexpr (std::is_same_v<DiagramModel,
                           clanguml::include_diagram::model::diagram>) {
             auto find_includes_callback =
@@ -401,6 +397,51 @@ private:
     std::function<void()> progress_;
 };
 
+template <typename DiagramConfig>
+auto make_generator(const std::string &name,
+    const std::string &translation_unit,
+    const common::compilation_database_ptr &db, DiagramConfig &diagram,
+    const cli::runtime_config &runtime_config,
+    std::shared_ptr<progress_indicator_base> indicator)
+{
+    using diagram_model = typename diagram_model_t<DiagramConfig>::type;
+    using diagram_visitor = typename diagram_visitor_t<DiagramConfig>::type;
+
+    return [name, diagram, indicator, db = std::ref(*db),
+               translation_units = std::vector<std::string>{translation_unit},
+               runtime_config]() mutable -> std::unique_ptr<diagram_model> {
+        try {
+            std::unique_ptr<diagram_model> model;
+            auto progress_fun = [&indicator, &name]() {
+                if (indicator)
+                    indicator->increment(name);
+            };
+
+            model = generate_diagram_model<diagram_model, DiagramConfig,
+                diagram_visitor>(db, name, diagram, translation_units,
+                false, // runtime_config,
+                std::move(progress_fun));
+            return model;
+        }
+        catch (clanguml::generators::clang_tool_exception &e) {
+            if (indicator)
+                indicator->fail(name);
+            throw std::move(e);
+        }
+        catch (std::exception &e) {
+            if (indicator)
+                indicator->fail(name);
+
+            LOG_ERROR("Failed to generate diagram '{}': {}", name, e.what());
+
+            throw std::runtime_error(fmt::format(
+                "Failed to generate diagram '{}': {}", name, e.what()));
+        }
+
+        return {};
+    };
+};
+
 /**
  * @brief Specialization of
  * [clang::ASTFrontendAction](https://clang.llvm.org/doxygen/classclang_1_1tooling_1_1FrontendActionFactory.html)
@@ -416,10 +457,10 @@ private:
  */
 template <typename DiagramModel, typename DiagramConfig,
     typename DiagramVisitor>
-std::unique_ptr<DiagramModel> generate(const common::compilation_database &db,
-    const std::string &name, DiagramConfig &config,
-    const std::vector<std::string> &translation_units, bool /*verbose*/ = false,
-    std::function<void()> progress = {})
+std::unique_ptr<DiagramModel> generate_diagram_model(
+    const common::compilation_database &db, const std::string &name,
+    DiagramConfig &config, const std::vector<std::string> &translation_units,
+    bool /*verbose*/ = false, std::function<void()> progress = {})
 {
     LOG_INFO("Generating diagram {}", name);
 
@@ -438,14 +479,16 @@ std::unique_ptr<DiagramModel> generate(const common::compilation_database &db,
 
     auto action_factory =
         std::make_unique<diagram_action_visitor_factory<DiagramModel,
-            DiagramConfig, DiagramVisitor>>(
-            *diagram, config, std::move(progress));
+            DiagramConfig, DiagramVisitor>>(*diagram, config, progress);
 
     clang_tool.run(action_factory.get());
 
     diagram->set_complete(true);
 
-    diagram->finalize();
+    if (progress)
+        progress();
+
+    LOG_INFO("Generated diagram model {}", name);
 
     return diagram;
 }

@@ -62,6 +62,8 @@ public:
      */
     std::optional<std::string> doxygen_link() const override;
 
+    void append(const enum_ &) { }
+
 protected:
     std::string full_name_impl(bool relative = true) const override;
 

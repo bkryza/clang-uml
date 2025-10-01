@@ -723,4 +723,22 @@ int calculate_template_params_specialization_match(
     return 0;
 }
 
+bool template_parameter::operator==(const template_parameter &other) const
+{
+    return kind_ == other.kind_ && type_ == other.type_ &&
+        name_ == other.name_ && default_value_ == other.default_value_ &&
+        is_template_parameter_ == other.is_template_parameter_ &&
+        is_template_template_parameter_ ==
+        other.is_template_template_parameter_ &&
+        is_ellipsis_ == other.is_ellipsis_ &&
+        is_variadic_ == other.is_variadic_ &&
+        is_function_template_ == other.is_function_template_ &&
+        is_data_pointer_ == other.is_data_pointer_ &&
+        is_member_pointer_ == other.is_member_pointer_ &&
+        is_array_ == other.is_array_ && context_ == other.context_ &&
+        concept_constraint_ == other.concept_constraint_ &&
+        template_params_ == other.template_params_ && id_ == other.id_ &&
+        is_unexposed_ == other.is_unexposed_;
+}
+
 } // namespace clanguml::common::model

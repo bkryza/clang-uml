@@ -333,6 +333,30 @@ public:
     void handle_invalid_from_condition(const config::source_location &sf) const;
     void handle_invalid_to_condition(const config::source_location &sf) const;
 
+    void append(diagram &&other)
+    {
+        assert(this != &other);
+
+        clanguml::common::model::diagram::append(
+            dynamic_cast<clanguml::common::model::diagram &&>(other));
+
+        for (auto &[id, activity] : other.activities_) {
+            if (activities_.find(id) == activities_.end()) {
+                activities_.emplace(id, std::move(activity));
+            }
+        }
+
+        for (auto &[id, participant] : other.participants_) {
+            if (participants_.find(id) == participants_.end()) {
+                participants_.emplace(id, std::move(participant));
+            }
+        }
+
+        for (const auto &id : other.active_participants_) {
+            active_participants_.insert(id);
+        }
+    }
+
 private:
     bool inline_lambda_operator_call(
         eid_t id, model::activity &new_activity, const model::message &m);

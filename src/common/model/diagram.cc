@@ -61,7 +61,12 @@ bool diagram::complete() const { return complete_; }
 
 void diagram::finalize()
 {
-    // Remove elements that do not match the filter
+    assert(complete());
+
+    // Reset the filters as they may contain invalid references after
+    // models have been combined
+    filter().reset();
+
     apply_filter();
     filtered_ = true;
 }

@@ -91,9 +91,33 @@ auto generate_diagram_impl(clanguml::common::compilation_database &db,
 
     auto tus = diagram->glob_translation_units(db.getAllFiles());
 
-    auto model = clanguml::common::generators::generate<diagram_model,
-        diagram_config, diagram_visitor>(
-        db, diagram->name, dynamic_cast<diagram_config &>(*diagram), tus);
+    if (tus.empty()) {
+        // Edge case for test cases with no diagrams
+        return clanguml::common::generators::generate_diagram_model<
+            diagram_model, DiagramConfig, diagram_visitor>(db, diagram->name,
+            dynamic_cast<DiagramConfig &>(*diagram), std::vector<std::string>{},
+            false);
+    }
+
+    auto it = tus.begin();
+
+    std::unique_ptr<diagram_model> model =
+        clanguml::common::generators::generate_diagram_model<diagram_model,
+            DiagramConfig, diagram_visitor>(db, diagram->name,
+            dynamic_cast<DiagramConfig &>(*diagram),
+            std::vector<std::string>{*it}, false);
+
+    it++;
+
+    for (; it != tus.end(); it++) {
+        model->append(std::move(
+            *clanguml::common::generators::generate_diagram_model<diagram_model,
+                DiagramConfig, diagram_visitor>(db, diagram->name,
+                dynamic_cast<DiagramConfig &>(*diagram),
+                std::vector<std::string>{*it}, false)));
+    }
+
+    model->finalize();
 
     return model;
 }

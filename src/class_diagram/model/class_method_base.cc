@@ -45,4 +45,11 @@ void class_method_base::add_parameter(method_parameter &&parameter)
 {
     parameters_.emplace_back(std::move(parameter));
 }
+
+bool class_method_base::operator==(const class_method_base &other) const
+{
+    return class_element::operator==(other) &&
+        parameters_ == other.parameters_ && is_static_ == other.is_static_ &&
+        display_name_ == other.display_name_;
+}
 } // namespace clanguml::class_diagram::model

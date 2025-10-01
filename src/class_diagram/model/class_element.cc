@@ -47,4 +47,10 @@ void class_element::set_qualified_name(const std::string &qn)
 
 std::string class_element::qualified_name() const { return qualified_name_; }
 
+bool class_element::operator==(const class_element &other) const
+{
+    return access_ == other.access_ && name_ == other.name_ &&
+        qualified_name_ == other.qualified_name_ && type_ == other.type_;
+}
+
 } // namespace clanguml::class_diagram::model

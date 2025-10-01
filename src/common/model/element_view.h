@@ -102,6 +102,8 @@ protected:
         for (auto &&e : other.elements_) {
             if (!get(e.get().id()))
                 add(std::move(e));
+            else
+                get(e.get().id()).value().append(e);
         }
     }
 

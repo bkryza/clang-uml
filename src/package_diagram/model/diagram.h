@@ -179,6 +179,8 @@ public:
 
     void append(diagram &&other)
     {
+        assert(this != &other);
+
         clanguml::common::model::diagram::append(
             dynamic_cast<clanguml::common::model::diagram &&>(other));
 

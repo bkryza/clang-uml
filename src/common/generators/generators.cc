@@ -105,8 +105,8 @@ void generate_diagram_select_generator(const std::string &od,
     if constexpr (!std::is_same_v<diagram_generator, not_supported>) {
 
         std::stringstream buffer;
-        buffer << diagram_generator(
-            dynamic_cast<DiagramConfig &>(*diagram), *model);
+        buffer << diagram_generator(dynamic_cast<DiagramConfig &>(*diagram),
+            const_cast<DiagramModel &>(model));
 
         // Only open the file after the diagram has been generated successfully
         // in order not to overwrite previous diagram in case of failure
@@ -127,7 +127,7 @@ void generate_diagram_select_generator(const std::string &od,
 }
 
 template <typename DiagramConfig>
-void generate_diagram_impl(const std::string &name,
+auto generate_diagram_impl(const std::string &name,
     std::shared_ptr<clanguml::config::diagram> diagram,
     const common::compilation_database &db,
     const std::vector<std::string> &translation_units,
@@ -137,76 +137,10 @@ void generate_diagram_impl(const std::string &name,
     using diagram_model = typename diagram_model_t<DiagramConfig>::type;
     using diagram_visitor = typename diagram_visitor_t<DiagramConfig>::type;
 
-    auto model = clanguml::common::generators::generate<diagram_model,
+    return clanguml::common::generators::generate_diagram_model<diagram_model,
         diagram_config, diagram_visitor>(db, diagram->name,
         dynamic_cast<diagram_config &>(*diagram), translation_units,
         runtime_config.verbose, std::move(progress));
-
-    if constexpr (std::is_same_v<DiagramConfig, config::sequence_diagram>) {
-        if (runtime_config.print_from) {
-            auto from_values = model->list_from_values();
-
-            if (logging::logger_type() == logging::logger_type_t::text) {
-                for (const auto &from : from_values) {
-                    std::cout << from << '\n';
-                }
-            }
-            else {
-                inja::json j = inja::json::array();
-                for (const auto &from : from_values) {
-                    j.emplace_back(logging::escape_json(from));
-                }
-                std::cout << j.dump();
-            }
-
-            return;
-        }
-        if (runtime_config.print_to) {
-            auto to_values = model->list_to_values();
-            if (logging::logger_type() == logging::logger_type_t::text) {
-                for (const auto &to : to_values) {
-                    std::cout << to << '\n';
-                }
-            }
-            else {
-                inja::json j = inja::json::array();
-                for (const auto &to : to_values) {
-                    j.emplace_back(logging::escape_json(to));
-                }
-                std::cout << j.dump();
-            }
-            return;
-        }
-    }
-
-    for (const auto generator_type : runtime_config.generators) {
-        if (generator_type == generator_type_t::plantuml) {
-            generate_diagram_select_generator<diagram_config,
-                plantuml_generator_tag>(
-                runtime_config.output_directory, name, diagram, model);
-        }
-        else if (generator_type == generator_type_t::json) {
-            generate_diagram_select_generator<diagram_config,
-                json_generator_tag>(
-                runtime_config.output_directory, name, diagram, model);
-        }
-        else if (generator_type == generator_type_t::mermaid) {
-            generate_diagram_select_generator<diagram_config,
-                mermaid_generator_tag>(
-                runtime_config.output_directory, name, diagram, model);
-        }
-        else if (generator_type == generator_type_t::graphml) {
-            generate_diagram_select_generator<diagram_config,
-                graphml_generator_tag>(
-                runtime_config.output_directory, name, diagram, model);
-        }
-
-        // Convert plantuml or mermaid to an image using command provided
-        // in the command line arguments
-        if (runtime_config.render_diagrams) {
-            render_diagram(generator_type, diagram);
-        }
-    }
 }
 } // namespace detail
 
@@ -280,9 +214,16 @@ int generate_diagrams(const std::vector<std::string> &diagram_names,
         &translation_units_map)
 {
     util::thread_pool_executor generator_executor{runtime_config.thread_count};
-    std::vector<std::future<void>> futs;
+    std::map<std::string /* diagram name */,
+        std::vector<
+            std::future<std::unique_ptr<package_diagram::model::diagram>>>>
+        package_diagram_models;
+    std::map<std::string /* diagram name */,
+        std::vector<
+            std::future<std::unique_ptr<include_diagram::model::diagram>>>>
+        include_diagram_models;
 
-    std::unique_ptr<progress_indicator_base> indicator;
+    std::shared_ptr<progress_indicator_base> indicator;
 
     if (runtime_config.progress) {
         if (clanguml::logging::logger_type() == logging::logger_type_t::text) {
@@ -349,52 +290,150 @@ int generate_diagrams(const std::vector<std::string> &diagram_names,
         LOG_DBG("Found {} matching translation unit commands for diagram {}",
             matching_commands_count, name);
 
-        auto generator = [&name = name, &diagram = diagram, &indicator,
-                             db = std::ref(*db), matching_commands_count,
-                             translation_units = valid_translation_units,
-                             runtime_config]() mutable -> void {
-            try {
-                if (indicator) {
-                    indicator->add_progress_bar(name, matching_commands_count,
-                        diagram_type_to_color(diagram->type()));
+        if (indicator) {
+            indicator->add_progress_bar(name, matching_commands_count,
+                diagram_type_to_color(diagram->type()));
+        }
 
-                    generate_diagram(name, diagram, db, translation_units,
-                        runtime_config, [&indicator, &name]() {
-                            if (indicator)
-                                indicator->increment(name);
-                        });
+        for (const auto &tu : valid_translation_units) {
 
-                    if (indicator)
-                        indicator->complete(name);
-                }
-                else {
-                    generate_diagram(name, diagram, db, translation_units,
-                        runtime_config, {});
-                }
+            if (diagram->type() == model::diagram_t::kPackage) {
+                std::function<
+                    std::unique_ptr<package_diagram::model::diagram>()>
+                    generator =
+                        make_generator<config::package_diagram>(name, tu, db,
+                            dynamic_cast<config::package_diagram &>(*diagram),
+                            runtime_config, indicator);
+
+                auto fut =
+                    generator_executor
+                        .add<std::unique_ptr<package_diagram::model::diagram>>(
+                            std::move(generator));
+
+                package_diagram_models[name].emplace_back(std::move(fut));
             }
-            catch (clanguml::generators::clang_tool_exception &e) {
-                if (indicator)
-                    indicator->fail(name);
-                throw std::move(e);
+            else if (diagram->type() == model::diagram_t::kInclude) {
+                std::function<
+                    std::unique_ptr<include_diagram::model::diagram>()>
+                    generator =
+                        make_generator<config::include_diagram>(name, tu, db,
+                            dynamic_cast<config::include_diagram &>(*diagram),
+                            runtime_config, indicator);
+
+                auto fut =
+                    generator_executor
+                        .add<std::unique_ptr<include_diagram::model::diagram>>(
+                            std::move(generator));
+
+                include_diagram_models[name].emplace_back(std::move(fut));
             }
-            catch (std::exception &e) {
-                if (indicator)
-                    indicator->fail(name);
-
-                LOG_ERROR(
-                    "Failed to generate diagram '{}': {}", name, e.what());
-
-                throw std::runtime_error(fmt::format(
-                    "Failed to generate diagram '{}': {}", name, e.what()));
-            }
-        };
-
-        futs.emplace_back(generator_executor.add(std::move(generator)));
+        }
     }
 
-    for (auto &fut : futs) {
+    LOG_INFO("Collecting package diagram futures");
+
+    for (auto &[name, futs] : package_diagram_models) {
         try {
-            fut.get();
+            std::vector<std::unique_ptr<package_diagram::model::diagram>>
+                models;
+            for (auto &fut : futs) {
+                models.emplace_back(fut.get());
+            }
+
+            LOG_INFO("Collected package diagram futures for: {}", name);
+
+            auto it = models.begin();
+            auto &first = *it;
+            it++;
+            for (; it != models.end(); it++) {
+                first->append(std::move(*it->get()));
+            }
+            first->finalize();
+            first->apply_filter();
+
+            LOG_INFO("Finalized diagram {}", name);
+
+            for (const auto generator_type : runtime_config.generators) {
+                if (generator_type == generator_type_t::plantuml) {
+                    detail::generate_diagram_select_generator<
+                        config::package_diagram, plantuml_generator_tag>(
+                        runtime_config.output_directory, name,
+                        config.diagrams.at(first->name()), *first);
+                }
+                else if (generator_type == generator_type_t::json) {
+                    detail::generate_diagram_select_generator<
+                        config::package_diagram, json_generator_tag>(
+                        runtime_config.output_directory, name,
+                        config.diagrams.at(first->name()), *first);
+                }
+                else if (generator_type == generator_type_t::mermaid) {
+                    detail::generate_diagram_select_generator<
+                        config::package_diagram, mermaid_generator_tag>(
+                        runtime_config.output_directory, name,
+                        config.diagrams.at(first->name()), *first);
+                }
+                else if (generator_type == generator_type_t::graphml) {
+                    detail::generate_diagram_select_generator<
+                        config::package_diagram, graphml_generator_tag>(
+                        runtime_config.output_directory, name,
+                        config.diagrams.at(first->name()), *first);
+                }
+            }
+        }
+        catch (std::exception &e) {
+            errors.emplace_back(std::current_exception());
+        }
+    }
+
+    LOG_INFO("Collecting include diagram futures");
+
+    for (auto &[name, futs] : include_diagram_models) {
+        try {
+            std::vector<std::unique_ptr<include_diagram::model::diagram>>
+                models;
+            for (auto &fut : futs) {
+                models.emplace_back(fut.get());
+            }
+
+            LOG_INFO("Collected include diagram futures for: {}", name);
+
+            auto it = models.begin();
+            auto &first = *it;
+            it++;
+            for (; it != models.end(); it++) {
+                first->append(std::move(*it->get()));
+            }
+            first->finalize();
+            first->apply_filter();
+
+            LOG_INFO("Finalized diagram {}", name);
+
+            for (const auto generator_type : runtime_config.generators) {
+                if (generator_type == generator_type_t::plantuml) {
+                    detail::generate_diagram_select_generator<
+                        config::include_diagram, plantuml_generator_tag>(
+                        runtime_config.output_directory, name,
+                        config.diagrams.at(first->name()), *first);
+                }
+                else if (generator_type == generator_type_t::json) {
+                    detail::generate_diagram_select_generator<
+                        config::include_diagram, json_generator_tag>(
+                        runtime_config.output_directory, name,
+                        config.diagrams.at(first->name()), *first);
+                }
+                else if (generator_type == generator_type_t::mermaid) {
+                    detail::generate_diagram_select_generator<
+                        config::include_diagram, mermaid_generator_tag>(
+                        runtime_config.output_directory, name,
+                        config.diagrams.at(first->name()), *first);
+                }
+                else if (generator_type == generator_type_t::graphml) {
+                    detail::generate_diagram_select_generator<
+                        config::include_diagram, graphml_generator_tag>(
+                        runtime_config.output_directory, name,
+                        config.diagrams.at(first->name()), *first);
+                }
+            }
         }
         catch (std::exception &e) {
             errors.emplace_back(std::current_exception());

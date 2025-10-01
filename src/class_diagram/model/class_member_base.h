@@ -68,6 +68,8 @@ public:
      */
     std::optional<size_t> destination_multiplicity() const;
 
+    bool operator==(const class_member_base &other) const;
+
 private:
     bool is_static_{false};
     std::optional<size_t> destination_multiplicity_{};

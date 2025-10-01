@@ -29,6 +29,8 @@ namespace clanguml::class_diagram::model {
 class class_member : public class_member_base {
 public:
     using class_member_base::class_member_base;
+
+    bool operator==(const class_member &other) const;
 };
 
 } // namespace clanguml::class_diagram::model

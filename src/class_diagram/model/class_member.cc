@@ -1,5 +1,5 @@
 /**
- * @file src/class_diagram/model/class_member_base.cc
+ * @file src/class_diagram/model/class_member.cc
  *
  * Copyright (c) 2021-2025 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,4 +16,13 @@
  * limitations under the License.
  */
 
-#include "class_member_base.h"
+#include "class_member.h"
+
+namespace clanguml::class_diagram::model {
+
+bool class_member::operator==(const class_member &other) const
+{
+    return class_member_base::operator==(other);
+}
+
+} // namespace clanguml::class_diagram::model

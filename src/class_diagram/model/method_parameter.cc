@@ -65,4 +65,10 @@ std::string method_parameter::to_string(
     return fmt::format("{} {} = {}", type_ns, name_ns, default_value());
 }
 
+bool method_parameter::operator==(const method_parameter &other) const
+{
+    return type_ == other.type_ && name_ == other.name_ &&
+        default_value_ == other.default_value_;
+}
+
 } // namespace clanguml::class_diagram::model
