@@ -299,6 +299,14 @@ void generate_diagrams_by_type(std::shared_ptr<config::diagram> diagram_config,
     }
 }
 
+template <typename T> bool is_model_ready(T &futs)
+{
+    using namespace std::chrono_literals;
+    return std::all_of(futs.begin(), futs.end(), [](auto &fut) {
+        return fut.valid() && fut.wait_for(5ms) == std::future_status::ready;
+    });
+}
+
 int generate_diagrams(const std::vector<std::string> &diagram_names,
     config::config &config, const common::compilation_database_ptr &db,
     const cli::runtime_config &runtime_config,
@@ -411,60 +419,89 @@ int generate_diagrams(const std::vector<std::string> &diagram_names,
 
     LOG_INFO("Collecting diagram futures");
 
-    for (auto &[name, futs] : diagram_models) {
-        try {
-            if (std::holds_alternative<class_diagram_model_futures>(futs)) {
-                auto combined_model = combine_partial_diagram_models<
-                    class_diagram::model::diagram>(
-                    std::get<class_diagram_model_futures>(futs));
+    size_t completed_diagrams{0};
 
-                generate_diagrams_by_type<config::class_diagram,
-                    class_diagram::model::diagram>(config.diagrams.at(name),
-                    *combined_model, name, runtime_config);
+    while (completed_diagrams < diagram_models.size()) {
+        for (auto &[name, futs_variant] : diagram_models) {
+            try {
+                if (std::holds_alternative<class_diagram_model_futures>(
+                        futs_variant)) {
+                    auto &futs =
+                        std::get<class_diagram_model_futures>(futs_variant);
+                    if (!is_model_ready(futs))
+                        continue;
+
+                    auto combined_model = combine_partial_diagram_models<
+                        class_diagram::model::diagram>(futs);
+
+                    generate_diagrams_by_type<config::class_diagram,
+                        class_diagram::model::diagram>(config.diagrams.at(name),
+                        *combined_model, name, runtime_config);
+                }
+                else if (std::holds_alternative<sequence_diagram_model_futures>(
+                             futs_variant)) {
+                    auto &futs =
+                        std::get<sequence_diagram_model_futures>(futs_variant);
+                    if (!is_model_ready(futs))
+                        continue;
+
+                    auto combined_model = combine_partial_diagram_models<
+                        sequence_diagram::model::diagram>(futs);
+
+                    generate_diagrams_by_type<config::sequence_diagram,
+                        sequence_diagram::model::diagram>(
+                        config.diagrams.at(name), *combined_model, name,
+                        runtime_config);
+                }
+                else if (std::holds_alternative<include_diagram_model_futures>(
+                             futs_variant)) {
+                    auto &futs =
+                        std::get<include_diagram_model_futures>(futs_variant);
+                    if (!is_model_ready(futs))
+                        continue;
+
+                    auto combined_model = combine_partial_diagram_models<
+                        include_diagram::model::diagram>(futs);
+
+                    generate_diagrams_by_type<config::include_diagram,
+                        include_diagram::model::diagram>(
+                        config.diagrams.at(name), *combined_model, name,
+                        runtime_config);
+                }
+                else if (std::holds_alternative<package_diagram_model_futures>(
+                             futs_variant)) {
+                    auto &futs =
+                        std::get<package_diagram_model_futures>(futs_variant);
+                    if (!is_model_ready(futs))
+                        continue;
+
+                    auto combined_model = combine_partial_diagram_models<
+                        package_diagram::model::diagram>(futs);
+
+                    generate_diagrams_by_type<config::package_diagram,
+                        package_diagram::model::diagram>(
+                        config.diagrams.at(name), *combined_model, name,
+                        runtime_config);
+                }
+
+                if (indicator)
+                    indicator->complete(name);
+
+                completed_diagrams++;
             }
-            else if (std::holds_alternative<sequence_diagram_model_futures>(
-                         futs)) {
-                auto combined_model = combine_partial_diagram_models<
-                    sequence_diagram::model::diagram>(
-                    std::get<sequence_diagram_model_futures>(futs));
-
-                generate_diagrams_by_type<config::sequence_diagram,
-                    sequence_diagram::model::diagram>(config.diagrams.at(name),
-                    *combined_model, name, runtime_config);
+            catch (clanguml::generators::clang_tool_exception &e) {
+                if (indicator)
+                    indicator->fail(name);
+                completed_diagrams++;
+                throw std::move(e);
             }
-            else if (std::holds_alternative<include_diagram_model_futures>(
-                         futs)) {
-                auto combined_model = combine_partial_diagram_models<
-                    include_diagram::model::diagram>(
-                    std::get<include_diagram_model_futures>(futs));
+            catch (std::exception &e) {
+                if (indicator)
+                    indicator->fail(name);
+                errors.emplace_back(std::current_exception());
 
-                generate_diagrams_by_type<config::include_diagram,
-                    include_diagram::model::diagram>(config.diagrams.at(name),
-                    *combined_model, name, runtime_config);
+                completed_diagrams++;
             }
-            else if (std::holds_alternative<package_diagram_model_futures>(
-                         futs)) {
-                auto combined_model = combine_partial_diagram_models<
-                    package_diagram::model::diagram>(
-                    std::get<package_diagram_model_futures>(futs));
-
-                generate_diagrams_by_type<config::package_diagram,
-                    package_diagram::model::diagram>(config.diagrams.at(name),
-                    *combined_model, name, runtime_config);
-            }
-
-            if (indicator)
-                indicator->complete(name);
-        }
-        catch (clanguml::generators::clang_tool_exception &e) {
-            if (indicator)
-                indicator->fail(name);
-            throw std::move(e);
-        }
-        catch (std::exception &e) {
-            if (indicator)
-                indicator->fail(name);
-            errors.emplace_back(std::current_exception());
         }
     }
 
