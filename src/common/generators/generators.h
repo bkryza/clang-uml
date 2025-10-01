@@ -484,6 +484,11 @@ auto make_generator(const std::string &name,
                runtime_config]() mutable -> std::unique_ptr<diagram_model> {
         try {
             std::unique_ptr<diagram_model> model;
+
+            if (indicator) {
+                indicator->update(name);
+            }
+
             auto progress_fun = [&indicator, &name]() {
                 if (indicator)
                     indicator->increment(name);

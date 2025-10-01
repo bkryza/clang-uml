@@ -60,6 +60,13 @@ public:
     virtual void increment(const std::string &name) = 0;
 
     /**
+     * Update the display of the progress bar without modifying progress.
+     *
+     * @param name Name of the progress ba*
+     */
+    virtual void update(const std::string &name) = 0;
+
+    /**
      * Stop all the progress bars.
      */
     virtual void stop() = 0;
@@ -92,6 +99,8 @@ public:
     void add_progress_bar(
         const std::string &name, size_t max, indicators::Color color) override;
 
+    void update(const std::string &name) override;
+
     void increment(const std::string &name) override;
 
     void stop() override { }
@@ -114,6 +123,8 @@ public:
 
     void add_progress_bar(
         const std::string &name, size_t max, indicators::Color color) override;
+
+    void update(const std::string &name) override;
 
     void increment(const std::string &name) override;
 
