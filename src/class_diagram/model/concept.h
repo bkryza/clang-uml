@@ -84,7 +84,7 @@ public:
      */
     const std::vector<std::string> &requires_statements() const;
 
-    void append(const concept_ &) { }
+    void append(const concept_ & /*unused*/);
 
 protected:
     std::string full_name_impl(bool relative = true) const override;

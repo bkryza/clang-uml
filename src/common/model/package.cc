@@ -45,6 +45,8 @@ bool package::is_deprecated() const { return is_deprecated_; }
 
 void package::set_deprecated(bool deprecated) { is_deprecated_ = deprecated; }
 
+void package::append(const package & /*unused*/) { }
+
 std::optional<std::string> package::doxygen_link() const
 {
     if (get_namespace().type() != path_type::kNamespace)

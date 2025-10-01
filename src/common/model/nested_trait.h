@@ -328,7 +328,7 @@ public:
 protected:
     void append(nested_trait &&other)
     {
-        for (auto &element : other.elements_) {
+        for (auto &element : std::move(other).elements_) {
             const auto element_id = element->id();
 
             if (elements_by_id_.count(element_id) > 0) {
@@ -349,10 +349,6 @@ protected:
                         element_name);
             }
         }
-
-        other.elements_.clear();
-        other.elements_by_id_.clear();
-        other.elements_by_name_.clear();
     }
 
 private:

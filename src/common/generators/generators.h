@@ -397,51 +397,6 @@ private:
     std::function<void()> progress_;
 };
 
-template <typename DiagramConfig>
-auto make_generator(const std::string &name,
-    const std::string &translation_unit,
-    const common::compilation_database_ptr &db, DiagramConfig &diagram,
-    const cli::runtime_config &runtime_config,
-    std::shared_ptr<progress_indicator_base> indicator)
-{
-    using diagram_model = typename diagram_model_t<DiagramConfig>::type;
-    using diagram_visitor = typename diagram_visitor_t<DiagramConfig>::type;
-
-    return [name, diagram, indicator, db = std::ref(*db),
-               translation_units = std::vector<std::string>{translation_unit},
-               runtime_config]() mutable -> std::unique_ptr<diagram_model> {
-        try {
-            std::unique_ptr<diagram_model> model;
-            auto progress_fun = [&indicator, &name]() {
-                if (indicator)
-                    indicator->increment(name);
-            };
-
-            model = generate_diagram_model<diagram_model, DiagramConfig,
-                diagram_visitor>(db, name, diagram, translation_units,
-                false, // runtime_config,
-                std::move(progress_fun));
-            return model;
-        }
-        catch (clanguml::generators::clang_tool_exception &e) {
-            if (indicator)
-                indicator->fail(name);
-            throw std::move(e);
-        }
-        catch (std::exception &e) {
-            if (indicator)
-                indicator->fail(name);
-
-            LOG_ERROR("Failed to generate diagram '{}': {}", name, e.what());
-
-            throw std::runtime_error(fmt::format(
-                "Failed to generate diagram '{}': {}", name, e.what()));
-        }
-
-        return {};
-    };
-};
-
 /**
  * @brief Specialization of
  * [clang::ASTFrontendAction](https://clang.llvm.org/doxygen/classclang_1_1tooling_1_1FrontendActionFactory.html)
@@ -492,6 +447,72 @@ std::unique_ptr<DiagramModel> generate_diagram_model(
 
     return diagram;
 }
+
+/**
+ * @brief Create a generator function for a specific diagram and translation
+ *        unit
+ *
+ * This function creates a lambda that will generate a diagram model for a
+ * single translation unit. The returned lambda can be executed asynchronously
+ * to build partial diagram models that can later be combined.
+ *
+ * @tparam DiagramConfig Type of diagram configuration (e.g., class_diagram,
+ *                       sequence_diagram)
+ * @param name Name of the diagram being generated
+ * @param translation_unit Path to the translation unit to process
+ * @param db Shared pointer to the compilation database
+ * @param diagram Reference to the diagram configuration
+ * @param runtime_config Runtime configuration including threading and output
+ *                       settings
+ * @param indicator Shared pointer to progress indicator for tracking generation
+ *                  progress
+ * @return Lambda function that returns a unique_ptr to the generated diagram
+ *         model
+ */
+template <typename DiagramConfig>
+auto make_generator(const std::string &name,
+    const std::string &translation_unit,
+    const common::compilation_database_ptr &db, DiagramConfig &diagram,
+    const cli::runtime_config &runtime_config,
+    std::shared_ptr<progress_indicator_base> indicator)
+{
+    using diagram_model = typename diagram_model_t<DiagramConfig>::type;
+    using diagram_visitor = typename diagram_visitor_t<DiagramConfig>::type;
+
+    return [name, diagram, indicator, db = std::ref(*db),
+               translation_units = std::vector<std::string>{translation_unit},
+               runtime_config]() mutable -> std::unique_ptr<diagram_model> {
+        try {
+            std::unique_ptr<diagram_model> model;
+            auto progress_fun = [&indicator, &name]() {
+                if (indicator)
+                    indicator->increment(name);
+            };
+
+            model = generate_diagram_model<diagram_model, DiagramConfig,
+                diagram_visitor>(db, name, diagram, translation_units, false,
+                std::move(progress_fun));
+
+            return model;
+        }
+        catch (clanguml::generators::clang_tool_exception &e) {
+            if (indicator)
+                indicator->fail(name);
+            throw std::move(e);
+        }
+        catch (std::exception &e) {
+            if (indicator)
+                indicator->fail(name);
+
+            LOG_ERROR("Failed to generate diagram '{}': {}", name, e.what());
+
+            throw std::runtime_error(fmt::format(
+                "Failed to generate diagram '{}': {}", name, e.what()));
+        }
+
+        return {};
+    };
+};
 
 /**
  * @brief Generate a single diagram

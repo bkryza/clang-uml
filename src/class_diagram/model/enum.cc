@@ -53,6 +53,8 @@ std::vector<std::string> &enum_::constants() { return constants_; }
 
 const std::vector<std::string> &enum_::constants() const { return constants_; }
 
+void enum_::append(const enum_ & /*unused*/) { }
+
 std::optional<std::string> enum_::doxygen_link() const
 {
     auto name = name_and_ns();

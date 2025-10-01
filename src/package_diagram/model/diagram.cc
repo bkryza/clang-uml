@@ -95,6 +95,19 @@ void diagram::apply_filter()
 }
 
 bool diagram::is_empty() const { return element_view<package>::is_empty(); }
+
+void diagram::append(diagram &&other)
+{
+    assert(this != &other);
+
+    clanguml::common::model::diagram::append(
+        dynamic_cast<clanguml::common::model::diagram &&>(other));
+
+    element_views<package>::append(
+        dynamic_cast<element_views<package> &&>(other));
+
+    nested_trait_t::append(dynamic_cast<nested_trait_t &&>(std::move(other)));
+}
 } // namespace clanguml::package_diagram::model
 
 namespace clanguml::common::model {

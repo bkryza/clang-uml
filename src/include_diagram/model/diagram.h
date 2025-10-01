@@ -138,18 +138,7 @@ public:
 
     void apply_filter() override;
 
-    void append(diagram &&other)
-    {
-        assert(this != &other);
-
-        clanguml::common::model::diagram::append(
-            dynamic_cast<clanguml::common::model::diagram &&>(other));
-
-        element_views<source_file>::append(
-            dynamic_cast<element_views<source_file> &&>(other));
-
-        nested_trait_t::append(dynamic_cast<nested_trait_t &&>(other));
-    }
+    void append(diagram &&other);
 
 private:
     const config::include_diagram &config_;

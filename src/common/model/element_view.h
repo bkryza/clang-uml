@@ -97,11 +97,11 @@ public:
     }
 
 protected:
-    void append(element_view &&other)
+    void append(const element_view &other)
     {
         for (auto &&e : other.elements_) {
             if (!get(e.get().id()))
-                add(std::move(e));
+                add(e);
             else
                 get(e.get().id()).value().append(e);
         }
@@ -122,9 +122,12 @@ template <typename... Ts> struct element_views : public element_view<Ts>... {
         (f(element_view<Ts>::view()), ...);
     }
 
-    void append(element_views<Ts...> &&other)
+    void append(const element_views<Ts...> &other)
     {
-        (element_view<Ts>::append(dynamic_cast<element_view<Ts> &&>(other)),
+
+        // NOLINTNEXTLINE
+        (element_view<Ts>::append(
+             dynamic_cast<const element_view<Ts> &>(other)),
             ...);
     }
 

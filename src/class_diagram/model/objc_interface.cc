@@ -72,4 +72,24 @@ std::optional<std::string> objc_interface::doxygen_link() const
 {
     return std::nullopt;
 }
+
+void objc_interface::append(const objc_interface &other)
+{
+    // Add members from other only if they don't already exist in this
+    for (const auto &member : other.members()) {
+        auto it = std::find(members_.begin(), members_.end(), member);
+        if (it == members_.end()) {
+            members_.push_back(member);
+        }
+    }
+
+    // Add methods from other only if they don't already exist in this
+    for (const auto &method : other.methods()) {
+        auto it = std::find(methods_.begin(), methods_.end(), method);
+        if (it == methods_.end()) {
+            methods_.push_back(method);
+        }
+    }
+}
+
 } // namespace clanguml::class_diagram::model

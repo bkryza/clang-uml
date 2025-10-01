@@ -76,7 +76,7 @@ public:
      */
     std::optional<std::string> doxygen_link() const override;
 
-    void append(const objc_interface &) { }
+    void append(const objc_interface &other);
 
 protected:
     std::string full_name_impl(bool relative = true) const override;

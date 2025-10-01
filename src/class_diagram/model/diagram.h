@@ -306,22 +306,7 @@ public:
 
     void apply_filter() override;
 
-    void append(diagram &&other)
-    {
-        clanguml::common::model::diagram::append(
-            dynamic_cast<clanguml::common::model::diagram &&>(other));
-
-        element_views<class_, enum_, concept_, objc_interface>::append(
-            dynamic_cast<
-                element_views<class_, enum_, concept_, objc_interface> &&>(
-                other));
-
-        nested_trait_t::append(dynamic_cast<nested_trait_t &&>(other));
-
-        for (auto &&ae : other.added_elements_) {
-            added_elements_.emplace(std::move(ae));
-        }
-    }
+    void append(diagram &&other);
 
 private:
     const config::class_diagram &config_;

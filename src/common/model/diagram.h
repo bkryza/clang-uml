@@ -272,15 +272,7 @@ public:
     diagram_filter &filter() { return *filter_; }
 
 protected:
-    void append(diagram &&other)
-    {
-        assert(complete_ && other.complete());
-        assert(name_ == other.name());
-
-        for (auto &&r : other.relationships()) {
-            add_relationship(std::move(r));
-        }
-    }
+    void append(diagram &&other);
 
 private:
     std::string name_;

@@ -182,4 +182,14 @@ const std::vector<relationship> &diagram::relationships() const
     return relationships_;
 }
 
+void diagram::append(diagram &&other)
+{
+    assert(complete_ && other.complete());
+    assert(name_ == other.name());
+
+    for (auto &&r : std::move(other).relationships()) {
+        add_relationship(std::move(r));
+    }
+}
+
 } // namespace clanguml::common::model

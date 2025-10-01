@@ -177,18 +177,7 @@ public:
     template <typename ElementT>
     const common::reference_vector<ElementT> &elements() const;
 
-    void append(diagram &&other)
-    {
-        assert(this != &other);
-
-        clanguml::common::model::diagram::append(
-            dynamic_cast<clanguml::common::model::diagram &&>(other));
-
-        element_views<package>::append(
-            dynamic_cast<element_views<package> &&>(other));
-
-        nested_trait_t::append(dynamic_cast<nested_trait_t &&>(other));
-    }
+    void append(diagram &&other);
 
 private:
     /**
@@ -224,7 +213,6 @@ private:
     bool add_with_filesystem_path(
         const common::model::path &parent_path, std::unique_ptr<ElementT> &&e);
 
-private:
     const config::package_diagram &config_;
 };
 
@@ -363,7 +351,6 @@ const common::reference_vector<ElementT> &diagram::elements() const
 {
     return element_view<ElementT>::view();
 }
-
 } // namespace clanguml::package_diagram::model
 
 namespace clanguml::common::model {

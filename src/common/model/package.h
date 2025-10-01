@@ -75,7 +75,7 @@ public:
      */
     std::optional<std::string> doxygen_link() const override;
 
-    void append(const package &) { }
+    void append(const package & /*unused*/);
 
 protected:
     std::string full_name_impl(bool relative) const override;

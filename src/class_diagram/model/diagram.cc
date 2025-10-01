@@ -425,6 +425,22 @@ bool diagram::is_empty() const
         element_view<enum_>::is_empty() && element_view<concept_>::is_empty() &&
         element_view<objc_interface>::is_empty();
 }
+
+void diagram::append(diagram &&other)
+{
+    clanguml::common::model::diagram::append(
+        dynamic_cast<clanguml::common::model::diagram &&>(other));
+
+    element_views<class_, enum_, concept_, objc_interface>::append(
+        dynamic_cast<element_views<class_, enum_, concept_, objc_interface> &&>(
+            other));
+
+    for (const auto &ae : other.added_elements_) {
+        added_elements_.emplace(ae);
+    }
+
+    nested_trait_t::append(dynamic_cast<nested_trait_t &&>(std::move(other)));
+}
 } // namespace clanguml::class_diagram::model
 
 namespace clanguml::common::model {

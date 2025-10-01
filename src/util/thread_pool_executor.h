@@ -53,7 +53,7 @@ public:
     {
         std::unique_lock<std::mutex> l(tasks_mutex_);
 
-        std::packaged_task<T()> ptask{std::move(task)};
+        std::packaged_task<T()> ptask{std::forward<F>(task)};
         auto res = ptask.get_future();
 
         tasks_.emplace_back(std::move(ptask));

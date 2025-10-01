@@ -170,7 +170,7 @@ public:
         return weakly_canonical(res);
     }
 
-    void append(const source_file &) { }
+    void append(const source_file & /*unused*/) { }
 
 protected:
     /**

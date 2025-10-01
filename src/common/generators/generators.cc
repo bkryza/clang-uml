@@ -97,16 +97,15 @@ namespace detail {
 template <typename DiagramConfig, typename GeneratorTag, typename DiagramModel>
 void generate_diagram_select_generator(const std::string &od,
     const std::string &name, std::shared_ptr<clanguml::config::diagram> diagram,
-    const DiagramModel &model)
+    DiagramModel &model)
 {
     using diagram_generator =
         typename diagram_generator_t<DiagramConfig, GeneratorTag>::type;
 
     if constexpr (!std::is_same_v<diagram_generator, not_supported>) {
-
         std::stringstream buffer;
-        buffer << diagram_generator(dynamic_cast<DiagramConfig &>(*diagram),
-            const_cast<DiagramModel &>(model));
+        buffer << diagram_generator(
+            dynamic_cast<DiagramConfig &>(*diagram), model);
 
         // Only open the file after the diagram has been generated successfully
         // in order not to overwrite previous diagram in case of failure
@@ -138,7 +137,7 @@ auto generate_diagram_impl(const std::string &name,
     using diagram_visitor = typename diagram_visitor_t<DiagramConfig>::type;
 
     return clanguml::common::generators::generate_diagram_model<diagram_model,
-        diagram_config, diagram_visitor>(db, diagram->name,
+        diagram_config, diagram_visitor>(db, name,
         dynamic_cast<diagram_config &>(*diagram), translation_units,
         runtime_config.verbose, std::move(progress));
 }
@@ -272,7 +271,7 @@ std::unique_ptr<T> combine_partial_diagram_models(
 
 template <typename DiagramConfig, typename DiagramModel>
 void generate_diagrams_by_type(std::shared_ptr<config::diagram> diagram_config,
-    const DiagramModel &model, const std::string &name,
+    DiagramModel &model, const std::string &name,
     const cli::runtime_config &runtime_config)
 {
     for (const auto generator_type : runtime_config.generators) {
