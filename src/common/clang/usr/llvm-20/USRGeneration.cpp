@@ -58,9 +58,13 @@ static StringRef GetExternalSourceContainer(const NamedDecl *D)
 {
     if (!D)
         return StringRef();
+
+#if !defined(_MSC_VER)
     if (auto *attr = D->getExternalSourceSymbolAttr()) {
         return attr->getDefinedIn();
     }
+#endif
+
     return StringRef();
 }
 
@@ -273,8 +277,12 @@ void USRGenerator::VisitFunctionDecl(const FunctionDecl *D)
     Policy.SuppressTemplateArgsInCXXConstructors = true;
     D->getDeclName().print(Out, Policy);
 
-    if ((!LangOpts.CPlusPlus || D->isExternC()) &&
-        !D->hasAttr<OverloadableAttr>())
+    if ((!LangOpts.CPlusPlus || D->isExternC())
+#if !defined(_MSC_VER)
+        &&
+        !D->hasAttr<OverloadableAttr>()
+#endif
+)
         return;
 
     if (D->isFunctionTemplateSpecialization()) {
@@ -1362,6 +1370,7 @@ bool common::index::generateUSRForDecl(
     // C++'s operator new function, can have invalid locations but it is fine to
     // create USRs that can identify them.
 
+#if !defined(_MSC_VER)
     // Check if the declaration has explicit external USR specified.
     auto *CD = D->getCanonicalDecl();
     if (auto *ExternalSymAttr = CD->getAttr<ExternalSourceSymbolAttr>()) {
@@ -1371,6 +1380,8 @@ bool common::index::generateUSRForDecl(
             return false;
         }
     }
+#endif
+
     USRGenerator UG(&D->getASTContext(), Buf, LangOpts);
     UG.Visit(D);
     return UG.ignoreResults();
