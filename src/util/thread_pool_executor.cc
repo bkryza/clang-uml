@@ -55,7 +55,7 @@ void thread_pool_executor::worker()
     }
 }
 
-std::packaged_task<void()> thread_pool_executor::get()
+std::function<void()> thread_pool_executor::get()
 {
     std::unique_lock<std::mutex> l(tasks_mutex_);
 

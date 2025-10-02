@@ -18,6 +18,7 @@
 #pragma once
 
 #include <deque>
+#include <functional>
 #include <future>
 #include <thread>
 #include <vector>
@@ -53,10 +54,11 @@ public:
     {
         std::unique_lock<std::mutex> l(tasks_mutex_);
 
-        std::packaged_task<T()> ptask{std::forward<F>(task)};
-        auto res = ptask.get_future();
+        auto ptask =
+            std::make_shared<std::packaged_task<T()>>(std::forward<F>(task));
+        auto res = ptask->get_future();
 
-        tasks_.emplace_back(std::move(ptask));
+        tasks_.emplace_back([ptask = std::move(ptask)]() { (*ptask)(); });
 
         l.unlock();
         tasks_cond_.notify_one();
@@ -75,10 +77,10 @@ private:
      */
     void worker();
 
-    std::packaged_task<void()> get();
+    std::function<void()> get();
 
     std::atomic_bool done_;
-    std::deque<std::packaged_task<void()>> tasks_;
+    std::deque<std::function<void()>> tasks_;
     std::mutex tasks_mutex_;
     std::condition_variable tasks_cond_;
     std::vector<std::thread> threads_;
