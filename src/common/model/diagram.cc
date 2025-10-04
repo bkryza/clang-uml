@@ -19,11 +19,18 @@
 #include "diagram.h"
 
 #include "filters/diagram_filter.h"
+#include "filters/diagram_filter_factory.h"
+
 #include "namespace.h"
 
 namespace clanguml::common::model {
 
-diagram::diagram() = default;
+diagram::diagram(const config::diagram &config)
+    : name_{config.name}
+{
+    set_filter(
+        clanguml::common::model::diagram_filter_factory::create(*this, config));
+}
 
 diagram::~diagram() = default;
 

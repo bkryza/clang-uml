@@ -58,7 +58,7 @@ public:
     using nested_trait_t = nested_trait_ns;
 
     diagram(const config::class_diagram &config)
-        : config_{config}
+        : clanguml::common::model::diagram{config}, config_{config}
     {
     }
 

@@ -274,8 +274,7 @@ TEST_CASE("Test namespaces regexp filter")
     clanguml::class_diagram::model::diagram diagram{
         dynamic_cast<clanguml::config::class_diagram &>(config)};
 
-    auto filter_ptr = diagram_filter_factory::create(diagram, config);
-    diagram_filter &filter = *filter_ptr;
+    diagram_filter &filter = diagram.filter();
 
     class_ c{{}};
 

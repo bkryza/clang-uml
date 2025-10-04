@@ -57,7 +57,7 @@ std::vector<std::vector<eid_t>> find_reverse_message_chains(
 class diagram : public clanguml::common::model::diagram {
 public:
     diagram(const config::sequence_diagram &config)
-        : config_{config}
+        : clanguml::common::model::diagram{config}, config_{config}
     {
     }
 

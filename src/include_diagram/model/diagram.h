@@ -46,7 +46,7 @@ public:
     using nested_trait_t = nested_trait_fspath;
 
     diagram(const config::include_diagram &config)
-        : config_{config}
+        : clanguml::common::model::diagram{config}, config_{config}
     {
     }
 

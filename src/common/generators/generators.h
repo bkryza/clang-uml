@@ -421,8 +421,6 @@ std::unique_ptr<DiagramModel> generate_diagram_model(
 
     auto diagram = std::make_unique<DiagramModel>(config);
     diagram->set_name(name);
-    diagram->set_filter(
-        model::diagram_filter_factory::create(*diagram, config));
 
     LOG_DBG("Found translation units for diagram {}: {}", name,
         fmt::join(translation_units, ", "));

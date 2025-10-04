@@ -40,7 +40,7 @@ class relationship;
  */
 class diagram {
 public:
-    diagram();
+    diagram(const config::diagram &config);
 
     diagram(const diagram &) = delete;
     diagram(diagram && /*unused*/) noexcept;
@@ -97,15 +97,6 @@ public:
      * @return Name of the diagram.
      */
     std::string name() const;
-
-    /**
-     * Set diagram filter for this diagram.
-     *
-     * @param filter diagram_filter instance
-     *
-     * @see clanguml::common::model::diagram_filter
-     */
-    void set_filter(std::unique_ptr<diagram_filter> filter);
 
     /**
      * Get diagram filter
@@ -270,6 +261,16 @@ public:
      * @return Reference to the diagrams element filter
      */
     diagram_filter &filter() { return *filter_; }
+
+private:
+    /**
+     * Set diagram filter for this diagram.
+     *
+     * @param filter diagram_filter instance
+     *
+     * @see clanguml::common::model::diagram_filter
+     */
+    void set_filter(std::unique_ptr<diagram_filter> filter);
 
 protected:
     void append(diagram &&other);

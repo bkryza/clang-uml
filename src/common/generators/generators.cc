@@ -249,24 +249,19 @@ void create_model_future(util::thread_pool_executor &generator_executor,
 }
 
 template <typename T>
-std::unique_ptr<T> combine_partial_diagram_models(
-    diagram_model_futures<T> &futs)
+void combine_partial_diagram_models(T &combined, diagram_model_futures<T> &futs)
 {
     std::vector<std::unique_ptr<T>> models;
     for (auto &fut : futs) {
         models.emplace_back(fut.get());
     }
 
-    auto it = models.begin();
-    auto &first = *it;
-    it++;
-    for (; it != models.end(); it++) {
-        first->append(std::move(*it->get()));
+    for (auto it = models.begin(); it != models.end(); it++) {
+        combined.append(std::move(*it->get()));
     }
-    first->finalize();
-    first->apply_filter();
 
-    return std::move(first);
+    combined.finalize();
+    combined.apply_filter();
 }
 
 template <typename DiagramConfig, typename DiagramModel>
@@ -430,8 +425,13 @@ int generate_diagrams(const std::vector<std::string> &diagram_names,
                     if (!is_model_ready(futs))
                         continue;
 
-                    auto combined_model = combine_partial_diagram_models<
-                        class_diagram::model::diagram>(futs);
+                    auto combined_model =
+                        std::make_unique<class_diagram::model::diagram>(
+                            dynamic_cast<config::class_diagram &>(
+                                *config.diagrams.at(name)));
+                    combined_model->set_complete(true);
+
+                    combine_partial_diagram_models(*combined_model, futs);
 
                     generate_diagrams_by_type<config::class_diagram,
                         class_diagram::model::diagram>(config.diagrams.at(name),
@@ -444,8 +444,13 @@ int generate_diagrams(const std::vector<std::string> &diagram_names,
                     if (!is_model_ready(futs))
                         continue;
 
-                    auto combined_model = combine_partial_diagram_models<
-                        sequence_diagram::model::diagram>(futs);
+                    auto combined_model =
+                        std::make_unique<sequence_diagram::model::diagram>(
+                            dynamic_cast<config::sequence_diagram &>(
+                                *config.diagrams.at(name)));
+                    combined_model->set_complete(true);
+
+                    combine_partial_diagram_models(*combined_model, futs);
 
                     generate_diagrams_by_type<config::sequence_diagram,
                         sequence_diagram::model::diagram>(
@@ -459,8 +464,13 @@ int generate_diagrams(const std::vector<std::string> &diagram_names,
                     if (!is_model_ready(futs))
                         continue;
 
-                    auto combined_model = combine_partial_diagram_models<
-                        include_diagram::model::diagram>(futs);
+                    auto combined_model =
+                        std::make_unique<include_diagram::model::diagram>(
+                            dynamic_cast<config::include_diagram &>(
+                                *config.diagrams.at(name)));
+                    combined_model->set_complete(true);
+
+                    combine_partial_diagram_models(*combined_model, futs);
 
                     generate_diagrams_by_type<config::include_diagram,
                         include_diagram::model::diagram>(
@@ -474,8 +484,13 @@ int generate_diagrams(const std::vector<std::string> &diagram_names,
                     if (!is_model_ready(futs))
                         continue;
 
-                    auto combined_model = combine_partial_diagram_models<
-                        package_diagram::model::diagram>(futs);
+                    auto combined_model =
+                        std::make_unique<package_diagram::model::diagram>(
+                            dynamic_cast<config::package_diagram &>(
+                                *config.diagrams.at(name)));
+                    combined_model->set_complete(true);
+
+                    combine_partial_diagram_models(*combined_model, futs);
 
                     generate_diagrams_by_type<config::package_diagram,
                         package_diagram::model::diagram>(
