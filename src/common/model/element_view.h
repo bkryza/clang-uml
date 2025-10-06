@@ -122,6 +122,11 @@ template <typename... Ts> struct element_views : public element_view<Ts>... {
         (f(element_view<Ts>::view()), ...);
     }
 
+    template <typename F> void for_each_view(F &&f)
+    {
+        (f(dynamic_cast<const element_view<Ts> &>(*this)), ...);
+    }
+
     void append(const element_views<Ts...> &other)
     {
 

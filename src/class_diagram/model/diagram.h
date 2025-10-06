@@ -20,6 +20,7 @@
 #include "class.h"
 #include "common/model/diagram.h"
 #include "common/model/element_view.h"
+#include "common/model/filters/diagram_filter.h"
 #include "common/model/nested_trait.h"
 #include "common/model/package.h"
 #include "common/types.h"
@@ -44,21 +45,16 @@ using common::model::element_views;
 using common::model::path;
 using common::model::path_type;
 
-using nested_trait_ns =
-    clanguml::common::model::nested_trait<clanguml::common::model::element,
-        clanguml::common::model::namespace_>;
-
 /**
  * @brief Class representing a class diagram.
  */
-class diagram : public common::model::diagram,
-                public element_views<class_, enum_, concept_, objc_interface>,
-                public nested_trait_ns {
+class diagram : public common::model::hierarchical_diagram<class_, enum_,
+                    concept_, objc_interface> {
 public:
-    using nested_trait_t = nested_trait_ns;
-
     diagram(const config::class_diagram &config)
-        : clanguml::common::model::diagram{config}, config_{config}
+        : common::model::hierarchical_diagram<class_, enum_, concept_,
+              objc_interface>(config)
+        , config_{config}
     {
     }
 
@@ -75,11 +71,6 @@ public:
      * @return Type of class diagram.
      */
     diagram_t type() const override;
-
-    /**
-     * Inherit the should_include methods from the common diagram model.
-     */
-    using common::model::diagram::should_include;
 
     /**
      * @brief Whether a class_member should be included in the diagram.
@@ -243,37 +234,21 @@ public:
     void add_concept(std::unique_ptr<concept_> &&c);
 
     void add_objc_interface(std::unique_ptr<objc_interface> &&c);
-
-    template <typename ElementT> void move(eid_t id, const path &parent_path)
-    {
-        LOG_DBG("Moving element {} to package {}", id.value(),
-            parent_path.to_string());
-
-        auto e = nested_trait_ns::get_and_remove<ElementT>(id);
-        assert(e);
-
-        element_view<ElementT>::remove({id});
-        added_elements_.erase(id);
-
-        this->add<ElementT>(parent_path, std::move(e));
-    }
-
-    template <typename ElementT> void remove(eid_t id)
-    {
-        nested_trait_ns::remove({id});
-        element_view<ElementT>::remove({id});
-    }
-
-    /**
-     * @brief Convert element id to PlantUML alias.
-     *
-     * @todo This method does not belong here - refactor to PlantUML specific
-     *       code.
-     *
-     * @param id Id of the diagram element.
-     * @return PlantUML alias.
-     */
-    std::string to_alias(eid_t id) const;
+    //
+    //    template <typename ElementT> void move(eid_t id, const path
+    //    &parent_path)
+    //    {
+    //        LOG_DBG("Moving element {} to package {}", id.value(),
+    //            parent_path.to_string());
+    //
+    //        auto e = nested_trait_ns::get_and_remove<ElementT>(id);
+    //        assert(e);
+    //
+    //        element_view<ElementT>::remove({id});
+    //        added_elements_.erase(id);
+    //
+    //        this->add<ElementT>(parent_path, std::move(e));
+    //    }
 
     /**
      * @brief Given an initial set of classes, add all their parents to the
@@ -312,17 +287,6 @@ private:
     const config::class_diagram &config_;
 
     std::set<eid_t> added_elements_;
-
-    template <typename ElementT>
-    bool add_with_namespace_path(std::unique_ptr<ElementT> &&e);
-
-    template <typename ElementT>
-    bool add_with_module_path(
-        const common::model::path &parent_path, std::unique_ptr<ElementT> &&e);
-
-    template <typename ElementT>
-    bool add_with_filesystem_path(
-        const common::model::path &parent_path, std::unique_ptr<ElementT> &&e);
 };
 
 template <typename ElementT> bool diagram::contains(const ElementT &element)
@@ -331,143 +295,6 @@ template <typename ElementT> bool diagram::contains(const ElementT &element)
         element_view<ElementT>::view().cend(),
         [&element](
             const auto &element_opt) { return element_opt.get() == element; });
-}
-
-template <typename ElementT>
-bool diagram::add_with_namespace_path(std::unique_ptr<ElementT> &&e)
-{
-    if (added_elements_.count(e->id()) > 0)
-        return true;
-
-    added_elements_.emplace(e->id());
-
-    const auto base_name = e->name();
-    const auto full_name = e->full_name(false);
-    const auto element_type = e->type_name();
-
-    LOG_DBG("Adding {}: {}::{}, {} [{}]", element_type,
-        e->get_namespace().to_string(), base_name, full_name, e->id().usr());
-
-    if (util::contains(base_name, "::"))
-        throw std::runtime_error("Name cannot contain namespace: " + base_name);
-
-    const auto ns = e->get_relative_namespace();
-
-    auto name = base_name;
-    auto name_and_ns = ns | name;
-    auto &e_ref = *e;
-    auto id = e_ref.id();
-
-    try {
-        if (!contains(e_ref)) {
-            if (add_element(ns, std::move(e)))
-                element_view<ElementT>::add(std::ref(e_ref));
-
-#if !defined(NDEBUG)
-            const auto maybe_el = get_element<ElementT>(name_and_ns);
-            const auto &el = maybe_el.value();
-
-            if ((el.name() != name) || !(el.get_relative_namespace() == ns))
-                throw std::runtime_error(
-                    "Invalid element stored in the diagram tree");
-
-            LOG_DBG("Added {} {} ({} - [{}])", element_type, base_name,
-                full_name, id);
-#endif
-
-            return true;
-        }
-    }
-    catch (const std::runtime_error &e) {
-        LOG_WARN("Cannot add {} {} with id {} due to: {}", element_type, name,
-            id, e.what());
-        return false;
-    }
-
-    LOG_DBG("{} {} ({} - [{}]) already in the model", element_type, base_name,
-        full_name, id);
-
-    return false;
-}
-
-template <typename ElementT>
-bool diagram::add_with_module_path(
-    const common::model::path &parent_path, std::unique_ptr<ElementT> &&e)
-{
-    if (added_elements_.count(e->id()) > 0)
-        return true;
-
-    added_elements_.emplace(e->id());
-
-    const auto element_type = e->type_name();
-
-    // Make sure all parent modules are already packages in the
-    // model
-    for (auto it = parent_path.begin(); it != parent_path.end(); it++) {
-        auto pkg = std::make_unique<common::model::package>(
-            e->using_namespace(), parent_path.type());
-        pkg->set_name(*it);
-        auto ns =
-            common::model::path(parent_path.begin(), it, parent_path.type());
-        // ns.pop_back();
-        pkg->set_namespace(ns);
-        pkg->set_id(common::to_id(*pkg));
-
-        add(ns, std::move(pkg));
-    }
-
-    const auto base_name = e->name();
-    const auto full_name = e->full_name(false);
-    auto &e_ref = *e;
-
-    if (add_element(parent_path, std::move(e))) {
-        element_view<ElementT>::add(std::ref(e_ref));
-        return true;
-    }
-
-    return false;
-}
-
-template <typename ElementT>
-bool diagram::add_with_filesystem_path(
-    const common::model::path &parent_path, std::unique_ptr<ElementT> &&e)
-{
-    if (added_elements_.count(e->id()) > 0)
-        return false;
-
-    LOG_DBG("Adding element {} at path {}", e->full_name(false),
-        parent_path.to_string());
-
-    const auto element_type = e->type_name();
-
-    // Make sure all parent modules are already packages in the
-    // model
-    for (auto it = parent_path.begin(); it != parent_path.end(); it++) {
-        auto pkg = std::make_unique<common::model::package>(
-            e->using_namespace(), parent_path.type());
-        pkg->set_name(*it);
-        auto package_path =
-            common::model::path(parent_path.begin(), it, parent_path.type());
-        pkg->set_namespace(package_path);
-        pkg->set_id(common::to_id(*pkg));
-
-        LOG_DBG("Adding filesystem package {} at path {}", pkg->name(),
-            package_path.to_string());
-
-        add(package_path, std::move(pkg));
-    }
-
-    const auto base_name = e->name();
-    const auto full_name = e->full_name(false);
-    auto &e_ref = *e;
-
-    if (add_element(parent_path, std::move(e))) {
-        added_elements_.emplace(e_ref.id());
-        element_view<ElementT>::add(std::ref(e_ref));
-        return true;
-    }
-
-    return false;
 }
 
 template <typename ElementT>
@@ -522,23 +349,6 @@ const common::reference_vector<ElementT> &diagram::elements() const
 {
     return element_view<ElementT>::view();
 }
-
-//
-// Template method specialization pre-declarations...
-//
-template <>
-bool diagram::add_with_namespace_path<common::model::package>(
-    std::unique_ptr<common::model::package> &&p);
-
-template <>
-bool diagram::add_with_module_path<common::model::package>(
-    const common::model::path &parent_path,
-    std::unique_ptr<common::model::package> &&p);
-
-template <>
-bool diagram::add_with_filesystem_path<common::model::package>(
-    const common::model::path &parent_path,
-    std::unique_ptr<common::model::package> &&p);
 
 } // namespace clanguml::class_diagram::model
 

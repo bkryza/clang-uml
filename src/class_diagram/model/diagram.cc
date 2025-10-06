@@ -313,34 +313,6 @@ bool diagram::has_element(eid_t id) const
         [id](const auto &c) { return c.get().id() == id; });
 }
 
-std::string diagram::to_alias(eid_t id) const
-{
-    LOG_TRACE("Looking for alias for {}", id);
-
-    for (const auto &c : classes()) {
-        if (c.get().id() == id) {
-            return c.get().alias();
-        }
-    }
-
-    for (const auto &e : enums()) {
-        if (e.get().id() == id)
-            return e.get().alias();
-    }
-
-    for (const auto &c : concepts()) {
-        if (c.get().id() == id)
-            return c.get().alias();
-    }
-
-    for (const auto &c : objc_interfaces()) {
-        if (c.get().id() == id)
-            return c.get().alias();
-    }
-
-    throw error::uml_alias_missing(fmt::format("Missing alias for {}", id));
-}
-
 void diagram::remove_redundant_dependencies()
 {
     using common::eid_t;
@@ -374,49 +346,6 @@ void diagram::remove_redundant_dependencies()
                 });
         }
     });
-}
-
-void diagram::apply_filter()
-{
-    common::model::apply_filter(relationships(), filter());
-
-    // First find all element ids which should be removed
-    std::set<eid_t> to_remove;
-
-    while (true) {
-        for_all_elements([&](auto &&elements_view) mutable {
-            for (const auto &el : elements_view)
-                if (!filter().should_include(el.get()))
-                    to_remove.emplace(el.get().id());
-        });
-
-        if (to_remove.empty())
-            break;
-
-        element_view<class_>::remove(to_remove);
-        element_view<enum_>::remove(to_remove);
-        element_view<concept_>::remove(to_remove);
-        element_view<objc_interface>::remove(to_remove);
-
-        nested_trait_ns::remove(to_remove);
-
-        to_remove.clear();
-
-        filter().reset();
-    }
-
-    for_all_elements([&](auto &&elements_view) mutable {
-        for (const auto &el : elements_view)
-            el.get().apply_filter(filter(), to_remove);
-    });
-
-    auto &rels = relationships();
-    rels.erase(std::remove_if(std::begin(rels), std::end(rels),
-                   [&to_remove](auto &&r) {
-                       return to_remove.count(r.source()) > 0 ||
-                           to_remove.count(r.destination()) > 0;
-                   }),
-        std::end(rels));
 }
 
 bool diagram::is_empty() const

@@ -674,20 +674,7 @@ bool translation_unit_visitor::add_or_update(
         set_source_location(*cls, class_model);
     }
 
-    if (is_complete_definition) {
-        if (maybe_existing_model &&
-            config().package_type() == config::package_type_t::kDirectory) {
-            // Move the class model to current filesystem path
-            // Eventually, this should be refactored so that it's
-            // not needed
-            const auto file = config().make_path_relative(class_model.file());
-            common::model::path p{
-                file.string(), common::model::path_type::kFilesystem};
-            p.pop_back();
-            diagram().move<ElementT>(id, p);
-        }
-    }
-    else {
+    if (!is_complete_definition) {
         forward_declarations_.get<ElementT>().emplace(id, std::move(c_ptr));
         return true;
     }

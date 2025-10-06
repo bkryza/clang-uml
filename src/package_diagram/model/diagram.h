@@ -18,7 +18,6 @@
 #pragma once
 
 #include "common/model/diagram.h"
-#include "common/model/element_view.h"
 #include "common/model/package.h"
 
 #include <string>
@@ -32,21 +31,15 @@ using clanguml::common::model::diagram_element;
 using clanguml::common::model::package;
 using clanguml::common::model::path;
 
-using nested_trait_ns =
-    clanguml::common::model::nested_trait<clanguml::common::model::element,
-        clanguml::common::model::namespace_>;
-
 /**
  * @brief Package diagram model.
  */
 class diagram : public clanguml::common::model::diagram,
-                public clanguml::common::model::element_views<package>,
-                public nested_trait_ns {
+                public clanguml::common::model::element_views<package> {
 public:
-    using nested_trait_t = nested_trait_ns;
-
     diagram(const config::package_diagram &config)
-        : clanguml::common::model::diagram{config}, config_{config}
+        : clanguml::common::model::diagram{config}
+        , config_{config}
     {
     }
     diagram(const diagram &) = delete;
@@ -126,32 +119,6 @@ public:
         const clanguml::common::string_or_regex &pattern) const;
 
     /**
-     * @brief Add diagram element at nested path
-     *
-     * This method handled both diagrams where packages are created from
-     * namespaces, as well as those were packages are created from project
-     * subdirectories.
-     *
-     * @tparam ElementT Type of diagram element to add
-     * @param parent_path Package nested path where the element should be added
-     * @param e Diagram element to add
-     * @return True, if the element was added.
-     */
-    template <typename ElementT>
-    bool add(const path &parent_path, std::unique_ptr<ElementT> &&e)
-    {
-        if (parent_path.type() == common::model::path_type::kNamespace) {
-            return add_with_namespace_path(std::move(e));
-        }
-
-        if (parent_path.type() == common::model::path_type::kModule) {
-            return add_with_module_path(parent_path, std::move(e));
-        }
-
-        return add_with_filesystem_path(parent_path, std::move(e));
-    }
-
-    /**
      * @brief Get alias of existing diagram element
      *
      * @param id Id of a package in the diagram
@@ -180,38 +147,6 @@ public:
     void append(diagram &&other);
 
 private:
-    /**
-     * @brief Add element using module as diagram path
-     *
-     * @tparam ElementT Element type
-     * @param e Element to add
-     * @return True, if the element was added
-     */
-    template <typename ElementT>
-    bool add_with_module_path(
-        const common::model::path &parent_path, std::unique_ptr<ElementT> &&e);
-
-    /**
-     * @brief Add element using namespace as diagram path
-     *
-     * @tparam ElementT Element type
-     * @param e Element to add
-     * @return True, if the element was added
-     */
-    template <typename ElementT>
-    bool add_with_namespace_path(std::unique_ptr<ElementT> &&e);
-
-    /**
-     * @brief Add element using relative filesystem path as diagram path
-     *
-     * @tparam ElementT Element type
-     * @param parent_path Path to diagram elements parent package
-     * @param e Element to add
-     * @return True, if the element was added
-     */
-    template <typename ElementT>
-    bool add_with_filesystem_path(
-        const common::model::path &parent_path, std::unique_ptr<ElementT> &&e);
 
     const config::package_diagram &config_;
 };
@@ -256,94 +191,6 @@ std::vector<opt_ref<ElementT>> diagram::find(
     }
 
     return result;
-}
-
-template <typename ElementT>
-bool diagram::add_with_namespace_path(std::unique_ptr<ElementT> &&p)
-{
-    LOG_DBG(
-        "Adding package: {}, {}, [{}]", p->name(), p->full_name(true), p->id());
-
-    auto ns = p->get_relative_namespace();
-    auto p_ref = std::ref(*p);
-
-    auto res = add_element(ns, std::move(p));
-    if (res)
-        element_view<ElementT>::add(p_ref);
-
-    return res;
-}
-
-template <typename ElementT>
-bool diagram::add_with_module_path(
-    const common::model::path &parent_path, std::unique_ptr<ElementT> &&p)
-{
-    LOG_DBG("Adding package: {}, {}, {}, [{}]", p->name(), p->full_name(false),
-        parent_path.to_string(), p->id());
-
-    // Make sure all parent modules are already packages in the
-    // model
-    auto module_relative_to = path{p->using_namespace()};
-
-    for (auto it = parent_path.begin(); it != parent_path.end(); it++) {
-        auto pkg = std::make_unique<common::model::package>(
-            p->using_namespace(), common::model::path_type::kModule);
-        pkg->set_name(*it);
-
-        auto module_relative_part = common::model::path(
-            parent_path.begin(), it, common::model::path_type::kModule);
-
-        auto module_absolute_path = module_relative_to | module_relative_part;
-        pkg->set_module(module_absolute_path.to_string());
-        pkg->set_namespace(module_absolute_path);
-
-        auto package_absolute_path = module_absolute_path | pkg->name();
-
-        pkg->set_id(eid_t{common::usr_t{package_absolute_path.to_string()}});
-
-        auto p_ref = std::ref(*pkg);
-
-        auto res = add_element(module_relative_part, std::move(pkg));
-        if (res)
-            element_view<ElementT>::add(p_ref);
-    }
-
-    auto p_ref = std::ref(*p);
-
-    auto res = add_element(parent_path, std::move(p));
-    if (res)
-        element_view<ElementT>::add(p_ref);
-
-    return res;
-}
-
-template <typename ElementT>
-bool diagram::add_with_filesystem_path(
-    const common::model::path &parent_path, std::unique_ptr<ElementT> &&p)
-{
-    LOG_TRACE("Adding package: {}, {}", p->name(), p->full_name(true));
-
-    // Make sure all parent directories are already packages in the
-    // model
-    for (auto it = parent_path.begin(); it != parent_path.end(); it++) {
-        auto pkg = std::make_unique<common::model::package>(
-            p->using_namespace(), common::model::path_type::kFilesystem);
-        pkg->set_name(*it);
-        auto ns = common::model::path(
-            parent_path.begin(), it, common::model::path_type::kFilesystem);
-        pkg->set_namespace(ns);
-        pkg->set_id(
-            common::to_id(std::filesystem::path(pkg->full_name(false))));
-
-        add_with_filesystem_path(ns, std::move(pkg));
-    }
-
-    auto pp = std::ref(*p);
-    auto res = add_element(parent_path, std::move(p));
-    if (res)
-        element_view<ElementT>::add(pp);
-
-    return res;
 }
 
 template <typename ElementT>

@@ -621,12 +621,13 @@ private:
 
     bool is_outward(relationship_t r) const;
 
-    template <typename NestedTraitT>
-    void process_elements(const diagram &d, const NestedTraitT &nt,
+//    template <typename NestedTraitT>
+    void process_elements(const diagram &d, //const NestedTraitT &nt,
         const config::context_config &context_cfg,
         std::set<eid_t> &effective_context,
         std::set<eid_t> &current_iteration_context) const
     {
+        /*
         if (d.type() == diagram_t::kClass) {
             for (const auto &p : nt) {
                 if (auto *pkg = dynamic_cast<package *>(p.get());
@@ -772,6 +773,7 @@ private:
                 }
             }
         }
+         */
     }
 
     template <typename DiagramT>

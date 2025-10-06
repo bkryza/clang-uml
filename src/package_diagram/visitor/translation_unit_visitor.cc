@@ -99,7 +99,7 @@ bool translation_unit_visitor::VisitNamespaceDecl(clang::NamespaceDecl *ns)
         if (!p->skip()) {
             LOG_DBG("Adding package {}", p->full_name(false));
 
-            diagram().add(p->path(), std::move(p));
+            diagram().add(std::move(p));
         }
     }
 
@@ -311,7 +311,7 @@ void translation_unit_visitor::add_relationships(
         set_source_location(*cls, *pkg);
 
         if (diagram().should_include(*pkg))
-            diagram().add(parent_path, std::move(pkg));
+            diagram().add(std::move(pkg));
     }
     else if (config().package_type() == config::package_type_t::kModule) {
         const auto *module = cls->getOwningModule();
@@ -353,7 +353,7 @@ void translation_unit_visitor::add_relationships(
         set_source_location(*cls, *pkg);
 
         if (diagram().should_include(*pkg))
-            diagram().add(parent_path, std::move(pkg));
+            diagram().add(std::move(pkg));
     }
 
     auto current_package_id = get_package_id(cls);

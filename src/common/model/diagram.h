@@ -17,10 +17,12 @@
  */
 #pragma once
 
+#include "common/model/element_view.h"
 #include "diagram_element.h"
 #include "enums.h"
 #include "namespace.h"
 #include "source_file.h"
+#include "util/error.h"
 
 #include <algorithm>
 #include <iterator>
@@ -147,7 +149,7 @@ public:
 
     virtual bool has_element(const eid_t /*id*/) const { return false; }
 
-    virtual bool should_include(
+    bool should_include(
         const namespace_ &ns, const std::string &name) const;
 
     /**
@@ -160,31 +162,128 @@ public:
     virtual void apply_filter() { }
 
     /**
-     * Return all relationships outgoing from this element.
-     *
-     * @return List of relationships.
+     * After generating the diagram we need to make sure that there are no
+     * duplicate relationships in the diagram.
      */
-    std::vector<relationship> &relationships();
+    void remove_duplicate_relationships();
+
+    /**
+     * Get diagram filter
+     *
+     * @return Reference to the diagrams element filter
+     */
+    diagram_filter &filter() { return *filter_; }
+
+private:
+    /**
+     * Set diagram filter for this diagram.
+     *
+     * @param filter diagram_filter instance
+     *
+     * @see clanguml::common::model::diagram_filter
+     */
+    void set_filter(std::unique_ptr<diagram_filter> filter);
+
+protected:
+    void append(diagram &&other);
+
+private:
+    std::string name_;
+    std::unique_ptr<diagram_filter> filter_;
+
+    bool complete_{false};
+    bool filtered_{false};
+};
+
+template <typename... Ts>
+class hierarchical_diagram
+    : public diagram,
+      public clanguml::common::model::element_views<Ts...> {
+public:
+    hierarchical_diagram(const config::diagram &config)
+        : common::model::diagram(config)
+    {
+    }
+
+    template <typename ElementT> void remove(eid_t id)
+    {
+        element_view<ElementT>::remove({id});
+        elements_.erase(id);
+    }
+
+    /**
+     * @brief Convert element id to PlantUML alias.
+     *
+     * @todo This method does not belong here - refactor to PlantUML specific
+     *       code.
+     *
+     * @param id Id of the diagram element.
+     * @return PlantUML alias.
+     */
+    std::string to_alias(eid_t id) const
+    {
+        LOG_TRACE("Looking for alias for {}", id);
+
+        if (elements_.count(id) == 0)
+            throw error::uml_alias_missing(
+                fmt::format("Missing alias for {}", id));
+
+        return elements_.at(id)->alias();
+    }
 
     /**
      * Return all relationships outgoing from this element.
      *
      * @return List of relationships.
      */
-    const std::vector<relationship> &relationships() const;
+    std::vector<relationship> &relationships() { return relationships_; }
+
+    /**
+     * Return all relationships outgoing from this element.
+     *
+     * @return List of relationships.
+     */
+    const std::vector<relationship> &relationships() const
+    {
+        return relationships_;
+    }
+
+    void remove_duplicate_relationships()
+    {
+        std::vector<relationship> unique_relationships;
+
+        for (auto &r : relationships_) {
+            if (!util::contains(unique_relationships, r)) {
+                unique_relationships.emplace_back(r);
+            }
+        }
+
+        std::swap(relationships_, unique_relationships);
+    }
 
     /**
      * Add relationships, whose source is this element.
      *
      * @param cr Relationship to another diagram element.
      */
-    void add_relationship(relationship &&cr);
+    void add_relationship(relationship &&cr)
+    {
+        assert(cr.source().has_value());
 
-    /**
-     * After generating the diagram we need to make sure that there are no
-     * duplicate relationships in the diagram.
-     */
-    void remove_duplicate_relationships();
+        if ((cr.type() == relationship_t::kInstantiation) &&
+            (cr.destination() == cr.source())) {
+            LOG_DBG("Skipping self instantiation relationship for {}",
+                cr.destination());
+            return;
+        }
+
+        if (!util::contains(relationships_, cr)) {
+            LOG_DBG("Adding relationship from: '{}' - {} - '{}'", cr.source(),
+                to_string(cr.type()), cr.destination());
+
+            relationships_.emplace_back(std::move(cr));
+        }
+    }
 
     /**
      * Return an iterator range over relationships with matching source id.
@@ -255,32 +354,63 @@ public:
                 relationships_.end(), relationships_.end(), source_id)};
     }
 
-    /**
-     * Get diagram filter
-     *
-     * @return Reference to the diagrams element filter
-     */
-    diagram_filter &filter() { return *filter_; }
+    void apply_filter() override
+    {
+        //        clanguml::common::model::apply_filter(relationships_,
+        //        filter());
 
-private:
-    /**
-     * Set diagram filter for this diagram.
-     *
-     * @param filter diagram_filter instance
-     *
-     * @see clanguml::common::model::diagram_filter
-     */
-    void set_filter(std::unique_ptr<diagram_filter> filter);
+        // First find all element ids which should be removed
+//        std::set<eid_t> to_remove;
+//
+//        while (true) {
+//            for_all_elements([&](auto &&elements_view) mutable {
+//                for (const auto &el : elements_view)
+//                    if (!filter().should_include(el.get()))
+//                        to_remove.emplace(el.get().id());
+//            });
+//
+//            if (to_remove.empty())
+//                break;
+//
+//            for_each_view([&to_remove](auto &view) { view.remove(to_remove); });
+//
+//            for (const auto id : to_remove) {
+//                elements_.erase(id);
+//            }
+//
+//            to_remove.clear();
+//
+//            filter().reset();
+//        }
+//
+//        for_all_elements([&](auto &&elements_view) mutable {
+//            for (const auto &el : elements_view)
+//                el.get().apply_filter(filter(), to_remove);
+//        });
+//
+//        auto &rels = relationships();
+//        rels.erase(std::remove_if(std::begin(rels), std::end(rels),
+//                       [&to_remove](auto &&r) {
+//                           return to_remove.count(r.source()) > 0 ||
+//                               to_remove.count(r.destination()) > 0;
+//                       }),
+//            std::end(rels));
+    }
 
 protected:
-    void append(diagram &&other);
+    void append(hierarchical_diagram &&other)
+    {
+        assert(complete() && other.complete());
+        assert(name() == other.name());
+
+        for (auto &&r : std::move(other).relationships()) {
+            add_relationship(std::move(r));
+        }
+    }
 
 private:
-    std::string name_;
-    std::unique_ptr<diagram_filter> filter_;
     std::vector<relationship> relationships_;
-    bool complete_{false};
-    bool filtered_{false};
+    std::map<eid_t, std::unique_ptr<common::model::element>> elements_;
 };
 
 template <typename T> bool needs_root_prefix(const T &e)

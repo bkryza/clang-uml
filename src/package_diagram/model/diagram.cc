@@ -78,7 +78,7 @@ void diagram::apply_filter()
 
         element_view<package>::remove(to_remove);
 
-        nested_trait_ns::remove(to_remove);
+        // TODO_1: remove all ids from to_remove from elements_
 
         auto &rels = relationships();
         rels.erase(std::remove_if(std::begin(rels), std::end(rels),
@@ -106,7 +106,7 @@ void diagram::append(diagram &&other)
     element_views<package>::append(
         dynamic_cast<element_views<package> &&>(other));
 
-    nested_trait_t::append(dynamic_cast<nested_trait_t &&>(std::move(other)));
+    // TODO_2: Add all new elements() from other to elements_
 }
 } // namespace clanguml::package_diagram::model
 
