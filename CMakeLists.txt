@@ -181,11 +181,14 @@ endif()
 #
 # Setup pugixml
 #
-if(MSVC)
-    add_definitions(-DPUGIXML_HEADER_ONLY)
-else(MSVC)
-    add_subdirectory(thirdparty/pugixml)
-endif(MSVC)
+find_package(pugixml OPTIONAL)
+if(NOT pugixml_FOUND)
+    if(MSVC)
+        add_definitions(-DPUGIXML_HEADER_ONLY)
+    else(MSVC)
+        add_subdirectory(thirdparty/pugixml)
+    endif(MSVC)
+endif(NOT pugixml_FOUND)
 
 #
 # Setup thirdparty sources
@@ -202,6 +205,9 @@ include_directories(${THIRDPARTY_HEADERS_DIR})
 include_directories(${PROJECT_SOURCE_DIR}/src/)
 include_directories(${PROJECT_BINARY_DIR}/src/version)
 include_directories(${YAML_CPP_INCLUDE_DIR})
+if(pugixml_FOUND)
+    include_directories(${pugixml_INCLUDE_DIR})
+endif(pugixml_FOUND)
 
 add_subdirectory(src)
 
