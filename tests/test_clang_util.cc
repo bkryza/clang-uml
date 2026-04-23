@@ -144,14 +144,25 @@ TEST_CASE("Test diagnostic_consumer")
     auto fs = llvm::vfs::getRealFileSystem();
     FileSystemOptions file_opts;
     FileManager file_mgr(file_opts, fs);
+    DiagnosticOptions diag_opts;
     auto diagnostic_engine = DiagnosticsEngine(
         llvm::IntrusiveRefCntPtr<DiagnosticIDs>(new DiagnosticIDs()),
-        new DiagnosticOptions());
+#if LLVM_VERSION_MAJOR > 20
+        diag_opts
+#else
+        new DiagnosticOptions()
+#endif
+    );
     SourceManager source_mgr(diagnostic_engine, file_mgr);
 
     DiagnosticsEngine diag_engine(
         llvm::IntrusiveRefCntPtr<DiagnosticIDs>(new DiagnosticIDs()),
-        new DiagnosticOptions());
+#if LLVM_VERSION_MAJOR > 20
+        diag_opts
+#else
+        new DiagnosticOptions()
+#endif
+    );
 
     diag_engine.setClient(&consumer, false);
     auto id_note = diag_engine.getCustomDiagID(
