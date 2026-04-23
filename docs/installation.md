@@ -130,7 +130,7 @@ First make sure that you have the following dependencies installed:
 
 ```bash
 # Ubuntu (Clang version will vary depending on Ubuntu version - below example is for Ubuntu 24.04)
-apt install make gcc g++ ccache cmake libyaml-cpp-dev llvm-18 clang-18 libclang-18-dev libclang-cpp18-dev
+apt install make gcc g++ ccache cmake libyaml-cpp-dev llvm-18 llvm-18-dev clang-18 libclang-18-dev libclang-cpp18-dev
 ```
 
 Then proceed with building the sources:
