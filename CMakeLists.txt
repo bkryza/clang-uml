@@ -123,6 +123,11 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
                                    -Wno-invalid-constexpr
                                    -Wno-deprecated-anon-enum-enum-conversion)
     endif()
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 21)
+        set(CUSTOM_COMPILE_OPTIONS ${CUSTOM_COMPILE_OPTIONS}
+            -Wno-preferred-type-bitfield-enum-conversion
+            -Wno-unnecessary-virtual-specifier)
+    endif()
 endif()
 
 link_directories(${LLVM_LIBRARY_DIR})
