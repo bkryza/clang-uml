@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" data-diagram-type="SEQUENCE" height="1005px" preserveAspectRatio="none" style="width:361px;height:1005px;background:#FFFFFF;" version="1.1" viewBox="0 0 361 1005" width="361px" zoomAndPan="magnify">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" data-diagram-type="SEQUENCE" height="1005px" preserveAspectRatio="none" style="width:348px;height:1005px;background:#FFFFFF;" version="1.1" viewBox="0 0 348 1005" width="348px" zoomAndPan="magnify">
   <defs>
     <style type="text/css">a:hover { text-decoration: underline; }</style>
   </defs>
@@ -48,7 +48,7 @@
       <rect fill="#FFFFFF" height="28" style="stroke:#181818;stroke-width:1;" width="10" x="250.929" y="907.3952"/>
     </g>
     <rect fill="none" height="430.4576" style="stroke:#000000;stroke-width:1.5;" width="240.929" x="10" y="87.7739"/>
-    <rect fill="none" height="386.4576" style="stroke:#000000;stroke-width:1.5;" width="125.3941" x="229.379" y="563.9376"/>
+    <rect fill="none" height="386.4576" style="stroke:#000000;stroke-width:1.5;" width="112.238" x="229.379" y="563.9376"/>
     <g>
       <title>tmain()</title>
       <rect fill="#000000" fill-opacity="0.00000" height="928.3273" width="8" x="46.3309" y="39.0679"/>
@@ -222,10 +222,10 @@
       <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="79.8981" x="62.3309" y="543.1286">select(colors)</text>
     </g>
     <path d="M229.379,563.9376 L316.798,563.9376 L316.798,573.6436 L306.798,583.6436 L229.379,583.6436 L229.379,563.9376" fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/>
-    <rect fill="none" height="386.4576" style="stroke:#000000;stroke-width:1.5;" width="125.3941" x="229.379" y="563.9376"/>
+    <rect fill="none" height="386.4576" style="stroke:#000000;stroke-width:1.5;" width="112.238" x="229.379" y="563.9376"/>
     <text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="42.419" x="244.379" y="578.8346">switch</text>
-    <line style="stroke:#000000;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="229.379" x2="354.7731" y1="584.6436" y2="584.6436"/>
-    <text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="99.7143" x="234.379" y="596.4025">[enum colors::red]</text>
+    <line style="stroke:#000000;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="229.379" x2="341.617" y1="584.6436" y2="584.6436"/>
+    <text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="65.0975" x="234.379" y="596.4025">[colors::red]</text>
     <g class="message" data-participant-1="C_0007466296117011526976" data-participant-2="C_0007466296117011526976">
       <line style="stroke:#181818;stroke-width:1;" x1="260.929" x2="302.929" y1="624.3315" y2="624.3315"/>
       <line style="stroke:#181818;stroke-width:1;" x1="302.929" x2="302.929" y1="624.3315" y2="637.3315"/>
@@ -233,8 +233,8 @@
       <polygon fill="#181818" points="271.929,633.3315,261.929,637.3315,271.929,641.3315,267.929,637.3315" style="stroke:#181818;stroke-width:1;"/>
       <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="28.496" x="267.929" y="618.5225">red()</text>
     </g>
-    <line style="stroke:#000000;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="229.379" x2="354.7731" y1="676.3315" y2="676.3315"/>
-    <text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="120.3941" x="234.379" y="688.0904">[enum colors::orange]</text>
+    <line style="stroke:#000000;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="229.379" x2="341.617" y1="676.3315" y2="676.3315"/>
+    <text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="85.7774" x="234.379" y="688.0904">[colors::orange]</text>
     <g class="message" data-participant-1="C_0007466296117011526976" data-participant-2="C_0007466296117011526976">
       <line style="stroke:#181818;stroke-width:1;" x1="260.929" x2="302.929" y1="716.0194" y2="716.0194"/>
       <line style="stroke:#181818;stroke-width:1;" x1="302.929" x2="302.929" y1="716.0194" y2="729.0194"/>
@@ -242,8 +242,8 @@
       <polygon fill="#181818" points="271.929,725.0194,261.929,729.0194,271.929,733.0194,267.929,729.0194" style="stroke:#181818;stroke-width:1;"/>
       <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="51.688" x="267.929" y="710.2104">orange()</text>
     </g>
-    <line style="stroke:#000000;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="229.379" x2="354.7731" y1="768.0194" y2="768.0194"/>
-    <text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="113.4422" x="234.379" y="779.7783">[enum colors::green]</text>
+    <line style="stroke:#000000;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="229.379" x2="341.617" y1="768.0194" y2="768.0194"/>
+    <text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="78.8254" x="234.379" y="779.7783">[colors::green]</text>
     <g class="message" data-participant-1="C_0007466296117011526976" data-participant-2="C_0007466296117011526976">
       <line style="stroke:#181818;stroke-width:1;" x1="260.929" x2="302.929" y1="807.7073" y2="807.7073"/>
       <line style="stroke:#181818;stroke-width:1;" x1="302.929" x2="302.929" y1="807.7073" y2="820.7073"/>
@@ -251,7 +251,7 @@
       <polygon fill="#181818" points="271.929,816.7073,261.929,820.7073,271.929,824.7073,267.929,820.7073" style="stroke:#181818;stroke-width:1;"/>
       <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="43.862" x="267.929" y="801.8983">green()</text>
     </g>
-    <line style="stroke:#000000;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="229.379" x2="354.7731" y1="859.7073" y2="859.7073"/>
+    <line style="stroke:#000000;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="229.379" x2="341.617" y1="859.7073" y2="859.7073"/>
     <text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="47.0027" x="234.379" y="871.4662">[default]</text>
     <g class="message" data-participant-1="C_0007466296117011526976" data-participant-2="C_0007466296117011526976">
       <line style="stroke:#181818;stroke-width:1;" x1="260.929" x2="302.929" y1="899.3952" y2="899.3952"/>
