@@ -763,11 +763,13 @@ void template_builder<VisitorT>::build_from_template_specialization_type(
 
     template_instantiation.is_template(true);
 
-    std::string full_template_specialization_name = common::to_string(
-        template_type.desugar(),
-        template_type.getTemplateName().getAsTemplateDecl()->getASTContext());
-
     auto *template_decl{template_type.getTemplateName().getAsTemplateDecl()};
+
+    if (template_decl == nullptr)
+        return;
+
+    std::string full_template_specialization_name = common::to_string(
+        template_type.desugar(), template_decl->getASTContext());
 
     build(location_declaration, template_instantiation, cls, template_decl,
         template_type.template_arguments(), full_template_specialization_name,
@@ -1625,6 +1627,9 @@ template_builder<VisitorT>::try_as_template_specialization_type(
 
     LOG_DBG("Template argument is a template specialization type");
 
+    if (nested_template_type->getTemplateName().getAsTemplateDecl() == nullptr)
+        return {};
+
     auto argument = template_parameter::make_argument("");
     type = consume_context(type, argument);
 
@@ -1847,6 +1852,26 @@ template_builder<VisitorT>::try_as_record_type(
     }
     else if (const auto *record_type_decl = record_type->getAsRecordDecl();
              record_type_decl != nullptr) {
+#if LLVM_VERSION_MAJOR >= 22
+        // In LLVM 22+, non-template record types used as template arguments
+        // may be printed without full namespace qualification by to_string().
+        // Use the decl's qualified name to ensure proper namespace resolution.
+        const auto qualified_name = config().simplify_template_type(
+            record_type_decl->getQualifiedNameAsString());
+        if (!qualified_name.empty() && qualified_name != type_name) {
+            argument.set_type(qualified_name);
+            argument.set_id(common::to_id(qualified_name));
+        }
+        const auto &effective_type_name =
+            qualified_name.empty() ? type_name : qualified_name;
+        const auto effective_type_id =
+            qualified_name.empty() ? type_id : common::to_id(qualified_name);
+        if (config_.generate_template_argument_dependencies() &&
+            diagram().should_include(namespace_{effective_type_name})) {
+            template_instantiation.add_relationship(
+                {relationship_t::kDependency, effective_type_id});
+        }
+#else
         if (config_.generate_template_argument_dependencies() &&
             diagram().should_include(namespace_{type_name})) {
             // Add dependency relationship to the parent
@@ -1854,6 +1879,7 @@ template_builder<VisitorT>::try_as_record_type(
             template_instantiation.add_relationship(
                 {relationship_t::kDependency, type_id});
         }
+#endif
     }
 
     return argument;

@@ -2717,11 +2717,12 @@ void translation_unit_visitor::find_instantiation_relationships(
             {common::model::relationship_t::kInstantiation, templated_decl_id});
         template_instantiation.template_specialization_found(true);
     }
-    else if (diagram().should_include(common::model::namespace_{full_name})) {
-        LOG_DBG("Skipping instantiation relationship from {} to {}",
-            template_instantiation, templated_decl_global_id);
-    }
     else {
+        // Add a deferred relationship using the local Clang AST id - it will
+        // be resolved to a global id in resolve_local_to_global_ids() during
+        // finalize(). This handles both the case where the template is in the
+        // included namespace (condition previously skipped this), and the case
+        // where the global id is not yet known.
         LOG_DBG("== Cannot determine global id for specialization template {} "
                 "- delaying until the translation unit is complete ",
             templated_decl_global_id);

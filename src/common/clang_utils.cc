@@ -224,7 +224,9 @@ std::string to_string(const clang::QualType &type, const clang::ASTContext &ctx,
     if (result.empty())
         result = "(anonymous)";
     else if (util::contains(result, "unnamed struct") ||
-        util::contains(result, "unnamed union")) {
+        util::contains(result, "unnamed union") ||
+        util::contains(result, "struct (unnamed") ||
+        util::contains(result, "union (unnamed")) {
         const auto *declarationTag = type->getAsTagDecl();
         if (declarationTag == nullptr) {
             result = "(unnamed undeclared)";
@@ -1191,6 +1193,24 @@ const clang::ConceptDecl *get_template_parameter_concept_constraint(
 {
     clang::TemplateTypeParmDecl *template_type_parameter{nullptr};
 
+#if LLVM_VERSION_MAJOR >= 22
+    // In LLVM 22+, getDecl() on a TemplateTypeParmType used in a base class
+    // may return the outer template's parameter (carrying an inherited concept
+    // constraint) instead of the base template's own parameter. Prefer the
+    // template_decl's own parameter at the matching index to avoid spuriously
+    // inheriting constraints (e.g. HList<T...> becoming HList<IsArithmetic
+    // T...> when used as base of Arithmetic<IsArithmetic T...>).
+    if (template_decl->getTemplateParameters()->size() >
+        type_parameter->getIndex()) {
+        template_type_parameter = clang::dyn_cast<clang::TemplateTypeParmDecl>(
+            template_decl->getTemplateParameters()->getParam(
+                type_parameter->getIndex()));
+    }
+    if (template_type_parameter == nullptr &&
+        type_parameter->getDecl() != nullptr) {
+        template_type_parameter = type_parameter->getDecl();
+    }
+#else
     if (type_parameter->getDecl() != nullptr) {
         template_type_parameter = type_parameter->getDecl();
     }
@@ -1200,6 +1220,7 @@ const clang::ConceptDecl *get_template_parameter_concept_constraint(
             template_decl->getTemplateParameters()->getParam(
                 type_parameter->getIndex()));
     }
+#endif
 
     if (template_type_parameter == nullptr ||
         template_type_parameter->getTypeConstraint() == nullptr)
