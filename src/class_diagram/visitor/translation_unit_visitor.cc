@@ -2502,6 +2502,19 @@ void translation_unit_visitor::resolve_local_to_global_ids()
                 }
             }
             el.get().remove_duplicate_relationships();
+
+            // Remove self-referential instantiation relationships.
+            // These can arise when a partial specialization's deferred local
+            // Clang ID resolves to its own global UML ID after id_mapper
+            // registration (e.g. conditional_t<Else> ..|> conditional_t<Else>)
+            auto &rels = el.get().relationships();
+            rels.erase(std::remove_if(rels.begin(), rels.end(),
+                           [&el](const relationship &r) {
+                               return r.type() ==
+                                   relationship_t::kInstantiation &&
+                                   r.destination() == el.get().id();
+                           }),
+                rels.end());
         }
     });
 }
@@ -2698,7 +2711,8 @@ void translation_unit_visitor::find_instantiation_relationships(
     auto templated_decl_global_id =
         id_mapper().get_global_id(templated_decl_id).value_or(eid_t{});
 
-    if (best_match_id.value() > 0) {
+    if (best_match_id.value() > 0 &&
+        best_match_id != template_instantiation.id()) {
         destination = best_match_full_name;
         template_instantiation.add_relationship(
             {common::model::relationship_t::kInstantiation, best_match_id});
@@ -2706,18 +2720,22 @@ void translation_unit_visitor::find_instantiation_relationships(
     }
     // If we can't find optimal match for parent template specialization,
     // just use whatever clang suggests
-    else if (diagram().has_element(templated_decl_global_id)) {
+    else if (diagram().has_element(templated_decl_global_id) &&
+        templated_decl_global_id != template_instantiation.id()) {
         template_instantiation.add_relationship(
             {common::model::relationship_t::kInstantiation,
                 templated_decl_global_id});
         template_instantiation.template_specialization_found(true);
     }
-    else if (id_mapper().get_global_id(templated_decl_id).has_value()) {
+    else if (id_mapper().get_global_id(templated_decl_id).has_value() &&
+        id_mapper().get_global_id(templated_decl_id).value() !=
+            template_instantiation.id()) {
         template_instantiation.add_relationship(
             {common::model::relationship_t::kInstantiation, templated_decl_id});
         template_instantiation.template_specialization_found(true);
     }
-    else {
+    else if (!diagram().has_element(templated_decl_global_id) &&
+        !id_mapper().get_global_id(templated_decl_id).has_value()) {
         // Add a deferred relationship using the local Clang AST id - it will
         // be resolved to a global id in resolve_local_to_global_ids() during
         // finalize(). This handles both the case where the template is in the

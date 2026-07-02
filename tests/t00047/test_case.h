@@ -28,5 +28,8 @@ TEST_CASE("t00047")
         REQUIRE(IsClass(src, "conditional_t<Else>"));
         REQUIRE(IsClass(src, "conditional_t<std::true_type,Result,Tail...>"));
         REQUIRE(IsClass(src, "conditional_t<std::false_type,Result,Tail...>"));
+
+        REQUIRE_FALSE(
+            IsInstantiation(src, "conditional_t<Else>", "conditional_t<Else>"));
     });
 }
