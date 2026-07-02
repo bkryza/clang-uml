@@ -66,8 +66,10 @@ Checks: >-
   -modernize-avoid-c-style-cast,
   -modernize-type-traits,
   -modernize-use-nodiscard,
+  -modernize-use-ranges,
   -modernize-use-trailing-return-type,
   -modernize-concat-nested-namespaces,
+  -modernize-use-starts-ends-with,
   -mpi*,
   -objc*,
   -openmp*,
@@ -91,6 +93,7 @@ Checks: >-
   -readability-redundant-casting,
   -readability-avoid-return-with-void-value,
   -readability-use-concise-preprocessor-directives,
+  -readability-container-contains,
   -darwin*,
   -zircon*
 WarningsAsErrors: '*'

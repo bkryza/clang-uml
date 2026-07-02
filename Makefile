@@ -201,7 +201,7 @@ format:
 
 .PHONY: debug_tidy
 tidy: debug
-	run-clang-tidy-22 -extra-arg=-Wno-unknown-warning-option -j $(NUMPROC) -p debug "${PWD}/src"
+	run-clang-tidy-22 -extra-arg=-std=c++17 -extra-arg=-Wno-unknown-warning-option -j $(NUMPROC) -p debug "${PWD}/src"
 
 .PHONY: check-formatting
 check-formatting:
