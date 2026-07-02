@@ -2284,13 +2284,14 @@ void translation_unit_visitor::process_field(
     if (template_field_type != nullptr) {
         // Skip types which are template template parameters of the parent
         // template
-        for (const auto &class_template_param : c.template_params()) {
-            if (class_template_param.name() ==
-                template_field_type->getTemplateName()
-                        .getAsTemplateDecl()
-                        ->getNameAsString() +
-                    "<>") {
-                field_type_is_template_template_parameter = true;
+        const auto *template_field_type_decl =
+            template_field_type->getTemplateName().getAsTemplateDecl();
+        if (template_field_type_decl != nullptr) {
+            for (const auto &class_template_param : c.template_params()) {
+                if (class_template_param.name() ==
+                    template_field_type_decl->getNameAsString() + "<>") {
+                    field_type_is_template_template_parameter = true;
+                }
             }
         }
     }
