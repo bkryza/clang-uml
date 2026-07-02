@@ -1155,6 +1155,7 @@ const clang::EnumDecl *get_typedef_enum_decl(const clang::TypedefDecl *decl)
 
     const clang::Type *unqualified_type = get_unqualified_type(decl);
 
+#if LLVM_VERSION_MAJOR < 22
     if (unqualified_type->getTypeClass() == clang::Type::Elaborated) {
         const auto *tag_decl =
             clang::cast<clang::ElaboratedType>(unqualified_type)
@@ -1168,6 +1169,18 @@ const clang::EnumDecl *get_typedef_enum_decl(const clang::TypedefDecl *decl)
         if (enum_decl != nullptr && enum_decl->getIdentifier() == nullptr)
             return enum_decl;
     }
+#else
+    {
+        const auto *tag_decl = unqualified_type->getAsTagDecl();
+
+        if (tag_decl == nullptr)
+            return nullptr;
+
+        const auto *enum_decl = clang::dyn_cast<clang::EnumDecl>(tag_decl);
+        if (enum_decl != nullptr && enum_decl->getIdentifier() == nullptr)
+            return enum_decl;
+    }
+#endif
 
     return nullptr;
 }
@@ -1192,7 +1205,12 @@ const clang::ConceptDecl *get_template_parameter_concept_constraint(
         template_type_parameter->getTypeConstraint() == nullptr)
         return nullptr;
 
+#if LLVM_VERSION_MAJOR < 22
     return template_type_parameter->getTypeConstraint()->getNamedConcept();
+#else
+    return clang::cast<clang::ConceptDecl>(
+        template_type_parameter->getTypeConstraint()->getNamedConcept());
+#endif
 }
 
 bool is_lambda_call(const clang::Expr *expr)

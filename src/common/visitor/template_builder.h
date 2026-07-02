@@ -665,8 +665,9 @@ void template_builder<VisitorT>::build_from_template_declaration(
                               clanguml::class_diagram::model::diagram>) {
                 if (template_type_parameter->getTypeConstraint() != nullptr) {
                     util::if_not_null(
-                        template_type_parameter->getTypeConstraint()
-                            ->getNamedConcept(),
+                        clang::dyn_cast_or_null<clang::ConceptDecl>(
+                            template_type_parameter->getTypeConstraint()
+                                ->getNamedConcept()),
                         [this, &ct, &templated_element](
                             const clang::ConceptDecl *named_concept) mutable {
                             ct.set_concept_constraint(
@@ -1156,9 +1157,11 @@ template_parameter template_builder<VisitorT>::process_type_argument(
 {
     std::optional<template_parameter> argument;
 
+#if LLVM_VERSION_MAJOR < 22
     if (type->getAs<clang::ElaboratedType>() != nullptr) {
         type = type->getAs<clang::ElaboratedType>()->getNamedType(); // NOLINT
     }
+#endif
 
     auto type_name = common::to_string(type, &cls->getASTContext());
 
@@ -1387,8 +1390,10 @@ template_builder<VisitorT>::try_as_member_pointer(
 
 #if LLVM_VERSION_MAJOR < 21
         const auto *member_class_type = mp_type->getClass();
-#else
+#elif LLVM_VERSION_MAJOR < 22
         const auto *member_class_type = mp_type->getQualifier()->getAsType();
+#else
+        const auto *member_class_type = mp_type->getQualifier().getAsType();
 #endif
 
         if (member_class_type == nullptr)
@@ -1419,8 +1424,10 @@ template_builder<VisitorT>::try_as_member_pointer(
 
 #if LLVM_VERSION_MAJOR < 21
         const auto *member_class_type = mp_type->getClass();
-#else
+#elif LLVM_VERSION_MAJOR < 22
         const auto *member_class_type = mp_type->getQualifier()->getAsType();
+#else
+        const auto *member_class_type = mp_type->getQualifier().getAsType();
 #endif
 
         if (member_class_type == nullptr)
