@@ -1,137 +1,146 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" data-diagram-type="SEQUENCE" height="266px" preserveAspectRatio="none" style="width:672px;height:266px;background:#FFFFFF;" version="1.1" viewBox="0 0 672 266" width="672px" zoomAndPan="magnify">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" data-diagram-type="SEQUENCE" height="268px" preserveAspectRatio="none" style="width:682px;height:268px;background:#FFFFFF;" version="1.1" viewBox="0 0 682 268" width="682px" zoomAndPan="magnify">
+  <?plantuml 1.2026.6?>
   <defs>
     <style type="text/css">a:hover { text-decoration: underline; }</style>
   </defs>
   <g>
     <g>
-      <title>tmain()</title>
+      <title>tmain..</title>
       <rect fill="#FFFFFF" height="131.706" style="stroke:#181818;stroke-width:1;" width="10" x="30.3309" y="68.1358"/>
     </g>
     <g>
-      <title>&lt;&lt; CUDA Kernel &gt;&gt;</title>
+      <title>.. CUDA Kernel ..</title>
       <rect fill="#FFFFFF" height="125.706" style="stroke:#181818;stroke-width:1;" width="10" x="219.9083" y="74.1358"/>
     </g>
     <g>
-      <title>&lt;&lt; CUDA Device &gt;&gt;</title>
+      <title>.. CUDA Device ..</title>
       <rect fill="#FFFFFF" height="14" style="stroke:#181818;stroke-width:1;" width="10" x="432.0046" y="114.8419"/>
     </g>
     <g>
-      <title>&lt;&lt; CUDA Device &gt;&gt;</title>
+      <title>.. CUDA Device ..</title>
       <rect fill="#FFFFFF" height="14" style="stroke:#181818;stroke-width:1;" width="10" x="432.0046" y="142.8419"/>
     </g>
     <g>
-      <title>&lt;&lt; CUDA Device &gt;&gt;</title>
+      <title>.. CUDA Device ..</title>
       <rect fill="#FFFFFF" height="14" style="stroke:#181818;stroke-width:1;" width="10" x="573.1842" y="170.8419"/>
     </g>
     <rect fill="none" height="103.706" style="stroke:#000000;stroke-width:1.5;" width="600.8521" x="65.6618" y="89.1358"/>
-    <g>
-      <title>tmain()</title>
-      <rect fill="#000000" fill-opacity="0.00000" height="151.706" width="8" x="31.3309" y="58.1358"/>
-      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="35" x2="35" y1="58.1358" y2="209.8419"/>
+    <g class="participant-lifeline" data-entity-uid="part1" data-qualified-name="C_0011985590119186302825" data-source-line="1" id="part1-lifeline">
+      <g>
+        <title>tmain..</title>
+        <rect fill="#000000" fill-opacity="0.00000" height="151.706" width="8" x="31.3309" y="58.1358"/>
+        <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5,5;" x1="35" x2="35" y1="58.1358" y2="209.8419"/>
+      </g>
     </g>
-    <g>
-      <title>&lt;&lt; CUDA Kernel &gt;&gt;</title>
-      <rect fill="#000000" fill-opacity="0.00000" height="151.706" width="8" x="220.9083" y="58.1358"/>
-      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="224.6618" x2="224.6618" y1="58.1358" y2="209.8419"/>
+    <g class="participant-lifeline" data-entity-uid="part2" data-qualified-name="C_0015988772945202309445" data-source-line="3" id="part2-lifeline">
+      <g>
+        <title>.. CUDA Kernel ..</title>
+        <rect fill="#000000" fill-opacity="0.00000" height="151.706" width="8" x="220.9083" y="58.1358"/>
+        <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5,5;" x1="224.6618" x2="224.6618" y1="58.1358" y2="209.8419"/>
+      </g>
     </g>
-    <g>
-      <title>&lt;&lt; CUDA Device &gt;&gt;</title>
-      <rect fill="#000000" fill-opacity="0.00000" height="151.706" width="8" x="433.0046" y="58.1358"/>
-      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="436.1547" x2="436.1547" y1="58.1358" y2="209.8419"/>
+    <g class="participant-lifeline" data-entity-uid="part3" data-qualified-name="C_0006536992010162789483" data-source-line="7" id="part3-lifeline">
+      <g>
+        <title>.. CUDA Device ..</title>
+        <rect fill="#000000" fill-opacity="0.00000" height="151.706" width="8" x="433.0046" y="58.1358"/>
+        <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5,5;" x1="436.1547" x2="436.1547" y1="58.1358" y2="209.8419"/>
+      </g>
     </g>
-    <g>
-      <title>&lt;&lt; CUDA Device &gt;&gt;</title>
-      <rect fill="#000000" fill-opacity="0.00000" height="151.706" width="8" x="574.1842" y="58.1358"/>
-      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="577.8544" x2="577.8544" y1="58.1358" y2="209.8419"/>
+    <g class="participant-lifeline" data-entity-uid="part4" data-qualified-name="C_0015178936324891580453" data-source-line="16" id="part4-lifeline">
+      <g>
+        <title>.. CUDA Device ..</title>
+        <rect fill="#000000" fill-opacity="0.00000" height="151.706" width="8" x="574.1842" y="58.1358"/>
+        <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5,5;" x1="577.8544" x2="577.8544" y1="58.1358" y2="209.8419"/>
+      </g>
     </g>
-    <g class="participant participant-head" data-participant="C_0011985590119186302825">
+    <g class="participant participant-head" data-entity-uid="part1" data-qualified-name="C_0011985590119186302825" data-source-line="1" id="part1-head">
       <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="60.6618" x="5" y="24.0679"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="46.6618" x="12" y="46.0339">tmain()</text>
     </g>
-    <g class="participant participant-tail" data-participant="C_0011985590119186302825">
+    <g class="participant participant-tail" data-entity-uid="part1" data-qualified-name="C_0011985590119186302825" data-source-line="1" id="part1-tail">
       <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="60.6618" x="5" y="208.8419"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="46.6618" x="12" y="230.8078">tmain()</text>
     </g>
-    <g class="participant participant-head" data-participant="C_0015988772945202309445">
+    <g class="participant participant-head" data-entity-uid="part2" data-qualified-name="C_0015988772945202309445" data-source-line="3" id="part2-head">
       <rect fill="#E2E2F0" height="52.1358" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="298.4929" x="75.6618" y="5"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="91.0277" x="179.3944" y="26.9659">«CUDA Kernel»</text>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="284.4929" x="82.6618" y="46.0339">vector_square_add(float *,float *,float *,int)</text>
     </g>
-    <g class="participant participant-tail" data-participant="C_0015988772945202309445">
+    <g class="participant participant-tail" data-entity-uid="part2" data-qualified-name="C_0015988772945202309445" data-source-line="3" id="part2-tail">
       <rect fill="#E2E2F0" height="52.1358" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="298.4929" x="75.6618" y="208.8419"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="91.0277" x="179.3944" y="230.8078">«CUDA Kernel»</text>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="284.4929" x="82.6618" y="249.8757">vector_square_add(float *,float *,float *,int)</text>
     </g>
-    <g class="participant participant-head" data-participant="C_0006536992010162789483">
+    <g class="participant participant-head" data-entity-uid="part3" data-qualified-name="C_0006536992010162789483" data-source-line="7" id="part3-head">
       <rect fill="#E2E2F0" height="52.1358" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="105.6997" x="384.1547" y="5"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="91.6997" x="391.1547" y="26.9659">«CUDA Device»</text>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="83.7057" x="395.1517" y="46.0339">square(float)</text>
     </g>
-    <g class="participant participant-tail" data-participant="C_0006536992010162789483">
+    <g class="participant participant-tail" data-entity-uid="part3" data-qualified-name="C_0006536992010162789483" data-source-line="7" id="part3-tail">
       <rect fill="#E2E2F0" height="52.1358" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="105.6997" x="384.1547" y="208.8419"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="91.6997" x="391.1547" y="230.8078">«CUDA Device»</text>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="83.7057" x="395.1517" y="249.8757">square(float)</text>
     </g>
-    <g class="participant participant-head" data-participant="C_0015178936324891580453">
+    <g class="participant participant-head" data-entity-uid="part4" data-qualified-name="C_0015178936324891580453" data-source-line="16" id="part4-head">
       <rect fill="#E2E2F0" height="52.1358" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="156.6595" x="499.8544" y="5"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="91.6997" x="532.3343" y="26.9659">«CUDA Device»</text>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="142.6595" x="506.8544" y="46.0339">add&lt;float&gt;(float,float)</text>
     </g>
-    <g class="participant participant-tail" data-participant="C_0015178936324891580453">
+    <g class="participant participant-tail" data-entity-uid="part4" data-qualified-name="C_0015178936324891580453" data-source-line="16" id="part4-tail">
       <rect fill="#E2E2F0" height="52.1358" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="156.6595" x="499.8544" y="208.8419"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="91.6997" x="532.3343" y="230.8078">«CUDA Device»</text>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="142.6595" x="506.8544" y="249.8757">add&lt;float&gt;(float,float)</text>
     </g>
     <g>
-      <title>tmain()</title>
+      <title>tmain..</title>
       <rect fill="#FFFFFF" height="131.706" style="stroke:#181818;stroke-width:1;" width="10" x="30.3309" y="68.1358"/>
     </g>
     <g>
-      <title>&lt;&lt; CUDA Kernel &gt;&gt;</title>
+      <title>.. CUDA Kernel ..</title>
       <rect fill="#FFFFFF" height="125.706" style="stroke:#181818;stroke-width:1;" width="10" x="219.9083" y="74.1358"/>
     </g>
     <g>
-      <title>&lt;&lt; CUDA Device &gt;&gt;</title>
+      <title>.. CUDA Device ..</title>
       <rect fill="#FFFFFF" height="14" style="stroke:#181818;stroke-width:1;" width="10" x="432.0046" y="114.8419"/>
     </g>
     <g>
-      <title>&lt;&lt; CUDA Device &gt;&gt;</title>
+      <title>.. CUDA Device ..</title>
       <rect fill="#FFFFFF" height="14" style="stroke:#181818;stroke-width:1;" width="10" x="432.0046" y="142.8419"/>
     </g>
     <g>
-      <title>&lt;&lt; CUDA Device &gt;&gt;</title>
+      <title>.. CUDA Device ..</title>
       <rect fill="#FFFFFF" height="14" style="stroke:#181818;stroke-width:1;" width="10" x="573.1842" y="170.8419"/>
     </g>
-    <g class="message" data-participant-1="C_0011985590119186302825" data-participant-2="C_0015988772945202309445">
-      <polygon fill="#181818" points="207.9083,70.1358,217.9083,74.1358,207.9083,78.1358,211.9083,74.1358" style="stroke:#181818;stroke-width:1;"/>
+    <g class="message" data-entity-1="part1" data-entity-2="part2" data-source-line="4" id="msg1">
+      <polygon fill="#181818" points="207.9083,70.1358,217.9083,74.1358,207.9083,78.1358,211.9083,74.1358" style="stroke:#181818;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/>
       <line style="stroke:#181818;stroke-width:1;" x1="40.3309" x2="213.9083" y1="74.1358" y2="74.1358"/>
     </g>
     <path d="M65.6618,89.1358 L138.9498,89.1358 L138.9498,98.8419 L128.9498,108.8419 L65.6618,108.8419 L65.6618,89.1358" fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/>
     <rect fill="none" height="103.706" style="stroke:#000000;stroke-width:1.5;" width="600.8521" x="65.6618" y="89.1358"/>
-    <text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="28.288" x="80.6618" y="104.0328">loop</text>
-    <g class="message" data-participant-1="C_0015988772945202309445" data-participant-2="C_0006536992010162789483">
-      <polygon fill="#181818" points="420.0046,110.8419,430.0046,114.8419,420.0046,118.8419,424.0046,114.8419" style="stroke:#181818;stroke-width:1;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-weight="700" lengthAdjust="spacing" textLength="28.288" x="80.6618" y="104.0328">loop</text>
+    <g class="message" data-entity-1="part2" data-entity-2="part3" data-source-line="8" id="msg2">
+      <polygon fill="#181818" points="420.0046,110.8419,430.0046,114.8419,420.0046,118.8419,424.0046,114.8419" style="stroke:#181818;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/>
       <line style="stroke:#181818;stroke-width:1;" x1="229.9083" x2="426.0046" y1="114.8419" y2="114.8419"/>
     </g>
-    <g class="message" data-participant-1="C_0006536992010162789483" data-participant-2="C_0015988772945202309445">
-      <polygon fill="#181818" points="240.9083,124.8419,230.9083,128.8419,240.9083,132.8419,236.9083,128.8419" style="stroke:#181818;stroke-width:1;"/>
-      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="234.9083" x2="436.0046" y1="128.8419" y2="128.8419"/>
+    <g class="message" data-entity-1="part3" data-entity-2="part2" data-source-line="10" id="msg3">
+      <polygon fill="#181818" points="240.9083,124.8419,230.9083,128.8419,240.9083,132.8419,236.9083,128.8419" style="stroke:#181818;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2,2;" x1="234.9083" x2="436.0046" y1="128.8419" y2="128.8419"/>
     </g>
-    <g class="message" data-participant-1="C_0015988772945202309445" data-participant-2="C_0006536992010162789483">
-      <polygon fill="#181818" points="420.0046,138.8419,430.0046,142.8419,420.0046,146.8419,424.0046,142.8419" style="stroke:#181818;stroke-width:1;"/>
+    <g class="message" data-entity-1="part2" data-entity-2="part3" data-source-line="12" id="msg4">
+      <polygon fill="#181818" points="420.0046,138.8419,430.0046,142.8419,420.0046,146.8419,424.0046,142.8419" style="stroke:#181818;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/>
       <line style="stroke:#181818;stroke-width:1;" x1="229.9083" x2="426.0046" y1="142.8419" y2="142.8419"/>
     </g>
-    <g class="message" data-participant-1="C_0006536992010162789483" data-participant-2="C_0015988772945202309445">
-      <polygon fill="#181818" points="240.9083,152.8419,230.9083,156.8419,240.9083,160.8419,236.9083,156.8419" style="stroke:#181818;stroke-width:1;"/>
-      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="234.9083" x2="436.0046" y1="156.8419" y2="156.8419"/>
+    <g class="message" data-entity-1="part3" data-entity-2="part2" data-source-line="14" id="msg5">
+      <polygon fill="#181818" points="240.9083,152.8419,230.9083,156.8419,240.9083,160.8419,236.9083,156.8419" style="stroke:#181818;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2,2;" x1="234.9083" x2="436.0046" y1="156.8419" y2="156.8419"/>
     </g>
-    <g class="message" data-participant-1="C_0015988772945202309445" data-participant-2="C_0015178936324891580453">
-      <polygon fill="#181818" points="561.1842,166.8419,571.1842,170.8419,561.1842,174.8419,565.1842,170.8419" style="stroke:#181818;stroke-width:1;"/>
+    <g class="message" data-entity-1="part2" data-entity-2="part4" data-source-line="17" id="msg6">
+      <polygon fill="#181818" points="561.1842,166.8419,571.1842,170.8419,561.1842,174.8419,565.1842,170.8419" style="stroke:#181818;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/>
       <line style="stroke:#181818;stroke-width:1;" x1="229.9083" x2="567.1842" y1="170.8419" y2="170.8419"/>
     </g>
-    <g class="message" data-participant-1="C_0015178936324891580453" data-participant-2="C_0015988772945202309445">
-      <polygon fill="#181818" points="240.9083,180.8419,230.9083,184.8419,240.9083,188.8419,236.9083,184.8419" style="stroke:#181818;stroke-width:1;"/>
-      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="234.9083" x2="577.1842" y1="184.8419" y2="184.8419"/>
+    <g class="message" data-entity-1="part4" data-entity-2="part2" data-source-line="19" id="msg7">
+      <polygon fill="#181818" points="240.9083,180.8419,230.9083,184.8419,240.9083,188.8419,236.9083,184.8419" style="stroke:#181818;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2,2;" x1="234.9083" x2="577.1842" y1="184.8419" y2="184.8419"/>
     </g>
   </g>
 </svg>

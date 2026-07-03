@@ -1,74 +1,135 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" data-diagram-type="CLASS" height="641px" preserveAspectRatio="none" style="width:382px;height:641px;background:#FFFFFF;" version="1.1" viewBox="0 0 382 641" width="382px" zoomAndPan="magnify">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" data-diagram-type="CLASS" height="640px" preserveAspectRatio="none" style="width:381px;height:640px;background:#FFFFFF;" version="1.1" viewBox="0 0 381 640" width="381px" zoomAndPan="magnify">
+  <?plantuml 1.2026.6?>
   <defs>
     <style type="text/css">a:hover { text-decoration: underline; }</style>
   </defs>
   <g>
-    <g class="entity" data-entity="C_0015199658254065871481" data-source-line="1" data-uid="ent0002" id="entity_C_0015199658254065871481">
+    <g class="entity" data-qualified-name="C_0015199658254065871481" data-source-line="1" id="ent0001">
       <rect fill="#F1F1F1" height="620.0375" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="361.3408" x="7" y="7"/>
       <ellipse cx="178.9474" cy="23" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;"/>
       <path d="M181.9161,28.6406 Q181.338,28.9375 180.6974,29.0781 Q180.0568,29.2344 179.3536,29.2344 Q176.8536,29.2344 175.5255,27.5938 Q174.213,25.9375 174.213,22.8125 Q174.213,19.6875 175.5255,18.0313 Q176.8536,16.375 179.3536,16.375 Q180.0568,16.375 180.6974,16.5313 Q181.3536,16.6875 181.9161,16.9844 L181.9161,19.7031 Q181.2911,19.125 180.6974,18.8594 Q180.1036,18.5781 179.4786,18.5781 Q178.1349,18.5781 177.4474,19.6563 Q176.7599,20.7188 176.7599,22.8125 Q176.7599,24.9063 177.4474,25.9844 Q178.1349,27.0469 179.4786,27.0469 Q180.1036,27.0469 180.6974,26.7813 Q181.2911,26.5 181.9161,25.9219 L181.9161,28.6406 Z " fill="#000000"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="8.946" x="199.4474" y="28.432">A</text>
       <line style="stroke:#181818;stroke-width:0.5;" x1="8" x2="367.3408" y1="39" y2="39"/>
-      <ellipse cx="18" cy="54.034" fill="none" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <g data-visibility-modifier="PUBLIC_FIELD">
+        <ellipse cx="18" cy="54.034" fill="none" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      </g>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="130.7455" x="27" y="57.9659">public_member : int</text>
-      <polygon fill="none" points="18,68.1019,22,72.1019,18,76.1019,14,72.1019" style="stroke:#B38D22;stroke-width:1;"/>
+      <g data-visibility-modifier="PROTECTED_FIELD">
+        <polygon fill="none" points="18,68.1019,22,72.1019,18,76.1019,14,72.1019" style="stroke:#B38D22;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/>
+      </g>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="155.0214" x="27" y="77.0339">protected_member : int</text>
-      <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="15" y="89.1698"/>
+      <g data-visibility-modifier="PRIVATE_FIELD">
+        <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="15" y="89.1698"/>
+      </g>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="136.8495" x="27" y="96.1018">private_member : int</text>
-      <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="15" y="108.2377"/>
+      <g data-visibility-modifier="PRIVATE_FIELD">
+        <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="15" y="108.2377"/>
+      </g>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="42.4198" x="27" y="115.1697">a_ : int</text>
-      <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="15" y="127.3056"/>
+      <g data-visibility-modifier="PRIVATE_FIELD">
+        <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="15" y="127.3056"/>
+      </g>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="43.1758" x="27" y="134.2376">b_ : int</text>
-      <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="15" y="146.3735"/>
+      <g data-visibility-modifier="PRIVATE_FIELD">
+        <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="15" y="146.3735"/>
+      </g>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="41.2858" x="27" y="153.3055">c_ : int</text>
-      <ellipse cx="18" cy="168.4415" fill="none" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <g data-visibility-modifier="PUBLIC_FIELD">
+        <ellipse cx="18" cy="168.4415" fill="none" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      </g>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" text-decoration="underline" textLength="86.8837" x="27" y="172.3734">static_int : int</text>
-      <ellipse cx="18" cy="187.5094" fill="none" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <g data-visibility-modifier="PUBLIC_FIELD">
+        <ellipse cx="18" cy="187.5094" fill="none" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      </g>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" text-decoration="underline" textLength="167.9434" x="27" y="191.4414">static_const_int : const int</text>
-      <ellipse cx="18" cy="206.5773" fill="none" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <g data-visibility-modifier="PUBLIC_FIELD">
+        <ellipse cx="18" cy="206.5773" fill="none" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      </g>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" text-decoration="underline" textLength="237.2571" x="27" y="210.5093">auto_member : const unsigned long</text>
       <line style="stroke:#181818;stroke-width:0.5;" x1="8" x2="367.3408" y1="218.6113" y2="218.6113"/>
-      <ellipse cx="18" cy="233.6452" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <g data-visibility-modifier="PUBLIC_METHOD">
+        <ellipse cx="18" cy="233.6452" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      </g>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="117.9635" x="27" y="237.5772">A() = default : void</text>
-      <ellipse cx="18" cy="252.7131" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <g data-visibility-modifier="PUBLIC_METHOD">
+        <ellipse cx="18" cy="252.7131" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      </g>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="80.7517" x="27" y="256.6451">A(int i) : void</text>
-      <ellipse cx="18" cy="271.781" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <g data-visibility-modifier="PUBLIC_METHOD">
+        <ellipse cx="18" cy="271.781" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      </g>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="151.0454" x="27" y="275.713">A(A &amp;&amp;) = default : void</text>
-      <ellipse cx="18" cy="290.849" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <g data-visibility-modifier="PUBLIC_METHOD">
+        <ellipse cx="18" cy="290.849" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      </g>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="183.1193" x="27" y="294.7809">A(const A &amp;) = deleted : void</text>
-      <ellipse cx="18" cy="309.9169" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <g data-visibility-modifier="PUBLIC_METHOD">
+        <ellipse cx="18" cy="309.9169" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      </g>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="125.9715" x="27" y="313.8489">~A() = default : void</text>
-      <ellipse cx="18" cy="328.9848" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <g data-visibility-modifier="PUBLIC_METHOD">
+        <ellipse cx="18" cy="328.9848" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      </g>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="138.7255" x="27" y="332.9168">basic_method() : void</text>
-      <ellipse cx="18" cy="348.0527" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <g data-visibility-modifier="PUBLIC_METHOD">
+        <ellipse cx="18" cy="348.0527" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      </g>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" text-decoration="underline" textLength="129.7375" x="27" y="351.9847">static_method() : int</text>
-      <ellipse cx="18" cy="367.1206" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <g data-visibility-modifier="PUBLIC_METHOD">
+        <ellipse cx="18" cy="367.1206" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      </g>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="180.0673" x="27" y="371.0526">const_method() const : void</text>
-      <ellipse cx="18" cy="386.1885" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <g data-visibility-modifier="PUBLIC_METHOD">
+        <ellipse cx="18" cy="386.1885" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      </g>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="124.7675" x="27" y="390.1205">auto_method() : int</text>
-      <ellipse cx="18" cy="405.2565" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <g data-visibility-modifier="PUBLIC_METHOD">
+        <ellipse cx="18" cy="405.2565" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      </g>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="116.1996" x="27" y="409.1884">operator++() : A &amp;</text>
-      <ellipse cx="18" cy="424.3244" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <g data-visibility-modifier="PUBLIC_METHOD">
+        <ellipse cx="18" cy="424.3244" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      </g>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="245.1111" x="27" y="428.2564">operator=(A &amp;&amp; other) noexcept : A &amp;</text>
-      <ellipse cx="18" cy="443.3923" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <g data-visibility-modifier="PUBLIC_METHOD">
+        <ellipse cx="18" cy="443.3923" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      </g>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="234.8631" x="27" y="447.3243">operator=(A &amp; other) noexcept : A &amp;</text>
-      <ellipse cx="18" cy="462.4602" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <g data-visibility-modifier="PUBLIC_METHOD">
+        <ellipse cx="18" cy="462.4602" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      </g>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="147.4054" x="27" y="466.3922">size() const : std::size_t</text>
-      <ellipse cx="18" cy="481.5281" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <g data-visibility-modifier="PUBLIC_METHOD">
+        <ellipse cx="18" cy="481.5281" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      </g>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="169.9453" x="27" y="485.4601">double_int(const int i) : int</text>
-      <ellipse cx="18" cy="500.596" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <g data-visibility-modifier="PUBLIC_METHOD">
+        <ellipse cx="18" cy="500.596" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      </g>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="266.517" x="27" y="504.528">sum(const double a, const double b) : int</text>
-      <ellipse cx="18" cy="519.664" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <g data-visibility-modifier="PUBLIC_METHOD">
+        <ellipse cx="18" cy="519.664" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      </g>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="162.6513" x="27" y="523.5959">default_int(int i = 12) : int</text>
-      <ellipse cx="18" cy="538.7319" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <g data-visibility-modifier="PUBLIC_METHOD">
+        <ellipse cx="18" cy="538.7319" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      </g>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="335.3408" x="27" y="542.6639">default_string(int i, std::string s = "abc") : std::string</text>
-      <ellipse cx="18" cy="557.7998" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      <g data-visibility-modifier="PUBLIC_METHOD">
+        <ellipse cx="18" cy="557.7998" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1;"/>
+      </g>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" text-decoration="underline" textLength="156.0574" x="27" y="561.7318">create_from_int(int i) : A</text>
-      <polygon fill="#FFFF44" points="18,571.8677,22,575.8677,18,579.8677,14,575.8677" style="stroke:#B38D22;stroke-width:1;"/>
+      <g data-visibility-modifier="PROTECTED_METHOD">
+        <polygon fill="#FFFF44" points="18,571.8677,22,575.8677,18,579.8677,14,575.8677" style="stroke:#B38D22;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/>
+      </g>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="169.3154" x="27" y="580.7997">protected_method() : void</text>
-      <rect fill="#F24D5C" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="15" y="592.9356"/>
+      <g data-visibility-modifier="PRIVATE_METHOD">
+        <rect fill="#F24D5C" height="6" style="stroke:#C82930;stroke-width:1;" width="6" x="15" y="592.9356"/>
+      </g>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="151.1434" x="27" y="599.8676">private_method() : void</text>
-      <polygon fill="#FFFF44" points="18,610.0035,22,614.0035,18,618.0035,14,614.0035" style="stroke:#B38D22;stroke-width:1;"/>
+      <g data-visibility-modifier="PROTECTED_METHOD">
+        <polygon fill="#FFFF44" points="18,610.0035,22,614.0035,18,618.0035,14,614.0035" style="stroke:#B38D22;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/>
+      </g>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="265.733" x="27" y="618.9355">compare : std::function&lt;bool (const int)&gt;</text>
     </g>
   </g>
