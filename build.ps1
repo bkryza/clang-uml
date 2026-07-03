@@ -1,5 +1,5 @@
 param (
-  $Prefix="C:\clang-uml-llvm20",
+  $Prefix="C:\clang-uml-llvm22",
   $BuildType="Release"
 )
 
