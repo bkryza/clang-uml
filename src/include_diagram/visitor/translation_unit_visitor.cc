@@ -265,8 +265,8 @@ translation_unit_visitor::include_visitor::process_source_file(
             source_file.set_type(source_file_t::kHeader);
 
         source_file.set_file(std::filesystem::absolute(file.string())
-                                 .lexically_normal()
-                                 .string());
+                .lexically_normal()
+                .string());
 
         if (util::is_relative_to(file_path, config().root_directory())) {
             source_file.set_file_relative(util::path_to_url(

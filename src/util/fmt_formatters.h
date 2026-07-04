@@ -23,8 +23,8 @@
     namespace fmt {                                                            \
     template <> struct formatter<TYPE> : formatter<std::string> {              \
         template <typename FormatContext>                                      \
-        auto format(                                                           \
-            const TYPE &level, FormatContext &ctx) -> decltype(ctx.out())      \
+        auto format(const TYPE &level, FormatContext &ctx)                     \
+            -> decltype(ctx.out())                                             \
         {                                                                      \
             return ::fmt::format_to(ctx.out(), "{}", to_string(level));        \
         }                                                                      \

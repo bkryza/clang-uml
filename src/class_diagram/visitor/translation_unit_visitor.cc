@@ -675,12 +675,12 @@ void translation_unit_visitor::process_constraint_requirements(
         }
     }
     else if (const auto *binop = llvm::dyn_cast<clang::BinaryOperator>(expr);
-             binop) {
+        binop) {
         process_constraint_requirements(cpt, binop->getLHS(), concept_model);
         process_constraint_requirements(cpt, binop->getRHS(), concept_model);
     }
     else if (const auto *unop = llvm::dyn_cast<clang::UnaryOperator>(expr);
-             unop) {
+        unop) {
         process_constraint_requirements(cpt, unop->getSubExpr(), concept_model);
     }
 }
@@ -1243,7 +1243,7 @@ void translation_unit_visitor::process_objc_ivar(
             // Relationships to fields whose type is an anonymous and nested
             // struct have to be handled separately here
             anonymous_struct_relationships_[field_type->getAsRecordDecl()
-                                                ->getID()] =
+                    ->getID()] =
                 std::make_tuple(field.name(), relationship_hint, field.access(),
                     field.destination_multiplicity());
         }
@@ -1289,7 +1289,7 @@ void translation_unit_visitor::process_class_bases(
         }
         else if (const auto *record_type =
                      base.getType()->getAs<clang::RecordType>();
-                 record_type != nullptr) {
+            record_type != nullptr) {
             parent_id = common::to_id(*record_type->getDecl());
         }
         else
@@ -1471,9 +1471,9 @@ void translation_unit_visitor::process_method(
 
     // Move dereferencing to build() method of template_builder
     if (const auto *templ = mf.getReturnType()
-                                .getNonReferenceType()
-                                .getUnqualifiedType()
-                                ->getAs<clang::TemplateSpecializationType>();
+            .getNonReferenceType()
+            .getUnqualifiedType()
+            ->getAs<clang::TemplateSpecializationType>();
         templ != nullptr) {
         const auto *unaliased_type = templ;
         if (unaliased_type->isTypeAlias())
@@ -1819,7 +1819,7 @@ bool translation_unit_visitor::find_relationships(const clang::Decl *decl,
                 else if (const auto *function_type =
                              template_argument.getAsType()
                                  ->getAs<clang::FunctionProtoType>();
-                         function_type != nullptr) {
+                    function_type != nullptr) {
                     for (const auto &param_type :
                         function_type->param_types()) {
                         result = find_relationships(decl, param_type,
@@ -1848,11 +1848,11 @@ bool translation_unit_visitor::find_relationships(const clang::Decl *decl,
     }
     else if (const auto *template_specialization_type =
                  type->getAs<clang::TemplateSpecializationType>();
-             template_specialization_type != nullptr) {
+        template_specialization_type != nullptr) {
         const auto *type_instantiation_template_decl =
             template_specialization_type->getTemplateName().getAsTemplateDecl();
         if (should_include(template_specialization_type->getTemplateName()
-                               .getAsTemplateDecl())) {
+                    .getAsTemplateDecl())) {
             relationships.emplace_back(
                 template_specialization_type->getTemplateName()
                     .getAsTemplateDecl()
@@ -1893,10 +1893,9 @@ bool translation_unit_visitor::find_relationships(const clang::Decl *decl,
                 clang::TemplateArgument::ArgKind::TemplateExpansion) {
                 // pass
             }
-            else if (const auto *function_type =
-                         template_argument.getAsType()
-                             ->getAs<clang::FunctionProtoType>();
-                     function_type != nullptr) {
+            else if (const auto *function_type = template_argument.getAsType()
+                         ->getAs<clang::FunctionProtoType>();
+                function_type != nullptr) {
                 for (const auto &param_type : function_type->param_types()) {
                     result = find_relationships(decl, param_type, relationships,
                         relationship_t::kDependency);
@@ -1996,11 +1995,10 @@ void translation_unit_visitor::process_function_parameter(
         LOG_DBG("Looking for relationships in type: {}",
             common::to_string(p.getType(), p.getASTContext()));
 
-        if (const auto *templ =
-                p.getType()
-                    .getNonReferenceType()
-                    .getUnqualifiedType()
-                    ->getAs<clang::TemplateSpecializationType>();
+        if (const auto *templ = p.getType()
+                .getNonReferenceType()
+                .getUnqualifiedType()
+                ->getAs<clang::TemplateSpecializationType>();
             templ != nullptr) {
             auto template_specialization_ptr =
                 std::make_unique<class_>(config().using_namespace());
@@ -2391,7 +2389,7 @@ void translation_unit_visitor::process_field(
                 // Relationships to fields whose type is an anonymous nested
                 // struct have to be handled separately here
                 anonymous_struct_relationships_[field_type->getAsRecordDecl()
-                                                    ->getID()] =
+                        ->getID()] =
                     std::make_tuple(field.name(), relationship_hint,
                         field.access(), field.destination_multiplicity());
             }

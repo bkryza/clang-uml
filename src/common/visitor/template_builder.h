@@ -752,9 +752,8 @@ void template_builder<VisitorT>::build_from_template_specialization_type(
     const auto *template_type_ptr = &template_type_decl;
 
     if (template_type_decl.isTypeAlias()) {
-        if (const auto *tsp =
-                template_type_decl.getAliasedType()
-                    ->template getAs<clang::TemplateSpecializationType>();
+        if (const auto *tsp = template_type_decl.getAliasedType()
+                ->template getAs<clang::TemplateSpecializationType>();
             tsp != nullptr)
             template_type_ptr = tsp;
     }
@@ -804,8 +803,8 @@ void template_builder<VisitorT>::build(const clang::NamedDecl &location_decl,
 
         namespace_ ns{
             common::get_tag_namespace(*class_template_decl->getTemplatedDecl()
-                                           ->getParent()
-                                           ->getOuterLexicalRecordContext())};
+                    ->getParent()
+                    ->getOuterLexicalRecordContext())};
 
         std::string ns_str = ns.to_string();
         std::string name = template_decl->getQualifiedNameAsString();
@@ -1490,8 +1489,8 @@ std::optional<template_parameter> template_builder<VisitorT>::try_as_array(
     else if (array_type->isConstantArrayType()) {
         argument.add_template_param(template_parameter::make_argument(
             std::to_string(((clang::ConstantArrayType *)array_type) // NOLINT
-                               ->getSize()
-                               .getLimitedValue())));
+                    ->getSize()
+                    .getLimitedValue())));
     }
 
     // TODO: Handle variable sized arrays
@@ -1660,8 +1659,8 @@ template_builder<VisitorT>::try_as_template_specialization_type(
 
     auto nested_template_instantiation =
         visitor_.create_element(nested_template_type->getTemplateName()
-                                    .getAsTemplateDecl()
-                                    ->getTemplatedDecl());
+                .getAsTemplateDecl()
+                ->getTemplatedDecl());
     build_from_template_specialization_type(location_decl,
         *nested_template_instantiation, cls, *nested_template_type,
         diagram().should_include(
@@ -1851,7 +1850,7 @@ template_builder<VisitorT>::try_as_record_type(
         }
     }
     else if (const auto *record_type_decl = record_type->getAsRecordDecl();
-             record_type_decl != nullptr) {
+        record_type_decl != nullptr) {
 #if LLVM_VERSION_MAJOR >= 22
         // In LLVM 22+, non-template record types used as template arguments
         // may be printed without full namespace qualification by to_string().

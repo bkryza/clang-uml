@@ -47,7 +47,7 @@ void inject_resource_dir(
         clang::GetResourcesPath(argv_0, main_addr)
 #endif
                                                           )
-                                                         .c_str())(args, "");
+            .c_str())(args, "");
 }
 } // namespace
 

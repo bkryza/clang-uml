@@ -666,7 +666,7 @@ cli_flow_t cli_handler::add_config_diagram(
     YAML::Node doc = YAML::LoadFile(config_file.string());
 
     for (YAML::const_iterator it = doc["diagrams"].begin();
-         it != doc["diagrams"].end(); ++it) {
+        it != doc["diagrams"].end(); ++it) {
         if (it->first.as<std::string>() == name) {
             std::cerr << "ERROR: " << config_file_path
                       << " file already contains '" << name << "' diagram";

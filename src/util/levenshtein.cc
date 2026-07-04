@@ -59,7 +59,7 @@ std::vector<std::string> get_approximate_matches(
 
     std::vector<std::string> result;
     for (size_t i = 0; i < std::min<size_t>(distance_pairs.size(), max_results);
-         ++i) {
+        ++i) {
         result.push_back(distance_pairs[i].second);
     }
 

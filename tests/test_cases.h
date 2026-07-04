@@ -2085,7 +2085,7 @@ bool MessageChainsOrder<json_t>(
     const auto sequence_chains_count{
         d.src["sequences"][0]["message_chains"].size()};
     for (uint32_t chain_index = 0; chain_index < sequence_chains_count;
-         chain_index++) {
+        chain_index++) {
         for (const auto &messages : message_chains) {
 
             int64_t offset{0};

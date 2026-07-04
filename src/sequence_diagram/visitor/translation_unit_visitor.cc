@@ -1518,7 +1518,7 @@ bool translation_unit_visitor::process_callee(clang::CallExpr *expr,
     //
     else if (const auto *cuda_call_expr =
                  llvm::dyn_cast_or_null<clang::CUDAKernelCallExpr>(expr);
-             cuda_call_expr != nullptr) {
+        cuda_call_expr != nullptr) {
         result = process_cuda_kernel_call_expression(m, cuda_call_expr);
     }
     //
@@ -1526,7 +1526,7 @@ bool translation_unit_visitor::process_callee(clang::CallExpr *expr,
     //
     else if (const auto *operator_call_expr =
                  llvm::dyn_cast_or_null<clang::CXXOperatorCallExpr>(expr);
-             operator_call_expr != nullptr) {
+        operator_call_expr != nullptr) {
 
         result = process_operator_call_expression(m, operator_call_expr);
     }
@@ -1535,7 +1535,7 @@ bool translation_unit_visitor::process_callee(clang::CallExpr *expr,
     //
     else if (const auto *method_call_expr =
                  llvm::dyn_cast_or_null<clang::CXXMemberCallExpr>(expr);
-             method_call_expr != nullptr) {
+        method_call_expr != nullptr) {
 
         result = process_class_method_call_expression(m, method_call_expr);
     }
@@ -1725,9 +1725,9 @@ bool translation_unit_visitor::VisitReturnStmt(clang::ReturnStmt *stmt)
     }
     else if (context().current_function_template_decl_ != nullptr) {
         m.set_return_type(context()
-                              .current_function_template_decl_->getAsFunction()
-                              ->getReturnType()
-                              .getAsString());
+                .current_function_template_decl_->getAsFunction()
+                ->getReturnType()
+                .getAsString());
     }
     else if (context().current_method_decl_ != nullptr) {
         m.set_return_type(
@@ -1795,9 +1795,9 @@ bool translation_unit_visitor::VisitCoyieldExpr(clang::CoyieldExpr *expr)
     }
     else if (context().current_function_template_decl_ != nullptr) {
         m.set_return_type(context()
-                              .current_function_template_decl_->getAsFunction()
-                              ->getReturnType()
-                              .getAsString());
+                .current_function_template_decl_->getAsFunction()
+                ->getReturnType()
+                .getAsString());
     }
     else if (context().current_method_decl_ != nullptr) {
         m.set_return_type(
@@ -1861,9 +1861,9 @@ bool translation_unit_visitor::VisitCoreturnStmt(clang::CoreturnStmt *stmt)
     }
     else if (context().current_function_template_decl_ != nullptr) {
         m.set_return_type(context()
-                              .current_function_template_decl_->getAsFunction()
-                              ->getReturnType()
-                              .getAsString());
+                .current_function_template_decl_->getAsFunction()
+                ->getReturnType()
+                .getAsString());
     }
     else if (context().current_method_decl_ != nullptr) {
         m.set_return_type(
@@ -2169,7 +2169,7 @@ bool translation_unit_visitor::process_class_template_method_call_expression(
 
     if (is_callee_valid_template_specialization(dependent_member_callee)) {
         if (const auto *tst = dependent_member_callee->getBaseType()
-                                  ->getAs<clang::TemplateSpecializationType>();
+                ->getAs<clang::TemplateSpecializationType>();
             tst != nullptr) {
             const auto *template_declaration =
                 tst->getTemplateName().getAsTemplateDecl();
@@ -3347,8 +3347,8 @@ translation_unit_visitor::get_expression_comment(const clang::SourceManager &sm,
 
     if (!caller_id.is_global() &&
         !processed_comments_by_caller_id_
-             .emplace(caller_id.ast_local_value(), raw_comment)
-             .second) {
+            .emplace(caller_id.ast_local_value(), raw_comment)
+            .second) {
         return {};
     }
 
