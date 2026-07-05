@@ -2,7 +2,7 @@ Source: clang-uml
 Maintainer: Bartek Kryza <bkryza@gmail.com>
 Section: devel
 Priority: optional
-Build-Depends: debhelper, git, make, ccache, pkg-config, gcc, g++, gdb, cmake (>= 3.16), libyaml-cpp-dev, llvm-22, llvm-22-dev, clang-22, clang-tools-22, libclang-22-dev, libclang-cpp22-dev, libmlir-22-dev, mlir-22-tools, bash-completion, dh-sequence-bash-completion, libdw-dev, libunwind-dev
+Build-Depends: debhelper, git, make, ccache, pkg-config, gcc, g++, gdb, cmake (>= 3.16), libyaml-cpp-dev, llvm-22, llvm-22-dev, clang-22, clang-tools-22, libclang-22-dev, libclang-cpp22-dev, libmlir-22-dev, mlir-22-tools, bash-completion, dh-sequence-bash-completion, libdw-dev, libunwind-dev, robin-map-dev
 Standards-Version: 4.3.0
 Vcs-Browser: https://github.com/bkryza/clang-uml
 Vcs-Git: https://github.com/bkryza/clang-uml.git
