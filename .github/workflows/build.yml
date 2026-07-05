@@ -50,7 +50,7 @@ jobs:
     - name: Run coverage
       run: |
         grcov --llvm --binary-path debug --output-path coverage.info -t lcov --keep-only 'src/*' --source-dir . --ignore src/main.cc --ignore src/common/generators/generators.cc  .
-        lcov --ignore-errors inconsistent -l coverage.info
+        lcov --ignore-errors inconsistent,format --erase-functions '__cxx_global_var_init' -l coverage.info
     - name: Upload coverage
       uses: codecov/codecov-action@v3
       with:
