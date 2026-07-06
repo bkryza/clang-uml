@@ -1,5 +1,7 @@
 # CHANGELOG
 
+### 0.6.3
+  * Added support for LLVm 22 (#450)
   * Fixed tests building with LLVM 21 (#447, Thanks @krzysiek358)
 
 ### 0.6.2

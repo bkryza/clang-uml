@@ -193,15 +193,15 @@ init_compile_commands: debug
 
 .PHONY: clang-format
 clang-format:
-	docker run --rm -v $(CURDIR):/root/sources bkryza/clang-format-check:1.5
+	docker run --rm -v $(CURDIR):/root/sources bkryza/clang-format-check:1.6
 
 .PHONY: format
 format:
-	docker run --rm -v $(CURDIR):/root/sources bkryza/clang-format-check:1.5
+	docker run --rm -v $(CURDIR):/root/sources bkryza/clang-format-check:1.6
 
 .PHONY: debug_tidy
 tidy: debug
-	run-clang-tidy-17 -extra-arg=-Wno-unknown-warning-option -j $(NUMPROC) -p debug "${PWD}/src"
+	run-clang-tidy-22 -extra-arg=-std=c++17 -extra-arg=-Wno-unknown-warning-option -j $(NUMPROC) -p debug "${PWD}/src"
 
 .PHONY: check-formatting
 check-formatting:

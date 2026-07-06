@@ -450,7 +450,7 @@ YAML::Emitter &operator<<(
         out << c.skip_redundant_dependencies;
     }
     else if (const auto *sd = dynamic_cast<const sequence_diagram *>(&c);
-             sd != nullptr) {
+        sd != nullptr) {
         out << sd->title;
         out << c.combine_free_functions_into_file_participants;
         out << c.inline_lambda_messages;
@@ -466,13 +466,13 @@ YAML::Emitter &operator<<(
         out << c.message_name_width;
     }
     else if (const auto *pd = dynamic_cast<const package_diagram *>(&c);
-             pd != nullptr) {
+        pd != nullptr) {
         out << pd->title;
         out << c.generate_packages;
         out << c.package_type;
     }
     else if (const auto *id = dynamic_cast<const include_diagram *>(&c);
-             id != nullptr) {
+        id != nullptr) {
         out << id->title;
         out << c.generate_system_headers;
     }

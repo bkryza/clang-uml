@@ -35,7 +35,7 @@ TEST_CASE("t00051")
             "(lambda at t00051.cc:59:27) &&"));
         REQUIRE(IsMethod<Private>(src, "A", "start_thread3",
             "B<(lambda at t00051.cc:43:18),(lambda at "
-            "t00051.cc:43:27)>"));
+            "t00051.cc:43:28)>"));
         REQUIRE(IsMethod<Private>(
             src, "A", "get_function", "(lambda at t00051.cc:48:16)"));
 
@@ -44,12 +44,12 @@ TEST_CASE("t00051")
         REQUIRE(IsMethod<Public>(src, "B<F,FF=F>", "ff", "void"));
 
         REQUIRE(IsClassTemplate(
-            src, "B<(lambda at t00051.cc:43:18),(lambda at t00051.cc:43:27)>"));
+            src, "B<(lambda at t00051.cc:43:18),(lambda at t00051.cc:43:28)>"));
 
         REQUIRE(IsInstantiation(src, "B<F,FF=F>",
-            "B<(lambda at t00051.cc:43:18),(lambda at t00051.cc:43:27)>"));
+            "B<(lambda at t00051.cc:43:18),(lambda at t00051.cc:43:28)>"));
 
         REQUIRE(IsDependency(src, "A",
-            "B<(lambda at t00051.cc:43:18),(lambda at t00051.cc:43:27)>"));
+            "B<(lambda at t00051.cc:43:18),(lambda at t00051.cc:43:28)>"));
     });
 }

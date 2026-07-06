@@ -55,8 +55,8 @@
 
 namespace fmt {
 template <> struct formatter<inja::json> : formatter<std::string> {
-    auto format(const inja::json &json,
-        format_context &ctx) const -> decltype(ctx.out())
+    auto format(const inja::json &json, format_context &ctx) const
+        -> decltype(ctx.out())
     {
         return fmt::format_to(ctx.out(), "{}", json.dump());
     }

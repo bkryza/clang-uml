@@ -280,8 +280,8 @@ void generator<C, D>::generate_row_column_hints(std::ostream &ostr,
         element_opt = model.get((uns | entity_name).to_string());
 
     for (auto it = cbegin(group_elements);
-         it != cend(group_elements) && std::next(it) != cend(group_elements);
-         ++it) {
+        it != cend(group_elements) && std::next(it) != cend(group_elements);
+        ++it) {
         const auto &first = *it;
         const auto &second = *std::next(it);
 

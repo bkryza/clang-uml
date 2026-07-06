@@ -557,7 +557,7 @@ void generator::generate_participant(
 
         auto participant_name = util::path_to_url(std::filesystem::relative(
             std::filesystem::path{file_path}, config().root_directory())
-                                                      .string());
+                .string());
 
         ostr << indent(1) << "participant "
              << fmt::format("C_{:022}", file_id.value()) << " as "
