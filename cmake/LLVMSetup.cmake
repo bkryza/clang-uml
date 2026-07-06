@@ -97,7 +97,7 @@ else(LINK_LLVM_SHARED)
         if(${LLVM_PACKAGE_VERSION} VERSION_GREATER_EQUAL "18.1")
             list(APPEND LIBTOOLING_LIBS clangAPINotes)
         endif()
-        if(${LLVM_PACKAGE_VERSION} VERSION_GREATER_EQUAL "22.0")
+        if(${LLVM_PACKAGE_VERSION} VERSION_GREATER_EQUAL "22.1")
             list(APPEND LIBTOOLING_LIBS clangOptions
                                         clangAnalysisLifetimeSafety
                                         LLVMPlugins)
