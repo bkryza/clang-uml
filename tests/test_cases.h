@@ -377,13 +377,12 @@ template <> bool IsClassOnce(const plantuml_t &d, QualifiedName cls)
     util::replace_all(name, "]", "\\]");
 
     const std::string alias_regex("[A-Z]_[0-9]+");
-    const std::vector<std::string> keywords{"class", "abstract", "enum",
-        "protocol"};
+    const std::vector<std::string> keywords{
+        "class", "abstract", "enum", "protocol"};
 
     int64_t total{0};
     for (const auto &kw : keywords) {
-        total +=
-            d.count(kw + "\\s\"" + name + "\"\\sas\\s" + alias_regex);
+        total += d.count(kw + "\\s\"" + name + "\"\\sas\\s" + alias_regex);
     }
 
     return total == 1;
