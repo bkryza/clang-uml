@@ -1,208 +1,225 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" data-diagram-type="SEQUENCE" height="349px" preserveAspectRatio="none" style="width:894px;height:349px;background:#FFFFFF;" version="1.1" viewBox="0 0 894 349" width="894px" zoomAndPan="magnify">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" data-diagram-type="SEQUENCE" height="351px" preserveAspectRatio="none" style="width:899px;height:351px;background:#FFFFFF;" version="1.1" viewBox="0 0 899 351" width="899px" zoomAndPan="magnify">
+  <?plantuml 1.2026.6?>
   <defs>
     <style type="text/css">a:hover { text-decoration: underline; }</style>
   </defs>
   <g>
     <g>
-      <title>tmain()</title>
+      <title>tmain..</title>
       <rect fill="#FFFFFF" height="243.9421" style="stroke:#181818;stroke-width:1;" width="10" x="30.3309" y="49.0679"/>
     </g>
     <g>
-      <title>Answer&lt;Factorial&lt;5&gt;,120&gt;</title>
+      <title>Answer.Factorial.5..120.</title>
       <rect fill="#FFFFFF" height="220.2361" style="stroke:#181818;stroke-width:1;" width="10" x="164.1745" y="72.7739"/>
     </g>
     <g>
-      <title>Factorial&lt;5&gt;</title>
+      <title>Factorial.5.</title>
       <rect fill="#FFFFFF" height="188.5301" style="stroke:#181818;stroke-width:1;" width="10" x="314.811" y="104.4799"/>
     </g>
     <g>
-      <title>Factorial&lt;4&gt;</title>
+      <title>Factorial.4.</title>
       <rect fill="#FFFFFF" height="156.8241" style="stroke:#181818;stroke-width:1;" width="10" x="419.0587" y="136.186"/>
     </g>
     <g>
-      <title>Factorial&lt;3&gt;</title>
+      <title>Factorial.3.</title>
       <rect fill="#FFFFFF" height="125.118" style="stroke:#181818;stroke-width:1;" width="10" x="523.3064" y="167.892"/>
     </g>
     <g>
-      <title>Factorial&lt;2&gt;</title>
+      <title>Factorial.2.</title>
       <rect fill="#FFFFFF" height="93.412" style="stroke:#181818;stroke-width:1;" width="10" x="627.5541" y="199.598"/>
     </g>
     <g>
-      <title>Factorial&lt;1&gt;</title>
+      <title>Factorial.1.</title>
       <rect fill="#FFFFFF" height="61.706" style="stroke:#181818;stroke-width:1;" width="10" x="731.8018" y="231.304"/>
     </g>
     <g>
-      <title>Factorial&lt;0&gt;</title>
+      <title>Factorial.0.</title>
       <rect fill="#FFFFFF" height="30" style="stroke:#181818;stroke-width:1;" width="10" x="836.0495" y="263.01"/>
     </g>
-    <g>
-      <title>tmain()</title>
-      <rect fill="#000000" fill-opacity="0.00000" height="271.9421" width="8" x="31.3309" y="39.0679"/>
-      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="35" x2="35" y1="39.0679" y2="311.01"/>
+    <g class="participant-lifeline" data-entity-uid="part1" data-qualified-name="C_0013541713203140637275" data-source-line="1" id="part1-lifeline">
+      <g>
+        <title>tmain..</title>
+        <rect fill="#000000" fill-opacity="0.00000" height="271.9421" width="8" x="31.3309" y="39.0679"/>
+        <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5,5;" x1="35" x2="35" y1="39.0679" y2="311.01"/>
+      </g>
     </g>
-    <g>
-      <title>Answer&lt;Factorial&lt;5&gt;,120&gt;</title>
-      <rect fill="#000000" fill-opacity="0.00000" height="271.9421" width="8" x="165.1745" y="39.0679"/>
-      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="168.6618" x2="168.6618" y1="39.0679" y2="311.01"/>
+    <g class="participant-lifeline" data-entity-uid="part2" data-qualified-name="C_0009974384032448996891" data-source-line="3" id="part2-lifeline">
+      <g>
+        <title>Answer.Factorial.5..120.</title>
+        <rect fill="#000000" fill-opacity="0.00000" height="271.9421" width="8" x="165.1745" y="39.0679"/>
+        <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5,5;" x1="168.6618" x2="168.6618" y1="39.0679" y2="311.01"/>
+      </g>
     </g>
-    <g>
-      <title>Factorial&lt;5&gt;</title>
-      <rect fill="#000000" fill-opacity="0.00000" height="271.9421" width="8" x="315.811" y="39.0679"/>
-      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="319.6871" x2="319.6871" y1="39.0679" y2="311.01"/>
+    <g class="participant-lifeline" data-entity-uid="part3" data-qualified-name="C_0014470348070131105152" data-source-line="6" id="part3-lifeline">
+      <g>
+        <title>Factorial.5.</title>
+        <rect fill="#000000" fill-opacity="0.00000" height="271.9421" width="8" x="315.811" y="39.0679"/>
+        <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5,5;" x1="319.6871" x2="319.6871" y1="39.0679" y2="311.01"/>
+      </g>
     </g>
-    <g>
-      <title>Factorial&lt;4&gt;</title>
-      <rect fill="#000000" fill-opacity="0.00000" height="271.9421" width="8" x="420.0587" y="39.0679"/>
-      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="423.9348" x2="423.9348" y1="39.0679" y2="311.01"/>
+    <g class="participant-lifeline" data-entity-uid="part4" data-qualified-name="C_0015923558380730687307" data-source-line="9" id="part4-lifeline">
+      <g>
+        <title>Factorial.4.</title>
+        <rect fill="#000000" fill-opacity="0.00000" height="271.9421" width="8" x="420.0587" y="39.0679"/>
+        <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5,5;" x1="423.9348" x2="423.9348" y1="39.0679" y2="311.01"/>
+      </g>
     </g>
-    <g>
-      <title>Factorial&lt;3&gt;</title>
-      <rect fill="#000000" fill-opacity="0.00000" height="271.9421" width="8" x="524.3064" y="39.0679"/>
-      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="528.1825" x2="528.1825" y1="39.0679" y2="311.01"/>
+    <g class="participant-lifeline" data-entity-uid="part5" data-qualified-name="C_0009626949398905800989" data-source-line="12" id="part5-lifeline">
+      <g>
+        <title>Factorial.3.</title>
+        <rect fill="#000000" fill-opacity="0.00000" height="271.9421" width="8" x="524.3064" y="39.0679"/>
+        <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5,5;" x1="528.1825" x2="528.1825" y1="39.0679" y2="311.01"/>
+      </g>
     </g>
-    <g>
-      <title>Factorial&lt;2&gt;</title>
-      <rect fill="#000000" fill-opacity="0.00000" height="271.9421" width="8" x="628.5541" y="39.0679"/>
-      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="632.4302" x2="632.4302" y1="39.0679" y2="311.01"/>
+    <g class="participant-lifeline" data-entity-uid="part6" data-qualified-name="C_0012686412387984414310" data-source-line="15" id="part6-lifeline">
+      <g>
+        <title>Factorial.2.</title>
+        <rect fill="#000000" fill-opacity="0.00000" height="271.9421" width="8" x="628.5541" y="39.0679"/>
+        <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5,5;" x1="632.4302" x2="632.4302" y1="39.0679" y2="311.01"/>
+      </g>
     </g>
-    <g>
-      <title>Factorial&lt;1&gt;</title>
-      <rect fill="#000000" fill-opacity="0.00000" height="271.9421" width="8" x="732.8018" y="39.0679"/>
-      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="736.6779" x2="736.6779" y1="39.0679" y2="311.01"/>
+    <g class="participant-lifeline" data-entity-uid="part7" data-qualified-name="C_0002344415787796910968" data-source-line="18" id="part7-lifeline">
+      <g>
+        <title>Factorial.1.</title>
+        <rect fill="#000000" fill-opacity="0.00000" height="271.9421" width="8" x="732.8018" y="39.0679"/>
+        <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5,5;" x1="736.6779" x2="736.6779" y1="39.0679" y2="311.01"/>
+      </g>
     </g>
-    <g>
-      <title>Factorial&lt;0&gt;</title>
-      <rect fill="#000000" fill-opacity="0.00000" height="271.9421" width="8" x="837.0495" y="39.0679"/>
-      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="840.9256" x2="840.9256" y1="39.0679" y2="311.01"/>
+    <g class="participant-lifeline" data-entity-uid="part8" data-qualified-name="C_0012957705056319589666" data-source-line="21" id="part8-lifeline">
+      <g>
+        <title>Factorial.0.</title>
+        <rect fill="#000000" fill-opacity="0.00000" height="271.9421" width="8" x="837.0495" y="39.0679"/>
+        <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5,5;" x1="840.9256" x2="840.9256" y1="39.0679" y2="311.01"/>
+      </g>
     </g>
-    <g class="participant participant-head" data-participant="C_0013541713203140637275">
+    <g class="participant participant-head" data-entity-uid="part1" data-qualified-name="C_0013541713203140637275" data-source-line="1" id="part1-head">
       <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="60.6618" x="5" y="5"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="46.6618" x="12" y="26.9659">tmain()</text>
     </g>
-    <g class="participant participant-tail" data-participant="C_0013541713203140637275">
+    <g class="participant participant-tail" data-entity-uid="part1" data-qualified-name="C_0013541713203140637275" data-source-line="1" id="part1-tail">
       <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="60.6618" x="5" y="310.01"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="46.6618" x="12" y="331.976">tmain()</text>
     </g>
-    <g class="participant participant-head" data-participant="C_0009974384032448996891">
+    <g class="participant participant-head" data-entity-uid="part2" data-qualified-name="C_0009974384032448996891" data-source-line="3" id="part2-head">
       <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="187.0253" x="75.6618" y="5"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="173.0253" x="82.6618" y="26.9659">Answer&lt;Factorial&lt;5&gt;,120&gt;</text>
     </g>
-    <g class="participant participant-tail" data-participant="C_0009974384032448996891">
+    <g class="participant participant-tail" data-entity-uid="part2" data-qualified-name="C_0009974384032448996891" data-source-line="3" id="part2-tail">
       <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="187.0253" x="75.6618" y="310.01"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="173.0253" x="82.6618" y="331.976">Answer&lt;Factorial&lt;5&gt;,120&gt;</text>
     </g>
-    <g class="participant participant-head" data-participant="C_0014470348070131105152">
+    <g class="participant participant-head" data-entity-uid="part3" data-qualified-name="C_0014470348070131105152" data-source-line="6" id="part3-head">
       <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="94.2477" x="272.6871" y="5"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="80.2477" x="279.6871" y="26.9659">Factorial&lt;5&gt;</text>
     </g>
-    <g class="participant participant-tail" data-participant="C_0014470348070131105152">
+    <g class="participant participant-tail" data-entity-uid="part3" data-qualified-name="C_0014470348070131105152" data-source-line="6" id="part3-tail">
       <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="94.2477" x="272.6871" y="310.01"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="80.2477" x="279.6871" y="331.976">Factorial&lt;5&gt;</text>
     </g>
-    <g class="participant participant-head" data-participant="C_0015923558380730687307">
+    <g class="participant participant-head" data-entity-uid="part4" data-qualified-name="C_0015923558380730687307" data-source-line="9" id="part4-head">
       <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="94.2477" x="376.9348" y="5"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="80.2477" x="383.9348" y="26.9659">Factorial&lt;4&gt;</text>
     </g>
-    <g class="participant participant-tail" data-participant="C_0015923558380730687307">
+    <g class="participant participant-tail" data-entity-uid="part4" data-qualified-name="C_0015923558380730687307" data-source-line="9" id="part4-tail">
       <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="94.2477" x="376.9348" y="310.01"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="80.2477" x="383.9348" y="331.976">Factorial&lt;4&gt;</text>
     </g>
-    <g class="participant participant-head" data-participant="C_0009626949398905800989">
+    <g class="participant participant-head" data-entity-uid="part5" data-qualified-name="C_0009626949398905800989" data-source-line="12" id="part5-head">
       <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="94.2477" x="481.1825" y="5"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="80.2477" x="488.1825" y="26.9659">Factorial&lt;3&gt;</text>
     </g>
-    <g class="participant participant-tail" data-participant="C_0009626949398905800989">
+    <g class="participant participant-tail" data-entity-uid="part5" data-qualified-name="C_0009626949398905800989" data-source-line="12" id="part5-tail">
       <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="94.2477" x="481.1825" y="310.01"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="80.2477" x="488.1825" y="331.976">Factorial&lt;3&gt;</text>
     </g>
-    <g class="participant participant-head" data-participant="C_0012686412387984414310">
+    <g class="participant participant-head" data-entity-uid="part6" data-qualified-name="C_0012686412387984414310" data-source-line="15" id="part6-head">
       <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="94.2477" x="585.4302" y="5"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="80.2477" x="592.4302" y="26.9659">Factorial&lt;2&gt;</text>
     </g>
-    <g class="participant participant-tail" data-participant="C_0012686412387984414310">
+    <g class="participant participant-tail" data-entity-uid="part6" data-qualified-name="C_0012686412387984414310" data-source-line="15" id="part6-tail">
       <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="94.2477" x="585.4302" y="310.01"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="80.2477" x="592.4302" y="331.976">Factorial&lt;2&gt;</text>
     </g>
-    <g class="participant participant-head" data-participant="C_0002344415787796910968">
+    <g class="participant participant-head" data-entity-uid="part7" data-qualified-name="C_0002344415787796910968" data-source-line="18" id="part7-head">
       <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="94.2477" x="689.6779" y="5"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="80.2477" x="696.6779" y="26.9659">Factorial&lt;1&gt;</text>
     </g>
-    <g class="participant participant-tail" data-participant="C_0002344415787796910968">
+    <g class="participant participant-tail" data-entity-uid="part7" data-qualified-name="C_0002344415787796910968" data-source-line="18" id="part7-tail">
       <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="94.2477" x="689.6779" y="310.01"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="80.2477" x="696.6779" y="331.976">Factorial&lt;1&gt;</text>
     </g>
-    <g class="participant participant-head" data-participant="C_0012957705056319589666">
+    <g class="participant participant-head" data-entity-uid="part8" data-qualified-name="C_0012957705056319589666" data-source-line="21" id="part8-head">
       <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="94.2477" x="793.9256" y="5"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="80.2477" x="800.9256" y="26.9659">Factorial&lt;0&gt;</text>
     </g>
-    <g class="participant participant-tail" data-participant="C_0012957705056319589666">
+    <g class="participant participant-tail" data-entity-uid="part8" data-qualified-name="C_0012957705056319589666" data-source-line="21" id="part8-tail">
       <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="94.2477" x="793.9256" y="310.01"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="80.2477" x="800.9256" y="331.976">Factorial&lt;0&gt;</text>
     </g>
     <g>
-      <title>tmain()</title>
+      <title>tmain..</title>
       <rect fill="#FFFFFF" height="243.9421" style="stroke:#181818;stroke-width:1;" width="10" x="30.3309" y="49.0679"/>
     </g>
     <g>
-      <title>Answer&lt;Factorial&lt;5&gt;,120&gt;</title>
+      <title>Answer.Factorial.5..120.</title>
       <rect fill="#FFFFFF" height="220.2361" style="stroke:#181818;stroke-width:1;" width="10" x="164.1745" y="72.7739"/>
     </g>
     <g>
-      <title>Factorial&lt;5&gt;</title>
+      <title>Factorial.5.</title>
       <rect fill="#FFFFFF" height="188.5301" style="stroke:#181818;stroke-width:1;" width="10" x="314.811" y="104.4799"/>
     </g>
     <g>
-      <title>Factorial&lt;4&gt;</title>
+      <title>Factorial.4.</title>
       <rect fill="#FFFFFF" height="156.8241" style="stroke:#181818;stroke-width:1;" width="10" x="419.0587" y="136.186"/>
     </g>
     <g>
-      <title>Factorial&lt;3&gt;</title>
+      <title>Factorial.3.</title>
       <rect fill="#FFFFFF" height="125.118" style="stroke:#181818;stroke-width:1;" width="10" x="523.3064" y="167.892"/>
     </g>
     <g>
-      <title>Factorial&lt;2&gt;</title>
+      <title>Factorial.2.</title>
       <rect fill="#FFFFFF" height="93.412" style="stroke:#181818;stroke-width:1;" width="10" x="627.5541" y="199.598"/>
     </g>
     <g>
-      <title>Factorial&lt;1&gt;</title>
+      <title>Factorial.1.</title>
       <rect fill="#FFFFFF" height="61.706" style="stroke:#181818;stroke-width:1;" width="10" x="731.8018" y="231.304"/>
     </g>
     <g>
-      <title>Factorial&lt;0&gt;</title>
+      <title>Factorial.0.</title>
       <rect fill="#FFFFFF" height="30" style="stroke:#181818;stroke-width:1;" width="10" x="836.0495" y="263.01"/>
     </g>
-    <g class="message" data-participant-1="C_0013541713203140637275" data-participant-2="C_0009974384032448996891">
-      <polygon fill="#181818" points="152.1745,68.7739,162.1745,72.7739,152.1745,76.7739,156.1745,72.7739" style="stroke:#181818;stroke-width:1;"/>
+    <g class="message" data-entity-1="part1" data-entity-2="part2" data-source-line="4" id="msg1">
+      <polygon fill="#181818" points="152.1745,68.7739,162.1745,72.7739,152.1745,76.7739,156.1745,72.7739" style="stroke:#181818;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/>
       <line style="stroke:#181818;stroke-width:1;" x1="40.3309" x2="158.1745" y1="72.7739" y2="72.7739"/>
       <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" text-decoration="underline" textLength="37.2451" x="47.3309" y="66.9649">print()</text>
     </g>
-    <g class="message" data-participant-1="C_0009974384032448996891" data-participant-2="C_0014470348070131105152">
-      <polygon fill="#181818" points="302.811,100.4799,312.811,104.4799,302.811,108.4799,306.811,104.4799" style="stroke:#181818;stroke-width:1;"/>
+    <g class="message" data-entity-1="part2" data-entity-2="part3" data-source-line="7" id="msg2">
+      <polygon fill="#181818" points="302.811,100.4799,312.811,104.4799,302.811,108.4799,306.811,104.4799" style="stroke:#181818;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/>
       <line style="stroke:#181818;stroke-width:1;" x1="174.1745" x2="308.811" y1="104.4799" y2="104.4799"/>
       <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" text-decoration="underline" textLength="53.3261" x="181.1745" y="98.6709">print(int)</text>
     </g>
-    <g class="message" data-participant-1="C_0014470348070131105152" data-participant-2="C_0015923558380730687307">
-      <polygon fill="#181818" points="407.0587,132.186,417.0587,136.186,407.0587,140.186,411.0587,136.186" style="stroke:#181818;stroke-width:1;"/>
+    <g class="message" data-entity-1="part3" data-entity-2="part4" data-source-line="10" id="msg3">
+      <polygon fill="#181818" points="407.0587,132.186,417.0587,136.186,407.0587,140.186,411.0587,136.186" style="stroke:#181818;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/>
       <line style="stroke:#181818;stroke-width:1;" x1="324.811" x2="413.0587" y1="136.186" y2="136.186"/>
       <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" text-decoration="underline" textLength="53.3261" x="331.811" y="130.377">print(int)</text>
     </g>
-    <g class="message" data-participant-1="C_0015923558380730687307" data-participant-2="C_0009626949398905800989">
-      <polygon fill="#181818" points="511.3064,163.892,521.3064,167.892,511.3064,171.892,515.3064,167.892" style="stroke:#181818;stroke-width:1;"/>
+    <g class="message" data-entity-1="part4" data-entity-2="part5" data-source-line="13" id="msg4">
+      <polygon fill="#181818" points="511.3064,163.892,521.3064,167.892,511.3064,171.892,515.3064,167.892" style="stroke:#181818;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/>
       <line style="stroke:#181818;stroke-width:1;" x1="429.0587" x2="517.3064" y1="167.892" y2="167.892"/>
       <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" text-decoration="underline" textLength="53.3261" x="436.0587" y="162.083">print(int)</text>
     </g>
-    <g class="message" data-participant-1="C_0009626949398905800989" data-participant-2="C_0012686412387984414310">
-      <polygon fill="#181818" points="615.5541,195.598,625.5541,199.598,615.5541,203.598,619.5541,199.598" style="stroke:#181818;stroke-width:1;"/>
+    <g class="message" data-entity-1="part5" data-entity-2="part6" data-source-line="16" id="msg5">
+      <polygon fill="#181818" points="615.5541,195.598,625.5541,199.598,615.5541,203.598,619.5541,199.598" style="stroke:#181818;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/>
       <line style="stroke:#181818;stroke-width:1;" x1="533.3064" x2="621.5541" y1="199.598" y2="199.598"/>
       <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" text-decoration="underline" textLength="53.3261" x="540.3064" y="193.789">print(int)</text>
     </g>
-    <g class="message" data-participant-1="C_0012686412387984414310" data-participant-2="C_0002344415787796910968">
-      <polygon fill="#181818" points="719.8018,227.304,729.8018,231.304,719.8018,235.304,723.8018,231.304" style="stroke:#181818;stroke-width:1;"/>
+    <g class="message" data-entity-1="part6" data-entity-2="part7" data-source-line="19" id="msg6">
+      <polygon fill="#181818" points="719.8018,227.304,729.8018,231.304,719.8018,235.304,723.8018,231.304" style="stroke:#181818;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/>
       <line style="stroke:#181818;stroke-width:1;" x1="637.5541" x2="725.8018" y1="231.304" y2="231.304"/>
       <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" text-decoration="underline" textLength="53.3261" x="644.5541" y="225.495">print(int)</text>
     </g>
-    <g class="message" data-participant-1="C_0002344415787796910968" data-participant-2="C_0012957705056319589666">
-      <polygon fill="#181818" points="824.0495,259.01,834.0495,263.01,824.0495,267.01,828.0495,263.01" style="stroke:#181818;stroke-width:1;"/>
+    <g class="message" data-entity-1="part7" data-entity-2="part8" data-source-line="22" id="msg7">
+      <polygon fill="#181818" points="824.0495,259.01,834.0495,263.01,824.0495,267.01,828.0495,263.01" style="stroke:#181818;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/>
       <line style="stroke:#181818;stroke-width:1;" x1="741.8018" x2="830.0495" y1="263.01" y2="263.01"/>
       <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" text-decoration="underline" textLength="53.3261" x="748.8018" y="257.201">print(int)</text>
     </g>

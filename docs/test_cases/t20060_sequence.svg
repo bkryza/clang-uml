@@ -1,137 +1,148 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" data-diagram-type="SEQUENCE" height="246px" preserveAspectRatio="none" style="width:866px;height:246px;background:#FFFFFF;" version="1.1" viewBox="0 0 866 246" width="866px" zoomAndPan="magnify">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" data-diagram-type="SEQUENCE" height="248px" preserveAspectRatio="none" style="width:871px;height:248px;background:#FFFFFF;" version="1.1" viewBox="0 0 871 248" width="871px" zoomAndPan="magnify">
+  <?plantuml 1.2026.6?>
   <defs>
     <style type="text/css">a:hover { text-decoration: underline; }</style>
   </defs>
   <g>
     <g>
-      <title>tmain()</title>
+      <title>tmain..</title>
       <rect fill="#FFFFFF" height="141.412" style="stroke:#181818;stroke-width:1;" width="10" x="30.3309" y="49.0679"/>
     </g>
     <g>
-      <title>tmain()::(lambda t20060.cc:20:13)</title>
+      <title>tmain.....lambda t20060.cc.20.13.</title>
       <rect fill="#FFFFFF" height="42" style="stroke:#181818;stroke-width:1;" width="10" x="242.3711" y="72.7739"/>
     </g>
     <g>
-      <title>is_empty(const std::string &amp;)</title>
+      <title>is_empty.const std..string ..</title>
       <rect fill="#FFFFFF" height="14" style="stroke:#181818;stroke-width:1;" width="10" x="468.2713" y="86.7739"/>
     </g>
     <g>
-      <title>tmain()::(lambda t20060.cc:21:9)</title>
+      <title>tmain.....lambda t20060.cc.21.9.</title>
       <rect fill="#FFFFFF" height="44" style="stroke:#181818;stroke-width:1;" width="10" x="690.1675" y="146.4799"/>
     </g>
     <g>
-      <title>log()</title>
+      <title>log..</title>
       <rect fill="#FFFFFF" height="30" style="stroke:#181818;stroke-width:1;" width="10" x="833.5381" y="160.4799"/>
     </g>
-    <g>
-      <title>tmain()</title>
-      <rect fill="#000000" fill-opacity="0.00000" height="169.412" width="8" x="31.3309" y="39.0679"/>
-      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="35" x2="35" y1="39.0679" y2="208.4799"/>
+    <g class="participant-lifeline" data-entity-uid="part1" data-qualified-name="C_0016867892245141477884" data-source-line="1" id="part1-lifeline">
+      <g>
+        <title>tmain..</title>
+        <rect fill="#000000" fill-opacity="0.00000" height="169.412" width="8" x="31.3309" y="39.0679"/>
+        <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5,5;" x1="35" x2="35" y1="39.0679" y2="208.4799"/>
+      </g>
     </g>
-    <g>
-      <title>tmain()::(lambda t20060.cc:20:13)</title>
-      <rect fill="#000000" fill-opacity="0.00000" height="169.412" width="8" x="243.3711" y="39.0679"/>
-      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="246.5425" x2="246.5425" y1="39.0679" y2="208.4799"/>
+    <g class="participant-lifeline" data-entity-uid="part2" data-qualified-name="C_0001159451977026084506" data-source-line="3" id="part2-lifeline">
+      <g>
+        <title>tmain.....lambda t20060.cc.20.13.</title>
+        <rect fill="#000000" fill-opacity="0.00000" height="169.412" width="8" x="243.3711" y="39.0679"/>
+        <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5,5;" x1="246.5425" x2="246.5425" y1="39.0679" y2="208.4799"/>
+      </g>
     </g>
-    <g>
-      <title>is_empty(const std::string &amp;)</title>
-      <rect fill="#000000" fill-opacity="0.00000" height="169.412" width="8" x="469.2713" y="39.0679"/>
-      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="473.1997" x2="473.1997" y1="39.0679" y2="208.4799"/>
+    <g class="participant-lifeline" data-entity-uid="part3" data-qualified-name="C_0017553744039385280162" data-source-line="6" id="part3-lifeline">
+      <g>
+        <title>is_empty.const std..string ..</title>
+        <rect fill="#000000" fill-opacity="0.00000" height="169.412" width="8" x="469.2713" y="39.0679"/>
+        <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5,5;" x1="473.1997" x2="473.1997" y1="39.0679" y2="208.4799"/>
+      </g>
     </g>
-    <g>
-      <title>tmain()::(lambda t20060.cc:21:9)</title>
-      <rect fill="#000000" fill-opacity="0.00000" height="169.412" width="8" x="691.1675" y="39.0679"/>
-      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="694.343" x2="694.343" y1="39.0679" y2="208.4799"/>
+    <g class="participant-lifeline" data-entity-uid="part4" data-qualified-name="C_0013246174834624002534" data-source-line="13" id="part4-lifeline">
+      <g>
+        <title>tmain.....lambda t20060.cc.21.9.</title>
+        <rect fill="#000000" fill-opacity="0.00000" height="169.412" width="8" x="691.1675" y="39.0679"/>
+        <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5,5;" x1="694.343" x2="694.343" y1="39.0679" y2="208.4799"/>
+      </g>
     </g>
-    <g>
-      <title>log()</title>
-      <rect fill="#000000" fill-opacity="0.00000" height="169.412" width="8" x="834.5381" y="39.0679"/>
-      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="837.9921" x2="837.9921" y1="39.0679" y2="208.4799"/>
+    <g class="participant-lifeline" data-entity-uid="part5" data-qualified-name="C_0018112273080811055181" data-source-line="16" id="part5-lifeline">
+      <g>
+        <title>log..</title>
+        <rect fill="#000000" fill-opacity="0.00000" height="169.412" width="8" x="834.5381" y="39.0679"/>
+        <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5,5;" x1="837.9921" x2="837.9921" y1="39.0679" y2="208.4799"/>
+      </g>
     </g>
-    <g class="participant participant-head" data-participant="C_0016867892245141477884">
+    <g class="participant participant-head" data-entity-uid="part1" data-qualified-name="C_0016867892245141477884" data-source-line="1" id="part1-head">
       <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="60.6618" x="5" y="5"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="46.6618" x="12" y="26.9659">tmain()</text>
     </g>
-    <g class="participant participant-tail" data-participant="C_0016867892245141477884">
+    <g class="participant participant-tail" data-entity-uid="part1" data-qualified-name="C_0016867892245141477884" data-source-line="1" id="part1-tail">
       <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="60.6618" x="5" y="207.4799"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="46.6618" x="12" y="229.4459">tmain()</text>
     </g>
-    <g class="participant participant-head" data-participant="C_0001159451977026084506">
+    <g class="participant participant-head" data-entity-uid="part2" data-qualified-name="C_0001159451977026084506" data-source-line="3" id="part2-head">
       <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="231.6571" x="131.5425" y="5"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="217.6571" x="138.5425" y="26.9659">tmain()::(lambda t20060.cc:20:13)</text>
     </g>
-    <g class="participant participant-tail" data-participant="C_0001159451977026084506">
+    <g class="participant participant-tail" data-entity-uid="part2" data-qualified-name="C_0001159451977026084506" data-source-line="3" id="part2-tail">
       <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="231.6571" x="131.5425" y="207.4799"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="217.6571" x="138.5425" y="229.4459">tmain()::(lambda t20060.cc:20:13)</text>
     </g>
-    <g class="participant participant-head" data-participant="C_0017553744039385280162">
+    <g class="participant participant-head" data-entity-uid="part3" data-qualified-name="C_0017553744039385280162" data-source-line="6" id="part3-head">
       <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="200.1433" x="373.1997" y="5"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="186.1433" x="380.1997" y="26.9659">is_empty(const std::string &amp;)</text>
     </g>
-    <g class="participant participant-tail" data-participant="C_0017553744039385280162">
+    <g class="participant participant-tail" data-entity-uid="part3" data-qualified-name="C_0017553744039385280162" data-source-line="6" id="part3-tail">
       <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="200.1433" x="373.1997" y="207.4799"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="186.1433" x="380.1997" y="229.4459">is_empty(const std::string &amp;)</text>
     </g>
-    <g class="participant participant-head" data-participant="C_0013246174834624002534">
+    <g class="participant participant-head" data-entity-uid="part4" data-qualified-name="C_0013246174834624002534" data-source-line="13" id="part4-head">
       <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="223.6492" x="583.343" y="5"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="209.6492" x="590.343" y="26.9659">tmain()::(lambda t20060.cc:21:9)</text>
     </g>
-    <g class="participant participant-tail" data-participant="C_0013246174834624002534">
+    <g class="participant participant-tail" data-entity-uid="part4" data-qualified-name="C_0013246174834624002534" data-source-line="13" id="part4-tail">
       <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="223.6492" x="583.343" y="207.4799"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="209.6492" x="590.343" y="229.4459">tmain()::(lambda t20060.cc:21:9)</text>
     </g>
-    <g class="participant participant-head" data-participant="C_0018112273080811055181">
+    <g class="participant participant-head" data-entity-uid="part5" data-qualified-name="C_0018112273080811055181" data-source-line="16" id="part5-head">
       <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="43.0919" x="816.9921" y="5"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="29.0919" x="823.9921" y="26.9659">log()</text>
     </g>
-    <g class="participant participant-tail" data-participant="C_0018112273080811055181">
+    <g class="participant participant-tail" data-entity-uid="part5" data-qualified-name="C_0018112273080811055181" data-source-line="16" id="part5-tail">
       <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="43.0919" x="816.9921" y="207.4799"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="29.0919" x="823.9921" y="229.4459">log()</text>
     </g>
     <g>
-      <title>tmain()</title>
+      <title>tmain..</title>
       <rect fill="#FFFFFF" height="141.412" style="stroke:#181818;stroke-width:1;" width="10" x="30.3309" y="49.0679"/>
     </g>
     <g>
-      <title>tmain()::(lambda t20060.cc:20:13)</title>
+      <title>tmain.....lambda t20060.cc.20.13.</title>
       <rect fill="#FFFFFF" height="42" style="stroke:#181818;stroke-width:1;" width="10" x="242.3711" y="72.7739"/>
     </g>
     <g>
-      <title>is_empty(const std::string &amp;)</title>
+      <title>is_empty.const std..string ..</title>
       <rect fill="#FFFFFF" height="14" style="stroke:#181818;stroke-width:1;" width="10" x="468.2713" y="86.7739"/>
     </g>
     <g>
-      <title>tmain()::(lambda t20060.cc:21:9)</title>
+      <title>tmain.....lambda t20060.cc.21.9.</title>
       <rect fill="#FFFFFF" height="44" style="stroke:#181818;stroke-width:1;" width="10" x="690.1675" y="146.4799"/>
     </g>
     <g>
-      <title>log()</title>
+      <title>log..</title>
       <rect fill="#FFFFFF" height="30" style="stroke:#181818;stroke-width:1;" width="10" x="833.5381" y="160.4799"/>
     </g>
-    <g class="message" data-participant-1="C_0016867892245141477884" data-participant-2="C_0001159451977026084506">
-      <polygon fill="#181818" points="230.3711,68.7739,240.3711,72.7739,230.3711,76.7739,234.3711,72.7739" style="stroke:#181818;stroke-width:1;"/>
+    <g class="message" data-entity-1="part1" data-entity-2="part2" data-source-line="4" id="msg1">
+      <polygon fill="#181818" points="230.3711,68.7739,240.3711,72.7739,230.3711,76.7739,234.3711,72.7739" style="stroke:#181818;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/>
       <line style="stroke:#181818;stroke-width:1;" x1="40.3309" x2="236.3711" y1="72.7739" y2="72.7739"/>
       <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="183.0402" x="47.3309" y="66.9649">operator()(const auto &amp;) const</text>
     </g>
-    <g class="message" data-participant-1="C_0001159451977026084506" data-participant-2="C_0017553744039385280162">
-      <polygon fill="#181818" points="456.2713,82.7739,466.2713,86.7739,456.2713,90.7739,460.2713,86.7739" style="stroke:#181818;stroke-width:1;"/>
+    <g class="message" data-entity-1="part2" data-entity-2="part3" data-source-line="7" id="msg2">
+      <polygon fill="#181818" points="456.2713,82.7739,466.2713,86.7739,456.2713,90.7739,460.2713,86.7739" style="stroke:#181818;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/>
       <line style="stroke:#181818;stroke-width:1;" x1="252.3711" x2="462.2713" y1="86.7739" y2="86.7739"/>
     </g>
-    <g class="message" data-participant-1="C_0017553744039385280162" data-participant-2="C_0001159451977026084506">
-      <polygon fill="#181818" points="263.3711,96.7739,253.3711,100.7739,263.3711,104.7739,259.3711,100.7739" style="stroke:#181818;stroke-width:1;"/>
-      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="257.3711" x2="472.2713" y1="100.7739" y2="100.7739"/>
+    <g class="message" data-entity-1="part3" data-entity-2="part2" data-source-line="9" id="msg3">
+      <polygon fill="#181818" points="263.3711,96.7739,253.3711,100.7739,263.3711,104.7739,259.3711,100.7739" style="stroke:#181818;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2,2;" x1="257.3711" x2="472.2713" y1="100.7739" y2="100.7739"/>
     </g>
-    <g class="message" data-participant-1="C_0001159451977026084506" data-participant-2="C_0016867892245141477884">
-      <polygon fill="#181818" points="51.3309,110.7739,41.3309,114.7739,51.3309,118.7739,47.3309,114.7739" style="stroke:#181818;stroke-width:1;"/>
-      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2.0,2.0;" x1="45.3309" x2="246.3711" y1="114.7739" y2="114.7739"/>
+    <g class="message" data-entity-1="part2" data-entity-2="part1" data-source-line="11" id="msg4">
+      <polygon fill="#181818" points="51.3309,110.7739,41.3309,114.7739,51.3309,118.7739,47.3309,114.7739" style="stroke:#181818;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/>
+      <line style="stroke:#181818;stroke-width:1;stroke-dasharray:2,2;" x1="45.3309" x2="246.3711" y1="114.7739" y2="114.7739"/>
     </g>
-    <g class="message" data-participant-1="C_0016867892245141477884" data-participant-2="C_0013246174834624002534">
-      <polygon fill="#181818" points="678.1675,142.4799,688.1675,146.4799,678.1675,150.4799,682.1675,146.4799" style="stroke:#181818;stroke-width:1;"/>
+    <g class="message" data-entity-1="part1" data-entity-2="part4" data-source-line="14" id="msg5">
+      <polygon fill="#181818" points="678.1675,142.4799,688.1675,146.4799,678.1675,150.4799,682.1675,146.4799" style="stroke:#181818;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/>
       <line style="stroke:#181818;stroke-width:1;" x1="40.3309" x2="684.1675" y1="146.4799" y2="146.4799"/>
       <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="183.0402" x="47.3309" y="140.6709">operator()(const auto &amp;) const</text>
     </g>
-    <g class="message" data-participant-1="C_0013246174834624002534" data-participant-2="C_0018112273080811055181">
-      <polygon fill="#181818" points="821.5381,156.4799,831.5381,160.4799,821.5381,164.4799,825.5381,160.4799" style="stroke:#181818;stroke-width:1;"/>
+    <g class="message" data-entity-1="part4" data-entity-2="part5" data-source-line="17" id="msg6">
+      <polygon fill="#181818" points="821.5381,156.4799,831.5381,160.4799,821.5381,164.4799,825.5381,160.4799" style="stroke:#181818;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/>
       <line style="stroke:#181818;stroke-width:1;" x1="700.1675" x2="827.5381" y1="160.4799" y2="160.4799"/>
     </g>
   </g>

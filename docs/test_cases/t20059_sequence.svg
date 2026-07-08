@@ -1,168 +1,179 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" data-diagram-type="SEQUENCE" height="471px" preserveAspectRatio="none" style="width:666px;height:471px;background:#FFFFFF;" version="1.1" viewBox="0 0 666 471" width="666px" zoomAndPan="magnify">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" data-diagram-type="SEQUENCE" height="473px" preserveAspectRatio="none" style="width:671px;height:473px;background:#FFFFFF;" version="1.1" viewBox="0 0 671 473" width="671px" zoomAndPan="magnify">
+  <?plantuml 1.2026.6?>
   <defs>
     <style type="text/css">a:hover { text-decoration: underline; }</style>
   </defs>
   <g>
     <g>
-      <title>t20059_tmain()</title>
+      <title>t20059_tmain..</title>
       <rect fill="#FFFFFF" height="328.2361" style="stroke:#181818;stroke-width:1;" width="10" x="55.9858" y="68.1358"/>
     </g>
     <g>
-      <title>&lt;&lt;ObjC Interface&gt;&gt;</title>
+      <title>..ObjC Interface..</title>
       <rect fill="#FFFFFF" height="67.706" style="stroke:#181818;stroke-width:1;" width="10" x="180.2744" y="91.8419"/>
     </g>
     <g>
-      <title>&lt;&lt;ObjC Interface&gt;&gt;</title>
+      <title>..ObjC Interface..</title>
       <rect fill="#FFFFFF" height="28" style="stroke:#181818;stroke-width:1;" width="10" x="185.2744" y="131.5479"/>
     </g>
     <g>
-      <title>&lt;&lt;ObjC Interface&gt;&gt;</title>
+      <title>..ObjC Interface..</title>
       <rect fill="#FFFFFF" height="67.706" style="stroke:#181818;stroke-width:1;" width="10" x="306.88" y="198.2539"/>
     </g>
     <g>
-      <title>&lt;&lt;ObjC Interface&gt;&gt;</title>
+      <title>..ObjC Interface..</title>
       <rect fill="#FFFFFF" height="28" style="stroke:#181818;stroke-width:1;" width="10" x="311.88" y="237.9599"/>
     </g>
     <g>
-      <title>&lt;&lt;ObjC Interface&gt;&gt;</title>
+      <title>..ObjC Interface..</title>
       <rect fill="#FFFFFF" height="30" style="stroke:#181818;stroke-width:1;" width="10" x="470.9192" y="304.6659"/>
     </g>
     <g>
-      <title>&lt;&lt;ObjC Interface&gt;&gt;</title>
+      <title>..ObjC Interface..</title>
       <rect fill="#FFFFFF" height="30" style="stroke:#181818;stroke-width:1;" width="10" x="597.5248" y="366.3719"/>
     </g>
-    <g>
-      <title>t20059_tmain()</title>
-      <rect fill="#000000" fill-opacity="0.00000" height="356.2361" width="8" x="56.9858" y="58.1358"/>
-      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="60" x2="60" y1="58.1358" y2="414.3719"/>
+    <g class="participant-lifeline" data-entity-uid="part1" data-qualified-name="C_0002191222857623626941" data-source-line="1" id="part1-lifeline">
+      <g>
+        <title>t20059_tmain..</title>
+        <rect fill="#000000" fill-opacity="0.00000" height="356.2361" width="8" x="56.9858" y="58.1358"/>
+        <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5,5;" x1="60" x2="60" y1="58.1358" y2="414.3719"/>
+      </g>
     </g>
-    <g>
-      <title>&lt;&lt;ObjC Interface&gt;&gt;</title>
-      <rect fill="#000000" fill-opacity="0.00000" height="356.2361" width="8" x="181.2744" y="58.1358"/>
-      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="184.9716" x2="184.9716" y1="58.1358" y2="414.3719"/>
+    <g class="participant-lifeline" data-entity-uid="part2" data-qualified-name="C_0007770706727829622367" data-source-line="3" id="part2-lifeline">
+      <g>
+        <title>..ObjC Interface..</title>
+        <rect fill="#000000" fill-opacity="0.00000" height="356.2361" width="8" x="181.2744" y="58.1358"/>
+        <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5,5;" x1="184.9716" x2="184.9716" y1="58.1358" y2="414.3719"/>
+      </g>
     </g>
-    <g>
-      <title>&lt;&lt;ObjC Interface&gt;&gt;</title>
-      <rect fill="#000000" fill-opacity="0.00000" height="356.2361" width="8" x="307.88" y="58.1358"/>
-      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="311.5772" x2="311.5772" y1="58.1358" y2="414.3719"/>
+    <g class="participant-lifeline" data-entity-uid="part3" data-qualified-name="C_0017944793818042698205" data-source-line="10" id="part3-lifeline">
+      <g>
+        <title>..ObjC Interface..</title>
+        <rect fill="#000000" fill-opacity="0.00000" height="356.2361" width="8" x="307.88" y="58.1358"/>
+        <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5,5;" x1="311.5772" x2="311.5772" y1="58.1358" y2="414.3719"/>
+      </g>
     </g>
-    <g>
-      <title>&lt;&lt;ObjC Interface&gt;&gt;</title>
-      <rect fill="#000000" fill-opacity="0.00000" height="356.2361" width="8" x="471.9192" y="58.1358"/>
-      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="475.6164" x2="475.6164" y1="58.1358" y2="414.3719"/>
+    <g class="participant-lifeline" data-entity-uid="part4" data-qualified-name="C_0000634933405440427427" data-source-line="17" id="part4-lifeline">
+      <g>
+        <title>..ObjC Interface..</title>
+        <rect fill="#000000" fill-opacity="0.00000" height="356.2361" width="8" x="471.9192" y="58.1358"/>
+        <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5,5;" x1="475.6164" x2="475.6164" y1="58.1358" y2="414.3719"/>
+      </g>
     </g>
-    <g>
-      <title>&lt;&lt;ObjC Interface&gt;&gt;</title>
-      <rect fill="#000000" fill-opacity="0.00000" height="356.2361" width="8" x="598.5248" y="58.1358"/>
-      <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="602.222" x2="602.222" y1="58.1358" y2="414.3719"/>
+    <g class="participant-lifeline" data-entity-uid="part5" data-qualified-name="C_0000692865596133572688" data-source-line="21" id="part5-lifeline">
+      <g>
+        <title>..ObjC Interface..</title>
+        <rect fill="#000000" fill-opacity="0.00000" height="356.2361" width="8" x="598.5248" y="58.1358"/>
+        <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5,5;" x1="602.222" x2="602.222" y1="58.1358" y2="414.3719"/>
+      </g>
     </g>
-    <g class="participant participant-head" data-participant="C_0002191222857623626941">
+    <g class="participant participant-head" data-entity-uid="part1" data-qualified-name="C_0002191222857623626941" data-source-line="1" id="part1-head">
       <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="111.9716" x="5" y="24.0679"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="97.9716" x="12" y="46.0339">t20059_tmain()</text>
     </g>
-    <g class="participant participant-tail" data-participant="C_0002191222857623626941">
+    <g class="participant participant-tail" data-entity-uid="part1" data-qualified-name="C_0002191222857623626941" data-source-line="1" id="part1-tail">
       <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="111.9716" x="5" y="413.3719"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="97.9716" x="12" y="435.3379">t20059_tmain()</text>
     </g>
-    <g class="participant participant-head" data-participant="C_0007770706727829622367">
+    <g class="participant participant-head" data-entity-uid="part2" data-qualified-name="C_0007770706727829622367" data-source-line="3" id="part2-head">
       <rect fill="#E2E2F0" height="52.1358" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="116.6056" x="126.9716" y="5"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="102.6056" x="133.9716" y="26.9659">«ObjC Interface»</text>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="60.2558" x="155.1465" y="46.0339">t20059_A</text>
     </g>
-    <g class="participant participant-tail" data-participant="C_0007770706727829622367">
+    <g class="participant participant-tail" data-entity-uid="part2" data-qualified-name="C_0007770706727829622367" data-source-line="3" id="part2-tail">
       <rect fill="#E2E2F0" height="52.1358" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="116.6056" x="126.9716" y="413.3719"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="102.6056" x="133.9716" y="435.3379">«ObjC Interface»</text>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="60.2558" x="155.1465" y="454.4058">t20059_A</text>
     </g>
-    <g class="participant participant-head" data-participant="C_0017944793818042698205">
+    <g class="participant participant-head" data-entity-uid="part3" data-qualified-name="C_0017944793818042698205" data-source-line="10" id="part3-head">
       <rect fill="#E2E2F0" height="52.1358" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="116.6056" x="253.5772" y="5"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="102.6056" x="260.5772" y="26.9659">«ObjC Interface»</text>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="60.4097" x="281.6752" y="46.0339">t20059_B</text>
     </g>
-    <g class="participant participant-tail" data-participant="C_0017944793818042698205">
+    <g class="participant participant-tail" data-entity-uid="part3" data-qualified-name="C_0017944793818042698205" data-source-line="10" id="part3-tail">
       <rect fill="#E2E2F0" height="52.1358" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="116.6056" x="253.5772" y="413.3719"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="102.6056" x="260.5772" y="435.3379">«ObjC Interface»</text>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="60.4097" x="281.6752" y="454.4058">t20059_B</text>
     </g>
-    <g class="participant participant-head" data-participant="C_0000634933405440427427">
+    <g class="participant participant-head" data-entity-uid="part4" data-qualified-name="C_0000634933405440427427" data-source-line="17" id="part4-head">
       <rect fill="#E2E2F0" height="52.1358" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="116.6056" x="417.6164" y="5"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="102.6056" x="424.6164" y="26.9659">«ObjC Interface»</text>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="60.1577" x="445.8403" y="46.0339">t20059_C</text>
     </g>
-    <g class="participant participant-tail" data-participant="C_0000634933405440427427">
+    <g class="participant participant-tail" data-entity-uid="part4" data-qualified-name="C_0000634933405440427427" data-source-line="17" id="part4-tail">
       <rect fill="#E2E2F0" height="52.1358" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="116.6056" x="417.6164" y="413.3719"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="102.6056" x="424.6164" y="435.3379">«ObjC Interface»</text>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="60.1577" x="445.8403" y="454.4058">t20059_C</text>
     </g>
-    <g class="participant participant-head" data-participant="C_0000692865596133572688">
+    <g class="participant participant-head" data-entity-uid="part5" data-qualified-name="C_0000692865596133572688" data-source-line="21" id="part5-head">
       <rect fill="#E2E2F0" height="52.1358" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="116.6056" x="544.222" y="5"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="102.6056" x="551.222" y="26.9659">«ObjC Interface»</text>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="61.5297" x="571.7599" y="46.0339">t20059_D</text>
     </g>
-    <g class="participant participant-tail" data-participant="C_0000692865596133572688">
+    <g class="participant participant-tail" data-entity-uid="part5" data-qualified-name="C_0000692865596133572688" data-source-line="21" id="part5-tail">
       <rect fill="#E2E2F0" height="52.1358" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="116.6056" x="544.222" y="413.3719"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="102.6056" x="551.222" y="435.3379">«ObjC Interface»</text>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="61.5297" x="571.7599" y="454.4058">t20059_D</text>
     </g>
     <g>
-      <title>t20059_tmain()</title>
+      <title>t20059_tmain..</title>
       <rect fill="#FFFFFF" height="328.2361" style="stroke:#181818;stroke-width:1;" width="10" x="55.9858" y="68.1358"/>
     </g>
     <g>
-      <title>&lt;&lt;ObjC Interface&gt;&gt;</title>
+      <title>..ObjC Interface..</title>
       <rect fill="#FFFFFF" height="67.706" style="stroke:#181818;stroke-width:1;" width="10" x="180.2744" y="91.8419"/>
     </g>
     <g>
-      <title>&lt;&lt;ObjC Interface&gt;&gt;</title>
+      <title>..ObjC Interface..</title>
       <rect fill="#FFFFFF" height="28" style="stroke:#181818;stroke-width:1;" width="10" x="185.2744" y="131.5479"/>
     </g>
     <g>
-      <title>&lt;&lt;ObjC Interface&gt;&gt;</title>
+      <title>..ObjC Interface..</title>
       <rect fill="#FFFFFF" height="67.706" style="stroke:#181818;stroke-width:1;" width="10" x="306.88" y="198.2539"/>
     </g>
     <g>
-      <title>&lt;&lt;ObjC Interface&gt;&gt;</title>
+      <title>..ObjC Interface..</title>
       <rect fill="#FFFFFF" height="28" style="stroke:#181818;stroke-width:1;" width="10" x="311.88" y="237.9599"/>
     </g>
     <g>
-      <title>&lt;&lt;ObjC Interface&gt;&gt;</title>
+      <title>..ObjC Interface..</title>
       <rect fill="#FFFFFF" height="30" style="stroke:#181818;stroke-width:1;" width="10" x="470.9192" y="304.6659"/>
     </g>
     <g>
-      <title>&lt;&lt;ObjC Interface&gt;&gt;</title>
+      <title>..ObjC Interface..</title>
       <rect fill="#FFFFFF" height="30" style="stroke:#181818;stroke-width:1;" width="10" x="597.5248" y="366.3719"/>
     </g>
-    <g class="message" data-participant-1="C_0002191222857623626941" data-participant-2="C_0007770706727829622367">
-      <polygon fill="#181818" points="168.2744,87.8419,178.2744,91.8419,168.2744,95.8419,172.2744,91.8419" style="stroke:#181818;stroke-width:1;"/>
+    <g class="message" data-entity-1="part1" data-entity-2="part2" data-source-line="4" id="msg1">
+      <polygon fill="#181818" points="168.2744,87.8419,178.2744,91.8419,168.2744,95.8419,172.2744,91.8419" style="stroke:#181818;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/>
       <line style="stroke:#181818;stroke-width:1;" x1="65.9858" x2="174.2744" y1="91.8419" y2="91.8419"/>
       <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="37.2451" x="72.9858" y="86.0328">print()</text>
     </g>
-    <g class="message" data-participant-1="C_0007770706727829622367" data-participant-2="C_0007770706727829622367">
+    <g class="message" data-entity-1="part2" data-entity-2="part2" data-source-line="6" id="msg2">
       <line style="stroke:#181818;stroke-width:1;" x1="195.2744" x2="237.2744" y1="123.5479" y2="123.5479"/>
       <line style="stroke:#181818;stroke-width:1;" x1="237.2744" x2="237.2744" y1="123.5479" y2="136.5479"/>
       <line style="stroke:#181818;stroke-width:1;" x1="196.2744" x2="237.2744" y1="136.5479" y2="136.5479"/>
-      <polygon fill="#181818" points="206.2744,132.5479,196.2744,136.5479,206.2744,140.5479,202.2744,136.5479" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="#181818" points="206.2744,132.5479,196.2744,136.5479,206.2744,140.5479,202.2744,136.5479" style="stroke:#181818;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/>
       <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="65.1561" x="202.2744" y="117.7389">printImpl()</text>
     </g>
-    <g class="message" data-participant-1="C_0002191222857623626941" data-participant-2="C_0017944793818042698205">
-      <polygon fill="#181818" points="294.88,194.2539,304.88,198.2539,294.88,202.2539,298.88,198.2539" style="stroke:#181818;stroke-width:1;"/>
+    <g class="message" data-entity-1="part1" data-entity-2="part3" data-source-line="11" id="msg3">
+      <polygon fill="#181818" points="294.88,194.2539,304.88,198.2539,294.88,202.2539,298.88,198.2539" style="stroke:#181818;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/>
       <line style="stroke:#181818;stroke-width:1;" x1="65.9858" x2="300.88" y1="198.2539" y2="198.2539"/>
       <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="37.2451" x="72.9858" y="192.4449">print()</text>
     </g>
-    <g class="message" data-participant-1="C_0017944793818042698205" data-participant-2="C_0017944793818042698205">
+    <g class="message" data-entity-1="part3" data-entity-2="part3" data-source-line="13" id="msg4">
       <line style="stroke:#181818;stroke-width:1;" x1="321.88" x2="363.88" y1="229.9599" y2="229.9599"/>
       <line style="stroke:#181818;stroke-width:1;" x1="363.88" x2="363.88" y1="229.9599" y2="242.9599"/>
       <line style="stroke:#181818;stroke-width:1;" x1="322.88" x2="363.88" y1="242.9599" y2="242.9599"/>
-      <polygon fill="#181818" points="332.88,238.9599,322.88,242.9599,332.88,246.9599,328.88,242.9599" style="stroke:#181818;stroke-width:1;"/>
+      <polygon fill="#181818" points="332.88,238.9599,322.88,242.9599,332.88,246.9599,328.88,242.9599" style="stroke:#181818;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/>
       <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="130.0392" x="328.88" y="224.1509">customPrintMethod()</text>
     </g>
-    <g class="message" data-participant-1="C_0002191222857623626941" data-participant-2="C_0000634933405440427427">
-      <polygon fill="#181818" points="458.9192,300.6659,468.9192,304.6659,458.9192,308.6659,462.9192,304.6659" style="stroke:#181818;stroke-width:1;"/>
+    <g class="message" data-entity-1="part1" data-entity-2="part4" data-source-line="18" id="msg5">
+      <polygon fill="#181818" points="458.9192,300.6659,468.9192,304.6659,458.9192,308.6659,462.9192,304.6659" style="stroke:#181818;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/>
       <line style="stroke:#181818;stroke-width:1;" x1="65.9858" x2="464.9192" y1="304.6659" y2="304.6659"/>
       <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="37.2451" x="72.9858" y="298.8569">print()</text>
     </g>
-    <g class="message" data-participant-1="C_0002191222857623626941" data-participant-2="C_0000692865596133572688">
-      <polygon fill="#181818" points="585.5248,362.3719,595.5248,366.3719,585.5248,370.3719,589.5248,366.3719" style="stroke:#181818;stroke-width:1;"/>
+    <g class="message" data-entity-1="part1" data-entity-2="part5" data-source-line="22" id="msg6">
+      <polygon fill="#181818" points="585.5248,362.3719,595.5248,366.3719,585.5248,370.3719,589.5248,366.3719" style="stroke:#181818;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/>
       <line style="stroke:#181818;stroke-width:1;" x1="65.9858" x2="591.5248" y1="366.3719" y2="366.3719"/>
       <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="37.2451" x="72.9858" y="360.5629">print()</text>
     </g>
