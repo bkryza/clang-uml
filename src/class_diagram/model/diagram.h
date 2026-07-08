@@ -323,6 +323,24 @@ private:
     template <typename ElementT>
     bool add_with_filesystem_path(
         const common::model::path &parent_path, std::unique_ptr<ElementT> &&e);
+
+    /**
+     * @brief Remove elements duplicated in `this` and `other` diagram.
+     *
+     * When merging per-translation-unit diagram models, the same element
+     * can exist in both models at different package paths, e.g. when
+     * one translation unit only saw a forward declaration of a type
+     * (and the element was added at the path of the header containing
+     * the forward declaration), and another translation unit saw the
+     * complete definition. `nested_trait::append` can only detect
+     * duplicates at the same nesting level, so they must be removed
+     * before the element trees are merged, preferring complete elements
+     * over incomplete ones.
+     *
+     * @tparam ElementT Type of diagram element.
+     * @param other The diagram model to be merged into this one.
+     */
+    template <typename ElementT> void remove_duplicate_elements(diagram &other);
 };
 
 template <typename ElementT> bool diagram::contains(const ElementT &element)
@@ -468,6 +486,34 @@ bool diagram::add_with_filesystem_path(
     }
 
     return false;
+}
+
+template <typename ElementT>
+void diagram::remove_duplicate_elements(diagram &other)
+{
+    std::set<eid_t> to_remove;
+    std::set<eid_t> to_remove_from_other;
+
+    for (const auto &el : other.elements<ElementT>()) {
+        const auto id = el.get().id();
+
+        const auto maybe_existing = find<ElementT>(id);
+        if (!maybe_existing)
+            continue;
+
+        // Prefer complete elements over incomplete ones, e.g. elements
+        // created from forward declarations
+        if (!maybe_existing.value().complete() && el.get().complete())
+            to_remove.emplace(id);
+        else
+            to_remove_from_other.emplace(id);
+    }
+
+    for (const auto &id : to_remove)
+        remove<ElementT>(id);
+
+    for (const auto &id : to_remove_from_other)
+        other.remove<ElementT>(id);
 }
 
 template <typename ElementT>

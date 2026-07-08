@@ -428,6 +428,15 @@ bool diagram::is_empty() const
 
 void diagram::append(diagram &&other)
 {
+    // Remove elements which exist in both diagram models, possibly at
+    // different package paths (e.g. when in one translation unit only
+    // a forward declaration of a type was encountered), before the
+    // element trees are merged below
+    remove_duplicate_elements<class_>(other);
+    remove_duplicate_elements<enum_>(other);
+    remove_duplicate_elements<concept_>(other);
+    remove_duplicate_elements<objc_interface>(other);
+
     clanguml::common::model::diagram::append(
         dynamic_cast<clanguml::common::model::diagram &&>(other));
 
