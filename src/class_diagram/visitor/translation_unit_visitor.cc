@@ -271,11 +271,16 @@ bool translation_unit_visitor::VisitTypeAliasTemplateDecl(
 
     template_specialization_ptr->is_template(true);
 
+    if (template_specialization_ptr->id().value() == 0) {
+        // The template builder could not resolve the underlying template
+        // declaration for this alias (e.g. dependent alias template), so
+        // no valid id could be assigned - skip it
+        return true;
+    }
+
     if (diagram().should_include(*template_specialization_ptr)) {
         const auto name = template_specialization_ptr->full_name(true);
         const auto id = template_specialization_ptr->id();
-
-        assert(id.value() != 0);
 
         LOG_DBG("Adding class {} with id {} [{}]", name, id, id.usr());
 

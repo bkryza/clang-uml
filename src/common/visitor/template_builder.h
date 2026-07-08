@@ -1879,16 +1879,13 @@ template_builder<VisitorT>::try_as_record_type(
             record_type_decl->getQualifiedNameAsString());
         if (!qualified_name.empty() && qualified_name != type_name) {
             argument.set_type(qualified_name);
-            argument.set_id(common::to_id(qualified_name));
         }
         const auto &effective_type_name =
             qualified_name.empty() ? type_name : qualified_name;
-        const auto effective_type_id =
-            qualified_name.empty() ? type_id : common::to_id(qualified_name);
         if (config_.generate_template_argument_dependencies() &&
             diagram().should_include(namespace_{effective_type_name})) {
-            template_instantiation.add_relationship(
-                {relationship_t::kDependency, effective_type_id});
+            diagram().add_relationship({relationship_t::kDependency,
+                template_instantiation.id(), type_id});
         }
 #else
         if (config_.generate_template_argument_dependencies() &&
