@@ -261,8 +261,11 @@ public:
 
     template <typename ElementT> void remove(eid_t id)
     {
-        nested_trait_ns::remove({id});
+        // The element must be removed from the element view before it is
+        // removed from the nested trait, which owns the element, as the
+        // element view removal must read the id of a still valid element
         element_view<ElementT>::remove({id});
+        nested_trait_ns::remove({id});
     }
 
     /**
