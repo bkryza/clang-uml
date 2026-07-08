@@ -86,6 +86,10 @@ bool IsUnion(const DiagramType &d, QualifiedName name);
 template <typename DiagramType>
 bool IsClass(const DiagramType &d, QualifiedName name);
 
+// Check if generated diagram contains a specified class exactly once
+template <typename DiagramType>
+bool IsClassOnce(const DiagramType &d, QualifiedName name);
+
 // Check if generated diagram contains a specified class template
 template <typename DiagramType>
 bool IsClassTemplate(const DiagramType &d, QualifiedName name);
@@ -359,6 +363,30 @@ template <> bool IsClass(const plantuml_t &d, QualifiedName cls)
 {
     return d.contains(
         fmt::format("class {}", d.get_alias(cls.str(d.generate_packages))));
+}
+
+template <> bool IsClassOnce(const plantuml_t &d, QualifiedName cls)
+{
+    auto name = cls.str(d.generate_packages);
+
+    util::replace_all(name, "(", "\\(");
+    util::replace_all(name, ")", "\\)");
+    util::replace_all(name, " ", "\\s");
+    util::replace_all(name, "*", "\\*");
+    util::replace_all(name, "[", "\\[");
+    util::replace_all(name, "]", "\\]");
+
+    const std::string alias_regex("[A-Z]_[0-9]+");
+    const std::vector<std::string> keywords{"class", "abstract", "enum",
+        "protocol"};
+
+    int64_t total{0};
+    for (const auto &kw : keywords) {
+        total +=
+            d.count(kw + "\\s\"" + name + "\"\\sas\\s" + alias_regex);
+    }
+
+    return total == 1;
 }
 
 template <> bool IsObjCInterface(const plantuml_t &d, QualifiedName cls)
@@ -948,6 +976,26 @@ template <> bool IsUnion(const mermaid_t &d, QualifiedName cls)
 template <> bool IsClass(const mermaid_t &d, QualifiedName cls)
 {
     return d.contains(fmt::format("class {}", d.get_alias(cls)));
+}
+
+template <> bool IsClassOnce(const mermaid_t &d, QualifiedName cls)
+{
+    auto name = cls.str(d.generate_packages);
+
+    util::replace_all(name, "(", "&lpar;");
+    util::replace_all(name, ")", "&rpar;");
+    util::replace_all(name, " ", "\\s");
+    util::replace_all(name, "*", "\\*");
+    util::replace_all(name, "[", "\\[");
+    util::replace_all(name, "]", "\\]");
+    util::replace_all(name, "<", "&lt;");
+    util::replace_all(name, ">", "&gt;");
+    util::replace_all(name, "{", "&lbrace;");
+    util::replace_all(name, "}", "&rbrace;");
+
+    const std::string alias_regex("[A-Z]_[0-9]+");
+
+    return d.count("class\\s" + alias_regex + "\\[\"" + name + "\"\\]") == 1;
 }
 
 template <> bool IsObjCInterface(const mermaid_t &d, QualifiedName cls)
@@ -1542,6 +1590,32 @@ template <> bool IsClass(const json_t &d, QualifiedName cls)
     auto e = get_element(
         d.src, expand_name(d.src, cls.str(d.generate_packages)), "class");
     return e && e->at("type") == "class" && !e->at("is_abstract");
+}
+
+namespace {
+int count_elements_by_name(
+    const nlohmann::json &j, const std::string &name, const std::string &type)
+{
+    if (!j.contains("elements"))
+        return 0;
+
+    int total{0};
+    for (const nlohmann::json &e : j["elements"]) {
+        if (e["display_name"] == name && e["type"] == type)
+            total++;
+
+        if (e["type"] == "namespace" || e["type"] == "folder" ||
+            e["type"] == "directory" || e["type"] == "module")
+            total += count_elements_by_name(e, name, type);
+    }
+    return total;
+}
+} // namespace
+
+template <> bool IsClassOnce(const json_t &d, QualifiedName cls)
+{
+    const auto name = expand_name(d.src, cls.str(d.generate_packages));
+    return count_elements_by_name(d.src, name, "class") == 1;
 }
 
 template <> bool IsObjCInterface(const json_t &d, QualifiedName cls)
@@ -2151,6 +2225,20 @@ template <> bool IsClass(const graphml_t &d, QualifiedName cls)
     auto class_node = get_element(d, "class", cls);
 
     return !!class_node;
+}
+
+template <> bool IsClassOnce(const graphml_t &d, QualifiedName cls)
+{
+    const auto node_type_id = get_attr_key_id(d, "node", "type");
+    const auto node_name_id = get_attr_key_id(d, "node", "name");
+
+    const auto query =
+        fmt::format("//node[data[@key='{}' and text()='class'] and "
+                    "data[@key='{}' and text()='{}']]",
+            node_type_id, node_name_id,
+            expand_name(d, cls.str(d.generate_packages)));
+
+    return d.src.select_nodes(query.c_str()).size() == 1;
 }
 
 template <> bool IsEnum(const graphml_t &d, QualifiedName cls)
