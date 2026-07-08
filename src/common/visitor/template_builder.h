@@ -1,7 +1,7 @@
 /**
  * @file src/class_diagram/visitor/template_builder.h
  *
- * Copyright (c) 2021-2025 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2026 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -647,8 +647,9 @@ void template_builder<VisitorT>::build_from_template_declaration(
                               clanguml::class_diagram::model::diagram>) {
                 if (template_type_parameter->getTypeConstraint() != nullptr) {
                     util::if_not_null(
-                        template_type_parameter->getTypeConstraint()
-                            ->getNamedConcept(),
+                        clang::dyn_cast_or_null<clang::ConceptDecl>(
+                            template_type_parameter->getTypeConstraint()
+                                ->getNamedConcept()),
                         [this, &ct, &templated_element](
                             const clang::ConceptDecl *named_concept) mutable {
                             ct.set_concept_constraint(
@@ -731,9 +732,8 @@ void template_builder<VisitorT>::build_from_template_specialization_type(
     const auto *template_type_ptr = &template_type_decl;
 
     if (template_type_decl.isTypeAlias()) {
-        if (const auto *tsp =
-                template_type_decl.getAliasedType()
-                    ->template getAs<clang::TemplateSpecializationType>();
+        if (const auto *tsp = template_type_decl.getAliasedType()
+                ->template getAs<clang::TemplateSpecializationType>();
             tsp != nullptr)
             template_type_ptr = tsp;
     }
@@ -742,18 +742,18 @@ void template_builder<VisitorT>::build_from_template_specialization_type(
 
     template_instantiation.is_template(true);
 
-    std::string full_template_specialization_name = common::to_string(
-        template_type.desugar(),
-        template_type.getTemplateName().getAsTemplateDecl()->getASTContext());
+    auto *template_decl{template_type.getTemplateName().getAsTemplateDecl()};
 
-    const auto *template_decl{
-        template_type.getTemplateName().getAsTemplateDecl()};
+    if (template_decl == nullptr)
+        return;
+
+    std::string full_template_specialization_name = common::to_string(
+        template_type.desugar(), template_decl->getASTContext());
 
     auto id =
         common::to_id(template_type, location_declaration.getASTContext());
 
-    auto id_decl =
-        common::to_id(*template_type.getTemplateName().getAsTemplateDecl());
+    auto id_decl = common::to_id(*template_decl);
 
     if (id_decl.has_value() &&
         common::is_template_specialization_fully_dependent(template_type)) {
@@ -798,8 +798,8 @@ void template_builder<VisitorT>::build(const clang::NamedDecl &location_decl,
 
         namespace_ ns{
             common::get_tag_namespace(*class_template_decl->getTemplatedDecl()
-                                           ->getParent()
-                                           ->getOuterLexicalRecordContext())};
+                    ->getParent()
+                    ->getOuterLexicalRecordContext())};
 
         std::string ns_str = ns.to_string();
         std::string name = template_decl->getQualifiedNameAsString();
@@ -1154,9 +1154,11 @@ template_parameter template_builder<VisitorT>::process_type_argument(
 {
     std::optional<template_parameter> argument;
 
+#if LLVM_VERSION_MAJOR < 22
     if (type->getAs<clang::ElaboratedType>() != nullptr) {
         type = type->getAs<clang::ElaboratedType>()->getNamedType(); // NOLINT
     }
+#endif
 
     auto type_name = common::to_string(type, &cls->getASTContext());
 
@@ -1385,8 +1387,10 @@ template_builder<VisitorT>::try_as_member_pointer(
 
 #if LLVM_VERSION_MAJOR < 21
         const auto *member_class_type = mp_type->getClass();
-#else
+#elif LLVM_VERSION_MAJOR < 22
         const auto *member_class_type = mp_type->getQualifier()->getAsType();
+#else
+        const auto *member_class_type = mp_type->getQualifier().getAsType();
 #endif
 
         if (member_class_type == nullptr)
@@ -1417,8 +1421,10 @@ template_builder<VisitorT>::try_as_member_pointer(
 
 #if LLVM_VERSION_MAJOR < 21
         const auto *member_class_type = mp_type->getClass();
-#else
+#elif LLVM_VERSION_MAJOR < 22
         const auto *member_class_type = mp_type->getQualifier()->getAsType();
+#else
+        const auto *member_class_type = mp_type->getQualifier().getAsType();
 #endif
 
         if (member_class_type == nullptr)
@@ -1479,8 +1485,8 @@ std::optional<template_parameter> template_builder<VisitorT>::try_as_array(
     else if (array_type->isConstantArrayType()) {
         argument.add_template_param(template_parameter::make_argument(
             std::to_string(((clang::ConstantArrayType *)array_type) // NOLINT
-                               ->getSize()
-                               .getLimitedValue())));
+                    ->getSize()
+                    .getLimitedValue())));
     }
 
     // TODO: Handle variable sized arrays
@@ -1618,6 +1624,9 @@ template_builder<VisitorT>::try_as_template_specialization_type(
 
     LOG_DBG("Template argument is a template specialization type");
 
+    if (nested_template_type->getTemplateName().getAsTemplateDecl() == nullptr)
+        return {};
+
     auto argument = template_parameter::make_argument("");
     type = consume_context(type, argument);
 
@@ -1650,8 +1659,8 @@ template_builder<VisitorT>::try_as_template_specialization_type(
 
     auto nested_template_instantiation =
         visitor_.create_element(nested_template_type->getTemplateName()
-                                    .getAsTemplateDecl()
-                                    ->getTemplatedDecl());
+                .getAsTemplateDecl()
+                ->getTemplatedDecl());
 
     eid_t nested_template_instantiation_id;
 
@@ -1861,7 +1870,27 @@ template_builder<VisitorT>::try_as_record_type(
         }
     }
     else if (const auto *record_type_decl = record_type->getAsRecordDecl();
-             record_type_decl != nullptr) {
+        record_type_decl != nullptr) {
+#if LLVM_VERSION_MAJOR >= 22
+        // In LLVM 22+, non-template record types used as template arguments
+        // may be printed without full namespace qualification by to_string().
+        // Use the decl's qualified name to ensure proper namespace resolution.
+        const auto qualified_name = config().simplify_template_type(
+            record_type_decl->getQualifiedNameAsString());
+        if (!qualified_name.empty() && qualified_name != type_name) {
+            argument.set_type(qualified_name);
+            argument.set_id(common::to_id(qualified_name));
+        }
+        const auto &effective_type_name =
+            qualified_name.empty() ? type_name : qualified_name;
+        const auto effective_type_id =
+            qualified_name.empty() ? type_id : common::to_id(qualified_name);
+        if (config_.generate_template_argument_dependencies() &&
+            diagram().should_include(namespace_{effective_type_name})) {
+            template_instantiation.add_relationship(
+                {relationship_t::kDependency, effective_type_id});
+        }
+#else
         if (config_.generate_template_argument_dependencies() &&
             diagram().should_include(namespace_{type_name})) {
             // Add dependency relationship to the parent
@@ -1869,6 +1898,7 @@ template_builder<VisitorT>::try_as_record_type(
             diagram().add_relationship({relationship_t::kDependency,
                 template_instantiation.id(), type_id});
         }
+#endif
     }
 
     return argument;

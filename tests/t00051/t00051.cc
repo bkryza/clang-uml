@@ -40,23 +40,23 @@ private:
 
     auto start_thread3()
     {
-        return B{[]() {}, []() {}};
+        return B{[]() { }, []() { }};
     }
 
     auto get_function()
     {
-        return []() {};
+        return []() { };
     }
 };
 
 A::custom_thread1 A::start_thread1()
 {
-    return custom_thread1{[]() {}};
+    return custom_thread1{[]() { }};
 }
 
 A::custom_thread2 A::start_thread2()
 {
-    return custom_thread2{[]() {}};
+    return custom_thread2{[]() { }};
 }
 
 }

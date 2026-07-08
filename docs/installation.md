@@ -109,10 +109,16 @@ Download and run the latest Windows installer from
 
 #### macOS
 
-Use Homebrew:
+`clang-uml` is available both in [Homebrew](https://brew.sh/):
 
 ```console
 brew install clang-uml
+```
+
+as well as in [MacPorts](https://ports.macports.org/):
+
+```console
+sudo port install clang-uml
 ```
 
 ### Building from source
@@ -124,7 +130,7 @@ First make sure that you have the following dependencies installed:
 
 ```bash
 # Ubuntu (Clang version will vary depending on Ubuntu version - below example is for Ubuntu 24.04)
-apt install make gcc g++ ccache cmake libyaml-cpp-dev llvm-18 clang-18 libclang-18-dev libclang-cpp18-dev
+apt install make gcc g++ ccache cmake libyaml-cpp-dev llvm-18 llvm-18-dev clang-18 libclang-18-dev libclang-cpp18-dev
 ```
 
 Then proceed with building the sources:
@@ -248,7 +254,7 @@ bin\clang-uml.exe --version
 It should produce something like:
 ```bash
 clang-uml 0.6.2
-Copyright (C) 2021-2025 Bartek Kryza <bkryza@gmail.com>
+Copyright (C) 2021-2026 Bartek Kryza <bkryza@gmail.com>
 Linux x86_64 6.5.0-21-generic
 Built against LLVM/Clang libraries version: 18.1.8
 Using LLVM/Clang libraries version: Ubuntu clang version 18.1.8

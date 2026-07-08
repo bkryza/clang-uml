@@ -22,7 +22,7 @@ public:
     static int fooCount_static;
 };
 
-enum FooEnum {};
+enum FooEnum { };
 
 template <typename T> class Bar {
     T bar;

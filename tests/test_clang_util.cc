@@ -1,7 +1,7 @@
 /**
  * @file tests/test_clang_util.cc
  *
- * Copyright (c) 2021-2025 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2026 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -144,17 +144,25 @@ TEST_CASE("Test diagnostic_consumer")
     auto fs = llvm::vfs::getRealFileSystem();
     FileSystemOptions file_opts;
     FileManager file_mgr(file_opts, fs);
-
-#if LLVM_VERSION_MAJOR < 21
-    auto diag_engine = DiagnosticsEngine(
+    DiagnosticOptions diag_opts;
+    auto diagnostic_engine = DiagnosticsEngine(
         llvm::IntrusiveRefCntPtr<DiagnosticIDs>(new DiagnosticIDs()),
-        new DiagnosticOptions());
+#if LLVM_VERSION_MAJOR > 20
+        diag_opts
 #else
-    auto *diagopt = new DiagnosticOptions();
-    auto diag_engine = DiagnosticsEngine(
-        llvm::IntrusiveRefCntPtr<DiagnosticIDs>(new DiagnosticIDs()), *diagopt);
+        new DiagnosticOptions()
 #endif
-    SourceManager source_mgr(diag_engine, file_mgr);
+    );
+    SourceManager source_mgr(diagnostic_engine, file_mgr);
+
+    DiagnosticsEngine diag_engine(
+        llvm::IntrusiveRefCntPtr<DiagnosticIDs>(new DiagnosticIDs()),
+#if LLVM_VERSION_MAJOR > 20
+        diag_opts
+#else
+        new DiagnosticOptions()
+#endif
+    );
 
     diag_engine.setClient(&consumer, false);
     auto id_note = diag_engine.getCustomDiagID(

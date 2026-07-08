@@ -1,7 +1,7 @@
 /**
  * @file tests/test_cases.h
  *
- * Copyright (c) 2021-2025 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2026 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -2158,7 +2158,7 @@ bool MessageChainsOrder<json_t>(
     const auto sequence_chains_count{
         d.src["sequences"][0]["message_chains"].size()};
     for (uint32_t chain_index = 0; chain_index < sequence_chains_count;
-         chain_index++) {
+        chain_index++) {
         for (const auto &messages : message_chains) {
 
             int64_t offset{0};

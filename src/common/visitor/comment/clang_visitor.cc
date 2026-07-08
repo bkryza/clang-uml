@@ -1,7 +1,7 @@
 /**
  * @file src/common/visitor/comment/clang_visitor.cc
  *
- * Copyright (c) 2021-2025 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2026 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -143,7 +143,7 @@ void clang_visitor::visit_block_command(
     std::string command_text;
 
     for (const auto *paragraph_it = command->child_begin();
-         paragraph_it != command->child_end(); ++paragraph_it) {
+        paragraph_it != command->child_end(); ++paragraph_it) {
 
         if ((*paragraph_it)->getCommentKind() ==
             CLANG_UML_LLVM_COMMENT_KIND(ParagraphComment)) {
@@ -177,7 +177,7 @@ void clang_visitor::visit_param_command(
     const auto name = command->getParamNameAsWritten().str();
 
     for (const auto *it = command->child_begin(); it != command->child_end();
-         ++it) {
+        ++it) {
 
         if ((*it)->getCommentKind() ==
             CLANG_UML_LLVM_COMMENT_KIND(ParagraphComment)) {
@@ -213,7 +213,7 @@ void clang_visitor::visit_tparam_command(
     const auto name = command->getParamNameAsWritten().str();
 
     for (const auto *it = command->child_begin(); it != command->child_end();
-         ++it) {
+        ++it) {
         if ((*it)->getCommentKind() ==
             CLANG_UML_LLVM_COMMENT_KIND(ParagraphComment)) {
             visit_paragraph(
@@ -243,7 +243,7 @@ void clang_visitor::visit_paragraph(
         return;
 
     for (const auto *text_it = paragraph->child_begin();
-         text_it != paragraph->child_end(); ++text_it) {
+        text_it != paragraph->child_end(); ++text_it) {
 
         if ((*text_it)->getCommentKind() ==
                 CLANG_UML_LLVM_COMMENT_KIND(TextComment) &&

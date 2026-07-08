@@ -1,7 +1,7 @@
 /**
  * @file src/util/levenshtein.cc
  *
- * Copyright (c) 2021-2025 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2026 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@ std::vector<std::string> get_approximate_matches(
 
     std::vector<std::string> result;
     for (size_t i = 0; i < std::min<size_t>(distance_pairs.size(), max_results);
-         ++i) {
+        ++i) {
         result.push_back(distance_pairs[i].second);
     }
 

@@ -1,7 +1,7 @@
 /**
  * @file src/util/util.h
  *
- * Copyright (c) 2021-2025 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2026 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -371,7 +371,7 @@ void if_not_null(const T *pointer, F &&func, FElse &&func_else)
 
 template <typename T, typename F> void if_not_null(const T *pointer, F &&func)
 {
-    if_not_null(pointer, std::forward<F>(func), []() {});
+    if_not_null(pointer, std::forward<F>(func), []() { });
 }
 
 template <typename F, typename FElse>
@@ -387,7 +387,7 @@ void _if(const bool condition, F &&func, FElse &&func_else)
 
 template <typename F> void _if(const bool condition, F &&func)
 {
-    _if(condition, std::forward<F>(func), []() {});
+    _if(condition, std::forward<F>(func), []() { });
 }
 
 template <typename T> void remove_duplicates(T &coll)

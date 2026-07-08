@@ -1,7 +1,7 @@
 /**
  * @file src/common/generators/plantuml/generator.h
  *
- * Copyright (c) 2021-2025 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2026 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -280,8 +280,8 @@ void generator<C, D>::generate_row_column_hints(std::ostream &ostr,
         element_opt = model.get((uns | entity_name).to_string());
 
     for (auto it = cbegin(group_elements);
-         it != cend(group_elements) && std::next(it) != cend(group_elements);
-         ++it) {
+        it != cend(group_elements) && std::next(it) != cend(group_elements);
+        ++it) {
         const auto &first = *it;
         const auto &second = *std::next(it);
 

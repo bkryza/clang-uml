@@ -1,6 +1,6 @@
 # Makefile
 #
-# Copyright (c) 2021-2025 Bartek Kryza <bkryza@gmail.com>
+# Copyright (c) 2021-2026 Bartek Kryza <bkryza@gmail.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -193,15 +193,15 @@ init_compile_commands: debug
 
 .PHONY: clang-format
 clang-format:
-	docker run --rm -v $(CURDIR):/root/sources bkryza/clang-format-check:1.5
+	docker run --rm -v $(CURDIR):/root/sources bkryza/clang-format-check:1.6
 
 .PHONY: format
 format:
-	docker run --rm -v $(CURDIR):/root/sources bkryza/clang-format-check:1.5
+	docker run --rm -v $(CURDIR):/root/sources bkryza/clang-format-check:1.6
 
-.PHONY: tidy
+.PHONY: debug_tidy
 tidy: debug
-	run-clang-tidy-20 -extra-arg=-Wno-unknown-warning-option -extra-arg=-std=c++17 -allow-no-checks -j $(NUMPROC) -p debug "${PWD}/src"
+	run-clang-tidy-22 -extra-arg=-std=c++17 -extra-arg=-Wno-unknown-warning-option -j $(NUMPROC) -p debug "${PWD}/src"
 
 .PHONY: check-formatting
 check-formatting:

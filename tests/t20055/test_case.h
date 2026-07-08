@@ -1,7 +1,7 @@
 /**
  * tests/t20055/test_case.h
  *
- * Copyright (c) 2021-2025 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2026 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,7 @@ TEST_CASE("t20055")
                 {{"ns2", "tmain()"}, {"ns2", "C"}, "c()"},
                 {{"ns2", "C"}, {"ns1", "B"}, "b()"},
                 {{"ns1", "B"}, {"ns1", "d()"}, ""},
-                {{"ns2", "C"}, {"ns2", "f()"}, ""}
-                //
+                {{"ns2", "C"}, {"ns2", "f()"}, ""} //
             }));
 
         REQUIRE(!HasMessage(src, {{"ns1", "B"}, {"ns1", "A"}, "a()"}));

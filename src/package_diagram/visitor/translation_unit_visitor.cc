@@ -2,7 +2,7 @@
 /**
  * @file src/package_diagram/visitor/translation_unit_visitor.cc
  *
- * Copyright (c) 2021-2025 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2026 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -725,7 +725,7 @@ bool translation_unit_visitor::find_relationships(const clang::Decl *decl,
             // Add dependency to template declaration
             relationships.emplace_back(
                 get_package_id(template_specialization_type->getTemplateName()
-                                   .getAsTemplateDecl()),
+                        .getAsTemplateDecl()),
                 relationship_hint, decl);
 
             // Add dependencies to template arguments
@@ -759,7 +759,7 @@ bool translation_unit_visitor::find_relationships(const clang::Decl *decl,
                 else if (const auto *function_type =
                              template_argument.getAsType()
                                  ->getAs<clang::FunctionProtoType>();
-                         function_type != nullptr) {
+                    function_type != nullptr) {
                     for (const auto &param_type :
                         function_type->param_types()) {
                         result = find_relationships(decl, param_type,
@@ -820,7 +820,7 @@ bool translation_unit_visitor::find_relationships(const clang::Decl *decl,
             }
         }
         else if (const auto *record_decl = type->getAsRecordDecl();
-                 record_decl != nullptr) {
+            record_decl != nullptr) {
             // This is only possible for plain C translation unit, so we
             // don't need to consider namespaces or modules here
             if (config().package_type() == config::package_type_t::kDirectory) {

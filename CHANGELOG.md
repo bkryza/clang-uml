@@ -1,5 +1,9 @@
 # CHANGELOG
 
+### 0.6.3
+  * Added support for LLVm 22 (#450)
+  * Fixed tests building with LLVM 21 (#447, Thanks @krzysiek358)
+
 ### 0.6.2
   * Added support for LLVM 21 (#419)
   * Added generate_method_argument_names options for sequence diagrams (#404)

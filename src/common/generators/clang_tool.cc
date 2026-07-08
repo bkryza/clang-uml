@@ -1,7 +1,7 @@
 /**
  * @file src/common/generators/clang_tool.cc
  *
- * Copyright (c) 2021-2025 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2026 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,9 @@
 #include <clang/Frontend/CompilerInstance.h>
 #include <clang/Frontend/CompilerInvocation.h>
 #include <clang/Tooling/CompilationDatabase.h>
+#if LLVM_VERSION_MAJOR >= 22
+#include <clang/Options/OptionUtils.h>
+#endif
 
 #include "util/util.h"
 
@@ -38,8 +41,13 @@ void inject_resource_dir(
         return;
 
     args = clang::tooling::getInsertArgumentAdjuster(("-resource-dir=" +
-        clang::CompilerInvocation::GetResourcesPath(argv_0, main_addr))
-                                                         .c_str())(args, "");
+#if LLVM_VERSION_MAJOR < 22
+        clang::CompilerInvocation::GetResourcesPath(argv_0, main_addr)
+#else
+        clang::GetResourcesPath(argv_0, main_addr)
+#endif
+                                                          )
+            .c_str())(args, "");
 }
 } // namespace
 

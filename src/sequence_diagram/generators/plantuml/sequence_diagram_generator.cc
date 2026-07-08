@@ -1,7 +1,7 @@
 /**
  * @file src/sequence_diagram/generators/plantuml/sequence_diagram_generator.cc
  *
- * Copyright (c) 2021-2025 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2026 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -567,7 +567,7 @@ void generator::generate_participant(
 
         auto participant_name = util::path_to_url(relative(
             std::filesystem::path{file_path}, config().root_directory())
-                                                      .string());
+                .string());
 
         ostr << "participant \"" << participant_name << "\" as "
              << fmt::format("C_{:022}", file_id.value());

@@ -1,7 +1,7 @@
 /**
  * @file src/config/yaml_decoders.cc
  *
- * Copyright (c) 2021-2025 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2026 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -250,14 +250,13 @@ void get_option<std::map<std::string, clanguml::config::diagram_template>>(
 
         YAML::Node included_node = YAML::LoadFile(include_path.string());
 
-        option.set(
-            included_node.as<
-                std::map<std::string, clanguml::config::diagram_template>>());
+        option.set(included_node.as<
+            std::map<std::string, clanguml::config::diagram_template>>());
     }
     else
         option.set(node[option.name]
-                       .as<std::map<std::string,
-                           clanguml::config::diagram_template>>());
+                .as<std::map<std::string,
+                    clanguml::config::diagram_template>>());
 }
 
 std::shared_ptr<clanguml::config::diagram> parse_diagram_config(const Node &d)

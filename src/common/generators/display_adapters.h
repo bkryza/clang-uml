@@ -1,7 +1,7 @@
 /**
  * @file src/common/generators/display_adapters.h
  *
- * Copyright (c) 2021-2025 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2026 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,25 +41,25 @@ template <typename> std::false_type has_type_impl(...);
 template <typename U> struct has_type : decltype(has_type_impl<U>(0)) { };
 
 template <typename U>
-auto has_full_name_impl(
-    int) -> decltype(std::declval<U>().full_name(std::declval<bool>()),
-             std::true_type{});
+auto has_full_name_impl(int)
+    -> decltype(std::declval<U>().full_name(std::declval<bool>()),
+        std::true_type{});
 template <typename> std::false_type has_full_name_impl(...);
 
 template <typename U>
 struct has_full_name : decltype(has_full_name_impl<U>(0)) { };
 
 template <typename U>
-auto has_name_no_ns_impl(
-    int) -> decltype(std::declval<U>().name_no_ns(), std::true_type{});
+auto has_name_no_ns_impl(int)
+    -> decltype(std::declval<U>().name_no_ns(), std::true_type{});
 template <typename> std::false_type has_name_no_ns_impl(...);
 
 template <typename U>
 struct has_name_no_ns : decltype(has_name_no_ns_impl<U>(0)) { };
 
 template <typename U>
-auto has_full_name_no_ns_impl(
-    int) -> decltype(std::declval<U>().full_name_no_ns(), std::true_type{});
+auto has_full_name_no_ns_impl(int)
+    -> decltype(std::declval<U>().full_name_no_ns(), std::true_type{});
 template <typename> std::false_type has_full_name_no_ns_impl(...);
 
 template <typename U>

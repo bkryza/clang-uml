@@ -1,7 +1,7 @@
 /**
  * @file src/class_diagram/visitor/translation_unit_visitor.cc
  *
- * Copyright (c) 2021-2025 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2026 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -661,12 +661,12 @@ void translation_unit_visitor::process_constraint_requirements(
         }
     }
     else if (const auto *binop = llvm::dyn_cast<clang::BinaryOperator>(expr);
-             binop) {
+        binop) {
         process_constraint_requirements(cpt, binop->getLHS(), concept_model);
         process_constraint_requirements(cpt, binop->getRHS(), concept_model);
     }
     else if (const auto *unop = llvm::dyn_cast<clang::UnaryOperator>(expr);
-             unop) {
+        unop) {
         process_constraint_requirements(cpt, unop->getSubExpr(), concept_model);
     }
 }
@@ -1295,7 +1295,7 @@ void translation_unit_visitor::process_class_bases(
         }
         else if (const auto *record_type =
                      base.getType()->getAs<clang::RecordType>();
-                 record_type != nullptr) {
+            record_type != nullptr) {
             parent_id = common::to_id(*record_type->getDecl());
         }
         else
@@ -1477,9 +1477,9 @@ void translation_unit_visitor::process_method(
 
     // Move dereferencing to build() method of template_builder
     if (const auto *templ = mf.getReturnType()
-                                .getNonReferenceType()
-                                .getUnqualifiedType()
-                                ->getAs<clang::TemplateSpecializationType>();
+            .getNonReferenceType()
+            .getUnqualifiedType()
+            ->getAs<clang::TemplateSpecializationType>();
         templ != nullptr) {
         const auto *unaliased_type = templ;
         if (unaliased_type->isTypeAlias())
@@ -1836,7 +1836,7 @@ bool translation_unit_visitor::find_relationships(const clang::Decl *decl,
                 else if (const auto *function_type =
                              template_argument.getAsType()
                                  ->getAs<clang::FunctionProtoType>();
-                         function_type != nullptr) {
+                    function_type != nullptr) {
                     for (const auto &param_type :
                         function_type->param_types()) {
                         result = find_relationships(decl, param_type,
@@ -1921,10 +1921,9 @@ bool translation_unit_visitor::find_relationships(const clang::Decl *decl,
                 clang::TemplateArgument::ArgKind::TemplateExpansion) {
                 // pass
             }
-            else if (const auto *function_type =
-                         template_argument.getAsType()
-                             ->getAs<clang::FunctionProtoType>();
-                     function_type != nullptr) {
+            else if (const auto *function_type = template_argument.getAsType()
+                         ->getAs<clang::FunctionProtoType>();
+                function_type != nullptr) {
                 for (const auto &param_type : function_type->param_types()) {
                     result = find_relationships(decl, param_type, relationships,
                         relationship_t::kDependency);
@@ -2025,11 +2024,10 @@ void translation_unit_visitor::process_function_parameter(
         LOG_DBG("Looking for relationships in type: {}",
             common::to_string(p.getType(), p.getASTContext()));
 
-        if (const auto *templ =
-                p.getType()
-                    .getNonReferenceType()
-                    .getUnqualifiedType()
-                    ->getAs<clang::TemplateSpecializationType>();
+        if (const auto *templ = p.getType()
+                .getNonReferenceType()
+                .getUnqualifiedType()
+                ->getAs<clang::TemplateSpecializationType>();
             templ != nullptr) {
             auto template_specialization_ptr =
                 std::make_unique<class_>(config().using_namespace());
@@ -2313,13 +2311,14 @@ void translation_unit_visitor::process_field(
     if (template_field_type != nullptr) {
         // Skip types which are template template parameters of the parent
         // template
-        for (const auto &class_template_param : c.template_params()) {
-            if (class_template_param.name() ==
-                template_field_type->getTemplateName()
-                        .getAsTemplateDecl()
-                        ->getNameAsString() +
-                    "<>") {
-                field_type_is_template_template_parameter = true;
+        const auto *template_field_type_decl =
+            template_field_type->getTemplateName().getAsTemplateDecl();
+        if (template_field_type_decl != nullptr) {
+            for (const auto &class_template_param : c.template_params()) {
+                if (class_template_param.name() ==
+                    template_field_type_decl->getNameAsString() + "<>") {
+                    field_type_is_template_template_parameter = true;
+                }
             }
         }
     }
@@ -2619,7 +2618,8 @@ void translation_unit_visitor::find_instantiation_relationships(
 
     auto templated_decl_global_id = templated_decl_id;
 
-    if (best_match_id.value() > 0) {
+    if (best_match_id.value() > 0 &&
+        best_match_id != template_instantiation.id()) {
         destination = best_match_full_name;
         diagram().add_relationship(
             {common::model::relationship_t::kInstantiation,
@@ -2628,13 +2628,15 @@ void translation_unit_visitor::find_instantiation_relationships(
     }
     // If we can't find optimal match for parent template specialization,
     // just use whatever clang suggests
-    else if (diagram().has_element(templated_decl_global_id)) {
+    else if (diagram().has_element(templated_decl_global_id) &&
+        templated_decl_global_id != template_instantiation.id()) {
         diagram().add_relationship(
             {common::model::relationship_t::kInstantiation,
                 template_instantiation.id(), templated_decl_global_id});
         template_instantiation.template_specialization_found(true);
     }
-    else if (templated_decl_id.value() != 0) {
+    else if (templated_decl_id.value() != 0 &&
+        templated_decl_id != template_instantiation.id()) {
         diagram().add_relationship(
             {common::model::relationship_t::kInstantiation,
                 template_instantiation.id(), templated_decl_id});
