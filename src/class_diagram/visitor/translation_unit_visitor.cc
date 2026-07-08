@@ -1800,7 +1800,7 @@ bool translation_unit_visitor::find_relationships(const clang::Decl *decl,
             if (should_include(type_instantiation_template_decl)) {
                 relationships.emplace_back(
                     common::to_id(*type_instantiation_type->getTemplateName()
-                                       .getAsTemplateDecl()),
+                            .getAsTemplateDecl()),
                     relationship_hint, decl);
             }
 
@@ -1870,7 +1870,7 @@ bool translation_unit_visitor::find_relationships(const clang::Decl *decl,
     }
     else if (const auto *template_specialization_type =
                  type->getAs<clang::TemplateSpecializationType>();
-             template_specialization_type != nullptr) {
+        template_specialization_type != nullptr) {
 
         const auto *type_instantiation_template_decl =
             template_specialization_type->getTemplateName().getAsTemplateDecl();
@@ -1879,17 +1879,17 @@ bool translation_unit_visitor::find_relationships(const clang::Decl *decl,
             type_instantiation_template_decl->getASTContext());
         auto id_decl =
             common::to_id(*template_specialization_type->getTemplateName()
-                               .getAsTemplateDecl());
+                    .getAsTemplateDecl());
 
         if (id_decl.has_value() &&
             common::is_template_specialization_fully_dependent(
                 *template_specialization_type)) {
             id = common::to_id(*template_specialization_type->getTemplateName()
-                                    .getAsTemplateDecl());
+                    .getAsTemplateDecl());
         }
 
         if (should_include(template_specialization_type->getTemplateName()
-                               .getAsTemplateDecl())) {
+                    .getAsTemplateDecl())) {
             relationships.emplace_back(id, relationship_hint, decl);
         }
         auto idx{0};

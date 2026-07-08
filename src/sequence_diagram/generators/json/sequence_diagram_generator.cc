@@ -168,7 +168,7 @@ void generator::generate_to_activity(
                     .value();
             msg["to"]["participant_id"] = std::to_string(common::to_id(
                 std::filesystem::path{file_participant.file_relative()})
-                                                             .value());
+                    .value());
         }
         else {
             msg["to"]["participant_id"] =
@@ -213,7 +213,7 @@ void generator::generate_from_activity(const message &m,
                     .value();
             msg["from"]["participant_id"] = std::to_string(common::to_id(
                 std::filesystem::path{file_participant.file_relative()})
-                                                               .value());
+                    .value());
         }
         else {
             msg["from"]["participant_id"] =
