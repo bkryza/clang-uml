@@ -1270,9 +1270,13 @@ void translation_unit_visitor::process_class_bases(
             auto type_template_decl_id =
                 common::to_id(*tsp, cls->getASTContext());
 
-            if (common::is_template_specialization_fully_dependent(*tsp)) {
-                type_template_decl_id =
-                    common::to_id(*tsp->getTemplateName().getAsTemplateDecl());
+            if (const auto *tsp_decl =
+                    tsp->getTemplateName().getAsTemplateDecl();
+                tsp_decl != nullptr &&
+                common::is_template_specialization_fully_dependent(*tsp)) {
+                if (auto id_decl = common::to_id(*tsp_decl);
+                    id_decl.has_value())
+                    type_template_decl_id = id_decl;
             }
 
             if (diagram().get(type_template_decl_id).has_value()) {
@@ -1284,16 +1288,12 @@ void translation_unit_visitor::process_class_bases(
                 tbuilder().build_from_template_specialization_type(
                     *cls, *template_specialization_ptr, cls, *tsp, {});
 
-                if (common::is_template_specialization_fully_dependent(*tsp)) {
-                    type_template_decl_id = common::to_id(
-                        *tsp->getTemplateName().getAsTemplateDecl());
-                }
-
                 template_specialization_ptr->set_id(type_template_decl_id);
 
                 parent_id = template_specialization_ptr->id();
 
-                if (diagram().should_include(*template_specialization_ptr)) {
+                if (type_template_decl_id.value() != 0 &&
+                    diagram().should_include(*template_specialization_ptr)) {
                     diagram().add_class(std::move(template_specialization_ptr));
                 }
             }
@@ -1501,10 +1501,14 @@ void translation_unit_visitor::process_method(
 
             auto id = common::to_id(*unaliased_type, mf.getASTContext());
 
-            if (common::is_template_specialization_fully_dependent(
+            if (const auto *unaliased_type_decl =
+                    unaliased_type->getTemplateName().getAsTemplateDecl();
+                unaliased_type_decl != nullptr &&
+                common::is_template_specialization_fully_dependent(
                     *unaliased_type)) {
-                id = common::to_id(
-                    *unaliased_type->getTemplateName().getAsTemplateDecl());
+                if (auto id_decl = common::to_id(*unaliased_type_decl);
+                    id_decl.has_value())
+                    id = id_decl;
             }
 
             template_specialization_ptr->set_id(id);
@@ -2338,8 +2342,12 @@ void translation_unit_visitor::process_field(
         auto id = common::to_id(
             *template_field_type, field_declaration.getASTContext());
 
-        auto id_decl = common::to_id(
-            *template_field_type->getTemplateName().getAsTemplateDecl());
+        const auto *template_field_type_decl =
+            template_field_type->getTemplateName().getAsTemplateDecl();
+
+        eid_t id_decl;
+        if (template_field_type_decl != nullptr)
+            id_decl = common::to_id(*template_field_type_decl);
 
         if (id_decl.has_value() &&
             common::is_template_specialization_fully_dependent(
