@@ -179,10 +179,11 @@ void call_expression_context::update(
 
 eid_t call_expression_context::caller_id() const
 {
-    if (lambda_caller_id().has_value()) {
+    if (const auto lambda_caller = lambda_caller_id();
+        lambda_caller.has_value()) {
         // Handle a case when local class is defined inside a lambda
         if (!is_local_class())
-            return *lambda_caller_id(); // NOLINT
+            return *lambda_caller;
     }
 
     return current_caller_id_;
