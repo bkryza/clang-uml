@@ -203,7 +203,7 @@ using_module: mod1.mod2
 which will render modules relative to `mod1.mod2`.
 
 For examples of this feature check out the following test cases documentation:
-[t00071](test_cases/t00072.md) and [t00072](test_cases/t00072.md).
+[t00071](test_cases/t00071.md) and [t00072](test_cases/t00072.md).
 
 ## Class context diagram
 Sometimes it's helpful to generate a class diagram depicting only direct

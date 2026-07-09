@@ -294,7 +294,7 @@ clang-uml --add-compile-flag -I/opt/my_toolchain/include \
 ```
 
 Also see
-[here](./md_docs_2common__options.html#resolving-include-path-and-compiler-flags-issues).
+[here](./common_options.md#resolving-include-path-and-compiler-flags-issues).
 
 ### "error: unknown pragma ignored"
 If your code bases uses some non-standard pragmas declarations or you

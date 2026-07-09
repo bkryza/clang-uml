@@ -404,7 +404,7 @@ However, a call expression can be injected manually through a comment
 directive
 
 ```cpp
-// \uml{note CALLEE}
+// \uml{call CALLEE}
 ```
 
 It should be placed in the comment just before such line of code, for example:
@@ -464,7 +464,7 @@ Rendering of messages, which are either function or method signatures or return
 types, can be controlled by several configuration options:
 
 * `generate_method_arguments` - this enum controls how the message arguments are
-  render, possible values are `none`, `abbrev` or `full`
+  rendered, possible values are `none`, `abbreviated` or `full`
 * `generate_method_argument_names` - in addition to argument type, also render
   the argument name
 * `generate_return_types` - in return messages, render return type as message

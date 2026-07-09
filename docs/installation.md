@@ -19,6 +19,12 @@
 * [Shell autocompletion scripts](#shell-autocompletion-scripts)
   * [Bash](#bash)
   * [Zsh](#zsh)
+* [LLM skills](#llm-skills)
+  * [Claude Code](#claude-code)
+  * [Cursor](#cursor)
+  * [GitHub Copilot](#github-copilot)
+  * [Codex CLI](#codex-cli)
+  * [Chat-based LLMs](#chat-based-llms)
 
 <!-- tocstop -->
 
@@ -271,7 +277,7 @@ For `Linux` and `macos`, Bash and Zsh autocomplete scripts are available, and
 if `clang-uml` is installed from a distribution package they should work
 out of the box. When installing `clang-uml` from sources the files need to be
 installed manually. The completion scripts are available in directory:
-* [`packaging/autocomplete`](./packaging/autocomplete)
+* [`packaging/autocomplete`](../packaging/autocomplete)
 
 #### Bash
 The `clang-uml` script can be either directly loaded to the
@@ -321,4 +327,84 @@ restarting Zsh:
 $ unfunction _clang-uml
 $ autoload -U _clang-uml
 ```
+
+### LLM skills
+`clang-uml` provides a skill file - [`packaging/agents/SKILLS.md`](../packaging/agents/SKILLS.md) - which
+teaches LLM-based coding assistants how to create and edit `.clang-uml`
+configuration files for your project.
+
+#### Claude Code
+Copy the skill file to a skill directory, either in your project:
+
+```shell
+mkdir -p .claude/skills/clang-uml-config
+cp SKILLS.md .claude/skills/clang-uml-config/SKILL.md
+```
+
+or in your home directory, to make it available in all projects:
+
+```shell
+mkdir -p ~/.claude/skills/clang-uml-config
+cp SKILLS.md ~/.claude/skills/clang-uml-config/SKILL.md
+```
+
+then add the following YAML frontmatter at the top of the copied
+`SKILL.md` file, so that Claude Code knows when to load it:
+
+```yaml
+---
+name: clang-uml-config
+description: >
+  Create or edit .clang-uml configuration files for generating UML
+  class, sequence, package and include diagrams from C, C++ or
+  Objective-C code using clang-uml. Use when the user asks to configure
+  clang-uml or generate UML diagrams from source code.
+---
+```
+
+Claude Code will load the skill automatically whenever a request matches
+the description, or it can be invoked directly using
+`/clang-uml-config`.
+
+Alternatively, without using the skills mechanism, simply reference the
+file from your project's `CLAUDE.md`:
+
+```markdown
+When creating or modifying `.clang-uml` configuration files, first read
+`SKILLS.md`.
+```
+
+#### Cursor
+Copy the file contents into a project rule, e.g.
+`.cursor/rules/clang-uml.mdc`, and add a rule description so it is
+applied automatically when relevant:
+
+```markdown
+---
+description: Creating or editing .clang-uml configuration files
+---
+```
+
+#### GitHub Copilot
+Copy or reference the file from `.github/copilot-instructions.md` in
+your project, e.g.:
+
+```markdown
+When creating or modifying `.clang-uml` configuration files, follow the
+instructions in `SKILLS.md`.
+```
+
+#### Codex CLI
+Reference the file from `AGENTS.md` in the project root:
+
+```markdown
+When creating or modifying `.clang-uml` configuration files, first read
+`SKILLS.md`.
+```
+
+#### Chat-based LLMs
+For any chat-based LLM (e.g. claude.ai, ChatGPT, Gemini), paste or
+attach the file in the conversation, then ask the model to generate a
+`.clang-uml` configuration for your project, ideally providing also the
+project's directory tree and top-level namespaces.
 
