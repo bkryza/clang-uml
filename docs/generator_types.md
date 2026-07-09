@@ -9,7 +9,7 @@
 
 <!-- tocstop -->
 
-Currently, there are 3 types of diagram generators: `plantuml`, `mermaid`, `graphml`
+Currently, there are 4 types of diagram generators: `plantuml`, `mermaid`, `graphml`
 and `json`.
 
 > `graphml` generator does not support sequence diagrams

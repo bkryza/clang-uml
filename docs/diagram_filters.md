@@ -232,7 +232,7 @@ context filter has a `direction` option, which can have one of 3 values:
   * `any` (default)
   * `inward` - only relationships pointing toward the specified class are
                considered in calculating the context
-  * `outward` -  only relationships pointing toward the specified class are
+  * `outward` -  only relationships pointing away from the specified class are
                considered in calculating the context
 
 For example, the following filter:
@@ -262,7 +262,7 @@ For example, the following filter:
               - aggregation
 ```
 will only include elements related to class `A` through inheritance or
-aggregation relationship (see test case [t00076](./test_cases/t00078.md)).
+aggregation relationship (see test case [t00078](./test_cases/t00078.md)).
 
 ## relationships
 

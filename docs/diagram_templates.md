@@ -43,9 +43,9 @@ diagram_templates:
         {% endif %}
         include:
           parents: [{{ class_name }}]
-          namespaces: [{{ namespace_names }}]
-        relationships:
-          - inheritance
+          namespaces: [{{ namespace_name }}]
+          relationships:
+            - inheritance
         exclude:
           access: [public, protected, private]
         plantuml:
@@ -80,7 +80,7 @@ simply call the `clang-uml` using the following options:
 ```bash
 clang-uml --add-diagram-from-template parents_hierarchy_tmpl \
   --template-var class_name=clanguml::config::include_diagram \
-  --template-var namespace_names=clanguml \
+  --template-var namespace_name=clanguml \
   --template-var diagram_name=abcd \
   --template-var "glob=src/config/*.cc" \
   --template-var using_namespace=clanguml::config

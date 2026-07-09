@@ -175,7 +175,7 @@ package_type: module
 
 for example check out this diagram (you can click on package names to see the
 corresponding module source):
-![t30014_package](./test_cases/t30012_package.svg)
+![t30012_package](./test_cases/t30012_package.svg)
 
 Diagrams can be rendered relative to a specific module using `using_module`
 option:

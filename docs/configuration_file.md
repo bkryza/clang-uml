@@ -29,7 +29,7 @@
 * `generate_concept_requirements` - determines whether concept requirements are rendered in the diagram (default: `true`)
 * `using_namespace` - similar to C++ `using namespace`, a `A::B` value here will render a class `A::B::C::MyClass` in the diagram as `C::MyClass`, at most 1 value is supported
 * `generate_packages` - whether or not the class diagram should contain packages generated from namespaces or subdirectories
-* `package_type` - determines how the packages are inferred: `namespace` - use C++ namespaces, `directory` - use project's directory structure
+* `package_type` - determines how the packages are inferred: `namespace` - use C++ namespaces, `directory` - use project's directory structure, `module` - use C++20 modules
 * `include` - definition of inclusion patterns:
     * `namespaces` - list of namespaces to include
     * `relationships` - list of relationships to include
@@ -74,8 +74,7 @@ add_compile_flags:
 remove_compile_flags:
   - '-Wshadow'
 # Compiler driver command to query for system include paths
-query_driver:
-  - arm-none-eabi-g++
+query_driver: arm-none-eabi-g++
 # The directory where *.puml files will be generated
 output_directory: docs/diagrams
 # Set this as default for all diagrams
@@ -111,7 +110,7 @@ diagrams:
       - src/common/model/*.cc
       - src/class_diagram/model/*.h
       - src/class_diagram/model/*.cc
-      - r: ".*test.*\\.cpp$
+      - r: ".*test.*\\.cpp$"
     include:
       # Only include entities from the following namespaces
       namespaces:
@@ -155,7 +154,7 @@ diagrams:
         - 'title clang-uml class diagram model'
     mermaid:
       # Add this line at the end of a Mermaid diagram
-      end:
+      after:
         - 'direction LR'
     graphml:
       notes:

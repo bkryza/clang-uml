@@ -17,8 +17,7 @@ The following, are the `clang-uml` additional template functions:
 * `ltrim(string)` - left trims a string
 * `rtrim(string)` - right trims a string
 * `trim(string)` - trims a string
-* `substr(string, offset, length)` - returns a substring of a string from offset of length
-* `split(string)` - splits a string and returns a list of strings
+* `split(string, regex)` - splits a string using regex separator and returns a list of strings
 * `replace(string, regex, replacement)` - returns a string with replace matches to regex with replacement string
 * `abbrv(string, length)` - returns a string truncated to length including trailing ellipsis
 * `element(string)` - returns the entire JSON context a given diagram element, including the following properties:

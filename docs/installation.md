@@ -19,6 +19,12 @@
 * [Shell autocompletion scripts](#shell-autocompletion-scripts)
   * [Bash](#bash)
   * [Zsh](#zsh)
+* [LLM skills](#llm-skills)
+  * [Claude Code](#claude-code)
+  * [Cursor](#cursor)
+  * [GitHub Copilot](#github-copilot)
+  * [Codex CLI](#codex-cli)
+  * [Chat-based LLMs](#chat-based-llms)
 
 <!-- tocstop -->
 
@@ -271,7 +277,7 @@ For `Linux` and `macos`, Bash and Zsh autocomplete scripts are available, and
 if `clang-uml` is installed from a distribution package they should work
 out of the box. When installing `clang-uml` from sources the files need to be
 installed manually. The completion scripts are available in directory:
-* [`packaging/autocomplete`](./packaging/autocomplete)
+* [`packaging/autocomplete`](../packaging/autocomplete)
 
 #### Bash
 The `clang-uml` script can be either directly loaded to the
@@ -323,7 +329,7 @@ $ autoload -U _clang-uml
 ```
 
 ### LLM skills
-`clang-uml` provides a skill file - [`SKILLS.md`](../SKILLS.md) - which
+`clang-uml` provides a skill file - [`packaging/agents/SKILLS.md`](../packaging/agents/SKILLS.md) - which
 teaches LLM-based coding assistants how to create and edit `.clang-uml`
 configuration files for your project.
 
