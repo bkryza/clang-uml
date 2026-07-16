@@ -355,6 +355,16 @@ std::string to_string(const clang::Expr *expr)
     return result;
 }
 
+std::string to_string(const clang::Decl *decl)
+{
+    const clang::LangOptions lang_options;
+    std::string result;
+    llvm::raw_string_ostream ostream(result);
+    decl->print(ostream, clang::PrintingPolicy(lang_options));
+
+    return result;
+}
+
 std::string to_string(const clang::ValueDecl *val)
 {
     return val->getQualifiedNameAsString();

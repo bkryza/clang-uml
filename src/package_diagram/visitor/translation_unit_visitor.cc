@@ -288,7 +288,7 @@ void translation_unit_visitor::add_relationships(
     // If this diagram has directory packages, first make sure that the
     // package for current directory is already in the model
     if (config().package_type() == config::package_type_t::kDirectory) {
-        auto file = source_manager().getFilename(cls->getLocation()).str();
+        auto file = get_file_path(cls);
 
         if (file.empty())
             return;
@@ -415,15 +415,44 @@ eid_t translation_unit_visitor::get_package_id(const clang::Decl *cls)
         return {};
     }
 
-    auto file =
-        source_manager().getFilename(cls->getSourceRange().getBegin()).str();
+    auto file = get_file_path(cls);
+
+    if (file.empty()) {
+        LOG_DBG("Cannot determine file location of {}", common::to_string(cls));
+        return {};
+    }
+
     auto relative_file = config().make_path_relative(file);
+
     relative_file.make_preferred();
+
     common::model::path parent_path{
         relative_file.string(), common::model::path_type::kFilesystem};
+
     parent_path.pop_back();
 
     return common::to_id(std::filesystem::path(parent_path.to_string()));
+}
+
+std::string translation_unit_visitor::get_file_path(
+    const clang::Decl *decl) const
+{
+    const auto begin_loc = decl->getSourceRange().getBegin();
+
+    // Resolve macro locations to file locations (e.g. for types declared
+    // through macro expansion)
+    auto file_location = source_manager().getFileLoc(begin_loc);
+    auto file = source_manager().getFilename(file_location).str();
+
+    if (file.empty()) {
+        // If the location has no associated file (e.g. it points into
+        // `<scratch space>` from token pasting), fall back to the macro
+        // expansion location
+        file_location = source_manager().getExpansionLoc(begin_loc);
+        file = source_manager().getFilename(file_location).str();
+    }
+
+    return file;
 }
 
 void translation_unit_visitor::process_class_declaration(

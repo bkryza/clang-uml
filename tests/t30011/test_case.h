@@ -30,10 +30,12 @@ TEST_CASE("t30011")
         REQUIRE(IsDirectoryPackage(src, "libraries"s, "lib2"s));
         REQUIRE(IsDirectoryPackage(src, "libraries"s, "lib3"s));
         REQUIRE(IsDirectoryPackage(src, "libraries"s, "lib4"s));
+        REQUIRE(IsDirectoryPackage(src, "libraries"s, "lib5"s));
 
         REQUIRE(IsDependency(src, "app", "lib1"));
         REQUIRE(IsDependency(src, "app", "lib2"));
         REQUIRE(IsDependency(src, "app", "lib3"));
         REQUIRE(IsDependency(src, "app", "lib4"));
+        REQUIRE(IsDependency(src, "app", "lib5"));
     });
 }

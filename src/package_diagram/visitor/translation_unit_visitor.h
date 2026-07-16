@@ -109,6 +109,20 @@ private:
     eid_t get_package_id(const clang::Decl *cls);
 
     /**
+     * @brief Get the path of the source file containing the declaration.
+     *
+     * If the declaration's location is a macro location, it is resolved
+     * to a file location, falling back to the macro expansion location
+     * if necessary.
+     *
+     * @param decl Declaration
+     * @return Path of the file containing the declaration, or empty string
+     *         if the declaration has no associated file (e.g. it comes
+     *         from the compiler predefines buffer)
+     */
+    std::string get_file_path(const clang::Decl *decl) const;
+
+    /**
      * @brief Process class declaration
      *
      * @param cls Class declaration
