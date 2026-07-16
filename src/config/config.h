@@ -564,6 +564,8 @@ using relationship_hints_t = std::map<std::string, relationship_hint_t>;
 
 using type_aliases_t = std::map<std::string, std::string>;
 
+using package_path_prefix_mapping_t = std::map<std::string, std::string>;
+
 struct type_aliases_longer_first_comparator {
     bool operator()(const std::string &a, const std::string &b) const
     {
@@ -599,6 +601,19 @@ struct inheritable_diagram_options {
     void inherit(const inheritable_diagram_options &parent);
 
     std::string simplify_template_type(std::string full_name) const;
+
+    /**
+     * @brief Apply `package_path_prefix_mapping` to a relative source path
+     *
+     * If the path starts with one of the prefixes defined in the
+     * `package_path_prefix_mapping` option, the prefix is replaced with the
+     * alias value (or removed, if the value is empty).
+     *
+     * @param p Source path relative to the project root
+     * @return Path with the first matching prefix alias applied
+     */
+    std::filesystem::path apply_package_path_prefix_mapping(
+        const std::filesystem::path &p) const;
 
     /**
      * @brief Whether the diagram element should be fully qualified in diagram
@@ -655,6 +670,8 @@ struct inheritable_diagram_options {
     option<bool> generate_packages{"generate_packages", false};
     option<package_type_t> package_type{
         "package_type", package_type_t::kNamespace};
+    option<package_path_prefix_mapping_t> package_path_prefix_mapping{
+        "package_path_prefix_mapping"};
     option<bool> generate_template_argument_dependencies{
         "generate_template_argument_dependencies", true};
     option<bool> skip_redundant_dependencies{

@@ -293,7 +293,8 @@ void translation_unit_visitor::add_relationships(
         if (file.empty())
             return;
 
-        auto relative_file = config().make_path_relative(file);
+        auto relative_file = config().apply_package_path_prefix_mapping(
+            config().make_path_relative(file));
         relative_file.make_preferred();
 
         common::model::path parent_path{
@@ -422,7 +423,8 @@ eid_t translation_unit_visitor::get_package_id(const clang::Decl *cls)
         return {};
     }
 
-    auto relative_file = config().make_path_relative(file);
+    auto relative_file = config().apply_package_path_prefix_mapping(
+        config().make_path_relative(file));
 
     relative_file.make_preferred();
 

@@ -470,6 +470,10 @@ YAML::Emitter &operator<<(
         out << pd->title;
         out << c.generate_packages;
         out << c.package_type;
+        if (c.package_path_prefix_mapping) {
+            out << YAML::Key << "package_path_prefix_mapping" << YAML::Value
+                << c.package_path_prefix_mapping();
+        }
     }
     else if (const auto *id = dynamic_cast<const include_diagram *>(&c);
         id != nullptr) {

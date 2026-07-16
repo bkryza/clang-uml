@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../include/libraries/lib6/lib6.h"
 #include "../libraries/lib1/lib1.h"
 #include "../libraries/lib2/lib2.h"
 #include "../libraries/lib3/lib3.h"
@@ -11,6 +12,7 @@ struct t30011_App {
     struct t30011_B *b;
     enum t30011_E e;
     struct t30011_D d;
+    struct t30011_F f;
 };
 
 void c(struct t30011_App *app, struct t30011_C *c) { }

@@ -885,6 +885,7 @@ template <> struct convert<package_diagram> {
 
         get_option(node, rhs.layout);
         get_option(node, rhs.package_type);
+        get_option(node, rhs.package_path_prefix_mapping);
 
         get_option(node, rhs.get_relative_to());
 
@@ -1057,6 +1058,7 @@ template <> struct convert<config> {
         get_option(node, rhs.generate_concept_requirements);
         get_option(node, rhs.generate_packages);
         get_option(node, rhs.package_type);
+        get_option(node, rhs.package_path_prefix_mapping);
         get_option(node, rhs.generate_template_argument_dependencies);
         get_option(node, rhs.skip_redundant_dependencies);
         get_option(node, rhs.generate_links);

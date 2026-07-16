@@ -312,6 +312,7 @@ types:
         #
         generate_packages: !optional bool
         package_type: !optional package_type_t
+        package_path_prefix_mapping: !optional map_t<string;string>
         layout: !optional layout_t
     include_diagram_t:
         type: !variant [include]
@@ -414,6 +415,7 @@ root:
     generate_packages: !optional bool
     group_methods: !optional bool
     package_type: !optional package_type_t
+    package_path_prefix_mapping: !optional map_t<string;string>
     generate_template_argument_dependencies: !optional bool
     skip_redundant_dependencies: !optional bool
     type_aliases: !optional map_t<string;string>

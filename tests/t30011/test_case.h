@@ -32,10 +32,15 @@ TEST_CASE("t30011")
         REQUIRE(IsDirectoryPackage(src, "libraries"s, "lib4"s));
         REQUIRE(IsDirectoryPackage(src, "libraries"s, "lib5"s));
 
+        // Package 'lib6' is remapped from 'include/libraries/lib6' to
+        // top-level 'lib6' using the `package_path_prefix_mapping` option
+        REQUIRE(IsDirectoryPackage(src, "lib6"s));
+
         REQUIRE(IsDependency(src, "app", "lib1"));
         REQUIRE(IsDependency(src, "app", "lib2"));
         REQUIRE(IsDependency(src, "app", "lib3"));
         REQUIRE(IsDependency(src, "app", "lib4"));
         REQUIRE(IsDependency(src, "app", "lib5"));
+        REQUIRE(IsDependency(src, "app", "lib6"));
     });
 }
