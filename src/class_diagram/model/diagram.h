@@ -57,12 +57,18 @@ class diagram : public common::model::diagram,
 public:
     using nested_trait_t = nested_trait_ns;
 
-    diagram() = default;
+    diagram(const config::class_diagram &config)
+        : clanguml::common::model::diagram{config}
+        , config_{config}
+    {
+    }
 
     diagram(const diagram &) = delete;
     diagram(diagram &&) = default;
     diagram &operator=(const diagram &) = delete;
-    diagram &operator=(diagram &&) = default;
+    diagram &operator=(diagram &&) = delete;
+
+    const config::class_diagram &config() const { return config_; }
 
     /**
      * @brief Get the diagram model type - in this case class.
@@ -216,6 +222,29 @@ public:
         return add_with_filesystem_path(parent_path, std::move(e));
     }
 
+    /**
+     * @brief Add class (or template class) to the diagram.
+     *
+     * @param c Class model
+     */
+    void add_class(std::unique_ptr<class_> &&c);
+
+    /**
+     * @brief Add enum to the diagram.
+     *
+     * @param e Enum model
+     */
+    void add_enum(std::unique_ptr<enum_> &&e);
+
+    /**
+     * @brief Add concept to the diagram.
+     *
+     * @param c Concept model
+     */
+    void add_concept(std::unique_ptr<concept_> &&c);
+
+    void add_objc_interface(std::unique_ptr<objc_interface> &&c);
+
     template <typename ElementT> void move(eid_t id, const path &parent_path)
     {
         LOG_DBG("Moving element {} to package {}", id.value(),
@@ -232,8 +261,11 @@ public:
 
     template <typename ElementT> void remove(eid_t id)
     {
-        nested_trait_ns::remove({id});
+        // The element must be removed from the element view before it is
+        // removed from the nested trait, which owns the element, as the
+        // element view removal must read the id of a still valid element
         element_view<ElementT>::remove({id});
+        nested_trait_ns::remove({id});
     }
 
     /**
@@ -278,7 +310,11 @@ public:
 
     void apply_filter() override;
 
+    void append(diagram &&other);
+
 private:
+    const config::class_diagram &config_;
+
     std::set<eid_t> added_elements_;
 
     template <typename ElementT>
@@ -291,6 +327,24 @@ private:
     template <typename ElementT>
     bool add_with_filesystem_path(
         const common::model::path &parent_path, std::unique_ptr<ElementT> &&e);
+
+    /**
+     * @brief Remove elements duplicated in `this` and `other` diagram.
+     *
+     * When merging per-translation-unit diagram models, the same element
+     * can exist in both models at different package paths, e.g. when
+     * one translation unit only saw a forward declaration of a type
+     * (and the element was added at the path of the header containing
+     * the forward declaration), and another translation unit saw the
+     * complete definition. `nested_trait::append` can only detect
+     * duplicates at the same nesting level, so they must be removed
+     * before the element trees are merged, preferring complete elements
+     * over incomplete ones.
+     *
+     * @tparam ElementT Type of diagram element.
+     * @param other The diagram model to be merged into this one.
+     */
+    template <typename ElementT> void remove_duplicate_elements(diagram &other);
 };
 
 template <typename ElementT> bool diagram::contains(const ElementT &element)
@@ -313,8 +367,8 @@ bool diagram::add_with_namespace_path(std::unique_ptr<ElementT> &&e)
     const auto full_name = e->full_name(false);
     const auto element_type = e->type_name();
 
-    LOG_DBG("Adding {}: {}::{}, {}", element_type,
-        e->get_namespace().to_string(), base_name, full_name);
+    LOG_DBG("Adding {}: {}::{}, {} [{}]", element_type,
+        e->get_namespace().to_string(), base_name, full_name, e->id().usr());
 
     if (util::contains(base_name, "::"))
         throw std::runtime_error("Name cannot contain namespace: " + base_name);
@@ -379,7 +433,7 @@ bool diagram::add_with_module_path(
             common::model::path(parent_path.begin(), it, parent_path.type());
         // ns.pop_back();
         pkg->set_namespace(ns);
-        pkg->set_id(common::to_id(pkg->full_name(false)));
+        pkg->set_id(common::to_id(*pkg));
 
         add(ns, std::move(pkg));
     }
@@ -417,7 +471,7 @@ bool diagram::add_with_filesystem_path(
         auto package_path =
             common::model::path(parent_path.begin(), it, parent_path.type());
         pkg->set_namespace(package_path);
-        pkg->set_id(common::to_id("__directory__" + pkg->full_name(false)));
+        pkg->set_id(common::to_id(*pkg));
 
         LOG_DBG("Adding filesystem package {} at path {}", pkg->name(),
             package_path.to_string());
@@ -436,6 +490,34 @@ bool diagram::add_with_filesystem_path(
     }
 
     return false;
+}
+
+template <typename ElementT>
+void diagram::remove_duplicate_elements(diagram &other)
+{
+    std::set<eid_t> to_remove;
+    std::set<eid_t> to_remove_from_other;
+
+    for (const auto &el : other.elements<ElementT>()) {
+        const auto id = el.get().id();
+
+        const auto maybe_existing = find<ElementT>(id);
+        if (!maybe_existing)
+            continue;
+
+        // Prefer complete elements over incomplete ones, e.g. elements
+        // created from forward declarations
+        if (!maybe_existing.value().complete() && el.get().complete())
+            to_remove.emplace(id);
+        else
+            to_remove_from_other.emplace(id);
+    }
+
+    for (const auto &id : to_remove)
+        remove<ElementT>(id);
+
+    for (const auto &id : to_remove_from_other)
+        other.remove<ElementT>(id);
 }
 
 template <typename ElementT>

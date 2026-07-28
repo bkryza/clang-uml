@@ -49,7 +49,7 @@ void generator::generate_relationships(
         });
     }
     else {
-        for (const auto &r : f.relationships()) {
+        for (const auto &r : model().relationships(f.id())) {
             ostr << indent(1) << f.alias() << " "
                  << (r.type() == common::model::relationship_t::kDependency
                             ? "-.->"

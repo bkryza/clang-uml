@@ -25,7 +25,6 @@
 #include "common/model/source_file.h"
 #include "common/model/source_location.h"
 #include "common/model/template_element.h"
-#include "common/visitor/ast_id_mapper.h"
 #include "config/config.h"
 
 #include <clang/AST/Comment.h>
@@ -97,13 +96,6 @@ public:
     {
         return translation_unit_path_;
     }
-
-    /**
-     * @brief Get reference to Clang AST to clang-uml id mapper
-     *
-     * @return Reference to Clang AST to clang-uml id mapper
-     */
-    common::visitor::ast_id_mapper &id_mapper() const { return id_mapper_; }
 
     /**
      * @brief Get clang::SourceManager
@@ -343,7 +335,5 @@ private:
     std::filesystem::path translation_unit_path_;
 
     std::set<const clang::RawComment *> processed_comments_;
-
-    mutable common::visitor::ast_id_mapper id_mapper_;
 };
 } // namespace clanguml::common::visitor

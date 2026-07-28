@@ -308,6 +308,7 @@ void inheritable_diagram_options::inherit(
     generate_template_argument_dependencies.override(
         parent.generate_template_argument_dependencies);
     package_type.override(parent.package_type);
+    package_path_prefix_mapping.override(parent.package_path_prefix_mapping);
     generate_template_argument_dependencies.override(
         parent.generate_template_argument_dependencies);
     skip_redundant_dependencies.override(parent.skip_redundant_dependencies);
@@ -349,6 +350,49 @@ std::string inheritable_diagram_options::simplify_template_type(
     }
 
     return full_name;
+}
+
+namespace {
+std::vector<std::string> path_components(const std::filesystem::path &p)
+{
+    std::vector<std::string> result;
+    for (const auto &component : p) {
+        auto component_str = component.string();
+        if (!component_str.empty() && component_str != ".")
+            result.emplace_back(std::move(component_str));
+    }
+    return result;
+}
+} // namespace
+
+std::filesystem::path
+inheritable_diagram_options::apply_package_path_prefix_mapping(
+    const std::filesystem::path &p) const
+{
+    if (!package_path_prefix_mapping.has_value ||
+        package_path_prefix_mapping().empty())
+        return p;
+
+    const auto components = path_components(p.lexically_normal());
+
+    for (const auto &[prefix, replacement] : package_path_prefix_mapping()) {
+        const auto prefix_components =
+            path_components(std::filesystem::path{prefix}.lexically_normal());
+
+        if (prefix_components.empty() ||
+            !util::starts_with(components, prefix_components))
+            continue;
+
+        std::filesystem::path result{replacement};
+        for (auto it = components.begin() +
+                static_cast<std::ptrdiff_t>(prefix_components.size());
+            it != components.end(); ++it)
+            result /= *it;
+
+        return result.lexically_normal();
+    }
+
+    return p;
 }
 
 bool inheritable_diagram_options::generate_fully_qualified_name() const

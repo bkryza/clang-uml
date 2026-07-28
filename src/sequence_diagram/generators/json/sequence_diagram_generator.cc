@@ -166,8 +166,9 @@ void generator::generate_to_activity(
                 model()
                     .get_participant<model::function>(to.value().id())
                     .value();
-            msg["to"]["participant_id"] = std::to_string(
-                common::to_id(file_participant.file_relative()).value());
+            msg["to"]["participant_id"] = std::to_string(common::to_id(
+                std::filesystem::path{file_participant.file_relative()})
+                    .value());
         }
         else {
             msg["to"]["participant_id"] =
@@ -210,8 +211,9 @@ void generator::generate_from_activity(const message &m,
                 model()
                     .get_participant<model::function>(from.value().id())
                     .value();
-            msg["from"]["participant_id"] = std::to_string(
-                common::to_id(file_participant.file_relative()).value());
+            msg["from"]["participant_id"] = std::to_string(common::to_id(
+                std::filesystem::path{file_participant.file_relative()})
+                    .value());
         }
         else {
             msg["from"]["participant_id"] =
@@ -643,7 +645,7 @@ std::optional<eid_t> generator::generate_participant(
     std::optional<eid_t> participant_id{};
 
     if (!force) {
-        for (const auto pid : model().active_participants()) {
+        for (const auto &pid : model().active_participants()) {
             if (pid == id) {
                 participant_id = pid;
                 break;
@@ -765,8 +767,8 @@ std::optional<eid_t> generator::generate_participant(
         const auto &function_participant =
             model().get_participant<model::function>(*participant_id).value();
 
-        const auto file_participant_id =
-            common::to_id(function_participant.file_relative());
+        auto file_participant_id = common::to_id(
+            std::filesystem::path{function_participant.file_relative()});
 
         if (!is_participant_generated(file_participant_id)) {
             nlohmann::json p = function_participant;
@@ -862,7 +864,7 @@ void generator::generate_from_sequences(nlohmann::json &parent) const
 
     // Use this to break out of recurrent loops
     std::vector<eid_t> visited_participants;
-    for (const auto from_id : start_from) {
+    for (const auto &from_id : start_from) {
 
         const auto &from = model().get_participant<model::function>(from_id);
 
@@ -907,7 +909,7 @@ void generator::generate_to_sequences(nlohmann::json &parent) const
             model().handle_invalid_from_condition(to_location);
         }
 
-        for (const auto to_activity_id : to_activity_ids) {
+        for (const auto &to_activity_id : to_activity_ids) {
             const auto &to =
                 model().get_participant<model::function>(to_activity_id);
 
@@ -968,14 +970,14 @@ void generator::generate_from_to_sequences(nlohmann::json &parent) const
             model().handle_invalid_to_condition(to_location);
         }
 
-        for (const auto from_activity_id : from_activity_ids) {
+        for (const auto &from_activity_id : from_activity_ids) {
             if (model().participants().count(from_activity_id) == 0)
                 continue;
 
             const auto &from =
                 model().get_participant<model::function>(from_activity_id);
 
-            for (const auto to_activity_id : to_activity_ids) {
+            for (const auto &to_activity_id : to_activity_ids) {
                 if (model().participants().count(to_activity_id) == 0)
                     continue;
 

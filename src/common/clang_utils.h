@@ -19,6 +19,7 @@
 
 #include "common/model/enums.h"
 #include "common/model/namespace.h"
+#include "common/model/package.h"
 #include "common/model/source_location.h"
 #include "common/model/template_parameter.h"
 #include "config/config.h"
@@ -47,6 +48,7 @@ model::access_t access_specifier_to_access_t(
     clang::AccessSpecifier access_specifier);
 model::access_t access_specifier_to_access_t(
     clang::ObjCIvarDecl::AccessControl access_specifier);
+
 /**
  * @brief Generate full qualified name for
  * [clang::TagDecl](https://clang.llvm.org/doxygen/classclang_1_1TagDecl.html)
@@ -109,6 +111,9 @@ std::string to_string(
 std::string to_string(const clang::QualType &type, const clang::ASTContext &ctx,
     bool try_canonical = true);
 
+std::string to_string(const clang::TemplateSpecializationType &type,
+    const clang::ASTContext &ctx, bool try_canonical = true);
+
 std::string to_string(const clang::RecordType &type,
     const clang::ASTContext &ctx, bool try_canonical = true);
 
@@ -116,6 +121,8 @@ std::string to_string(
     const clang::TemplateArgument &arg, const clang::ASTContext *ctx = nullptr);
 
 std::string to_string(const clang::Expr *expr);
+
+std::string to_string(const clang::Decl *decl);
 
 std::string to_string(const clang::ValueDecl *val);
 
@@ -183,33 +190,28 @@ bool is_subexpr_of(const clang::Stmt *parent_stmt, const clang::Stmt *sub_stmt);
  *
  * @{
  */
-template <typename T> eid_t to_id(const T &declaration);
+usr_t to_usr(const clang::Decl &decl);
 
-template <> eid_t to_id(const std::string &full_name);
+usr_t to_usr(const clang::QualType &type);
 
-eid_t to_id(const clang::QualType &type, const clang::ASTContext &ctx);
+usr_t to_usr(
+    const clang::TemplateSpecializationType &type, clang::ASTContext &ctx);
 
-template <> eid_t to_id(const clang::NamespaceDecl &declaration);
+usr_t to_usr(const clang::Module &module);
 
-template <> eid_t to_id(const clang::CXXRecordDecl &declaration);
+eid_t to_id(const clang::QualType &type);
 
-template <> eid_t to_id(const clang::RecordDecl &declaration);
+eid_t to_id(
+    const clang::TemplateSpecializationType &type, clang::ASTContext &ctx);
 
-template <> eid_t to_id(const clang::ObjCCategoryDecl &type);
+eid_t to_id(const clang::Decl &decl);
 
-template <> eid_t to_id(const clang::ObjCInterfaceDecl &type);
+eid_t to_id(const std::filesystem::path &type);
 
-template <> eid_t to_id(const clang::ObjCProtocolDecl &type);
+eid_t to_id(const common::model::package &pkg);
 
-template <> eid_t to_id(const clang::EnumDecl &declaration);
+eid_t to_id(const clang::Module &module);
 
-template <> eid_t to_id(const clang::TagDecl &declaration);
-
-template <> eid_t to_id(const clang::EnumType &type);
-
-template <> eid_t to_id(const clang::TemplateSpecializationType &type);
-
-template <> eid_t to_id(const std::filesystem::path &type);
 /** @} */ // end of to_id
 
 /**
@@ -375,6 +377,9 @@ const clang::EnumDecl *get_typedef_enum_decl(const clang::TypedefDecl *decl);
 const clang::ConceptDecl *get_template_parameter_concept_constraint(
     const clang::TemplateTypeParmType *type_parameter,
     const clang::TemplateDecl *template_decl);
+
+bool is_template_specialization_fully_dependent(
+    const clang::TemplateSpecializationType &tst);
 
 /**
  * Check if clang::Expr is a call on lambda operator()

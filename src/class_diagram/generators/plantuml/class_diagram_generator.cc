@@ -184,7 +184,7 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
     std::set<std::string> rendered_relations;
 
     std::stringstream all_relations_str;
-    for (const auto &r : c.relationships()) {
+    for (const auto &r : model().relationships(c.id())) {
         try {
             generate_relationship(r, rendered_relations);
         }
@@ -417,7 +417,7 @@ void generator::generate(const objc_interface &c, std::ostream &ostr) const
     std::set<std::string> rendered_relations;
 
     std::stringstream all_relations_str;
-    for (const auto &r : c.relationships()) {
+    for (const auto &r : model().relationships(c.id())) {
         try {
             generate_relationship(r, rendered_relations);
         }
@@ -585,7 +585,7 @@ void generator::generate_relationships(
     std::stringstream all_relations_str;
     std::set<std::string> unique_relations;
 
-    for (const auto &r : c.relationships()) {
+    for (const auto &r : model().relationships(c.id())) {
         LOG_TRACE("== Processing relationship {}",
             plantuml_common::to_plantuml(r, config()));
 
@@ -664,7 +664,7 @@ void generator::generate_relationships(
     std::stringstream all_relations_str;
     std::set<std::string> unique_relations;
 
-    for (const auto &r : c.relationships()) {
+    for (const auto &r : model().relationships(c.id())) {
         if (!model().should_include(r.type()))
             continue;
 
@@ -751,7 +751,7 @@ void generator::generate(const enum_ &e, std::ostream &ostr) const
 
 void generator::generate_relationships(const enum_ &e, std::ostream &ostr) const
 {
-    for (const auto &r : e.relationships()) {
+    for (const auto &r : model().relationships(e.id())) {
         eid_t destination{};
         std::stringstream relstr;
         try {
@@ -803,7 +803,7 @@ void generator::generate_relationships(
     std::stringstream all_relations_str;
     std::set<std::string> unique_relations;
 
-    for (const auto &r : c.relationships()) {
+    for (const auto &r : model().relationships(c.id())) {
         LOG_TRACE("== Processing relationship {}",
             plantuml_common::to_plantuml(r, config()));
 

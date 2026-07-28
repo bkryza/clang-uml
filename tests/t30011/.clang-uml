@@ -2,6 +2,8 @@ diagrams:
   t30011_package:
     type: package
     package_type: directory
+    package_path_prefix_mapping:
+      include/libraries: ""
     glob:
       - t30011.c
     include:

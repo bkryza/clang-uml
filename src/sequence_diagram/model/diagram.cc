@@ -107,10 +107,23 @@ void diagram::add_participant(std::unique_ptr<participant> p)
 
         participants_.emplace(participant_id, std::move(p));
     }
+    else {
+        if (participants_.at(participant_id)->full_name(false) !=
+            p->full_name(false)) {
+            LOG_WARN("Participant with id {} already exists but has different "
+                     "name {} [{}], {} [{}]",
+                participant_id.value(),
+                participants_.at(participant_id)->full_name(false),
+                participants_.at(participant_id)->id().usr(),
+                p->full_name(false), p->id().usr());
+        }
+    }
 }
 
 void diagram::add_active_participant(eid_t id)
 {
+    assert(id.is_global());
+
     active_participants_.emplace(id);
 }
 
@@ -382,11 +395,11 @@ std::vector<message_chain_t> diagram::get_all_from_to_message_chains(
             if (next_it == end(chain))
                 break;
 
-            auto from_id = *it;
+            const auto &from_id = *it;
             if (activities_.count(from_id) == 0)
                 continue;
 
-            auto to_id = *(next_it);
+            const auto &to_id = *(next_it);
 
             const auto &act = activities_.at(from_id);
 
@@ -503,7 +516,7 @@ void diagram::inline_lambda_operator_calls()
     }
 
     // Skip active participants which are not in lambdaless_diagram participants
-    for (auto id : this->active_participants()) {
+    for (const auto &id : this->active_participants()) {
         if (participants.count(id) > 0) {
             active_participants.emplace(id);
         }
@@ -561,7 +574,7 @@ void diagram::print() const
 {
     LOG_TRACE(" --- Participants ---");
     for (const auto &[id, participant] : participants_) {
-        LOG_DBG("{} - {}", id, participant->to_string());
+        LOG_DBG("{} [{}] - {}", id, id.usr(), participant->to_string());
     }
 
     LOG_TRACE(" --- Activities ---");
@@ -807,6 +820,30 @@ void diagram::handle_invalid_to_condition(
     }
 
     throw error::invalid_sequence_to_condition(type(), name(), error_message);
+}
+
+void diagram::append(diagram &&other)
+{
+    assert(this != &other);
+
+    clanguml::common::model::diagram::append(
+        dynamic_cast<clanguml::common::model::diagram &&>(other));
+
+    for (auto &[id, activity] : other.activities_) {
+        if (activities_.find(id) == activities_.end()) {
+            activities_.emplace(id, std::move(activity));
+        }
+    }
+
+    for (auto &[id, participant] : other.participants_) {
+        if (participants_.find(id) == participants_.end()) {
+            participants_.emplace(id, std::move(participant));
+        }
+    }
+
+    for (const auto &id : std::move(other).active_participants_) {
+        active_participants_.insert(id);
+    }
 }
 } // namespace clanguml::sequence_diagram::model
 

@@ -30,18 +30,9 @@ TEST_CASE("Test eid_t")
     REQUIRE(empty.is_global());
     REQUIRE_EQ(empty.value(), 0);
 
-    eid_t local_id{(int64_t)100};
-    REQUIRE_EQ(local_id.ast_local_value(), 100);
-    REQUIRE_EQ(local_id.value(), 100);
-    REQUIRE(!local_id.is_global());
-
     eid_t global_id{(uint64_t)100};
     REQUIRE_EQ(global_id.value(), 100);
     REQUIRE(global_id.is_global());
-
-    REQUIRE(local_id != global_id);
-
-    REQUIRE(local_id != 101);
 }
 
 TEST_CASE("Test to_string")

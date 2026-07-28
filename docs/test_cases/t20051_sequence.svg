@@ -12,34 +12,34 @@
       <title>.. CUDA Kernel ..</title>
       <rect fill="#FFFFFF" height="30" style="stroke:#181818;stroke-width:1;" width="10" x="219.9083" y="74.1358"/>
     </g>
-    <g class="participant-lifeline" data-entity-uid="part1" data-qualified-name="C_0000264033748622970437" data-source-line="1" id="part1-lifeline">
+    <g class="participant-lifeline" data-entity-uid="part1" data-qualified-name="C_0018056009153979256727" data-source-line="1" id="part1-lifeline">
       <g>
         <title>tmain..</title>
         <rect fill="#000000" fill-opacity="0.00000" height="64" width="8" x="31.3309" y="58.1358"/>
         <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5,5;" x1="35" x2="35" y1="58.1358" y2="122.1358"/>
       </g>
     </g>
-    <g class="participant-lifeline" data-entity-uid="part2" data-qualified-name="C_0015777908100258569834" data-source-line="3" id="part2-lifeline">
+    <g class="participant-lifeline" data-entity-uid="part2" data-qualified-name="C_0012859214094069093769" data-source-line="3" id="part2-lifeline">
       <g>
         <title>.. CUDA Kernel ..</title>
         <rect fill="#000000" fill-opacity="0.00000" height="64" width="8" x="220.9083" y="58.1358"/>
         <line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5,5;" x1="224.6618" x2="224.6618" y1="58.1358" y2="122.1358"/>
       </g>
     </g>
-    <g class="participant participant-head" data-entity-uid="part1" data-qualified-name="C_0000264033748622970437" data-source-line="1" id="part1-head">
+    <g class="participant participant-head" data-entity-uid="part1" data-qualified-name="C_0018056009153979256727" data-source-line="1" id="part1-head">
       <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="60.6618" x="5" y="24.0679"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="46.6618" x="12" y="46.0339">tmain()</text>
     </g>
-    <g class="participant participant-tail" data-entity-uid="part1" data-qualified-name="C_0000264033748622970437" data-source-line="1" id="part1-tail">
+    <g class="participant participant-tail" data-entity-uid="part1" data-qualified-name="C_0018056009153979256727" data-source-line="1" id="part1-tail">
       <rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="60.6618" x="5" y="121.1358"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="46.6618" x="12" y="143.1018">tmain()</text>
     </g>
-    <g class="participant participant-head" data-entity-uid="part2" data-qualified-name="C_0015777908100258569834" data-source-line="3" id="part2-head">
+    <g class="participant participant-head" data-entity-uid="part2" data-qualified-name="C_0012859214094069093769" data-source-line="3" id="part2-head">
       <rect fill="#E2E2F0" height="52.1358" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="298.4929" x="75.6618" y="5"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="91.0277" x="179.3944" y="26.9659">«CUDA Kernel»</text>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="284.4929" x="82.6618" y="46.0339">vector_square_add(float *,float *,float *,int)</text>
     </g>
-    <g class="participant participant-tail" data-entity-uid="part2" data-qualified-name="C_0015777908100258569834" data-source-line="3" id="part2-tail">
+    <g class="participant participant-tail" data-entity-uid="part2" data-qualified-name="C_0012859214094069093769" data-source-line="3" id="part2-tail">
       <rect fill="#E2E2F0" height="52.1358" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="298.4929" x="75.6618" y="121.1358"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="91.0277" x="179.3944" y="143.1018">«CUDA Kernel»</text>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="284.4929" x="82.6618" y="162.1697">vector_square_add(float *,float *,float *,int)</text>

@@ -106,7 +106,8 @@ if(LLVM_VERSION_MAJOR GREATER_EQUAL 17)
 endif()
 if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     set(CUSTOM_COMPILE_OPTIONS ${CUSTOM_COMPILE_OPTIONS}
-                               -Wno-unused-private-field)
+                               -Wno-unused-private-field
+			       -D_LIBCPP_INTRODUCED_IN_LLVM_21=0)
     if(CMAKE_BUILD_TYPE MATCHES Debug)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fstandalone-debug")
     endif()

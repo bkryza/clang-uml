@@ -95,6 +95,8 @@ public:
     std::string to_string(
         const common::model::namespace_ &using_namespaces) const;
 
+    bool operator==(const method_parameter &other) const;
+
 private:
     std::string type_;
     std::string name_;

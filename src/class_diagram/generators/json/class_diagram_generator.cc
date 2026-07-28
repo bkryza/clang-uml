@@ -104,20 +104,6 @@ void to_json(nlohmann::json &j, const class_ &c)
 
     j["members"] = c.members();
     j["methods"] = c.methods();
-    auto bases = nlohmann::json::array();
-
-    for (const auto &rel : c.relationships()) {
-        if (rel.type() != common::model::relationship_t::kExtension)
-            continue;
-
-        auto base = nlohmann::json::object();
-        base["is_virtual"] = rel.is_virtual();
-        base["id"] = std::to_string(rel.destination().value());
-        if (rel.access() != common::model::access_t::kNone)
-            base["access"] = to_string(rel.access());
-        bases.push_back(std::move(base));
-    }
-    j["bases"] = std::move(bases);
 
     set_module(j, c);
 
@@ -132,25 +118,6 @@ void to_json(nlohmann::json &j, const objc_interface &c)
 
     j["members"] = c.members();
     j["methods"] = c.methods();
-    auto bases = nlohmann::json::array();
-    auto protocols = nlohmann::json::array();
-
-    for (const auto &rel : c.relationships()) {
-        if (rel.type() == common::model::relationship_t::kExtension) {
-            auto base = nlohmann::json::object();
-            base["id"] = std::to_string(rel.destination().value());
-            if (rel.access() != common::model::access_t::kNone)
-                base["access"] = to_string(rel.access());
-            bases.push_back(std::move(base));
-        }
-        else if (rel.type() == common::model::relationship_t::kInstantiation) {
-            auto protocol = nlohmann::json::object();
-            protocol["id"] = std::to_string(rel.destination().value());
-            protocols.push_back(std::move(protocol));
-        }
-    }
-    j["bases"] = std::move(bases);
-    j["protocols"] = std::move(protocols);
 }
 
 void to_json(nlohmann::json &j, const enum_ &c)
@@ -261,6 +228,22 @@ void generator::generate(const class_ &c, nlohmann::json &parent) const
 {
     nlohmann::json object = c;
 
+    auto bases = nlohmann::json::array();
+
+    for (const auto &rel : model().relationships(c.id())) {
+        if (rel.type() != common::model::relationship_t::kExtension)
+            continue;
+
+        auto base = nlohmann::json::object();
+        base["is_virtual"] = rel.is_virtual();
+        base["id"] = std::to_string(rel.destination().value());
+        if (rel.access() != common::model::access_t::kNone)
+            base["access"] = to_string(rel.access());
+        bases.push_back(std::move(base));
+    }
+
+    object["bases"] = std::move(bases);
+
     // Perform config dependent postprocessing on generated class
     if (!config().generate_fully_qualified_name())
         object["display_name"] =
@@ -306,6 +289,27 @@ void generator::generate(const concept_ &c, nlohmann::json &parent) const
 void generator::generate(const objc_interface &c, nlohmann::json &parent) const
 {
     nlohmann::json object = c;
+
+    auto bases = nlohmann::json::array();
+    auto protocols = nlohmann::json::array();
+
+    for (const auto &rel : model().relationships(c.id())) {
+        if (rel.type() == common::model::relationship_t::kExtension) {
+            auto base = nlohmann::json::object();
+            base["id"] = std::to_string(rel.destination().value());
+            if (rel.access() != common::model::access_t::kNone)
+                base["access"] = to_string(rel.access());
+            bases.push_back(std::move(base));
+        }
+        else if (rel.type() == common::model::relationship_t::kInstantiation) {
+            auto protocol = nlohmann::json::object();
+            protocol["id"] = std::to_string(rel.destination().value());
+            protocols.push_back(std::move(protocol));
+        }
+    }
+
+    object["bases"] = std::move(bases);
+    object["protocols"] = std::move(protocols);
 
     // Perform config dependent postprocessing on generated class
     if (!config().generate_fully_qualified_name())

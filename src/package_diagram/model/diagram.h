@@ -45,12 +45,17 @@ class diagram : public clanguml::common::model::diagram,
 public:
     using nested_trait_t = nested_trait_ns;
 
-    diagram() = default;
-
+    diagram(const config::package_diagram &config)
+        : clanguml::common::model::diagram{config}
+        , config_{config}
+    {
+    }
     diagram(const diagram &) = delete;
     diagram(diagram &&) = default;
     diagram &operator=(const diagram &) = delete;
-    diagram &operator=(diagram &&) = default;
+    diagram &operator=(diagram &&) = delete;
+
+    const config::package_diagram &config() const { return config_; }
 
     /**
      * @brief Get the diagram model type - in this case package.
@@ -173,6 +178,8 @@ public:
     template <typename ElementT>
     const common::reference_vector<ElementT> &elements() const;
 
+    void append(diagram &&other);
+
 private:
     /**
      * @brief Add element using module as diagram path
@@ -206,6 +213,8 @@ private:
     template <typename ElementT>
     bool add_with_filesystem_path(
         const common::model::path &parent_path, std::unique_ptr<ElementT> &&e);
+
+    const config::package_diagram &config_;
 };
 
 template <typename ElementT>
@@ -291,7 +300,7 @@ bool diagram::add_with_module_path(
 
         auto package_absolute_path = module_absolute_path | pkg->name();
 
-        pkg->set_id(common::to_id(package_absolute_path.to_string()));
+        pkg->set_id(eid_t{common::usr_t{package_absolute_path.to_string()}});
 
         auto p_ref = std::ref(*pkg);
 
@@ -324,7 +333,8 @@ bool diagram::add_with_filesystem_path(
         auto ns = common::model::path(
             parent_path.begin(), it, common::model::path_type::kFilesystem);
         pkg->set_namespace(ns);
-        pkg->set_id(common::to_id(pkg->full_name(false)));
+        pkg->set_id(
+            common::to_id(std::filesystem::path(pkg->full_name(false))));
 
         add_with_filesystem_path(ns, std::move(pkg));
     }
@@ -342,7 +352,6 @@ const common::reference_vector<ElementT> &diagram::elements() const
 {
     return element_view<ElementT>::view();
 }
-
 } // namespace clanguml::package_diagram::model
 
 namespace clanguml::common::model {

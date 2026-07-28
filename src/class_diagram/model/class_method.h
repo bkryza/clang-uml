@@ -238,6 +238,8 @@ public:
      */
     void is_operator(bool is_operator);
 
+    bool operator==(const class_method &other) const;
+
 private:
     bool is_pure_virtual_{false};
     bool is_virtual_{false};

@@ -94,6 +94,8 @@ template <typename T> struct diagram_source_t {
 
     int64_t find(const std::string &pattern, int64_t offset = 0) const;
 
+    int64_t count(const std::string &pattern) const;
+
     std::string to_string() const;
 
     T src;

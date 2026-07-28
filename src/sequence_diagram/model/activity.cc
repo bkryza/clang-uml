@@ -21,7 +21,7 @@
 namespace clanguml::sequence_diagram::model {
 
 activity::activity(eid_t id)
-    : from_{id}
+    : from_{std::move(id)}
 {
 }
 

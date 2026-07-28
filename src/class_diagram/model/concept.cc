@@ -90,4 +90,6 @@ const std::vector<std::string> &concept_::requires_statements() const
     return requires_statements_;
 }
 
+void concept_::append(const concept_ & /*unused*/) { }
+
 } // namespace clanguml::class_diagram::model

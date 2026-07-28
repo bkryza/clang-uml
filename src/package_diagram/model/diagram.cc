@@ -60,6 +60,8 @@ std::string diagram::to_alias(const eid_t id) const
 
 void diagram::apply_filter()
 {
+    common::model::apply_filter(relationships(), filter());
+
     // Remove elements by traversing down into packages until no elements
     // were removed. This is necessary to remove all empty packages.
     while (true) {
@@ -78,9 +80,13 @@ void diagram::apply_filter()
 
         nested_trait_ns::remove(to_remove);
 
-        for (const auto &c : packages()) {
-            c.get().apply_filter(filter(), to_remove);
-        }
+        auto &rels = relationships();
+        rels.erase(std::remove_if(std::begin(rels), std::end(rels),
+                       [&to_remove](auto &&r) {
+                           return to_remove.count(r.source()) > 0 ||
+                               to_remove.count(r.destination()) > 0;
+                       }),
+            std::end(rels));
 
         // If this loop didn't remove anything - stop it
         if (previous_to_remove_size == packages().size())
@@ -89,6 +95,19 @@ void diagram::apply_filter()
 }
 
 bool diagram::is_empty() const { return element_view<package>::is_empty(); }
+
+void diagram::append(diagram &&other)
+{
+    assert(this != &other);
+
+    clanguml::common::model::diagram::append(
+        dynamic_cast<clanguml::common::model::diagram &&>(other));
+
+    element_views<package>::append(
+        dynamic_cast<element_views<package> &&>(other));
+
+    nested_trait_t::append(dynamic_cast<nested_trait_t &&>(std::move(other)));
+}
 } // namespace clanguml::package_diagram::model
 
 namespace clanguml::common::model {

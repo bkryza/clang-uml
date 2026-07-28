@@ -85,6 +85,8 @@ public:
      */
     std::string qualified_name() const;
 
+    bool operator==(const class_element &other) const;
+
 private:
     common::model::access_t access_;
     std::string name_;

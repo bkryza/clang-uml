@@ -189,6 +189,17 @@ public:
      */
     const call_expression_context &context() const;
 
+    void add_processed_template_name(std::string qualified_name)
+    {
+        processed_template_qualified_names_.emplace(std::move(qualified_name));
+    }
+
+    bool has_processed_template_name(const std::string &qualified_name) const
+    {
+        return util::contains(
+            processed_template_qualified_names_, qualified_name);
+    }
+
     /**
      * @brief Get participant by declaration
      *
@@ -201,11 +212,9 @@ public:
     {
         assert(decl != nullptr);
 
-        auto unique_participant_id = get_unique_id(eid_t{decl->getID()});
-        if (!unique_participant_id.has_value())
-            return {};
+        auto id = common::to_id(*decl);
 
-        return get_participant<T>(unique_participant_id.value());
+        return get_participant<T>(id);
     }
 
     /**
@@ -220,11 +229,9 @@ public:
     {
         assert(decl != nullptr);
 
-        auto unique_participant_id = get_unique_id(eid_t{decl->getID()});
-        if (!unique_participant_id.has_value())
-            return {};
+        auto id = common::to_id(*decl);
 
-        return get_participant<T>(unique_participant_id.value());
+        return get_participant<T>(id);
     }
 
     /**
@@ -261,24 +268,18 @@ public:
             *(static_cast<T *>(diagram().participants().at(id).get())));
     }
 
-    /**
-     * @brief Store the mapping from local clang entity id (obtained using
-     *        getID()) method to clang-uml global id
-     *
-     * @todo Refactor to @ref ast_id_mapper
-     *
-     * @param local_id Local AST element id
-     * @param global_id Globa diagram element id
-     */
-    void set_unique_id(int64_t local_id, eid_t global_id);
+    template <typename T = model::participant>
+    common::optional_ref<T> get_participant(const std::string &full_name) const
+    {
+        for (const auto &[id, p] : diagram().participants()) {
+            if (p->full_name(false) == full_name ||
+                p->full_name(true) == full_name) {
+                return common::optional_ref<T>(*(static_cast<T *>(p.get())));
+            }
+        }
 
-    /**
-     * @brief Retrieve the global `clang-uml` entity id based on the Clang
-     *        local id
-     * @param local_id AST local element id
-     * @return Global diagram element id
-     */
-    std::optional<eid_t> get_unique_id(eid_t local_id) const;
+        return {};
+    }
 
     /**
      * @brief Finalize diagram model for this translation unit
@@ -580,8 +581,6 @@ private:
      */
     template_builder_t &tbuilder() { return template_builder_; }
 
-    void resolve_ids_to_global();
-
     void ensure_lambda_messages_have_operator_as_target();
 
     void add_callers_to_activities();
@@ -612,20 +611,21 @@ private:
     std::map<eid_t, std::unique_ptr<clanguml::sequence_diagram::model::class_>>
         forward_declarations_;
 
-    std::map<int64_t /* local anonymous struct id */,
-        std::tuple<std::string /* field name */, common::model::relationship_t,
-            common::model::access_t>>
-        anonymous_structs_;
-
     std::map<eid_t, std::set<eid_t>> activity_callers_;
 
     mutable unsigned within_static_variable_declaration_{0};
     mutable std::set<const clang::Expr *>
         already_visited_in_static_declaration_{};
 
-    mutable std::set<std::pair<int64_t, const clang::RawComment *>>
-        processed_comments_by_caller_id_;
-
     template_builder_t template_builder_;
+
+    /**
+     * When visiting CXX records we need to know if they have already been
+     * process in VisitClassTemplateDecl or
+     * VisitClassTemplateSpecializationDecl. If yes, then we need to skip it
+     *
+     * @todo There must be a better way to do this...
+     */
+    std::set<std::string> processed_template_qualified_names_;
 };
 } // namespace clanguml::sequence_diagram::visitor

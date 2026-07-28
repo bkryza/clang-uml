@@ -29,6 +29,7 @@ struct B {
 
 template <typename T> using AString = A<T, std::string>;
 template <typename T> using AStringPtr = A<T, std::unique_ptr<std::string>>;
+template <typename T> using ASStringPtr = A<T, std::shared_ptr<std::string>>;
 
 template <typename T>
 using PairPairBA = std::pair<std::pair<B, A<long, T>>, long>;

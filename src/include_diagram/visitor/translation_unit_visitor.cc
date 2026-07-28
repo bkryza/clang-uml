@@ -182,10 +182,8 @@ void translation_unit_visitor::include_visitor::process_internal_header(
         : common::model::relationship_t::kAssociation;
 
     if (diagram().get(current_file_id)) {
-        diagram()
-            .get(current_file_id)
-            .value()
-            .add_relationship(common::model::relationship{relationship_type,
+        diagram().add_relationship(
+            common::model::relationship{relationship_type, current_file_id,
                 include_file.id(), common::model::access_t::kNone});
     }
 }
@@ -207,12 +205,9 @@ void translation_unit_visitor::include_visitor::process_external_system_header(
     diagram().add_file(std::move(f));
 
     if (diagram().get(current_file_id)) {
-        diagram()
-            .get(current_file_id)
-            .value()
-            .add_relationship(common::model::relationship{
-                common::model::relationship_t::kDependency, f_id,
-                common::model::access_t::kNone});
+        diagram().add_relationship(common::model::relationship{
+            common::model::relationship_t::kDependency, current_file_id, f_id,
+            common::model::access_t::kNone});
     }
 }
 

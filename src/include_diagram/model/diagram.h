@@ -43,12 +43,20 @@ class diagram : public clanguml::common::model::diagram,
                 public clanguml::common::model::element_views<source_file>,
                 public nested_trait_fspath {
 public:
-    diagram() = default;
+    using nested_trait_t = nested_trait_fspath;
+
+    diagram(const config::include_diagram &config)
+        : clanguml::common::model::diagram{config}
+        , config_{config}
+    {
+    }
 
     diagram(const diagram &) = delete;
     diagram(diagram &&) = default;
     diagram &operator=(const diagram &) = delete;
-    diagram &operator=(diagram &&) = default;
+    diagram &operator=(diagram &&) = delete;
+
+    const config::include_diagram &config() const { return config_; }
 
     /**
      * @brief Get the diagram model type - in this case include.
@@ -130,6 +138,11 @@ public:
     bool is_empty() const override;
 
     void apply_filter() override;
+
+    void append(diagram &&other);
+
+private:
+    const config::include_diagram &config_;
 };
 
 template <typename ElementT>

@@ -75,6 +75,14 @@ bool diagram_source_t<std::string>::search(const std::string &pattern) const
 }
 
 template <>
+int64_t diagram_source_t<std::string>::count(const std::string &pattern) const
+{
+    std::regex pattern_regex{pattern};
+    auto it = std::sregex_iterator(src.begin(), src.end(), pattern_regex);
+    return std::distance(it, std::sregex_iterator{});
+}
+
+template <>
 bool diagram_source_t<nlohmann::json>::contains(std::string name) const
 {
     return false;

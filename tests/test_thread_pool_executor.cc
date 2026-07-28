@@ -29,12 +29,12 @@ TEST_CASE("Test thread_pool_executor")
 
     std::atomic_int counter{0};
 
-    std::vector<std::future<void>> futs;
+    std::vector<std::future<int>> futs;
 
     const unsigned int kTaskCount = 1000;
 
     for (auto i = 0U; i < kTaskCount; i++) {
-        futs.emplace_back(pool.add([&counter]() { counter++; }));
+        futs.emplace_back(pool.add<int>([&counter]() { return counter++; }));
     }
 
     for (auto &f : futs) {

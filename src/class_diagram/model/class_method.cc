@@ -122,4 +122,23 @@ bool class_method::is_operator() const { return is_operator_; }
 
 void class_method::is_operator(bool is_operator) { is_operator_ = is_operator; }
 
+bool class_method::operator==(const class_method &other) const
+{
+    return class_method_base::operator==(other) &&
+        template_params() == other.template_params() &&
+        is_pure_virtual_ == other.is_pure_virtual_ &&
+        is_virtual_ == other.is_virtual_ && is_const_ == other.is_const_ &&
+        is_defaulted_ == other.is_defaulted_ &&
+        is_deleted_ == other.is_deleted_ &&
+        is_noexcept_ == other.is_noexcept_ &&
+        is_constexpr_ == other.is_constexpr_ &&
+        is_consteval_ == other.is_consteval_ &&
+        is_coroutine_ == other.is_coroutine_ &&
+        is_constructor_ == other.is_constructor_ &&
+        is_destructor_ == other.is_destructor_ &&
+        is_move_assignment_ == other.is_move_assignment_ &&
+        is_copy_assignment_ == other.is_copy_assignment_ &&
+        is_operator_ == other.is_operator_;
+}
+
 } // namespace clanguml::class_diagram::model

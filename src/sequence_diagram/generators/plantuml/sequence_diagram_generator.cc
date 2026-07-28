@@ -460,7 +460,7 @@ void generator::generate_participant(
     eid_t participant_id{};
 
     if (!force) {
-        for (const auto pid : model().active_participants()) {
+        for (const auto &pid : model().active_participants()) {
             if (pid == id) {
                 participant_id = pid;
                 break;
@@ -560,7 +560,7 @@ void generator::generate_participant(
 
         assert(!file_path.empty());
 
-        const auto file_id = common::to_id(file_path);
+        const auto file_id = common::to_id(std::filesystem::path{file_path});
 
         if (is_participant_generated(file_id))
             return;
@@ -622,7 +622,8 @@ std::string generator::generate_alias(
     if ((participant.type_name() == "function" ||
             participant.type_name() == "function_template") &&
         config().combine_free_functions_into_file_participants()) {
-        const auto file_id = common::to_id(participant.file());
+        const auto file_id =
+            common::to_id(std::filesystem::path{participant.file()});
 
         return fmt::format("C_{:022}", file_id.value());
     }
@@ -655,7 +656,7 @@ void generator::generate_from_sequences(std::ostream &ostr) const
     // Use this to break out of recurrent loops
     std::vector<eid_t> visited_participants;
 
-    for (const auto from_id : start_from) {
+    for (const auto &from_id : start_from) {
         if (model().participants().count(from_id) == 0)
             continue;
 
@@ -811,11 +812,11 @@ void generator::generate_from_to_sequences(std::ostream &ostr) const
 
         bool first_separator_skipped{false};
 
-        for (const auto from_activity_id : from_activity_ids) {
+        for (const auto &from_activity_id : from_activity_ids) {
             if (model().participants().count(from_activity_id) == 0)
                 continue;
 
-            for (const auto to_activity_id : to_activity_ids) {
+            for (const auto &to_activity_id : to_activity_ids) {
                 if (model().participants().count(to_activity_id) == 0)
                     continue;
 

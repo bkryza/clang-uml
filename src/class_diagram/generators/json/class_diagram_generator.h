@@ -151,7 +151,7 @@ void generator::generate_relationships(const T &c, nlohmann::json &parent) const
     const auto &model =
         common_generator<diagram_config, diagram_model>::model();
 
-    for (const auto &r : c.relationships()) {
+    for (const auto &r : model.relationships(c.id())) {
         auto target_element = model.get(r.destination());
         if (!target_element.has_value()) {
             LOG_DBG("Skipping {} relation from '{}' to '{}' due "

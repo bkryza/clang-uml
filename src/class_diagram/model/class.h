@@ -143,6 +143,8 @@ public:
     void apply_filter(const common::model::diagram_filter &filter,
         const std::set<common::model::eid_t> &removed) override;
 
+    void append(const class_ &other);
+
 protected:
     /**
      * @brief Get class full name.

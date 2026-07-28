@@ -35,6 +35,7 @@
 #include "package_diagram/generators/json/package_diagram_generator.h"
 #include "package_diagram/generators/mermaid/package_diagram_generator.h"
 #include "package_diagram/generators/plantuml/package_diagram_generator.h"
+#include "progress_indicator.h"
 #include "sequence_diagram/generators/json/sequence_diagram_generator.h"
 #include "sequence_diagram/generators/mermaid/sequence_diagram_generator.h"
 #include "sequence_diagram/generators/plantuml/sequence_diagram_generator.h"
@@ -340,11 +341,6 @@ protected:
     {
         LOG_DBG("Visiting source file: {}", getCurrentFile().str());
 
-        // Update progress indicators, if enabled, on each translation
-        // unit
-        if (progress_)
-            progress_();
-
         if constexpr (std::is_same_v<DiagramModel,
                           clanguml::include_diagram::model::diagram>) {
             auto find_includes_callback =
@@ -416,17 +412,15 @@ private:
  */
 template <typename DiagramModel, typename DiagramConfig,
     typename DiagramVisitor>
-std::unique_ptr<DiagramModel> generate(const common::compilation_database &db,
-    const std::string &name, DiagramConfig &config,
-    const std::vector<std::string> &translation_units, bool /*verbose*/ = false,
-    std::function<void()> progress = {})
+std::unique_ptr<DiagramModel> generate_diagram_model(
+    const common::compilation_database &db, const std::string &name,
+    DiagramConfig &config, const std::vector<std::string> &translation_units,
+    bool /*verbose*/ = false, std::function<void()> progress = {})
 {
     LOG_INFO("Generating diagram {}", name);
 
-    auto diagram = std::make_unique<DiagramModel>();
+    auto diagram = std::make_unique<DiagramModel>(config);
     diagram->set_name(name);
-    diagram->set_filter(
-        model::diagram_filter_factory::create(*diagram, config));
 
     LOG_DBG("Found translation units for diagram {}: {}", name,
         fmt::join(translation_units, ", "));
@@ -438,17 +432,90 @@ std::unique_ptr<DiagramModel> generate(const common::compilation_database &db,
 
     auto action_factory =
         std::make_unique<diagram_action_visitor_factory<DiagramModel,
-            DiagramConfig, DiagramVisitor>>(
-            *diagram, config, std::move(progress));
+            DiagramConfig, DiagramVisitor>>(*diagram, config, progress);
 
     clang_tool.run(action_factory.get());
 
     diagram->set_complete(true);
 
-    diagram->finalize();
+    if (progress)
+        progress();
+
+    LOG_INFO("Generated diagram model {}", name);
 
     return diagram;
 }
+
+/**
+ * @brief Create a generator function for a specific diagram and translation
+ *        unit
+ *
+ * This function creates a lambda that will generate a diagram model for a
+ * single translation unit. The returned lambda can be executed asynchronously
+ * to build partial diagram models that can later be combined.
+ *
+ * @tparam DiagramConfig Type of diagram configuration (e.g., class_diagram,
+ *                       sequence_diagram)
+ * @param name Name of the diagram being generated
+ * @param translation_unit Path to the translation unit to process
+ * @param db Shared pointer to the compilation database
+ * @param diagram Reference to the diagram configuration
+ * @param runtime_config Runtime configuration including threading and output
+ *                       settings
+ * @param indicator Shared pointer to progress indicator for tracking generation
+ *                  progress
+ * @return Lambda function that returns a unique_ptr to the generated diagram
+ *         model
+ */
+template <typename DiagramConfig>
+auto make_generator(const std::string &name,
+    const std::string &translation_unit,
+    const common::compilation_database_ptr &db, DiagramConfig &diagram,
+    const cli::runtime_config &runtime_config,
+    std::shared_ptr<progress_indicator_base> indicator)
+{
+    using diagram_model = typename diagram_model_t<DiagramConfig>::type;
+    using diagram_visitor = typename diagram_visitor_t<DiagramConfig>::type;
+
+    return [name, diagram, indicator, db = std::ref(*db),
+               translation_units = std::vector<std::string>{translation_unit},
+               runtime_config]() mutable -> std::unique_ptr<diagram_model> {
+        try {
+            std::unique_ptr<diagram_model> model;
+
+            if (indicator) {
+                indicator->update(name);
+            }
+
+            auto progress_fun = [&indicator, &name]() {
+                if (indicator)
+                    indicator->increment(name);
+            };
+
+            model = generate_diagram_model<diagram_model, DiagramConfig,
+                diagram_visitor>(db, name, diagram, translation_units, false,
+                std::move(progress_fun));
+
+            return model;
+        }
+        catch (clanguml::generators::clang_tool_exception &e) {
+            if (indicator)
+                indicator->fail(name);
+            throw std::move(e);
+        }
+        catch (std::exception &e) {
+            if (indicator)
+                indicator->fail(name);
+
+            LOG_ERROR("Failed to generate diagram '{}': {}", name, e.what());
+
+            throw std::runtime_error(fmt::format(
+                "Failed to generate diagram '{}': {}", name, e.what()));
+        }
+
+        return {};
+    };
+};
 
 /**
  * @brief Generate a single diagram

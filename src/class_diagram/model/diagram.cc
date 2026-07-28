@@ -118,6 +118,111 @@ common::optional_ref<clanguml::common::model::diagram_element> diagram::get(
     return res;
 }
 
+void diagram::add_class(std::unique_ptr<class_> &&c)
+{
+    assert(c->id().value() != 0);
+
+    if ((config().generate_packages() &&
+            config().package_type() == config::package_type_t::kDirectory)) {
+        assert(!c->file().empty());
+
+        const auto file = config().make_path_relative(c->file());
+
+        common::model::path p{
+            file.string(), common::model::path_type::kFilesystem};
+        p.pop_back();
+
+        add(p, std::move(c));
+    }
+    else if ((config().generate_packages() &&
+                 config().package_type() == config::package_type_t::kModule)) {
+
+        const auto module_path = config().make_module_relative(c->module());
+
+        common::model::path p{module_path, common::model::path_type::kModule};
+
+        add(p, std::move(c));
+    }
+    else {
+        add(c->path(), std::move(c));
+    }
+}
+
+void diagram::add_objc_interface(std::unique_ptr<objc_interface> &&c)
+{
+    if ((config().generate_packages() &&
+            config().package_type() == config::package_type_t::kDirectory)) {
+        assert(!c->file().empty());
+
+        const auto file = config().make_path_relative(c->file());
+
+        common::model::path p{
+            file.string(), common::model::path_type::kFilesystem};
+        p.pop_back();
+
+        add(p, std::move(c));
+    }
+    else {
+        add(c->path(), std::move(c));
+    }
+}
+
+void diagram::add_enum(std::unique_ptr<enum_> &&e)
+{
+    if ((config().generate_packages() &&
+            config().package_type() == config::package_type_t::kDirectory)) {
+        assert(!e->file().empty());
+
+        const auto file = config().make_path_relative(e->file());
+
+        common::model::path p{
+            file.string(), common::model::path_type::kFilesystem};
+        p.pop_back();
+
+        add(p, std::move(e));
+    }
+    else if ((config().generate_packages() &&
+                 config().package_type() == config::package_type_t::kModule)) {
+
+        const auto module_path = config().make_module_relative(e->module());
+
+        common::model::path p{module_path, common::model::path_type::kModule};
+
+        add(p, std::move(e));
+    }
+    else {
+        add(e->path(), std::move(e));
+    }
+}
+
+void diagram::add_concept(std::unique_ptr<concept_> &&c)
+{
+    if ((config().generate_packages() &&
+            config().package_type() == config::package_type_t::kDirectory)) {
+        assert(!c->file().empty());
+
+        const auto file = config().make_path_relative(c->file());
+
+        common::model::path p{
+            file.string(), common::model::path_type::kFilesystem};
+        p.pop_back();
+
+        add(p, std::move(c));
+    }
+    else if ((config().generate_packages() &&
+                 config().package_type() == config::package_type_t::kModule)) {
+
+        const auto module_path = config().make_module_relative(c->module());
+
+        common::model::path p{module_path, common::model::path_type::kModule};
+
+        add(p, std::move(c));
+    }
+    else {
+        add(c->path(), std::move(c));
+    }
+}
+
 template <>
 bool diagram::add_with_namespace_path<common::model::package>(
     std::unique_ptr<common::model::package> &&p)
@@ -161,7 +266,7 @@ void diagram::get_parents(
 {
     bool found_new{false};
     for (const auto &parent : parents) {
-        for (const auto &rel : parent.get().relationships()) {
+        for (const auto &rel : relationships(parent.get().id())) {
             if (rel.type() != common::model::relationship_t::kExtension)
                 continue;
 
@@ -246,14 +351,17 @@ void diagram::remove_redundant_dependencies()
         for (const auto &el : elements_view) {
             std::set<eid_t> dependency_relationships_to_remove;
 
-            for (auto &r : el.get().relationships()) {
+            for (auto &r : relationships(el.get().id())) {
                 if (r.type() != relationship_t::kDependency)
                     dependency_relationships_to_remove.emplace(r.destination());
             }
 
-            util::erase_if(el.get().relationships(),
+            util::erase_if(relationships(),
                 [&dependency_relationships_to_remove, &el](const auto &r) {
                     if (r.type() != relationship_t::kDependency)
+                        return false;
+
+                    if (r.source() != el.get().id())
                         return false;
 
                     auto has_another_relationship_to_destination =
@@ -270,6 +378,8 @@ void diagram::remove_redundant_dependencies()
 
 void diagram::apply_filter()
 {
+    common::model::apply_filter(relationships(), filter());
+
     // First find all element ids which should be removed
     std::set<eid_t> to_remove;
 
@@ -299,6 +409,14 @@ void diagram::apply_filter()
         for (const auto &el : elements_view)
             el.get().apply_filter(filter(), to_remove);
     });
+
+    auto &rels = relationships();
+    rels.erase(std::remove_if(std::begin(rels), std::end(rels),
+                   [&to_remove](auto &&r) {
+                       return to_remove.count(r.source()) > 0 ||
+                           to_remove.count(r.destination()) > 0;
+                   }),
+        std::end(rels));
 }
 
 bool diagram::is_empty() const
@@ -306,6 +424,31 @@ bool diagram::is_empty() const
     return element_view<class_>::is_empty() &&
         element_view<enum_>::is_empty() && element_view<concept_>::is_empty() &&
         element_view<objc_interface>::is_empty();
+}
+
+void diagram::append(diagram &&other)
+{
+    // Remove elements which exist in both diagram models, possibly at
+    // different package paths (e.g. when in one translation unit only
+    // a forward declaration of a type was encountered), before the
+    // element trees are merged below
+    remove_duplicate_elements<class_>(other);
+    remove_duplicate_elements<enum_>(other);
+    remove_duplicate_elements<concept_>(other);
+    remove_duplicate_elements<objc_interface>(other);
+
+    clanguml::common::model::diagram::append(
+        dynamic_cast<clanguml::common::model::diagram &&>(other));
+
+    element_views<class_, enum_, concept_, objc_interface>::append(
+        dynamic_cast<element_views<class_, enum_, concept_, objc_interface> &&>(
+            other));
+
+    for (const auto &ae : other.added_elements_) {
+        added_elements_.emplace(ae);
+    }
+
+    nested_trait_t::append(dynamic_cast<nested_trait_t &&>(std::move(other)));
 }
 } // namespace clanguml::class_diagram::model
 

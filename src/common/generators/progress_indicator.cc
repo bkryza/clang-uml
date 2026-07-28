@@ -86,6 +86,30 @@ void progress_indicator::add_progress_bar(
     progress_bars_mutex_.unlock();
 }
 
+void json_logger_progress_indicator::update(const std::string &name)
+{
+    inja::json j;
+    j["diagram_name"] = name;
+
+    progress_bars_mutex_.lock();
+
+    if (progress_bar_index_.count(name) == 0) {
+        progress_bars_mutex_.unlock();
+        return;
+    }
+
+    auto &p = progress_bar_index_.at(name);
+
+    j["progress"] = p.progress;
+    j["max"] = p.max;
+    j["status"] = "ongoing";
+
+    progress_bars_mutex_.unlock();
+
+    spdlog::get("json-progress-logger")
+        ->log(spdlog::level::info, "{}", j.dump());
+}
+
 void json_logger_progress_indicator::increment(const std::string &name)
 {
     inja::json j;
@@ -110,6 +134,27 @@ void json_logger_progress_indicator::increment(const std::string &name)
 
     spdlog::get("json-progress-logger")
         ->log(spdlog::level::info, "{}", j.dump());
+}
+
+void progress_indicator::update(const std::string &name)
+{
+    const auto kASTTraverseProgressPercent = 95U;
+
+    progress_bars_mutex_.lock();
+
+    if (progress_bar_index_.count(name) == 0) {
+        progress_bars_mutex_.unlock();
+        return;
+    }
+
+    auto &p = progress_bar_index_.at(name);
+    auto &bar = progress_bars_[p.index];
+
+    bar.set_progress((p.progress * kASTTraverseProgressPercent) / p.max);
+    bar.set_option(indicators::option::PostfixText{
+        fmt::format("{}/{}", p.progress, p.max)});
+
+    progress_bars_mutex_.unlock();
 }
 
 void progress_indicator::increment(const std::string &name)

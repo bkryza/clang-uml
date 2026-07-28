@@ -117,6 +117,8 @@ diagram::get_with_namespace(
 
 void diagram::apply_filter()
 {
+    common::model::apply_filter(relationships(), filter());
+
     // First find all element ids which should be removed
     std::set<eid_t> to_remove;
 
@@ -132,10 +134,30 @@ void diagram::apply_filter()
     element_view<source_file>::remove(to_remove);
 
     nested_trait_fspath::remove(to_remove);
+
+    auto &rels = relationships();
+    rels.erase(std::remove_if(std::begin(rels), std::end(rels),
+                   [&to_remove](auto &&r) {
+                       return to_remove.count(r.source()) > 0 ||
+                           to_remove.count(r.destination()) > 0;
+                   }),
+        std::end(rels));
 }
 
 bool diagram::is_empty() const { return element_view<source_file>::is_empty(); }
 
+void diagram::append(diagram &&other)
+{
+    assert(this != &other);
+
+    clanguml::common::model::diagram::append(
+        dynamic_cast<clanguml::common::model::diagram &&>(other));
+
+    element_views<source_file>::append(
+        dynamic_cast<element_views<source_file> &&>(other));
+
+    nested_trait_t::append(dynamic_cast<nested_trait_t &&>(std::move(other)));
+}
 } // namespace clanguml::include_diagram::model
 
 namespace clanguml::common::model {

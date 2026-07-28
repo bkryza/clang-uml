@@ -56,6 +56,7 @@ struct call_expression_context {
      * @brief Reset call expression context to the original state.
      */
     void reset();
+    void reset_declarations();
 
     /**
      * @brief Verify that the context is in a valid state.

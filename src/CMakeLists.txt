@@ -8,7 +8,8 @@ configure_file(${CMAKE_CURRENT_LIST_DIR}/version/version-const.h.in
 #
 # Generate source list dynamically
 #
-file(GLOB_RECURSE SOURCES ${CMAKE_CURRENT_LIST_DIR}/*.cc)
+file(GLOB_RECURSE SOURCES ${CMAKE_CURRENT_LIST_DIR}/*.cc
+        ${CMAKE_CURRENT_LIST_DIR}/common/clang/usr/llvm-${LLVM_VERSION_MAJOR}/USRGeneration.cpp)
 set(MAIN_SOURCE_FILE ${CMAKE_CURRENT_LIST_DIR}/main.cc)
 list(REMOVE_ITEM SOURCES ${MAIN_SOURCE_FILE})
 

@@ -45,13 +45,14 @@ public:
      * Constructor.
      *
      * @param type Type of relationship
+     * @param source Id of the relationship origin
      * @param destination Id of the relationship target
      * @param access Access scope of the relationship
      * @param label Relationship label
      * @param multiplicity_source Multiplicity at the source
      * @param multiplicity_destination Multiplicity at the destination
      */
-    relationship(relationship_t type, eid_t destination,
+    relationship(relationship_t type, eid_t source, eid_t destination,
         access_t access = access_t::kPublic, std::string label = "",
         std::string multiplicity_source = "",
         std::string multiplicity_destination = "");
@@ -63,8 +64,8 @@ public:
      * @param access Inheritance access (public, protected, private).
      * @param is_virtual Whether the inheritance is virtual.
      */
-    relationship(eid_t destination, access_t access = access_t::kPublic,
-        bool is_virtual = false);
+    relationship(eid_t source, eid_t destination,
+        access_t access = access_t::kPublic, bool is_virtual = false);
 
     ~relationship() override = default;
 
@@ -83,12 +84,27 @@ public:
     relationship_t type() const noexcept;
 
     /**
+     * Set id of the diagram element which is the origin of this
+     * relationship.
+     *
+     * @param source Source element id.
+     */
+    void set_source(eid_t source);
+
+    /**
      * Set id of the diagram element which is the target of this
      * relationship.
      *
      * @param destination Target element id.
      */
     void set_destination(eid_t destination);
+
+    /**
+     * Get the id of the origin element of this relationship.
+     *
+     * @return Origin element id.
+     */
+    eid_t source() const;
 
     /**
      * Get the id of the target element of this relationship.
@@ -172,6 +188,7 @@ public:
 
 private:
     relationship_t type_;
+    eid_t source_;
     eid_t destination_;
     std::string multiplicity_source_;
     std::string multiplicity_destination_;

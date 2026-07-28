@@ -31,6 +31,8 @@ TEST_CASE("t00065")
         REQUIRE(IsEnum(src, "XYZ"));
         REQUIRE(IsEnum(src, "ABC"));
 
+        REQUIRE(IsClassOnce(src, "A"));
+
         REQUIRE(IsDirectoryPackage(src, "module1"s));
         REQUIRE(IsDirectoryPackage(src, "module2"s));
         REQUIRE(IsDirectoryPackage(src, "module1"s, "submodule1a"s));

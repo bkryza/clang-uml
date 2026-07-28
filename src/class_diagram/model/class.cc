@@ -21,6 +21,7 @@
 #include "common/model/filters/diagram_filter.h"
 #include "util/util.h"
 
+#include <algorithm>
 #include <sstream>
 
 namespace clanguml::class_diagram::model {
@@ -117,5 +118,24 @@ std::optional<std::string> class_::doxygen_link() const
     util::replace_all(name, "::", "_1_1");
     util::replace_all(name, "##", "_1_1"); // nested classes
     return fmt::format("{}{}.html", type, name);
+}
+
+void class_::append(const class_ &other)
+{
+    // Add members from other only if they don't already exist in this
+    for (const auto &member : other.members()) {
+        auto it = std::find(members_.begin(), members_.end(), member);
+        if (it == members_.end()) {
+            members_.push_back(member);
+        }
+    }
+
+    // Add methods from other only if they don't already exist in this
+    for (const auto &method : other.methods()) {
+        auto it = std::find(methods_.begin(), methods_.end(), method);
+        if (it == methods_.end()) {
+            methods_.push_back(method);
+        }
+    }
 }
 } // namespace clanguml::class_diagram::model

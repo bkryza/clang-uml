@@ -79,7 +79,6 @@ bool translation_unit_visitor::VisitNamespaceDecl(clang::NamespaceDecl *ns)
     p->set_namespace(package_parent);
     p->set_id(common::to_id(*ns));
     p->is_root(is_root);
-    id_mapper().add(ns->getID(), p->id());
 
     if (config().filter_mode() == config::filter_mode_t::advanced ||
         (diagram().should_include(*p) && !diagram().get(p->id()))) {
@@ -125,7 +124,7 @@ bool translation_unit_visitor::VisitTypedefDecl(clang::TypedefDecl *decl)
         }
 
         if (e_ptr && diagram().should_include(*e_ptr))
-            add_enum(std::move(e_ptr));
+            diagram().add_enum(std::move(e_ptr));
     }
 
     return true; // Continue traversing
@@ -182,8 +181,9 @@ translation_unit_visitor::create_declaration(
 
         e.set_namespace(ns);
         e.set_name(parent_class.value().name(), enm_name);
-        e.set_id(common::to_id(e.full_name(false)));
-        e.add_relationship({relationship_t::kContainment, *parent_id_opt});
+        e.set_id(common::to_id(*enm));
+        diagram().add_relationship(
+            {relationship_t::kContainment, e.id(), *parent_id_opt});
         e.nested(true);
     }
     else if (parent_id_opt && diagram().find<objc_interface>(*parent_id_opt)) {
@@ -191,17 +191,16 @@ translation_unit_visitor::create_declaration(
 
         e.set_namespace(ns);
         e.set_name(parent_class.value().name(), enm_name);
-        e.set_id(common::to_id(e.full_name(false)));
-        e.add_relationship({relationship_t::kContainment, *parent_id_opt});
+        e.set_id(common::to_id(*enm));
+        diagram().add_relationship(
+            {relationship_t::kContainment, e.id(), *parent_id_opt});
         e.nested(true);
     }
     else {
         e.set_name(enm_name);
         e.set_namespace(ns);
-        e.set_id(common::to_id(e.full_name(false)));
+        e.set_id(common::to_id(*enm));
     }
-
-    id_mapper().add(enm->getID(), e.id());
 
     process_comment(*enm, e);
     set_source_location(*enm, e);
@@ -231,13 +230,9 @@ bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
     if (!should_include(cls))
         return true;
 
-    LOG_DBG("= Visiting template specialization declaration {} at {} "
-            "(described class id {})",
+    LOG_DBG("= Visiting template specialization declaration {} at {} ",
         cls->getQualifiedNameAsString(),
-        cls->getLocation().printToString(source_manager()),
-        cls->getSpecializedTemplate()
-            ? cls->getSpecializedTemplate()->getTemplatedDecl()->getID()
-            : 0);
+        cls->getLocation().printToString(source_manager()));
 
     // TODO: Add support for classes defined in function/method bodies
     if (cls->isLocalClass() != nullptr)
@@ -276,16 +271,23 @@ bool translation_unit_visitor::VisitTypeAliasTemplateDecl(
 
     template_specialization_ptr->is_template(true);
 
+    if (template_specialization_ptr->id().value() == 0) {
+        // The template builder could not resolve the underlying template
+        // declaration for this alias (e.g. dependent alias template), so
+        // no valid id could be assigned - skip it
+        return true;
+    }
+
     if (diagram().should_include(*template_specialization_ptr)) {
         const auto name = template_specialization_ptr->full_name(true);
         const auto id = template_specialization_ptr->id();
 
-        LOG_DBG("Adding class {} with id {}", name, id);
+        LOG_DBG("Adding class {} with id {} [{}]", name, id, id.usr());
 
         set_source_location(*cls, *template_specialization_ptr);
         set_owning_module(*cls, *template_specialization_ptr);
 
-        add_class(std::move(template_specialization_ptr));
+        diagram().add_class(std::move(template_specialization_ptr));
     }
 
     return true;
@@ -310,15 +312,12 @@ bool translation_unit_visitor::VisitClassTemplateDecl(
 
     tbuilder().build_from_template_declaration(*c_ptr, *cls, *c_ptr);
 
-    // Override the id with the template id, for now we don't care about the
-    // underlying templated class id
-    const auto cls_full_name = c_ptr->full_name(false);
-    const auto id = common::to_id(cls_full_name);
+    const auto id = common::to_id(*cls);
+
+    LOG_DBG("=========== {}, {}", id.usr(), id.value());
 
     c_ptr->set_id(id);
     c_ptr->is_template(true);
-
-    id_mapper().add(cls->getID(), id);
 
     constexpr auto kMaxConstraintCount = 24U;
 
@@ -387,8 +386,6 @@ bool translation_unit_visitor::VisitObjCCategoryDecl(
 
     const auto category_id = category_ptr->id();
 
-    id_mapper().add(decl->getID(), category_id);
-
     auto &category_model =
         diagram().find<objc_interface>(category_id).has_value()
         ? *diagram().find<objc_interface>(category_id).get()
@@ -400,7 +397,7 @@ bool translation_unit_visitor::VisitObjCCategoryDecl(
         LOG_DBG("Adding ObjC category {} with id {}",
             category_model.full_name(false), category_model.id());
 
-        add_objc_interface(std::move(category_ptr));
+        diagram().add_objc_interface(std::move(category_ptr));
     }
     else {
         LOG_DBG("Skipping ObjC category {} with id {}",
@@ -427,8 +424,6 @@ bool translation_unit_visitor::VisitObjCProtocolDecl(
 
     const auto protocol_id = protocol_ptr->id();
 
-    id_mapper().add(decl->getID(), protocol_id);
-
     auto &protocol_model =
         diagram().find<objc_interface>(protocol_id).has_value()
         ? *diagram().find<objc_interface>(protocol_id).get()
@@ -440,7 +435,7 @@ bool translation_unit_visitor::VisitObjCProtocolDecl(
         LOG_DBG("Adding ObjC protocol {} with id {}",
             protocol_model.full_name(false), protocol_model.id());
 
-        add_objc_interface(std::move(protocol_ptr));
+        diagram().add_objc_interface(std::move(protocol_ptr));
     }
     else {
         LOG_DBG("Skipping ObjC protocol {} with id {}",
@@ -467,8 +462,6 @@ bool translation_unit_visitor::VisitObjCInterfaceDecl(
 
     const auto protocol_id = interface_ptr->id();
 
-    id_mapper().add(decl->getID(), protocol_id);
-
     auto &interface_model =
         diagram().find<objc_interface>(protocol_id).has_value()
         ? *diagram().find<objc_interface>(protocol_id).get()
@@ -481,7 +474,7 @@ bool translation_unit_visitor::VisitObjCInterfaceDecl(
         LOG_DBG("Adding ObjC interface {} with id {}",
             interface_model.full_name(false), interface_model.id());
 
-        add_objc_interface(std::move(interface_ptr));
+        diagram().add_objc_interface(std::move(interface_ptr));
     }
     else {
         LOG_DBG("Skipping ObjC interface {} with id {}",
@@ -506,8 +499,6 @@ bool translation_unit_visitor::TraverseConceptDecl(clang::ConceptDecl *cpt)
         return true;
 
     const auto concept_id = concept_model->id();
-
-    id_mapper().add(cpt->getID(), concept_id);
 
     tbuilder().build_from_template_declaration(*concept_model, *cpt);
 
@@ -546,7 +537,7 @@ bool translation_unit_visitor::TraverseConceptDecl(clang::ConceptDecl *cpt)
         LOG_DBG("Adding concept {} with id {}", concept_model->full_name(false),
             concept_model->id());
 
-        add_concept(std::move(concept_model));
+        diagram().add_concept(std::move(concept_model));
     }
     else {
         LOG_DBG("Skipping concept {} with id {}",
@@ -591,7 +582,7 @@ void translation_unit_visitor::process_constraint_requirements(
             }
             else {
                 LOG_DBG("=== Processing some other concept declaration: {}",
-                    decl->getID());
+                    common::to_id(*decl).usr());
             }
         }
 
@@ -726,13 +717,13 @@ void translation_unit_visitor::find_relationships_in_constraint_expression(
         if (type_element_id != c.id() &&
             (relationship_type != relationship_t::kNone)) {
 
-            relationship r{relationship_type, type_element_id};
+            relationship r{relationship_type, c.id(), type_element_id};
 
             if (source_decl != nullptr) {
                 set_source_location(*source_decl, r);
             }
 
-            c.add_relationship(std::move(r));
+            diagram().add_relationship(std::move(r));
         }
     }
 }
@@ -746,12 +737,7 @@ void translation_unit_visitor::process_concept_specialization_relationships(
         should_include(cpt)) {
 
         const auto cpt_name = cpt->getNameAsString();
-        const eid_t ast_id{cpt->getID()};
-        const auto maybe_id = id_mapper().get_global_id(ast_id);
-        if (!maybe_id)
-            return;
-
-        const auto target_id = maybe_id.value();
+        const auto target_id = common::to_id(*cpt);
 
         std::vector<std::string> constrained_template_params;
 
@@ -785,10 +771,10 @@ void translation_unit_visitor::process_concept_specialization_relationships(
         }
 
         if (!constrained_template_params.empty())
-            c.add_relationship(
-                {relationship_t::kConstraint, target_id, access_t::kNone,
-                    fmt::format(
-                        "{}", fmt::join(constrained_template_params, ","))});
+            diagram().add_relationship({relationship_t::kConstraint, c.id(),
+                target_id, access_t::kNone,
+                fmt::format(
+                    "{}", fmt::join(constrained_template_params, ","))});
     }
 }
 
@@ -806,7 +792,6 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
     if (cls->getOwningModule() != nullptr)
         LOG_DBG(
             "== getOwningModule()->Name = {}", cls->getOwningModule()->Name);
-    LOG_DBG("== getID() = {}", cls->getID());
     LOG_DBG("== isTemplateDecl() = {}", cls->isTemplateDecl());
     LOG_DBG("== isTemplated() = {}", cls->isTemplated());
     LOG_DBG("== getParent()->isRecord()() = {}", cls->getParent()->isRecord());
@@ -827,8 +812,9 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
     if (cls->isTemplated() && (cls->getDescribedTemplate() != nullptr)) {
         // If the described templated of this class is already in the model
         // skip it:
-        const eid_t ast_id{cls->getDescribedTemplate()->getID()};
-        if (id_mapper().get_global_id(ast_id))
+        auto described_template_id =
+            common::to_id(*cls->getDescribedTemplate());
+        if (diagram().get(described_template_id).has_value())
             return true;
     }
 
@@ -860,7 +846,7 @@ translation_unit_visitor::create_concept_declaration(clang::ConceptDecl *cpt)
 
     concept_model.set_name(cpt->getNameAsString());
     concept_model.set_namespace(ns);
-    concept_model.set_id(common::to_id(concept_model.full_name(false)));
+    concept_model.set_id(common::to_id(*cpt));
 
     process_comment(*cpt, concept_model);
     set_source_location(*cpt, concept_model);
@@ -884,6 +870,7 @@ std::unique_ptr<class_> translation_unit_visitor::create_declaration(
 
     auto record_ptr{std::make_unique<class_>(config().using_namespace())};
     auto &record = *record_ptr;
+    record.set_id(common::to_id(*rec));
 
     process_record_parent(rec, record, namespace_{});
 
@@ -900,7 +887,7 @@ std::unique_ptr<class_> translation_unit_visitor::create_declaration(
 #endif
 
         record.set_name(record_name);
-        record.set_id(common::to_id(record.full_name(false)));
+        record.set_id(common::to_id(*rec));
     }
 
     process_comment(*rec, record);
@@ -933,12 +920,13 @@ std::unique_ptr<class_> translation_unit_visitor::create_declaration(
 
     auto ns{common::get_tag_namespace(*cls)};
 
+    c.set_id(common::to_id(*cls));
+
     process_record_parent(cls, c, ns);
 
     if (!c.is_nested()) {
         c.set_name(common::get_tag_name(*cls));
         c.set_namespace(ns);
-        c.set_id(common::to_id(c.full_name(false)));
     }
 
     c.is_struct(cls->isStruct());
@@ -971,7 +959,7 @@ translation_unit_visitor::create_objc_category_declaration(
     decl->getClassInterface()->getNameAsString();
     c.set_name(fmt::format("{}({})",
         decl->getClassInterface()->getNameAsString(), decl->getNameAsString()));
-    c.set_id(common::to_id(fmt::format("__objc__category__{}", c.name())));
+    c.set_id(common::to_id(*decl));
     c.is_category(true);
 
     process_comment(*decl, c);
@@ -1086,14 +1074,14 @@ void translation_unit_visitor::process_objc_category_declaration(
     // category
     if (cls.getClassInterface() != nullptr) {
         eid_t objc_interface_id = common::to_id(*cls.getClassInterface());
-        common::model::relationship r{
-            relationship_t::kInstantiation, objc_interface_id, access_t::kNone};
+        common::model::relationship r{relationship_t::kInstantiation, c.id(),
+            objc_interface_id, access_t::kNone};
 
         LOG_DBG("Found protocol {} [{}] for ObjC interface {}",
             cls.getClassInterface()->getNameAsString(),
             objc_interface_id.value(), c.name());
 
-        c.add_relationship(std::move(r));
+        diagram().add_relationship(std::move(r));
     }
 
     c.complete(true);
@@ -1141,23 +1129,24 @@ void translation_unit_visitor::process_objc_interface_base(
 {
     if (const auto *base = cls.getSuperClass(); base != nullptr) {
         eid_t parent_id = common::to_id(*base);
-        common::model::relationship cp{parent_id, access_t::kNone, false};
+        common::model::relationship cp{
+            c.id(), parent_id, access_t::kNone, false};
 
         LOG_DBG("Found base class {} [{}] for ObjC interface {}",
             base->getNameAsString(), parent_id.value(), c.name());
 
-        c.add_relationship(std::move(cp));
+        diagram().add_relationship(std::move(cp));
     }
 
     for (const auto *protocol : cls.protocols()) {
         eid_t parent_id = common::to_id(*protocol);
         common::model::relationship cp{
-            relationship_t::kInstantiation, parent_id, access_t::kNone};
+            relationship_t::kInstantiation, c.id(), parent_id, access_t::kNone};
 
         LOG_DBG("Found protocol {} [{}] for ObjC interface {}",
             protocol->getNameAsString(), parent_id.value(), c.name());
 
-        c.add_relationship(std::move(cp));
+        diagram().add_relationship(std::move(cp));
     }
 }
 
@@ -1242,8 +1231,8 @@ void translation_unit_visitor::process_objc_ivar(
             field_type->getAsRecordDecl()->getNameAsString().empty()) {
             // Relationships to fields whose type is an anonymous and nested
             // struct have to be handled separately here
-            anonymous_struct_relationships_[field_type->getAsRecordDecl()
-                    ->getID()] =
+            anonymous_struct_relationships_[common::to_id(
+                *(field_type->getAsRecordDecl()))] =
                 std::make_tuple(field.name(), relationship_hint, field.access(),
                     field.destination_multiplicity());
         }
@@ -1276,15 +1265,37 @@ void translation_unit_visitor::process_class_bases(
         if (const auto *tsp =
                 base.getType()->getAs<clang::TemplateSpecializationType>();
             tsp != nullptr) {
-            auto template_specialization_ptr =
-                std::make_unique<class_>(config().using_namespace());
-            tbuilder().build_from_template_specialization_type(
-                *cls, *template_specialization_ptr, cls, *tsp, {});
+            // First check if the template declaration already exists in the
+            // model
+            auto type_template_decl_id =
+                common::to_id(*tsp, cls->getASTContext());
 
-            parent_id = template_specialization_ptr->id();
+            if (const auto *tsp_decl =
+                    tsp->getTemplateName().getAsTemplateDecl();
+                tsp_decl != nullptr &&
+                common::is_template_specialization_fully_dependent(*tsp)) {
+                if (auto id_decl = common::to_id(*tsp_decl);
+                    id_decl.has_value())
+                    type_template_decl_id = id_decl;
+            }
 
-            if (diagram().should_include(*template_specialization_ptr)) {
-                add_class(std::move(template_specialization_ptr));
+            if (diagram().get(type_template_decl_id).has_value()) {
+                parent_id = type_template_decl_id;
+            }
+            else {
+                auto template_specialization_ptr =
+                    std::make_unique<class_>(config().using_namespace());
+                tbuilder().build_from_template_specialization_type(
+                    *cls, *template_specialization_ptr, cls, *tsp, {});
+
+                template_specialization_ptr->set_id(type_template_decl_id);
+
+                parent_id = template_specialization_ptr->id();
+
+                if (type_template_decl_id.value() != 0 &&
+                    diagram().should_include(*template_specialization_ptr)) {
+                    diagram().add_class(std::move(template_specialization_ptr));
+                }
             }
         }
         else if (const auto *record_type =
@@ -1296,15 +1307,15 @@ void translation_unit_visitor::process_class_bases(
             // This could be a template parameter - we don't want it here
             continue;
 
-        common::model::relationship cp{parent_id,
+        common::model::relationship cp{c.id(), parent_id,
             common::access_specifier_to_access_t(base.getAccessSpecifier()),
             base.isVirtual()};
 
-        LOG_DBG("Found base class {} [{}] for class {}",
+        LOG_DBG("Found base class {} [{}, {}] for class {}",
             common::to_string(base.getType(), cls->getASTContext()),
-            parent_id.value(), c.name());
+            parent_id.usr(), parent_id.value(), c.name());
 
-        c.add_relationship(std::move(cp));
+        diagram().add_relationship(std::move(cp));
     }
 }
 
@@ -1413,12 +1424,12 @@ void translation_unit_visitor::process_friend(
         }
         else if (friend_type->getAs<clang::RecordType>() != nullptr) {
             if (should_include(friend_type->getAsRecordDecl())) {
-                relationship r{relationship_t::kFriendship,
+                relationship r{relationship_t::kFriendship, c.id(),
                     common::to_id(*friend_type->getAsRecordDecl()),
                     common::access_specifier_to_access_t(f.getAccess()),
                     "<<friend>>"};
 
-                c.add_relationship(std::move(r));
+                diagram().add_relationship(std::move(r));
             }
         }
     }
@@ -1488,13 +1499,27 @@ void translation_unit_visitor::process_method(
                 unaliased_type->getTemplateName().getAsTemplateDecl(),
                 *unaliased_type, &c);
 
+            auto id = common::to_id(*unaliased_type, mf.getASTContext());
+
+            if (const auto *unaliased_type_decl =
+                    unaliased_type->getTemplateName().getAsTemplateDecl();
+                unaliased_type_decl != nullptr &&
+                common::is_template_specialization_fully_dependent(
+                    *unaliased_type)) {
+                if (auto id_decl = common::to_id(*unaliased_type_decl);
+                    id_decl.has_value())
+                    id = id_decl;
+            }
+
+            template_specialization_ptr->set_id(id);
+
             template_specialization_ptr->is_template();
 
             if (diagram().should_include(*template_specialization_ptr)) {
                 relationships.emplace_back(template_specialization_ptr->id(),
                     relationship_t::kDependency, &mf);
 
-                add_class(std::move(template_specialization_ptr));
+                diagram().add_class(std::move(template_specialization_ptr));
             }
         }
     }
@@ -1506,7 +1531,8 @@ void translation_unit_visitor::process_method(
         relationships) {
         if (type_element_id != c.id() &&
             (relationship_type != relationship_t::kNone)) {
-            relationship r{relationship_t::kDependency, type_element_id};
+            relationship r{
+                relationship_t::kDependency, c.id(), type_element_id};
 
             if (source_decl != nullptr) {
                 set_source_location(*source_decl, r);
@@ -1516,7 +1542,7 @@ void translation_unit_visitor::process_method(
                     "{}: {}",
                 c, mf.getNameAsString(), r.type(), r.label());
 
-            c.add_relationship(std::move(r));
+            diagram().add_relationship(std::move(r));
         }
     }
 
@@ -1580,7 +1606,8 @@ void translation_unit_visitor::process_objc_method(
         relationships) {
         if (type_element_id != c.id() &&
             (relationship_type != relationship_t::kNone)) {
-            relationship r{relationship_t::kDependency, type_element_id};
+            relationship r{
+                relationship_t::kDependency, c.id(), type_element_id};
 
             if (source_decl != nullptr) {
                 set_source_location(*source_decl, r);
@@ -1590,7 +1617,7 @@ void translation_unit_visitor::process_objc_method(
                     "{}: {}",
                 c, mf.getNameAsString(), r.type(), r.label());
 
-            c.add_relationship(std::move(r));
+            diagram().add_relationship(std::move(r));
         }
     }
 
@@ -1671,10 +1698,10 @@ void translation_unit_visitor::
                     diagram().classes().back();
 
                 if (should_include(deduced_auto_decl)) {
-                    relationship r{relationship_t::kDependency,
+                    relationship r{relationship_t::kDependency, c.id(),
                         template_specialization_model.get().id()};
 
-                    c.add_relationship(std::move(r));
+                    diagram().add_relationship(std::move(r));
                 }
             }
         }
@@ -1760,7 +1787,7 @@ bool translation_unit_visitor::find_relationships(const clang::Decl *decl,
             // calculate here properly the ID for nested enums. It will be
             // resolved properly in finalize().
             relationships.emplace_back(
-                enum_type->getDecl()->getID(), relationship_hint, decl);
+                common::to_id(*enum_type->getDecl()), relationship_hint, decl);
         }
     }
     // TODO: Objc support
@@ -1776,9 +1803,8 @@ bool translation_unit_visitor::find_relationships(const clang::Decl *decl,
             // add it - and then process recursively its arguments
             if (should_include(type_instantiation_template_decl)) {
                 relationships.emplace_back(
-                    type_instantiation_type->getTemplateName()
-                        .getAsTemplateDecl()
-                        ->getID(),
+                    common::to_id(*type_instantiation_type->getTemplateName()
+                            .getAsTemplateDecl()),
                     relationship_hint, decl);
             }
 
@@ -1837,27 +1863,38 @@ bool translation_unit_visitor::find_relationships(const clang::Decl *decl,
         }
         else if (type->getAsCXXRecordDecl() != nullptr) {
             relationships.emplace_back(
-                type->getAsCXXRecordDecl()->getID(), relationship_hint, decl);
+                common::to_id(type), relationship_hint, decl);
             result = true;
         }
         else {
             relationships.emplace_back(
-                type->getAsRecordDecl()->getID(), relationship_hint, decl);
+                common::to_id(type), relationship_hint, decl);
             result = true;
         }
     }
     else if (const auto *template_specialization_type =
                  type->getAs<clang::TemplateSpecializationType>();
         template_specialization_type != nullptr) {
+
         const auto *type_instantiation_template_decl =
             template_specialization_type->getTemplateName().getAsTemplateDecl();
+
+        auto id = common::to_id(*template_specialization_type,
+            type_instantiation_template_decl->getASTContext());
+        auto id_decl =
+            common::to_id(*template_specialization_type->getTemplateName()
+                    .getAsTemplateDecl());
+
+        if (id_decl.has_value() &&
+            common::is_template_specialization_fully_dependent(
+                *template_specialization_type)) {
+            id = common::to_id(*template_specialization_type->getTemplateName()
+                    .getAsTemplateDecl());
+        }
+
         if (should_include(template_specialization_type->getTemplateName()
                     .getAsTemplateDecl())) {
-            relationships.emplace_back(
-                template_specialization_type->getTemplateName()
-                    .getAsTemplateDecl()
-                    ->getID(),
-                relationship_hint, decl);
+            relationships.emplace_back(id, relationship_hint, decl);
         }
         auto idx{0};
         for (const auto &template_argument :
@@ -1942,7 +1979,8 @@ void translation_unit_visitor::process_objc_method_parameter(
             relationships) {
             if (type_element_id != c.id() &&
                 (relationship_type != relationship_t::kNone)) {
-                relationship r{relationship_t::kDependency, type_element_id};
+                relationship r{
+                    relationship_t::kDependency, c.id(), type_element_id};
 
                 if (source_decl != nullptr) {
                     set_source_location(*source_decl, r);
@@ -1952,7 +1990,7 @@ void translation_unit_visitor::process_objc_method_parameter(
                         "{}: {}",
                     c, r.type(), r.label());
 
-                c.add_relationship(std::move(r));
+                diagram().add_relationship(std::move(r));
             }
         }
     }
@@ -2002,6 +2040,8 @@ void translation_unit_visitor::process_function_parameter(
             templ != nullptr) {
             auto template_specialization_ptr =
                 std::make_unique<class_>(config().using_namespace());
+            template_specialization_ptr->set_id(
+                common::to_id(*templ, p.getASTContext()));
             tbuilder().build_from_template_specialization_type(p,
                 *template_specialization_ptr,
                 templ->getTemplateName().getAsTemplateDecl(), *templ, &c);
@@ -2012,7 +2052,7 @@ void translation_unit_visitor::process_function_parameter(
                 relationships.emplace_back(template_specialization_ptr->id(),
                     relationship_t::kDependency, &p);
 
-                add_class(std::move(template_specialization_ptr));
+                diagram().add_class(std::move(template_specialization_ptr));
             }
         }
 
@@ -2023,7 +2063,8 @@ void translation_unit_visitor::process_function_parameter(
             relationships) {
             if (type_element_id != c.id() &&
                 (relationship_type != relationship_t::kNone)) {
-                relationship r{relationship_t::kDependency, type_element_id};
+                relationship r{
+                    relationship_t::kDependency, c.id(), type_element_id};
 
                 if (source_decl != nullptr) {
                     set_source_location(*source_decl, r);
@@ -2033,7 +2074,7 @@ void translation_unit_visitor::process_function_parameter(
                         "{}: {}",
                     c, r.type(), r.label());
 
-                c.add_relationship(std::move(r));
+                diagram().add_relationship(std::move(r));
             }
         }
     }
@@ -2049,7 +2090,7 @@ void translation_unit_visitor::add_relationships(
 
     for (const auto &[target, relationship_type, source_decl] : relationships) {
         if (relationship_type != relationship_t::kNone) {
-            relationship r{relationship_type, target};
+            relationship r{relationship_type, c.id(), target};
             r.set_label(field.name());
             r.set_access(field.access());
             if (source_decl != nullptr) {
@@ -2076,7 +2117,7 @@ void translation_unit_visitor::add_relationships(
             LOG_DBG("Adding relationship from {} to {} with label {}", c,
                 r.destination(), r.type(), r.label());
 
-            c.add_relationship(std::move(r));
+            diagram().add_relationship(std::move(r));
 
             if (break_on_first_aggregation &&
                 relationship_type == relationship_t::kAggregation)
@@ -2147,14 +2188,17 @@ std::unique_ptr<class_>
 translation_unit_visitor::process_template_specialization(
     clang::ClassTemplateSpecializationDecl *cls)
 {
-    LOG_DBG("Processing template specialization {} at {}",
+    LOG_DBG("Processing template specialization {} at {} [{}]",
         cls->getQualifiedNameAsString(),
-        cls->getLocation().printToString(source_manager()));
+        cls->getLocation().printToString(source_manager()),
+        common::to_id(*cls));
 
     auto c_ptr = std::make_unique<class_>(config().using_namespace());
+    auto &template_instantiation = *c_ptr;
+    template_instantiation.set_id(common::to_id(*cls));
+
     tbuilder().build_from_class_template_specialization(*c_ptr, *cls);
 
-    auto &template_instantiation = *c_ptr;
     template_instantiation.is_template(true);
 
     // TODO: refactor to method get_qualified_name()
@@ -2173,8 +2217,6 @@ translation_unit_visitor::process_template_specialization(
 
     if (!template_instantiation.is_nested()) {
         template_instantiation.set_name(common::get_tag_name(*cls));
-        template_instantiation.set_id(
-            common::to_id(template_instantiation.full_name(false)));
     }
 
     process_comment(*cls, template_instantiation);
@@ -2183,8 +2225,6 @@ translation_unit_visitor::process_template_specialization(
 
     if (template_instantiation.skip())
         return {};
-
-    id_mapper().add(cls->getID(), template_instantiation.id());
 
     return c_ptr;
 }
@@ -2272,11 +2312,9 @@ void translation_unit_visitor::process_field(
     const auto *template_field_type =
         field_type->getAs<clang::TemplateSpecializationType>();
     // TODO: Refactor to an unalias_type() method
-    if (template_field_type != nullptr)
-        if (template_field_type->isTypeAlias())
-            template_field_type =
-                template_field_type->getAliasedType()
-                    ->getAs<clang::TemplateSpecializationType>();
+    while (template_field_type != nullptr && template_field_type->isTypeAlias())
+        template_field_type = template_field_type->getAliasedType()
+                                  ->getAs<clang::TemplateSpecializationType>();
 
     bool field_type_is_template_template_parameter{false};
     if (template_field_type != nullptr) {
@@ -2300,12 +2338,42 @@ void translation_unit_visitor::process_field(
         // Build the template instantiation for the field type
         auto template_specialization_ptr =
             std::make_unique<class_>(config().using_namespace());
+
+        auto id = common::to_id(
+            *template_field_type, field_declaration.getASTContext());
+
+        const auto *template_field_type_decl =
+            template_field_type->getTemplateName().getAsTemplateDecl();
+
+        eid_t id_decl;
+        if (template_field_type_decl != nullptr)
+            id_decl = common::to_id(*template_field_type_decl);
+
+        if (id_decl.has_value() &&
+            common::is_template_specialization_fully_dependent(
+                *template_field_type)) {
+            template_specialization_ptr->set_id(id_decl);
+        }
+        else {
+            template_specialization_ptr->set_id(id);
+        }
+
         tbuilder().build_from_template_specialization_type(field_declaration,
             *template_specialization_ptr,
             field_type->getAs<clang::TemplateSpecializationType>()
                 ->getTemplateName()
                 .getAsTemplateDecl(),
             *template_field_type, {&c});
+
+        if (id_decl.has_value() &&
+            common::is_template_specialization_fully_dependent(
+                *template_field_type)) {
+            template_specialization_ptr->set_id(id_decl);
+        }
+        else {
+            template_specialization_ptr->set_id(id);
+        }
+
         template_specialization_ptr->is_template(true);
 
         if (!field.skip_relationship() && template_specialization_ptr) {
@@ -2376,7 +2444,7 @@ void translation_unit_visitor::process_field(
             // Add the template instantiation object to the diagram if it
             // matches the include pattern
             if (add_template_instantiation_to_diagram)
-                add_class(std::move(template_specialization_ptr));
+                diagram().add_class(std::move(template_specialization_ptr));
         }
     }
 
@@ -2388,8 +2456,8 @@ void translation_unit_visitor::process_field(
                 field_type->getAsRecordDecl()->getNameAsString().empty()) {
                 // Relationships to fields whose type is an anonymous nested
                 // struct have to be handled separately here
-                anonymous_struct_relationships_[field_type->getAsRecordDecl()
-                        ->getID()] =
+                anonymous_struct_relationships_[common::to_id(
+                    *(field_type->getAsRecordDecl()))] =
                     std::make_tuple(field.name(), relationship_hint,
                         field.access(), field.destination_multiplicity());
             }
@@ -2428,20 +2496,18 @@ void translation_unit_visitor::find_record_parent_id(const clang::TagDecl *decl,
             parent_record_decl != nullptr) {
             parent_ns = common::get_tag_namespace(*parent_record_decl);
 
-            eid_t local_id{parent_record_decl->getID()};
-
-            // First check if the parent has been added to the diagram as
-            // regular class
-            parent_id_opt = id_mapper().get_global_id(local_id);
+            eid_t parent_id = common::to_id(*parent_record_decl);
 
             // If not, check if the parent template declaration is in the
             // model
-            if (!parent_id_opt) {
+            if (!diagram().get(parent_id)) {
                 if (parent_record_decl->getDescribedTemplate() != nullptr) {
-                    local_id =
-                        parent_record_decl->getDescribedTemplate()->getID();
-                    parent_id_opt = id_mapper().get_global_id(local_id);
+                    parent_id_opt = common::to_id(
+                        *parent_record_decl->getDescribedTemplate());
                 }
+            }
+            else {
+                parent_id_opt = parent_id;
             }
         }
     }
@@ -2455,11 +2521,7 @@ void translation_unit_visitor::find_record_parent_id(const clang::TagDecl *decl,
                 clang::dyn_cast<clang::ObjCInterfaceDecl>(lexical_parent);
             parent_interface_decl != nullptr) {
 
-            eid_t ast_id{parent_interface_decl->getID()};
-
-            // First check if the parent has been added to the diagram as
-            // regular class
-            parent_id_opt = id_mapper().get_global_id(ast_id);
+            parent_id_opt = (common::to_id(*parent_interface_decl));
         }
     }
 }
@@ -2469,7 +2531,7 @@ void translation_unit_visitor::add_incomplete_forward_declarations()
     for (auto &[id, c] : forward_declarations_.get<class_>()) {
         if (!diagram().find<class_>(id).has_value() &&
             diagram().should_include(c->get_namespace())) {
-            add_class(std::move(c));
+            diagram().add_class(std::move(c));
         }
     }
     forward_declarations_.get<class_>().clear();
@@ -2477,50 +2539,14 @@ void translation_unit_visitor::add_incomplete_forward_declarations()
     for (auto &[id, e] : forward_declarations_.get<enum_>()) {
         if (!diagram().find<enum_>(id).has_value() &&
             diagram().should_include(e->get_namespace())) {
-            add_enum(std::move(e));
+            diagram().add_enum(std::move(e));
         }
     }
     forward_declarations_.get<enum_>().clear();
 }
 
-void translation_unit_visitor::resolve_local_to_global_ids()
-{
-    diagram().for_all_elements([&](auto &element_view) {
-        for (const auto &el : element_view) {
-            for (auto &rel : el.get().relationships()) {
-                if (!rel.destination().is_global()) {
-                    const auto maybe_id =
-                        id_mapper().get_global_id(rel.destination());
-                    if (maybe_id) {
-                        LOG_TRACE("= Resolved instantiation destination "
-                                  "from local "
-                                  "id {} to global id {}",
-                            rel.destination(), *maybe_id);
-                        rel.set_destination(*maybe_id);
-                    }
-                }
-            }
-            el.get().remove_duplicate_relationships();
-
-            // Remove self-referential instantiation relationships.
-            // These can arise when a partial specialization's deferred local
-            // Clang ID resolves to its own global UML ID after id_mapper
-            // registration (e.g. conditional_t<Else> ..|> conditional_t<Else>)
-            auto &rels = el.get().relationships();
-            rels.erase(std::remove_if(rels.begin(), rels.end(),
-                           [&el](const relationship &r) {
-                               return r.type() ==
-                                   relationship_t::kInstantiation &&
-                                   r.destination() == el.get().id();
-                           }),
-                rels.end());
-        }
-    });
-}
-
 void translation_unit_visitor::finalize()
 {
-    resolve_local_to_global_ids();
     add_incomplete_forward_declarations();
     if (config().skip_redundant_dependencies()) {
         diagram().remove_redundant_dependencies();
@@ -2569,111 +2595,7 @@ bool translation_unit_visitor::has_processed_template_class(
 void translation_unit_visitor::add_diagram_element(
     std::unique_ptr<common::model::template_element> element)
 {
-    add_class(util::unique_pointer_cast<class_>(std::move(element)));
-}
-
-void translation_unit_visitor::add_class(std::unique_ptr<class_> &&c)
-{
-    if ((config().generate_packages() &&
-            config().package_type() == config::package_type_t::kDirectory)) {
-        assert(!c->file().empty());
-
-        const auto file = config().make_path_relative(c->file());
-
-        common::model::path p{
-            file.string(), common::model::path_type::kFilesystem};
-        p.pop_back();
-
-        diagram().add(p, std::move(c));
-    }
-    else if ((config().generate_packages() &&
-                 config().package_type() == config::package_type_t::kModule)) {
-
-        const auto module_path = config().make_module_relative(c->module());
-
-        common::model::path p{module_path, common::model::path_type::kModule};
-
-        diagram().add(p, std::move(c));
-    }
-    else {
-        diagram().add(c->path(), std::move(c));
-    }
-}
-
-void translation_unit_visitor::add_objc_interface(
-    std::unique_ptr<objc_interface> &&c)
-{
-    if ((config().generate_packages() &&
-            config().package_type() == config::package_type_t::kDirectory)) {
-        assert(!c->file().empty());
-
-        const auto file = config().make_path_relative(c->file());
-
-        common::model::path p{
-            file.string(), common::model::path_type::kFilesystem};
-        p.pop_back();
-
-        diagram().add(p, std::move(c));
-    }
-    else {
-        diagram().add(c->path(), std::move(c));
-    }
-}
-
-void translation_unit_visitor::add_enum(std::unique_ptr<enum_> &&e)
-{
-    if ((config().generate_packages() &&
-            config().package_type() == config::package_type_t::kDirectory)) {
-        assert(!e->file().empty());
-
-        const auto file = config().make_path_relative(e->file());
-
-        common::model::path p{
-            file.string(), common::model::path_type::kFilesystem};
-        p.pop_back();
-
-        diagram().add(p, std::move(e));
-    }
-    else if ((config().generate_packages() &&
-                 config().package_type() == config::package_type_t::kModule)) {
-
-        const auto module_path = config().make_module_relative(e->module());
-
-        common::model::path p{module_path, common::model::path_type::kModule};
-
-        diagram().add(p, std::move(e));
-    }
-    else {
-        diagram().add(e->path(), std::move(e));
-    }
-}
-
-void translation_unit_visitor::add_concept(std::unique_ptr<concept_> &&c)
-{
-    if ((config().generate_packages() &&
-            config().package_type() == config::package_type_t::kDirectory)) {
-        assert(!c->file().empty());
-
-        const auto file = config().make_path_relative(c->file());
-
-        common::model::path p{
-            file.string(), common::model::path_type::kFilesystem};
-        p.pop_back();
-
-        diagram().add(p, std::move(c));
-    }
-    else if ((config().generate_packages() &&
-                 config().package_type() == config::package_type_t::kModule)) {
-
-        const auto module_path = config().make_module_relative(c->module());
-
-        common::model::path p{module_path, common::model::path_type::kModule};
-
-        diagram().add(p, std::move(c));
-    }
-    else {
-        diagram().add(c->path(), std::move(c));
-    }
+    diagram().add_class(util::unique_pointer_cast<class_>(std::move(element)));
 }
 
 void translation_unit_visitor::find_instantiation_relationships(
@@ -2707,45 +2629,44 @@ void translation_unit_visitor::find_instantiation_relationships(
         }
     }
 
-    auto templated_decl_global_id =
-        id_mapper().get_global_id(templated_decl_id).value_or(eid_t{});
+    auto templated_decl_global_id = templated_decl_id;
 
     if (best_match_id.value() > 0 &&
         best_match_id != template_instantiation.id()) {
         destination = best_match_full_name;
-        template_instantiation.add_relationship(
-            {common::model::relationship_t::kInstantiation, best_match_id});
+        diagram().add_relationship(
+            {common::model::relationship_t::kInstantiation,
+                template_instantiation.id(), best_match_id});
         template_instantiation.template_specialization_found(true);
     }
     // If we can't find optimal match for parent template specialization,
     // just use whatever clang suggests
     else if (diagram().has_element(templated_decl_global_id) &&
         templated_decl_global_id != template_instantiation.id()) {
-        template_instantiation.add_relationship(
+        diagram().add_relationship(
             {common::model::relationship_t::kInstantiation,
-                templated_decl_global_id});
+                template_instantiation.id(), templated_decl_global_id});
         template_instantiation.template_specialization_found(true);
     }
-    else if (id_mapper().get_global_id(templated_decl_id).has_value() &&
-        id_mapper().get_global_id(templated_decl_id).value() !=
-            template_instantiation.id()) {
-        template_instantiation.add_relationship(
-            {common::model::relationship_t::kInstantiation, templated_decl_id});
+    else if (templated_decl_id.value() != 0 &&
+        templated_decl_id != template_instantiation.id()) {
+        diagram().add_relationship(
+            {common::model::relationship_t::kInstantiation,
+                template_instantiation.id(), templated_decl_id});
         template_instantiation.template_specialization_found(true);
     }
-    else if (!diagram().has_element(templated_decl_global_id) &&
-        !id_mapper().get_global_id(templated_decl_id).has_value()) {
-        // Add a deferred relationship using the local Clang AST id - it will
-        // be resolved to a global id in resolve_local_to_global_ids() during
-        // finalize(). This handles both the case where the template is in the
-        // included namespace (condition previously skipped this), and the case
-        // where the global id is not yet known.
+    else if (diagram().should_include(common::model::namespace_{full_name})) {
+        LOG_DBG("Skipping instantiation relationship from {} to {}",
+            template_instantiation, templated_decl_global_id);
+    }
+    else {
         LOG_DBG("== Cannot determine global id for specialization template {} "
                 "- delaying until the translation unit is complete ",
             templated_decl_global_id);
 
-        template_instantiation.add_relationship(
-            {common::model::relationship_t::kInstantiation, templated_decl_id});
+        diagram().add_relationship(
+            {common::model::relationship_t::kInstantiation,
+                template_instantiation.id(), templated_decl_id});
     }
 }
 

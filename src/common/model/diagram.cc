@@ -19,11 +19,18 @@
 #include "diagram.h"
 
 #include "filters/diagram_filter.h"
+#include "filters/diagram_filter_factory.h"
+
 #include "namespace.h"
 
 namespace clanguml::common::model {
 
-diagram::diagram() = default;
+diagram::diagram(const config::diagram &config)
+    : name_{config.name}
+{
+    set_filter(
+        clanguml::common::model::diagram_filter_factory::create(*this, config));
+}
 
 diagram::~diagram() = default;
 
@@ -61,7 +68,12 @@ bool diagram::complete() const { return complete_; }
 
 void diagram::finalize()
 {
-    // Remove elements that do not match the filter
+    assert(complete());
+
+    // Reset the filters as they may contain invalid references after
+    // models have been combined
+    filter().reset();
+
     apply_filter();
     filtered_ = true;
 }
@@ -136,6 +148,55 @@ bool diagram::should_include(const common::model::source_file &f) const
         return true;
 
     return filter_->should_include(f);
+}
+
+void diagram::add_relationship(relationship &&cr)
+{
+    assert(cr.source().has_value());
+
+    if ((cr.type() == relationship_t::kInstantiation) &&
+        (cr.destination() == cr.source())) {
+        LOG_DBG("Skipping self instantiation relationship for {}",
+            cr.destination());
+        return;
+    }
+
+    if (!util::contains(relationships_, cr)) {
+        LOG_DBG("Adding relationship from: '{}' - {} - '{}'", cr.source(),
+            to_string(cr.type()), cr.destination());
+
+        relationships_.emplace_back(std::move(cr));
+    }
+}
+
+void diagram::remove_duplicate_relationships()
+{
+    std::vector<relationship> unique_relationships;
+
+    for (auto &r : relationships_) {
+        if (!util::contains(unique_relationships, r)) {
+            unique_relationships.emplace_back(r);
+        }
+    }
+
+    std::swap(relationships_, unique_relationships);
+}
+
+std::vector<relationship> &diagram::relationships() { return relationships_; }
+
+const std::vector<relationship> &diagram::relationships() const
+{
+    return relationships_;
+}
+
+void diagram::append(diagram &&other)
+{
+    assert(complete_ && other.complete());
+    assert(name_ == other.name());
+
+    for (auto &&r : std::move(other).relationships()) {
+        add_relationship(std::move(r));
+    }
 }
 
 } // namespace clanguml::common::model

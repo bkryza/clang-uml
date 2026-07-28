@@ -151,29 +151,6 @@ public:
      */
     void finalize();
 
-    /**
-     * @brief Add class (or template class) to the diagram.
-     *
-     * @param c Class model
-     */
-    void add_class(std::unique_ptr<class_> &&c);
-
-    /**
-     * @brief Add enum to the diagram.
-     *
-     * @param e Enum model
-     */
-    void add_enum(std::unique_ptr<enum_> &&e);
-
-    /**
-     * @brief Add concept to the diagram.
-     *
-     * @param c Concept model
-     */
-    void add_concept(std::unique_ptr<concept_> &&c);
-
-    void add_objc_interface(std::unique_ptr<objc_interface> &&c);
-
     void add_diagram_element(
         std::unique_ptr<common::model::template_element> element) override;
 
@@ -533,16 +510,6 @@ private:
     void add_incomplete_forward_declarations();
 
     /**
-     * @brief Replace any AST local ids in diagram elements with global ones
-     *
-     * Not all elements global ids can be set in relationships during
-     * traversal of the AST. In such cases, a local id (obtained from
-     * `getID()`) and at after the traversal is complete, the id is replaced
-     * with the global diagram id.
-     */
-    void resolve_local_to_global_ids();
-
-    /**
      * @brief Process concept constraint requirements
      *
      * @param cpt Concept declaration
@@ -610,7 +577,7 @@ private:
 
     forward_declarations_t<class_, enum_> forward_declarations_;
 
-    std::map<int64_t /* local anonymous struct id */,
+    std::map<eid_t /* anonymous struct id */,
         std::tuple<std::string /* field name */, common::model::relationship_t,
             common::model::access_t,
             std::optional<size_t> /* destination_multiplicity */>>
@@ -641,10 +608,11 @@ void translation_unit_visitor::process_record_parent_by_type(eid_t parent_id,
     c.set_namespace(parent_ns);
     const auto cls_name = decl->getNameAsString();
     if (cls_name.empty()) {
+        const auto decl_id = common::to_id(*decl);
         // Nested structs can be anonymous
-        if (anonymous_struct_relationships_.count(decl->getID()) > 0) {
+        if (anonymous_struct_relationships_.count(decl_id) > 0) {
             const auto &[label, hint, access, destination_multiplicity] =
-                anonymous_struct_relationships_[decl->getID()];
+                anonymous_struct_relationships_[decl_id];
 
             c.set_name(parent_class.value().name() + "##" +
                 fmt::format("({})", label));
@@ -655,9 +623,8 @@ void translation_unit_visitor::process_record_parent_by_type(eid_t parent_id,
                     std::to_string(*destination_multiplicity);
             }
 
-            parent_class.value().add_relationship(
-                {hint, common::to_id(c.full_name(false)), access, label, "",
-                    destination_multiplicity_str});
+            diagram().add_relationship({hint, parent_class.value().id(), c.id(),
+                access, label, "", destination_multiplicity_str});
         }
         else
             c.set_name(parent_class.value().name() + "##" +
@@ -668,12 +635,13 @@ void translation_unit_visitor::process_record_parent_by_type(eid_t parent_id,
             parent_class.value().name() + "##" + decl->getNameAsString());
     }
 
-    c.set_id(common::to_id(c.full_name(false)));
+    c.set_id(common::to_id(*decl));
 
     if (!(decl->getNameAsString().empty())) {
         // Don't add anonymous structs as contained in the class
         // as they are already added as aggregations
-        c.add_relationship({relationship_t::kContainment, parent_id});
+        diagram().add_relationship(
+            {relationship_t::kContainment, c.id(), parent_id});
     }
 
     c.nested(true);
@@ -688,8 +656,6 @@ bool translation_unit_visitor::add_or_update(
 
     const auto cls_id = c_ptr->id();
 
-    id_mapper().add(cls->getID(), cls_id);
-
     auto maybe_existing_model = diagram().find<ElementT>(cls_id);
 
     ElementT &class_model =
@@ -697,7 +663,9 @@ bool translation_unit_visitor::add_or_update(
 
     auto id = class_model.id();
 
-    if (cls->isCompleteDefinition() && !class_model.complete()) {
+    auto is_complete_definition{cls->isCompleteDefinition()};
+
+    if (is_complete_definition && !class_model.complete()) {
         process_declaration(*cls, class_model);
 
         // Update the source location for the element, otherwise
@@ -706,7 +674,7 @@ bool translation_unit_visitor::add_or_update(
         set_source_location(*cls, class_model);
     }
 
-    if (cls->isCompleteDefinition()) {
+    if (is_complete_definition) {
         if (maybe_existing_model &&
             config().package_type() == config::package_type_t::kDirectory) {
             // Move the class model to current filesystem path
@@ -727,14 +695,13 @@ bool translation_unit_visitor::add_or_update(
     forward_declarations_.get<ElementT>().erase(id);
 
     if constexpr (std::is_same_v<T, clang::ClassTemplateSpecializationDecl>) {
-        if (!class_model.template_specialization_found()) {
+        if (!class_model.template_specialization_found() &&
+            cls->getSpecializedTemplate() != nullptr) {
             // Only do this if we haven't found a better specialization
             // during construction of the template specialization
-            const eid_t ast_id{cls->getSpecializedTemplate()->getID()};
-            const auto maybe_id = id_mapper().get_global_id(ast_id);
-            if (maybe_id.has_value())
-                class_model.add_relationship(
-                    {relationship_t::kInstantiation, maybe_id.value()});
+            eid_t ast_id{common::to_id(*cls->getSpecializedTemplate())};
+            diagram().add_relationship(
+                {relationship_t::kInstantiation, class_model.id(), ast_id});
         }
     }
 
@@ -745,9 +712,9 @@ bool translation_unit_visitor::add_or_update(
         LOG_DBG("Adding {} {} with id {}", class_model.type_name(), class_model,
             class_model.id());
         if constexpr (std::is_same_v<ElementT, class_>)
-            add_class(std::move(c_ptr));
+            diagram().add_class(std::move(c_ptr));
         else
-            add_enum(std::move(c_ptr));
+            diagram().add_enum(std::move(c_ptr));
     }
     else {
         LOG_DBG("Skipping {} {} with id {}", class_model.type_name(),
