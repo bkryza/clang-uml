@@ -24,13 +24,12 @@ TEST_CASE("t00102")
         CHECK_CLASS_MODEL("t00102", "t00102_class");
 
     CHECK_CLASS_DIAGRAM(*class_config, class_diagram, *class_model,
-        [](const auto &src) {
-            REQUIRE(IsClassTemplate(src, "wrapper<C,T>"));
-        });
+        [](const auto &src) { REQUIRE(IsClassTemplate(src, "wrapper<C,T>")); });
 
     auto [sequence_config, sequence_db, sequence_diagram, sequence_model] =
         CHECK_SEQUENCE_MODEL("t00102", "t00102_sequence");
 
-    CHECK_SEQUENCE_DIAGRAM(*sequence_config, sequence_diagram, *sequence_model,
+    CHECK_SEQUENCE_DIAGRAM(
+        *sequence_config, sequence_diagram, *sequence_model,
         [](const auto &) { }, [](const json_t &) { });
 }
