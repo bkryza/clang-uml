@@ -300,6 +300,9 @@ test_cases:
     - name: t00101
       title: Test case for strategy design pattern using static polymorphism
       description:
+    - name: t00102
+      title: Test case for unresolved template declarations
+      description:
   Sequence diagrams:
     - name: t20001
       title: Basic sequence diagram test case
