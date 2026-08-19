@@ -2142,6 +2142,8 @@ bool translation_unit_visitor::process_class_template_method_call_expression(
 
             const auto *template_declaration =
                 tst->getTemplateName().getAsTemplateDecl();
+            if (template_declaration == nullptr)
+                return false;
 
             const auto template_declaration_id =
                 common::to_id(*template_declaration);

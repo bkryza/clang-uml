@@ -1,0 +1,19 @@
+diagrams:
+  t00102_class:
+    type: class
+    glob:
+      - t00102.cc
+    using_namespace: clanguml::t00102
+    include:
+      namespaces:
+        - clanguml::t00102
+  t00102_sequence:
+    type: sequence
+    glob:
+      - t00102.cc
+    using_namespace: clanguml::t00102
+    include:
+      namespaces:
+        - clanguml::t00102
+    from:
+      - function: "clanguml::t00102::tmain()"

@@ -1879,21 +1879,20 @@ bool translation_unit_visitor::find_relationships(const clang::Decl *decl,
         const auto *type_instantiation_template_decl =
             template_specialization_type->getTemplateName().getAsTemplateDecl();
 
+        if (type_instantiation_template_decl == nullptr)
+            return result;
+
         auto id = common::to_id(*template_specialization_type,
             type_instantiation_template_decl->getASTContext());
-        auto id_decl =
-            common::to_id(*template_specialization_type->getTemplateName()
-                    .getAsTemplateDecl());
+        auto id_decl = common::to_id(*type_instantiation_template_decl);
 
         if (id_decl.has_value() &&
             common::is_template_specialization_fully_dependent(
                 *template_specialization_type)) {
-            id = common::to_id(*template_specialization_type->getTemplateName()
-                    .getAsTemplateDecl());
+            id = common::to_id(*type_instantiation_template_decl);
         }
 
-        if (should_include(template_specialization_type->getTemplateName()
-                    .getAsTemplateDecl())) {
+        if (should_include(type_instantiation_template_decl)) {
             relationships.emplace_back(id, relationship_hint, decl);
         }
         auto idx{0};
