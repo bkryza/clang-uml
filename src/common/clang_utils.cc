@@ -1071,6 +1071,15 @@ bool parse_source_location(const std::string &location_str, std::string &file,
     return true;
 }
 
+const clang::RawComment *get_decl_comment(const clang::Decl &decl)
+{
+#if LLVM_VERSION_MAJOR >= 23
+    return decl.getASTContext().getRawCommentForAnyRedecl(&decl);
+#else
+    return decl.getASTContext().getRawCommentForDeclNoCache(&decl);
+#endif
+}
+
 clang::RawComment *get_expression_raw_comment(const clang::SourceManager &sm,
     const clang::ASTContext &context, const clang::Stmt *stmt)
 {

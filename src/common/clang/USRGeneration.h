@@ -39,4 +39,6 @@
 #include "usr/llvm-21/USRGeneration.h"
 #elif LLVM_VERSION_MAJOR == 22
 #include "usr/llvm-22/USRGeneration.h"
+#elif LLVM_VERSION_MAJOR == 23
+#include "usr/llvm-23/USRGeneration.h"
 #endif

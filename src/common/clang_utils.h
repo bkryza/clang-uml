@@ -312,6 +312,13 @@ consume_type_context(clang::QualType type);
 clang::RawComment *get_expression_raw_comment(const clang::SourceManager &sm,
     const clang::ASTContext &context, const clang::Stmt *stmt);
 
+/**
+ * Get the documentation comment attached to a declaration.
+ *
+ * @param decl Clang declaration.
+ */
+const clang::RawComment *get_decl_comment(const clang::Decl &decl);
+
 clang::RawComment *get_declaration_raw_comment(const clang::SourceManager &sm,
     const clang::ASTContext &context, const clang::Decl *decl);
 

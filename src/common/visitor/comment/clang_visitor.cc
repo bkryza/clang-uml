@@ -17,6 +17,7 @@
  */
 
 #include "clang_visitor.h"
+#include "common/clang_utils.h"
 #include "util/util.h"
 
 #if LLVM_VERSION_MAJOR > 17
@@ -37,8 +38,7 @@ clang_visitor::clang_visitor(clang::SourceManager &source_manager)
 void clang_visitor::visit(
     const clang::NamedDecl &decl, common::model::decorated_element &e)
 {
-    const auto *comment =
-        decl.getASTContext().getRawCommentForDeclNoCache(&decl);
+    const auto *comment = common::get_decl_comment(decl);
 
     if (comment == nullptr) {
         return;

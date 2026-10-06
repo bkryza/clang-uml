@@ -17,6 +17,7 @@
  */
 
 #include "plain_visitor.h"
+#include "common/clang_utils.h"
 
 namespace clanguml::common::visitor::comment {
 
@@ -28,8 +29,7 @@ plain_visitor::plain_visitor(clang::SourceManager &source_manager)
 void plain_visitor::visit(
     const clang::NamedDecl &decl, common::model::decorated_element &e)
 {
-    const auto *comment =
-        decl.getASTContext().getRawCommentForDeclNoCache(&decl);
+    const auto *comment = common::get_decl_comment(decl);
 
     if (comment == nullptr) {
         return;

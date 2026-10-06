@@ -19,8 +19,6 @@
 
 #include "model/namespace.h"
 
-#include "clang/Index/USRGeneration.h"
-
 #include <cassert>
 #include <cstdint>
 #include <optional>
