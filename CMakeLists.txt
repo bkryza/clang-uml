@@ -129,6 +129,10 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
             -Wno-preferred-type-bitfield-enum-conversion
             -Wno-unnecessary-virtual-specifier)
     endif()
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 23)
+        set(CUSTOM_COMPILE_OPTIONS ${CUSTOM_COMPILE_OPTIONS}
+            -Wno-deprecated-this-capture)
+    endif()
 endif()
 
 link_directories(${LLVM_LIBRARY_DIR})

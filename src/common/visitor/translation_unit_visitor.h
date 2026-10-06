@@ -196,7 +196,7 @@ public:
 
         comment_visitor_->visit(decl, e);
 
-        auto *comment = decl.getASTContext().getRawCommentForDeclNoCache(&decl);
+        const auto *comment = common::get_decl_comment(decl);
 
         process_comment(comment, decl.getASTContext().getDiagnostics(), e);
     }

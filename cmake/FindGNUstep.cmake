@@ -19,6 +19,14 @@ list(REMOVE_ITEM GNUSTEP_OBJC_FLAGS "-MMD")
 list(APPEND GNUSTEP_OBJC_FLAGS "-fblocks")
 list(APPEND GNUSTEP_OBJC_FLAGS "-fobjc-runtime=gnustep-2.0")
 
+if(CMAKE_OBJC_COMPILER_ID STREQUAL "Clang" AND
+   CMAKE_OBJC_COMPILER_VERSION VERSION_GREATER_EQUAL 23)
+    # Older GNUstep headers apply __block to an instance variable, which
+    # Clang 23 rejects. Keep this workaround local to the affected header.
+    list(APPEND GNUSTEP_OBJC_FLAGS "-include"
+         "${PROJECT_SOURCE_DIR}/tests/include/gnustep_compat.h")
+endif()
+
 # Get GNUstep LDFLAGS (for linking)
 execute_process(
     COMMAND ${GNUSTEP_CONFIG} --base-libs

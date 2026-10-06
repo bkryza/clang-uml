@@ -83,6 +83,11 @@ void translation_unit_visitor::include_visitor::InclusionDirective(
     auto current_file =
         std::filesystem::path{source_manager().getFilename(hash_loc).str()};
 
+    // Forced includes originate in Clang's predefines buffer, which has no
+    // source file and cannot be represented as an include-diagram element.
+    if (current_file.empty())
+        return;
+
     std::string file_name_str = file_name.str();
     current_file = std::filesystem::absolute(current_file);
     current_file = current_file.lexically_normal();
